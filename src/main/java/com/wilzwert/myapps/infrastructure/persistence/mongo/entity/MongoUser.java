@@ -1,0 +1,56 @@
+package com.wilzwert.myapps.infrastructure.persistence.mongo.entity;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
+import java.time.Instant;
+import java.util.UUID;
+
+/**
+ * @author Wilhelm Zwertvaegher
+ * Date:12/03/2025
+ * Time:16:06
+ */
+@Document(collection = "users")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class MongoUser  {
+    @Id
+    private UUID id;
+
+    @Indexed(unique = true)
+    private String email;
+
+    @Field(name = "password")
+    private String password;
+
+    @Indexed(unique = true)
+    private String username;
+
+    @Field(name = "first_name")
+    private String firstName;
+    @Field(name = "last_name")
+    private String lastName;
+
+    @Field(name = "role")
+    private String role;
+
+    @Field(name = "created_at")
+    @CreatedDate
+    private Instant createdAt;
+
+    @Field(name = "updated_at")
+    @LastModifiedDate
+    private Instant updatedAt;
+
+    private MongoRefreshToken refreshToken;
+}
+

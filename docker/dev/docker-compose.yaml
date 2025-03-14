@@ -1,0 +1,27 @@
+services:
+  mongodb:
+    container_name: myapps-mongo
+    image: mongo:8.0
+    restart: always
+    command:
+      - --storageEngine
+      - wiredTiger
+      - --auth
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo-data/:/data/
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - myapps-network
+    environment:
+      - MONGO_INITDB_DATABASE=myapps
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+
+networks:
+  myapps-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.75.0/24
