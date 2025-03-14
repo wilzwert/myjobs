@@ -1,6 +1,7 @@
 package com.wilzwert.myapps.domain.ports.driving;
 
 
+import com.wilzwert.myapps.domain.command.CreateJobCommand;
 import com.wilzwert.myapps.domain.model.Job;
 
 /**
@@ -9,5 +10,5 @@ import com.wilzwert.myapps.domain.model.Job;
  * Time:15:25
  */
 public interface CreateJobUseCase {
-    public Job createJob(Job job);
+    Job createJob(CreateJobCommand command);
 }

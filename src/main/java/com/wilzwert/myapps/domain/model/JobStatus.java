@@ -7,5 +7,6 @@ package com.wilzwert.myapps.domain.model;
  * Time:15:33
  */
 public enum JobStatus {
-
+    CREATED,
+    PENDING
 }

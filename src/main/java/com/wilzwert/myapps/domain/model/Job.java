@@ -1,6 +1,14 @@
 package com.wilzwert.myapps.domain.model;
 
 
+import com.wilzwert.myapps.domain.command.CreateJobCommand;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
+
+import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -9,7 +17,10 @@ import java.util.UUID;
  * Date:12/03/2025
  * Time:15:32
  */
-
+@Data
+@Accessors(chain = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class Job {
     private UUID id;
 
@@ -23,11 +34,26 @@ public class Job {
 
     private String profile;
 
-    private User user;
+    private Instant createdAt;
+
+    private Instant updatedAt;
+
+    private UUID userId;
 
     private List<Activity> activities;
 
-
-
-
+    public static Job fromCommand(CreateJobCommand command, UUID userId) {
+        return new Job(
+                UUID.randomUUID(),
+                command.url(),
+                JobStatus.CREATED,
+                command.title(),
+                "",
+                "",
+                null,
+                null,
+                userId,
+                Collections.emptyList()
+        );
+    }
 }

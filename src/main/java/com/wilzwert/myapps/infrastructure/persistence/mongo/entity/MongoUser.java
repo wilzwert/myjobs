@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -50,7 +51,11 @@ public class MongoUser  {
     @Field(name = "updated_at")
     @LastModifiedDate
     private Instant updatedAt;
-
-    private MongoRefreshToken refreshToken;
+    /* TODO ? refresh tokens
+    @ReadOnlyProperty
+    @DocumentReference(lookup="{'userId':?#{#self._id} }")
+    private List<MongoRefreshToken> refreshTokens;
+    */
+    private List<UUID> jobIds;
 }
 

@@ -111,7 +111,7 @@ public class JwtService {
      * @return the JWT Token
      */
     public String generateToken(String subject) {
-        log.info("Generating JWT token for {}", subject);
+        log.info("Generating JWT token for {} with secret {}, refresh exp {}", subject, jwtProperties.getSecretKey(), jwtProperties.getRefreshExpirationTime());
         return Jwts
                 .builder()
                 .subject(subject)

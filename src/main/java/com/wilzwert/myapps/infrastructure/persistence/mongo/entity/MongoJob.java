@@ -1,12 +1,14 @@
 package com.wilzwert.myapps.infrastructure.persistence.mongo.entity;
 
+import com.wilzwert.myapps.domain.model.JobStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -18,30 +20,31 @@ import java.util.UUID;
  * Date:12/03/2025
  * Time:16:06
  */
-@Document(collection = "applications")
+@Document(collection = "jobs")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@CompoundIndexes({
+        @CompoundIndex(name = "unique_user_job", def = "{'userId': 1, 'url': 1}", unique = true)
+})
 public class MongoJob {
     @Id
     private UUID id;
 
-    @Indexed(unique = true)
-    private String email;
+    @Field
+    private String url;
 
-    @Field(name = "password")
-    private String password;
+    @Field
+    private JobStatus status;
 
-    @Indexed(unique = true)
-    private String username;
+    @Field
+    private String title;
 
-    @Field(name = "first_name")
-    private String firstName;
-    @Field(name = "last_name")
-    private String lastName;
+    @Field
+    private String description;
 
-    @Field(name = "role")
-    private String role;
+    @Field
+    private String profile;
 
     @Field(name = "created_at")
     @CreatedDate
@@ -51,6 +54,7 @@ public class MongoJob {
     @LastModifiedDate
     private Instant updatedAt;
 
-    private MongoRefreshToken refreshToken;
+    @Field(name = "user_id")
+    private UUID userId;
 }
 

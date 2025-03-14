@@ -4,6 +4,7 @@ package com.wilzwert.myapps.domain.ports.driven;
 import com.wilzwert.myapps.domain.model.User;
 
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -12,6 +13,8 @@ import java.util.Optional;
  */
 public interface UserRepository {
     Optional<User> findByEmail(String email);
+
+    Optional<User> findById(UUID id);
 
     User save(User user);
 }
