@@ -40,10 +40,13 @@ public class AuthController {
 
     private final UserMapper userMapper;
 
-    public AuthController(RegisterUseCase registerUseCase, LoginUseCase loginUseCase, UserMapper userMapper) {
+    private final CookieProperties cookieProperties;
+
+    public AuthController(RegisterUseCase registerUseCase, LoginUseCase loginUseCase, UserMapper userMapper, CookieProperties cookieProperties) {
         this.registerUseCase = registerUseCase;
         this.loginUseCase = loginUseCase;
         this.userMapper = userMapper;
+        this.cookieProperties = cookieProperties;
     }
 
     @PostMapping("/register")
@@ -53,7 +56,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserResponse> login(@RequestBody final LoginRequest loginRequest, CookieProperties cookieProperties) {
+    public ResponseEntity<UserResponse> login(@RequestBody final LoginRequest loginRequest) {
         log.info("User login with email {}", loginRequest.getEmail());
         try {
             log.info("User login - authenticating");
@@ -61,8 +64,6 @@ public class AuthController {
 
             // FIXME : needs genericity or strategy
             if (user instanceof JwtAuthenticatedUser jwtAuthenticatedUser) {
-                System.out.println("Token " + jwtAuthenticatedUser.getJwtToken() + ", refresh " + jwtAuthenticatedUser.getRefreshToken());
-
                 ResponseCookie accessTokenCookie = ResponseCookie.from("access_token", jwtAuthenticatedUser.getJwtToken())
                         .httpOnly(true)
                         .secure(cookieProperties.isSecure())  // Dynamique
