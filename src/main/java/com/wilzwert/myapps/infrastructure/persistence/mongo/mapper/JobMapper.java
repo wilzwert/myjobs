@@ -7,5 +7,5 @@ package com.wilzwert.myapps.infrastructure.persistence.mongo.mapper;
  * Time:15:48
  */
 
-public class ApplicationMapper {
+public class JobMapper {
 }
