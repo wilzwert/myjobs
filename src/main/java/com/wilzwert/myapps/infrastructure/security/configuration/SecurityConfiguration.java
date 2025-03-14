@@ -4,17 +4,23 @@ package com.wilzwert.myapps.infrastructure.security.configuration;
 import com.wilzwert.myapps.domain.ports.driven.Authenticator;
 import com.wilzwert.myapps.domain.ports.driven.PasswordHasher;
 import com.wilzwert.myapps.domain.ports.driven.impl.DefaultPasswordHasher;
+import com.wilzwert.myapps.infrastructure.security.jwt.JwtAuthenticationFilter;
 import com.wilzwert.myapps.infrastructure.security.jwt.JwtAuthenticator;
+import com.wilzwert.myapps.infrastructure.security.service.CustomUserDetailsService;
 import com.wilzwert.myapps.infrastructure.security.service.JwtService;
 import com.wilzwert.myapps.infrastructure.security.service.RefreshTokenService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -23,6 +29,16 @@ import org.springframework.security.web.SecurityFilterChain;
  */
 @Configuration
 public class SecurityConfiguration {
+
+    private final CustomUserDetailsService userDetailsService;
+
+    private final JwtService jwtService;
+
+    public SecurityConfiguration(CustomUserDetailsService userDetailsService, JwtService jwtService) {
+        this.userDetailsService = userDetailsService;
+        this.jwtService = jwtService;
+    }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -63,7 +79,30 @@ public class SecurityConfiguration {
                 )
                 // TODO ?.authenticationProvider(authenticationProvider())
                 // insert our custom filter, which will authenticate user from token if provided in the request
-                // TODO ? .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtService, userDetailsService()), UsernamePasswordAuthenticationFilter.class)
                 .build();
+    }
+
+    /**
+     * Provide our custom UserDetailsService to the security component
+     * @return UserDetailsService
+     */
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return userDetailsService;
+    }
+
+    /**
+     * Configure the app's AuthenticationProvide with our custom elements
+     * @return AuthenticationProvider
+     */
+    @Bean
+    AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+
+        authProvider.setUserDetailsService(userDetailsService());
+        authProvider.setPasswordEncoder(passwordEncoder());
+
+        return authProvider;
     }
 }

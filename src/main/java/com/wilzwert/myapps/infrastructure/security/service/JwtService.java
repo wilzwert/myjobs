@@ -2,16 +2,18 @@ package com.wilzwert.myapps.infrastructure.security.service;
 
 
 import com.wilzwert.myapps.infrastructure.security.configuration.JwtProperties;
-import com.wilzwert.myapps.infrastructure.security.jwt.JwtToken;
+import com.wilzwert.myapps.infrastructure.security.model.JwtToken;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Optional;
 
@@ -44,17 +46,32 @@ public class JwtService {
      * @throws SignatureException when JWT token's signature is invalid
      */
     public Optional<JwtToken> extractTokenFromRequest(HttpServletRequest request) throws ExpiredJwtException, MalformedJwtException, IllegalArgumentException, UnsupportedJwtException, SignatureException {
-        String authHeader = request.getHeader("Authorization");
-        String token;
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            token = request.getParameter("token");
-            if(token == null || token.isEmpty()) {
-                // log.info("Authorization header not found or not compatible with Bearer token");
-                return Optional.empty();
-            }
+
+        String token = null;
+        Cookie[] cookies = request.getCookies();
+        Cookie jwtCookie;
+
+        if(cookies != null) {
+            jwtCookie = Arrays.stream(cookies)
+                    .filter(cookie -> "access_token".equals(cookie.getName()))
+                    .findFirst()
+                    .orElse(null);
+            token = jwtCookie != null ? jwtCookie.getValue() : null;
+
         }
-        else {
-            token = authHeader.substring(7);
+        if(token == null) {
+            String authHeader = request.getHeader("Authorization");
+
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                token = request.getParameter("token");
+                if(token == null || token.isEmpty()) {
+                    // log.info("Authorization header not found or not compatible with Bearer token");
+                    return Optional.empty();
+                }
+            }
+            else {
+                token = authHeader.substring(7);
+            }
         }
 
         try {

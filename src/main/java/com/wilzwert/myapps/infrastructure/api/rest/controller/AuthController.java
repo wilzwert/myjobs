@@ -11,16 +11,15 @@ import com.wilzwert.myapps.infrastructure.persistence.mongo.mapper.UserMapper;
 import com.wilzwert.myapps.infrastructure.api.rest.dto.UserResponse;
 import com.wilzwert.myapps.infrastructure.security.configuration.CookieProperties;
 import com.wilzwert.myapps.infrastructure.security.jwt.JwtAuthenticatedUser;
+import com.wilzwert.myapps.infrastructure.security.service.UserDetailsImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Duration;
@@ -98,6 +97,12 @@ public class AuthController {
             log.info("Login failed for User with email {}", loginRequest.getEmail());
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Login failed. " + e.getMessage());
         }
+    }
+
+    @GetMapping("/me")
+    public UserResponse me(Authentication authentication) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        return new UserResponse(userDetails.getEmail(), userDetails.getUsername(), userDetails.getRole());
     }
 
     /*

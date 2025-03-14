@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
  * As of now, the jwt token subject is the user's email
  *
  * @author Wilhelm Zwertvaegher
- * Date:07/11/2024
+ * Date:13/03/2025
  * Time:15:58
  */
 @Service
@@ -32,6 +32,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException, NumberFormatException {
         // we use the id as jwt token subject, therefore we load the user by its id
         User foundUser = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
-        return new UserDetailsImpl(foundUser.getId(), foundUser.getEmail(), foundUser.getPassword(), Collections.of(new SimpleGrantedAuthority(foundUser.getRole())));
+        return new UserDetailsImpl(foundUser.getId(), foundUser.getEmail(), foundUser.getUsername(), foundUser.getRole(), foundUser.getPassword(), Collections.of(new SimpleGrantedAuthority(foundUser.getRole())));
     }
 }
