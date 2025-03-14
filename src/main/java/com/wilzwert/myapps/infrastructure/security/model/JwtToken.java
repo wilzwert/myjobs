@@ -1,4 +1,4 @@
-package com.wilzwert.myapps.infrastructure.security.jwt;
+package com.wilzwert.myapps.infrastructure.security.model;
 
 
 import io.jsonwebtoken.Claims;
@@ -10,7 +10,7 @@ import lombok.Setter;
 /**
  * Represents a JWT token
  * @author Wilhelm Zwertvaegher
- * Date:07/11/2024
+ * Date:13/03/2025
  * Time:16:20
  */
 @Getter

@@ -10,7 +10,7 @@ import org.springframework.context.annotation.PropertySource;
 /**
  * Sets .env source for properties
  * @author Wilhelm Zwertvaegher
- * Date:07/11/2024
+ * Date:13/03/2025
  * Time:16:05
  */
 @Configuration
