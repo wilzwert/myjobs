@@ -8,6 +8,7 @@ import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -25,8 +26,18 @@ public class MongoJobRepository implements JobRepository {
     }
 
     @Override
-    public Optional<Job> findById(String id) {
+    public Optional<Job> findById(UUID id) {
         return springMongoJobRepository.findById(id).map(jobMapper::toDomain).or(Optional::empty);
+    }
+
+    @Override
+    public Optional<Job> findByUrlAndUserId(String url, UUID userId) {
+        return springMongoJobRepository.findByUrlAndUserId(url, userId).map(jobMapper::toDomain).or(Optional::empty);
+    }
+
+    @Override
+    public Optional<Job> findByIdAndUserId(UUID jobId, UUID userId) {
+        return springMongoJobRepository.findByIdAndUserId(jobId, userId).map(jobMapper::toDomain).or(Optional::empty);
     }
 
     @Override
@@ -38,5 +49,10 @@ public class MongoJobRepository implements JobRepository {
         System.out.println(mongoJob.getUserId());
         // throw new RuntimeException("TEST");
         return this.jobMapper.toDomain(springMongoJobRepository.save(this.jobMapper.toEntity(job)));
+    }
+
+    @Override
+    public void delete(Job job) {
+        springMongoJobRepository.delete(jobMapper.toEntity(job));
     }
 }

@@ -3,6 +3,8 @@ package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
 import lombok.*;
 
+import java.util.UUID;
+
 /**
  * @author Wilhelm Zwertvaegher
  * Date:13/03/2025
@@ -15,5 +17,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class JobResponse {
+    private UUID id;
     private String title;
 }

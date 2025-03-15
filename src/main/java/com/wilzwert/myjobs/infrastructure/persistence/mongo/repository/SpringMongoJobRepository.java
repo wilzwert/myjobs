@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -14,6 +15,8 @@ import java.util.Optional;
  */
 @Repository
 public interface SpringMongoJobRepository extends MongoRepository<MongoJob, String> {
-    Optional<MongoJob> findById(String id);
+    Optional<MongoJob> findById(UUID id);
+    Optional<MongoJob> findByUrlAndUserId(String url, UUID userId);
+    Optional<MongoJob> findByIdAndUserId(UUID jobId, UUID userId);
 
 }

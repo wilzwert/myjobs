@@ -2,6 +2,7 @@ package com.wilzwert.myjobs.domain.usecase;
 
 
 import com.wilzwert.myjobs.domain.command.RegisterUserCommand;
+import com.wilzwert.myjobs.domain.exception.UserAlreadyExistsException;
 import com.wilzwert.myjobs.domain.model.User;
 import com.wilzwert.myjobs.domain.ports.driven.PasswordHasher;
 import com.wilzwert.myjobs.domain.ports.driven.UserRepository;
@@ -25,6 +26,10 @@ public class RegisterUseCaseImpl implements RegisterUseCase {
 
     @Override
     public User registerUser(RegisterUserCommand registerUserCommand) {
+        if(userRepository.findByEmailOrUsername(registerUserCommand.email(), registerUserCommand.username()).isPresent()) {
+            throw new UserAlreadyExistsException();
+        }
+
         return userRepository.save(
             User.fromCommand(registerUserCommand)
                 .setPassword(passwordHasher.hashPassword(registerUserCommand.password()))

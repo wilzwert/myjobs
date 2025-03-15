@@ -1,5 +1,6 @@
 package com.wilzwert.myjobs.domain.command;
 
+
 import java.util.UUID;
 
 /**
@@ -8,5 +9,5 @@ import java.util.UUID;
  * Time:11:10
  */
 
-public record CreateJobCommand(String title, String url, String description, String profile, UUID userId) {
+public record UpdateJobCommand(UUID jobId, UUID userId, String title, String url, String description, String profile) {
 }

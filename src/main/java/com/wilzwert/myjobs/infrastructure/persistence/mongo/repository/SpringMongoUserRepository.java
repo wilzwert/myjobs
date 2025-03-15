@@ -16,6 +16,7 @@ import java.util.UUID;
 @Repository
 public interface SpringMongoUserRepository extends MongoRepository<MongoUser, String> {
     Optional<MongoUser> findByEmail(String email);
+    Optional<MongoUser> findByEmailOrUsername(String email, String username);
     Optional<MongoUser> findById(UUID id);
 
 }

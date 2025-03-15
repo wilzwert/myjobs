@@ -4,6 +4,7 @@ package com.wilzwert.myjobs.domain.ports.driven;
 import com.wilzwert.myjobs.domain.model.Job;
 
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -11,7 +12,13 @@ import java.util.Optional;
  * Time:15:29
  */
 public interface JobRepository {
-    Optional<Job> findById(String id);
+    Optional<Job> findById(UUID id);
+
+    Optional<Job> findByUrlAndUserId(String url, UUID userId);
+
+    Optional<Job> findByIdAndUserId(UUID jobId, UUID userId);
 
     Job save(Job job);
+
+    void delete(Job job);
 }

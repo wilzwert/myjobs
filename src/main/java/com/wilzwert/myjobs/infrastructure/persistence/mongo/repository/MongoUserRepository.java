@@ -30,6 +30,11 @@ public class MongoUserRepository implements UserRepository {
     }
 
     @Override
+    public Optional<User> findByEmailOrUsername(String email, String username) {
+        return springMongoUserRepository.findByEmailOrUsername(email, username).map(userMapper::toDomain).or(Optional::empty);
+    }
+
+    @Override
     public Optional<User> findById(UUID id) {
         return springMongoUserRepository.findById(id).map(userMapper::toDomain).or(Optional::empty);
     }

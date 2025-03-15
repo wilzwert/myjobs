@@ -1,7 +1,7 @@
 # TODO set .env
 spring:
   application:
-    name: MyApps
+    name: MyJobs
   data:
     mongodb:
       host: ${MONGODB_HOST:localhost}

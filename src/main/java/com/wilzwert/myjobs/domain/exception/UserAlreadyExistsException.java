@@ -7,7 +7,7 @@ package com.wilzwert.myjobs.domain.exception;
  * Time:09:17
  */
 
-public class UserAlreadyExistsException extends RuntimeException {
+public class UserAlreadyExistsException extends EntityAlreadyExistsException {
     public UserAlreadyExistsException() {
         super("User already exists");
     }
