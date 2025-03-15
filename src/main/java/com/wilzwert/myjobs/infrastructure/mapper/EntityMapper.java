@@ -1,5 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.mapper;
 
+import java.util.List;
+
 /**
  * @author Wilhelm Zwertvaegher
  * Date:14/03/2025
@@ -16,9 +18,15 @@ package com.wilzwert.myjobs.infrastructure.mapper;
 public interface EntityMapper<D, E, R, C, UR, U, S> {
     E toEntity(D domain);
 
+    List<E> toEntity(List<D> domains);
+
     D toDomain(E entity);
 
+    List<D> toDomain(List<E> entities);
+
     S toResponse(D domain);
+
+    List<S> toResponse(List<D> domains);
 
     C toCommand(R request);
 

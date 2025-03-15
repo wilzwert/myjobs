@@ -5,8 +5,10 @@ import com.wilzwert.myjobs.domain.model.Job;
 import com.wilzwert.myjobs.domain.ports.driven.JobRepository;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoJob;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -41,13 +43,14 @@ public class MongoJobRepository implements JobRepository {
     }
 
     @Override
+    public List<Job> findAllByUserId(UUID userId, int page, int size) {
+        return this.jobMapper.toDomain(springMongoJobRepository.findByUserId(userId, PageRequest.of(page, size)));
+    }
+
+    @Override
     public Job save(Job job) {
-        System.out.println("JOB USER ID"+job.getUserId());
         MongoJob mongoJob = this.jobMapper.toEntity(job);
         mongoJob.setUserId(job.getUserId());
-        System.out.println(mongoJob);
-        System.out.println(mongoJob.getUserId());
-        // throw new RuntimeException("TEST");
         return this.jobMapper.toDomain(springMongoJobRepository.save(this.jobMapper.toEntity(job)));
     }
 

@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.time.Instant;
-import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -33,8 +31,6 @@ public class User {
     private Instant createdAt;
     private Instant updatedAt;
 
-    private List<Job> jobs;
-
     public static User fromCommand(RegisterUserCommand command) {
         return new User(
             UUID.randomUUID(),
@@ -45,8 +41,7 @@ public class User {
             command.lastName(),
             "",
             null,
-            null,
-            Collections.emptyList()
+            null
         );
     }
 }

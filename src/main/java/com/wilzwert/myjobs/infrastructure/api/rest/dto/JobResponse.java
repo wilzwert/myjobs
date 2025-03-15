@@ -1,6 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
 
+import com.wilzwert.myjobs.domain.model.JobStatus;
 import lombok.*;
 
 import java.util.UUID;
@@ -19,4 +20,9 @@ import java.util.UUID;
 public class JobResponse {
     private UUID id;
     private String title;
+    private String url;
+    private String description;
+    private String profile;
+    private JobStatus status;
+
 }

@@ -1,6 +1,7 @@
 package com.wilzwert.myjobs.domain.usecase;
 
 
+import com.wilzwert.myjobs.domain.exception.LoginException;
 import com.wilzwert.myjobs.domain.model.AuthenticatedUser;
 import com.wilzwert.myjobs.domain.model.User;
 import com.wilzwert.myjobs.domain.ports.driven.Authenticator;
@@ -30,15 +31,12 @@ public class LoginUseCaseImpl implements LoginUseCase {
     @Override
     public AuthenticatedUser authenticateUser(String email, String password) {
         User user = userRepository.findByEmail(email)
-                // TODO : meilleure exception
-                .orElseThrow(() -> new RuntimeException("Utilisateur "+email+" non trouvé"));
-        // do stuff
-        System.out.println("hashed req pass"+password+" - "+passwordHasher.hashPassword(password));
+                .orElseThrow(LoginException::new);
+
         if(!passwordHasher.verifyPassword(password, user.getPassword())) {
-            // TODO : meilleure exception
-            throw new RuntimeException("Mot de passe invalide");
+            throw new LoginException();
         }
-        // TODO
+
         return authenticator.authenticate(user);
     }
 }

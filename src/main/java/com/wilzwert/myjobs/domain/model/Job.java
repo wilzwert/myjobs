@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.time.Instant;
-import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -40,8 +38,6 @@ public class Job {
 
     private UUID userId;
 
-    private List<Activity> activities;
-
     public static Job fromCommand(CreateJobCommand command, UUID userId) {
         return new Job(
                 UUID.randomUUID(),
@@ -52,8 +48,7 @@ public class Job {
                 "",
                 null,
                 null,
-                userId,
-                Collections.emptyList()
+                userId
         );
     }
 }

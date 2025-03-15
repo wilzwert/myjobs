@@ -12,8 +12,11 @@ import com.wilzwert.myjobs.domain.ports.driven.JobRepository;
 import com.wilzwert.myjobs.domain.ports.driven.UserRepository;
 import com.wilzwert.myjobs.domain.ports.driving.CreateJobUseCase;
 import com.wilzwert.myjobs.domain.ports.driving.DeleteJobUseCase;
+import com.wilzwert.myjobs.domain.ports.driving.GetUserJobsUseCase;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -21,7 +24,7 @@ import java.util.Optional;
  * Time:16:55
  */
 
-public class JobUseCaseImpl implements CreateJobUseCase, DeleteJobUseCase {
+public class JobUseCaseImpl implements CreateJobUseCase, DeleteJobUseCase, GetUserJobsUseCase {
 
     private final JobRepository jobRepository;
 
@@ -58,5 +61,14 @@ public class JobUseCaseImpl implements CreateJobUseCase, DeleteJobUseCase {
                     jobRepository::delete,
                     JobNotFoundException::new
                 );
+    }
+
+    @Override
+    public List<Job> getUserJobs(UUID userId, int page, int size) {
+        Optional<User> user = userRepository.findById(userId);
+        if(user.isEmpty()) {
+            throw new UserNotFoundException();
+        }
+        return jobRepository.findAllByUserId(user.get().getId(), page, size);
     }
 }

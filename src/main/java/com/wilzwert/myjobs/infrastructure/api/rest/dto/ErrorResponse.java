@@ -29,7 +29,6 @@ public class ErrorResponse {
     private String time;
 
     public static <E extends EntityAlreadyExistsException>  ErrorResponse fromException(E ex) {
-        System.out.println("AJHHH");
         return build(HttpStatus.CONFLICT, ex.getMessage());
     }
 
@@ -68,7 +67,6 @@ public class ErrorResponse {
     }
 
     public static ErrorResponse fromException(Exception ex) {
-        System.out.println("WTF "+ex.getClass().getName());
         return build(HttpStatus.INTERNAL_SERVER_ERROR, "WHY"+ex.getMessage());
     }
 
