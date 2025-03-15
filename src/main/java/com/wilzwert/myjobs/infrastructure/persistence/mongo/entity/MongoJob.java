@@ -56,9 +56,5 @@ public class MongoJob {
 
     @Field(name = "user_id")
     private UUID userId;
-
-    /*
-    @DocumentReference(lazy = true)
-    private MongoUser user;*/
 }
 

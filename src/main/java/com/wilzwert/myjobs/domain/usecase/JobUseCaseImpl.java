@@ -7,6 +7,7 @@ import com.wilzwert.myjobs.domain.exception.JobAlreadyExistsException;
 import com.wilzwert.myjobs.domain.exception.JobNotFoundException;
 import com.wilzwert.myjobs.domain.exception.UserNotFoundException;
 import com.wilzwert.myjobs.domain.model.Job;
+import com.wilzwert.myjobs.domain.model.JobStatus;
 import com.wilzwert.myjobs.domain.model.User;
 import com.wilzwert.myjobs.domain.ports.driven.JobRepository;
 import com.wilzwert.myjobs.domain.ports.driven.UserRepository;
@@ -46,7 +47,18 @@ public class JobUseCaseImpl implements CreateJobUseCase, DeleteJobUseCase, GetUs
             throw new JobAlreadyExistsException();
         }
 
-        Job job = user.get().addJob(Job.fromCommand(command, user.get()));
+        Job job = new Job(
+                UUID.randomUUID(),
+                command.url(),
+                JobStatus.CREATED,
+                command.title(),
+                command.description(),
+                command.profile(),
+                null,
+                null,
+                user.get().getId()
+        );
+        job = user.get().addJob(job);
         userRepository.save(user.get());
         return jobRepository.save(job);
     }

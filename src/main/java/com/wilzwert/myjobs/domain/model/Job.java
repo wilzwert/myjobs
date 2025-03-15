@@ -1,7 +1,6 @@
 package com.wilzwert.myjobs.domain.model;
 
 
-import com.wilzwert.myjobs.domain.command.CreateJobCommand;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,18 +36,4 @@ public class Job {
     private Instant updatedAt;
 
     private UUID userId;
-
-    public static Job fromCommand(CreateJobCommand command, User user) {
-        return new Job(
-                UUID.randomUUID(),
-                command.url(),
-                JobStatus.CREATED,
-                command.title(),
-                "",
-                "",
-                null,
-                null,
-                user.getId()
-        );
-    }
 }

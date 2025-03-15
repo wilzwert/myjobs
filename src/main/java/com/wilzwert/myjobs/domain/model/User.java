@@ -1,15 +1,12 @@
 package com.wilzwert.myjobs.domain.model;
 
 
-import com.wilzwert.myjobs.domain.command.RegisterUserCommand;
 import com.wilzwert.myjobs.domain.exception.JobNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-
 import java.time.Instant;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,20 +42,7 @@ public class User {
         if(!jobs.contains(job)) {
             throw new JobNotFoundException();
         }
-    }
 
-    public static User fromCommand(RegisterUserCommand command) {
-        return new User(
-            UUID.randomUUID(),
-            command.email(),
-            command.password(),
-            command.username(),
-            command.firstName(),
-            command.lastName(),
-            "",
-            null,
-            null,
-            Collections.emptyList()
-        );
+        jobs.remove(job);
     }
 }

@@ -8,6 +8,9 @@ import com.wilzwert.myjobs.domain.ports.driven.PasswordHasher;
 import com.wilzwert.myjobs.domain.ports.driven.UserRepository;
 import com.wilzwert.myjobs.domain.ports.driving.RegisterUseCase;
 
+import java.util.Collections;
+import java.util.UUID;
+
 /**
  * @author Wilhelm Zwertvaegher
  * Date:13/03/2025
@@ -31,7 +34,18 @@ public class RegisterUseCaseImpl implements RegisterUseCase {
         }
 
         return userRepository.save(
-            User.fromCommand(registerUserCommand)
+                new User(
+                        UUID.randomUUID(),
+                        registerUserCommand.email(),
+                        "",
+                        registerUserCommand.username(),
+                        registerUserCommand.firstName(),
+                        registerUserCommand.lastName(),
+                        "",
+                        null,
+                        null,
+                        Collections.emptyList()
+                )
                 .setPassword(passwordHasher.hashPassword(registerUserCommand.password()))
                 .setRole("USER")
         );
