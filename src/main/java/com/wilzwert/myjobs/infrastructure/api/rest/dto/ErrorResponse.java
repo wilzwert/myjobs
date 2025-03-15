@@ -2,6 +2,7 @@ package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wilzwert.myjobs.domain.exception.EntityAlreadyExistsException;
+import com.wilzwert.myjobs.domain.exception.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.coyote.BadRequestException;
@@ -30,6 +31,10 @@ public class ErrorResponse {
 
     public static <E extends EntityAlreadyExistsException>  ErrorResponse fromException(E ex) {
         return build(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    public static <E extends EntityNotFoundException>  ErrorResponse fromException(E ex) {
+        return build(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     public static ErrorResponse fromException(ResponseStatusException ex) {
@@ -67,7 +72,7 @@ public class ErrorResponse {
     }
 
     public static ErrorResponse fromException(Exception ex) {
-        return build(HttpStatus.INTERNAL_SERVER_ERROR, "WHY"+ex.getMessage());
+        return build(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
 
     private static ErrorResponse build(HttpStatusCode status, String message) {
