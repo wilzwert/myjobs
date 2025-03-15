@@ -1,6 +1,6 @@
 services:
   mongodb:
-    container_name: myapps-mongo
+    container_name: myjobs-mongo
     image: mongo:8.0
     restart: always
     command:
@@ -13,14 +13,14 @@ services:
       - ./mongo-data/:/data/
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     networks:
-      - myapps-network
+      - myjobs-network
     environment:
-      - MONGO_INITDB_DATABASE=myapps
+      - MONGO_INITDB_DATABASE=myjobs
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=password
 
 networks:
-  myapps-network:
+  myjobs-network:
     driver: bridge
     ipam:
       config:

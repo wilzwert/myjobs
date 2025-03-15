@@ -8,11 +8,11 @@
         <version>3.4.3</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.wilzwert.myapps</groupId>
-    <artifactId>MyApps</artifactId>
+    <groupId>com.wilzwert.myjobs</groupId>
+    <artifactId>MyJobs</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>MyApps</name>
-    <description>MyApps</description>
+    <name>MyJobs</name>
+    <description>MyJobs</description>
     <url/>
     <licenses>
         <license/>

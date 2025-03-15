@@ -6,7 +6,7 @@ spring:
     mongodb:
       host: ${MONGODB_HOST:localhost}
       port: ${MONGODB_HOST:27017}
-      database: ${MONGODB_DATABASE:myapps}
+      database: ${MONGODB_DATABASE:myjobs}
       username: ${MONGODB_USERNAME:mongouser}
       password: ${MONGODB_PASSWORD:mongopwd}
       auto-index-creation: true
