@@ -46,21 +46,27 @@ public class JobUseCaseImpl implements CreateJobUseCase, DeleteJobUseCase, GetUs
             throw new JobAlreadyExistsException();
         }
 
-        return jobRepository.save(Job.fromCommand(command, user.get().getId()));
+        Job job = user.get().addJob(Job.fromCommand(command, user.get()));
+        userRepository.save(user.get());
+        return jobRepository.save(job);
     }
 
     @Override
     public void deleteJob(DeleteJobCommand command) {
-        Optional<User> user = userRepository.findById(command.userId());
-        if(user.isEmpty()) {
+        Optional<User> foundUser = userRepository.findByIdWithJobs(command.userId());
+        if(foundUser.isEmpty()) {
             throw new UserNotFoundException();
         }
+        User user = foundUser.get();
+        Optional<Job> foundJob = jobRepository.findByIdAndUserId(command.jobId(), user.getId());
+        if(foundJob.isEmpty()) {
+            throw new JobNotFoundException();
+        }
 
-        jobRepository.findByIdAndUserId(command.jobId(), user.get().getId())
-                .ifPresentOrElse(
-                    jobRepository::delete,
-                    JobNotFoundException::new
-                );
+        user.removeJob(foundJob.get());
+
+        jobRepository.delete(foundJob.get());
+        userRepository.save(user);
     }
 
     @Override

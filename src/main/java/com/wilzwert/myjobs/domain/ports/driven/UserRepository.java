@@ -18,5 +18,7 @@ public interface UserRepository {
 
     Optional<User> findById(UUID id);
 
+    Optional<User> findByIdWithJobs(UUID id);
+
     User save(User user);
 }

@@ -38,7 +38,7 @@ public class Job {
 
     private UUID userId;
 
-    public static Job fromCommand(CreateJobCommand command, UUID userId) {
+    public static Job fromCommand(CreateJobCommand command, User user) {
         return new Job(
                 UUID.randomUUID(),
                 command.url(),
@@ -48,7 +48,7 @@ public class Job {
                 "",
                 null,
                 null,
-                userId
+                user.getId()
         );
     }
 }

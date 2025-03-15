@@ -8,6 +8,7 @@ import com.wilzwert.myjobs.domain.ports.driving.DeleteJobUseCase;
 import com.wilzwert.myjobs.domain.ports.driving.GetUserJobsUseCase;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.UserMapper;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,6 @@ public class JobController {
     private final CreateJobUseCase createJobUseCase;
     private final DeleteJobUseCase deleteJobUseCase;
     private final GetUserJobsUseCase getUserJobsUseCase;
-
     private final JobMapper jobMapper;
 
     public JobController(CreateJobUseCase createJobUseCase, DeleteJobUseCase deleteJobUseCase, GetUserJobsUseCase getUserJobsUseCase, JobMapper jobMapper) {

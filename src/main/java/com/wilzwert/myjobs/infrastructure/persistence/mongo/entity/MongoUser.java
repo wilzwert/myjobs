@@ -1,5 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.entity;
 
+import com.wilzwert.myjobs.domain.model.Job;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.Instant;
@@ -56,6 +58,7 @@ public class MongoUser  {
     @DocumentReference(lookup="{'userId':?#{#self._id} }")
     private List<MongoRefreshToken> refreshTokens;
     */
-    private List<UUID> jobIds;
+    @DocumentReference(lazy = true)
+    private List<Job> jobs;
 }
 

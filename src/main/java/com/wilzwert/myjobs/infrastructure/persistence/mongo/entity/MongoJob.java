@@ -25,7 +25,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @CompoundIndexes({
-        @CompoundIndex(name = "unique_user_job", def = "{'userId': 1, 'url': 1}", unique = true)
+        @CompoundIndex(name = "unique_user_job", def = "{'user_id': 1, 'url': 1}", unique = true)
 })
 public class MongoJob {
     @Id
@@ -56,5 +56,9 @@ public class MongoJob {
 
     @Field(name = "user_id")
     private UUID userId;
+
+    /*
+    @DocumentReference(lazy = true)
+    private MongoUser user;*/
 }
 

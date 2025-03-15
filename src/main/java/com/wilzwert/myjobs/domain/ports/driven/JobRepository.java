@@ -21,7 +21,6 @@ public interface JobRepository {
 
     List<Job> findAllByUserId(UUID userId, int page, int size);
 
-
     Job save(Job job);
 
     void delete(Job job);

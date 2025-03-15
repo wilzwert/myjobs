@@ -3,7 +3,6 @@ package com.wilzwert.myjobs.infrastructure.persistence.mongo.repository;
 
 import com.wilzwert.myjobs.domain.model.Job;
 import com.wilzwert.myjobs.domain.ports.driven.JobRepository;
-import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoJob;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
@@ -49,8 +48,6 @@ public class MongoJobRepository implements JobRepository {
 
     @Override
     public Job save(Job job) {
-        MongoJob mongoJob = this.jobMapper.toEntity(job);
-        mongoJob.setUserId(job.getUserId());
         return this.jobMapper.toDomain(springMongoJobRepository.save(this.jobMapper.toEntity(job)));
     }
 
