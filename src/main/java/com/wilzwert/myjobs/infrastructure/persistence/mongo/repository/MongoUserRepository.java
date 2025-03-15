@@ -46,7 +46,7 @@ public class MongoUserRepository implements UserRepository {
 
     @Override
     public Optional<User> findByIdWithJobs(UUID id) {
-        return findById(id).map(u -> u.setJobs(jobMapper.toDomain(springMongoJobRepository.findByUserId(u.getId(), null))));
+        return findById(id).map(u -> u.withJobs(jobMapper.toDomain(springMongoJobRepository.findByUserId(u.getId(), null))));
     }
 
     @Override

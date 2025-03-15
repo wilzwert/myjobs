@@ -2,9 +2,7 @@ package com.wilzwert.myjobs.domain.model;
 
 
 import com.wilzwert.myjobs.domain.exception.JobNotFoundException;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.Accessors;
 import java.time.Instant;
 import java.util.List;
@@ -16,25 +14,29 @@ import java.util.UUID;
  * Time:15:32
  */
 
-@Data
+@Getter
+@EqualsAndHashCode
 @Accessors(chain = true)
-@NoArgsConstructor
 @AllArgsConstructor
 public class User {
-    private UUID id;
-    private String email;
-    private String password;
-    private String username;
-    private String firstName;
-    private String lastName;
-    private String role;
-    private Instant createdAt;
-    private Instant updatedAt;
+    private final UUID id;
+    private final String email;
+    private final String password;
+    private final String username;
+    private final String firstName;
+    private final String lastName;
+    private final String role;
+    private final Instant createdAt;
+    private final Instant updatedAt;
 
-    private List<Job> jobs;
+    private final List<Job> jobs;
 
     public Job addJob(Job job) {
         jobs.add(job);
+
+        // automatically create first activity
+        job.addActivity(new Activity("", ActivityType.CREATION, null, null));
+
         return job;
     }
 
@@ -44,5 +46,20 @@ public class User {
         }
 
         jobs.remove(job);
+    }
+
+    public User withJobs(List<Job> jobs) {
+        return new User(
+                this.id,
+                this.email,
+                this.password,
+                this.username,
+                this.firstName,
+                this.lastName,
+                this.role,
+                this.createdAt,
+                this.updatedAt,
+                jobs
+        );
     }
 }

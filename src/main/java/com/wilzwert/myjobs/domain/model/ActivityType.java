@@ -7,4 +7,7 @@ package com.wilzwert.myjobs.domain.model;
  * Time:15:33
  */
 public enum ActivityType {
+    CREATION,
+    APPLICATION,
+    RELAUNCHING
 }

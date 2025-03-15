@@ -1,12 +1,11 @@
 package com.wilzwert.myjobs.domain.model;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -14,26 +13,41 @@ import java.util.UUID;
  * Date:12/03/2025
  * Time:15:32
  */
-@Data
+@Getter
+@EqualsAndHashCode
 @Accessors(chain = true)
-@NoArgsConstructor
 @AllArgsConstructor
 public class Job {
-    private UUID id;
+    private final UUID id;
 
-    private String url;
+    private final String url;
 
     private JobStatus status;
 
-    private String title;
+    private final String title;
 
-    private String description;
+    private final String description;
 
-    private String profile;
+    private final String profile;
 
-    private Instant createdAt;
+    private final Instant createdAt;
 
-    private Instant updatedAt;
+    private final Instant updatedAt;
 
-    private UUID userId;
+    private final UUID userId;
+
+    private final List<Activity> activities;
+
+    public Activity addActivity(Activity activity) {
+        System.out.println(activities);
+        activities.add(activity);
+
+        // FIXME
+        switch(activity.getType()) {
+            case CREATION -> this.status = JobStatus.CREATED;
+            default -> this.status = JobStatus.PENDING;
+        }
+
+        return activity;
+    }
 }

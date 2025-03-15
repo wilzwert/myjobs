@@ -15,9 +15,7 @@ import com.wilzwert.myjobs.domain.ports.driving.CreateJobUseCase;
 import com.wilzwert.myjobs.domain.ports.driving.DeleteJobUseCase;
 import com.wilzwert.myjobs.domain.ports.driving.GetUserJobsUseCase;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -38,15 +36,18 @@ public class JobUseCaseImpl implements CreateJobUseCase, DeleteJobUseCase, GetUs
 
     @Override
     public Job createJob(CreateJobCommand command) {
+        System.out.println("createJob1");
         Optional<User> user = userRepository.findById(command.userId());
         if(user.isEmpty()) {
             throw new UserNotFoundException();
         }
+        System.out.println("createJob2");
 
         if(jobRepository.findByUrlAndUserId(command.url(), user.get().getId()).isPresent()) {
             throw new JobAlreadyExistsException();
         }
 
+        System.out.println("createJob3");
         Job job = new Job(
                 UUID.randomUUID(),
                 command.url(),
@@ -56,10 +57,19 @@ public class JobUseCaseImpl implements CreateJobUseCase, DeleteJobUseCase, GetUs
                 command.profile(),
                 null,
                 null,
-                user.get().getId()
+                user.get().getId(),
+                new ArrayList<>()
         );
-        job = user.get().addJob(job);
+
+        System.out.println("createJob4");
+        try {
+            job = user.get().addJob(job);
+        }
+        catch (UnsupportedOperationException e) {
+            System.out.println(Arrays.toString(e.getStackTrace()));
+        }
         userRepository.save(user.get());
+        System.out.println("createJob5");
         return jobRepository.save(job);
     }
 

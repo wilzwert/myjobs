@@ -8,7 +8,7 @@ import com.wilzwert.myjobs.domain.ports.driven.PasswordHasher;
 import com.wilzwert.myjobs.domain.ports.driven.UserRepository;
 import com.wilzwert.myjobs.domain.ports.driving.RegisterUseCase;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.UUID;
 
 /**
@@ -37,17 +37,15 @@ public class RegisterUseCaseImpl implements RegisterUseCase {
                 new User(
                         UUID.randomUUID(),
                         registerUserCommand.email(),
-                        "",
+                        passwordHasher.hashPassword(registerUserCommand.password()),
                         registerUserCommand.username(),
                         registerUserCommand.firstName(),
                         registerUserCommand.lastName(),
-                        "",
+                        "USER",
                         null,
                         null,
-                        Collections.emptyList()
+                        new ArrayList<>()
                 )
-                .setPassword(passwordHasher.hashPassword(registerUserCommand.password()))
-                .setRole("USER")
         );
     }
 }

@@ -1,19 +1,17 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.entity;
 
-import com.wilzwert.myjobs.domain.model.JobStatus;
+import com.wilzwert.myjobs.domain.model.ActivityType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.index.CompoundIndex;
-import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -25,27 +23,13 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@CompoundIndexes({
-        @CompoundIndex(name = "unique_user_job", def = "{'user_id': 1, 'url': 1}", unique = true)
-})
-public class MongoJob {
+public class MongoActivity {
     @Id
-    private UUID id;
+    @MongoId
+    private String id;
 
     @Field
-    private String url;
-
-    @Field
-    private JobStatus status;
-
-    @Field
-    private String title;
-
-    @Field
-    private String description;
-
-    @Field
-    private String profile;
+    private ActivityType type;
 
     @Field(name = "created_at")
     @CreatedDate
@@ -57,8 +41,5 @@ public class MongoJob {
 
     @Field(name = "user_id")
     private UUID userId;
-
-    @Field(name = "activities")
-    private List<MongoActivity> activities;
 }
 
