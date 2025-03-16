@@ -1,4 +1,4 @@
-package com.wilzwert.myjobs.core.application;
+package com.wilzwert.myjobs.core.application.usecase;
 
 
 import com.wilzwert.myjobs.core.domain.model.ScrappedPage;

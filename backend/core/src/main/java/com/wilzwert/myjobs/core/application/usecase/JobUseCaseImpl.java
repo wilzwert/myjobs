@@ -1,8 +1,9 @@
-package com.wilzwert.myjobs.core.application;
+package com.wilzwert.myjobs.core.application.usecase;
 
 
 import com.wilzwert.myjobs.core.application.command.CreateJobCommand;
 import com.wilzwert.myjobs.core.application.command.DeleteJobCommand;
+import com.wilzwert.myjobs.core.application.command.UpdateJobCommand;
 import com.wilzwert.myjobs.core.domain.exception.JobAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.exception.JobNotFoundException;
 import com.wilzwert.myjobs.core.domain.exception.UserNotFoundException;
@@ -12,6 +13,7 @@ import com.wilzwert.myjobs.core.domain.ports.driven.UserRepository;
 import com.wilzwert.myjobs.core.domain.ports.driving.CreateJobUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.DeleteJobUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.GetUserJobsUseCase;
+import com.wilzwert.myjobs.core.domain.ports.driving.UpdateJobUseCase;
 
 import java.util.*;
 
@@ -21,7 +23,7 @@ import java.util.*;
  * Time:16:55
  */
 
-public class JobUseCaseImpl implements CreateJobUseCase, DeleteJobUseCase, GetUserJobsUseCase {
+public class JobUseCaseImpl implements CreateJobUseCase, UpdateJobUseCase, DeleteJobUseCase, GetUserJobsUseCase {
 
     private final JobRepository jobRepository;
 
@@ -89,5 +91,30 @@ public class JobUseCaseImpl implements CreateJobUseCase, DeleteJobUseCase, GetUs
             throw new UserNotFoundException();
         }
         return jobRepository.findAllByUserId(user.get().getId(), page, size);
+    }
+
+    @Override
+    public Job updateJob(UpdateJobCommand command) {
+        Optional<User> user = userRepository.findById(command.userId());
+        if(user.isEmpty()) {
+            throw new UserNotFoundException();
+        }
+
+        Optional<Job> foundJob = jobRepository.findByIdAndUserId(command.jobId(), user.get().getId());
+        if(foundJob.isEmpty()) {
+            throw new JobNotFoundException();
+        }
+
+        Job job = foundJob.get();
+
+        // if user wants to update the job's url, we have to check if it does not exist yet
+        if(!command.url().equals(job.getUrl())) {
+            Optional<Job> otherJob = jobRepository.findByUrlAndUserId(command.url(), user.get().getId());
+            if(otherJob.isPresent() && !otherJob.get().getId().equals(job.getId())) {
+                throw new JobAlreadyExistsException();
+            }
+        }
+
+        return this.jobRepository.save(job.updateJob(command.status(), command.url(), command.title(), command.description(), command.profile()));
     }
 }

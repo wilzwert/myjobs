@@ -4,6 +4,7 @@ package com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper;
 import com.wilzwert.myjobs.core.application.command.CreateJobCommand;
 import com.wilzwert.myjobs.core.application.command.UpdateJobCommand;
 import com.wilzwert.myjobs.core.domain.model.Job;
+import com.wilzwert.myjobs.core.domain.model.JobId;
 import com.wilzwert.myjobs.core.domain.model.UserId;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.CreateJobRequest;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.JobResponse;
@@ -21,4 +22,6 @@ import org.mapstruct.Mapper;
 public interface JobMapper extends EntityMapper<Job, MongoJob, CreateJobRequest, CreateJobCommand, UpdateJobRequest, UpdateJobCommand, JobResponse> {
 
     CreateJobCommand toCommand(CreateJobRequest createJobRequest, UserId userId);
+
+    UpdateJobCommand toCommand(UpdateJobRequest updateJobRequest, UserId userId, JobId jobId);
 }

@@ -54,6 +54,21 @@ public class Job {
         return activity;
     }
 
+    public Job updateJob(JobStatus status, String url, String title, String description, String profile) {
+        return new Job(
+            getId(),
+            url,
+            status,
+            title,
+            description,
+            profile,
+            getCreatedAt(),
+            Instant.now(),
+            getUserId(),
+            getActivities()
+        );
+    }
+
     public JobId getId() {
         return id;
     }
