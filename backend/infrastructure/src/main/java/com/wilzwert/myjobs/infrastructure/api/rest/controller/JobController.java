@@ -5,10 +5,7 @@ import com.wilzwert.myjobs.core.application.command.CreateJobCommand;
 import com.wilzwert.myjobs.core.application.command.DeleteJobCommand;
 import com.wilzwert.myjobs.core.application.command.UpdateJobCommand;
 import com.wilzwert.myjobs.core.domain.model.JobId;
-import com.wilzwert.myjobs.core.domain.ports.driving.CreateJobUseCase;
-import com.wilzwert.myjobs.core.domain.ports.driving.DeleteJobUseCase;
-import com.wilzwert.myjobs.core.domain.ports.driving.GetUserJobsUseCase;
-import com.wilzwert.myjobs.core.domain.ports.driving.UpdateJobUseCase;
+import com.wilzwert.myjobs.core.domain.ports.driving.*;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.UpdateJobRequest;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.CreateJobRequest;
@@ -35,11 +32,13 @@ public class JobController {
     private final CreateJobUseCase createJobUseCase;
     private final UpdateJobUseCase updateJobUseCase;
     private final DeleteJobUseCase deleteJobUseCase;
+    private final GetUserJobUseCase getUserJobUseCase;
     private final GetUserJobsUseCase getUserJobsUseCase;
     private final JobMapper jobMapper;
 
-    public JobController(CreateJobUseCase createJobUseCase, UpdateJobUseCase updateJobUseCase, DeleteJobUseCase deleteJobUseCase, GetUserJobsUseCase getUserJobsUseCase, JobMapper jobMapper) {
+    public JobController(CreateJobUseCase createJobUseCase, GetUserJobUseCase getUserJobUseCase,  UpdateJobUseCase updateJobUseCase, DeleteJobUseCase deleteJobUseCase, GetUserJobsUseCase getUserJobsUseCase, JobMapper jobMapper) {
         this.createJobUseCase = createJobUseCase;
+        this.getUserJobUseCase = getUserJobUseCase;
         this.updateJobUseCase = updateJobUseCase;
         this.deleteJobUseCase = deleteJobUseCase;
         this.getUserJobsUseCase = getUserJobsUseCase;
@@ -53,6 +52,13 @@ public class JobController {
         CreateJobCommand createJobCommand = jobMapper.toCommand(createJobRequest, userDetails.getId());
         return jobMapper.toResponse(createJobUseCase.createJob(createJobCommand));
     }
+
+    @GetMapping("{id}")
+    public JobResponse get(@PathVariable("id") String id,Authentication authentication) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        return jobMapper.toResponse(getUserJobUseCase.getUserJob(userDetails.getId(), new JobId(UUID.fromString(id))));
+    }
+
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@PathVariable("id") String id, @RequestBody final UpdateJobRequest updateJobRequest, Authentication authentication) {
@@ -60,7 +66,6 @@ public class JobController {
         UpdateJobCommand updateJobCommand = jobMapper.toCommand(updateJobRequest, userDetails.getId(), new JobId(UUID.fromString(id)));
         updateJobUseCase.updateJob(updateJobCommand);
     }
-
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)

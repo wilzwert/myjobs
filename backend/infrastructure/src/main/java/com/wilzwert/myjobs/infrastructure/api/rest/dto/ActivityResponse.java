@@ -2,6 +2,7 @@ package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
 import lombok.*;
 
+import java.time.Instant;
 import java.util.UUID;
 
 /**
@@ -18,4 +19,5 @@ import java.util.UUID;
 public class ActivityResponse {
     private UUID id;
     private String comment;
+    private Instant createdAt;
 }

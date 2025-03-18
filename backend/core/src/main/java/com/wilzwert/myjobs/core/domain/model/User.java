@@ -41,7 +41,7 @@ public class User extends DomainEntity<UserId> {
 
         // automatically create first activity
         System.out.println("Adding first activity to job");
-        return job.addActivity(new Activity(ActivityId.generate(), ActivityType.CREATION, job.getId(), "", null, null));
+        return job.addActivity(new Activity(ActivityId.generate(), ActivityType.CREATION, job.getId(), "", Instant.now(), Instant.now()));
     }
 
     public void removeJob(Job job) {

@@ -22,7 +22,7 @@ import java.util.*;
  * Time:16:55
  */
 
-public class JobUseCaseImpl implements CreateJobUseCase, UpdateJobUseCase, DeleteJobUseCase, GetUserJobsUseCase, AddActivityToJobUseCase {
+public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, UpdateJobUseCase, DeleteJobUseCase, GetUserJobsUseCase, AddActivityToJobUseCase {
 
     private final JobService jobService;
 
@@ -127,12 +127,17 @@ public class JobUseCaseImpl implements CreateJobUseCase, UpdateJobUseCase, Delet
             throw new JobNotFoundException();
         }
         Job job = foundJob.get();
-        Activity activity = new Activity(ActivityId.generate(), command.activityType(), job.getId(), command.comment(), null, null);
+        Activity activity = new Activity(ActivityId.generate(), command.activityType(), job.getId(), command.comment(), Instant.now(), Instant.now());
 
         job = job.addActivity(activity);
 
         // no transaction here as we let infra handle job + activities persistence
         this.jobService.save(job);
         return activity;
+    }
+
+    @Override
+    public Job getUserJob(UserId userId, JobId jobId) {
+        return jobService.findByIdAndUserId(jobId, userId).orElseThrow(JobNotFoundException::new);
     }
 }

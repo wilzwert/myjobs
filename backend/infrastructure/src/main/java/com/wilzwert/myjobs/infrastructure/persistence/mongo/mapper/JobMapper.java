@@ -18,7 +18,7 @@ import org.mapstruct.Mapper;
  * Date:12/03/2025
  * Time:15:48
  */
-@Mapper(componentModel = "spring", uses = IdMapper.class)
+@Mapper(componentModel = "spring", uses = {IdMapper.class, ActivityMapper.class})
 public interface JobMapper extends EntityMapper<Job, MongoJob, CreateJobRequest, CreateJobCommand, UpdateJobRequest, UpdateJobCommand, JobResponse> {
 
     CreateJobCommand toCommand(CreateJobRequest createJobRequest, UserId userId);
