@@ -1,4 +1,3 @@
-
 db.createUser(
     {
         user: "mongouser",
@@ -6,7 +5,7 @@ db.createUser(
         roles: [
             {
                 role: "readWrite",
-                db: "myapps"
+                db: "myjobs"
             }
         ]
     }

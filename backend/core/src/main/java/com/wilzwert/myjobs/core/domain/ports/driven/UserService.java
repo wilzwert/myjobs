@@ -1,0 +1,29 @@
+package com.wilzwert.myjobs.core.domain.ports.driven;
+
+
+import com.wilzwert.myjobs.core.domain.model.Job;
+import com.wilzwert.myjobs.core.domain.model.User;
+import com.wilzwert.myjobs.core.domain.model.UserId;
+
+import java.util.Optional;
+
+/**
+ * @author Wilhelm Zwertvaegher
+ * Date:12/03/2025
+ * Time:15:29
+ */
+public interface UserService {
+    Optional<User> findByEmail(String email);
+
+    Optional<User> findByEmailOrUsername(String email, String username);
+
+    Optional<User> findById(UserId id);
+
+    Optional<User> findByIdWithJobs(UserId id);
+
+    User save(User user);
+
+    User saveUserAndJob(User user, Job job);
+
+    User deleteJobAndSaveUser(User user, Job job);
+}
