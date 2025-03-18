@@ -6,7 +6,7 @@ import com.wilzwert.myjobs.core.domain.exception.UserAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.model.User;
 import com.wilzwert.myjobs.core.domain.model.UserId;
 import com.wilzwert.myjobs.core.domain.ports.driven.PasswordHasher;
-import com.wilzwert.myjobs.core.domain.ports.driven.UserRepository;
+import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.ports.driving.RegisterUseCase;
 
 import java.util.ArrayList;
@@ -17,22 +17,22 @@ import java.util.ArrayList;
  */
 
 public class RegisterUseCaseImpl implements RegisterUseCase {
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final PasswordHasher passwordHasher;
 
-    public RegisterUseCaseImpl(UserRepository userRepository, PasswordHasher passwordHasher) {
-        this.userRepository = userRepository;
+    public RegisterUseCaseImpl(UserService userService, PasswordHasher passwordHasher) {
+        this.userService = userService;
         this.passwordHasher = passwordHasher;
     }
 
 
     @Override
     public User registerUser(RegisterUserCommand registerUserCommand) {
-        if(userRepository.findByEmailOrUsername(registerUserCommand.email(), registerUserCommand.username()).isPresent()) {
+        if(userService.findByEmailOrUsername(registerUserCommand.email(), registerUserCommand.username()).isPresent()) {
             throw new UserAlreadyExistsException();
         }
 
-        return userRepository.save(
+        return userService.save(
                 new User(
                         UserId.generate(),
                         registerUserCommand.email(),

@@ -2,7 +2,7 @@ package com.wilzwert.myjobs.infrastructure.security.service;
 
 
 import com.wilzwert.myjobs.core.domain.model.User;
-import com.wilzwert.myjobs.core.domain.ports.driven.UserRepository;
+import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
 import io.jsonwebtoken.lang.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,16 +22,16 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class CustomUserDetailsService implements UserDetailsService {
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public CustomUserDetailsService(final UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public CustomUserDetailsService(final UserService userService) {
+        this.userService = userService;
     }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException, NumberFormatException {
         // we use the id as jwt token subject, therefore we load the user by its id
-        User foundUser = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
+        User foundUser = userService.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
         return new UserDetailsImpl(foundUser.getId(), foundUser.getEmail(), foundUser.getUsername(), foundUser.getRole(), foundUser.getPassword(), Collections.of(new SimpleGrantedAuthority(foundUser.getRole())));
     }
 }

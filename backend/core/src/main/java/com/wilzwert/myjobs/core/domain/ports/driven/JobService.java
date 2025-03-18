@@ -1,6 +1,7 @@
 package com.wilzwert.myjobs.core.domain.ports.driven;
 
 
+import com.wilzwert.myjobs.core.domain.model.Activity;
 import com.wilzwert.myjobs.core.domain.model.Job;
 import com.wilzwert.myjobs.core.domain.model.JobId;
 import com.wilzwert.myjobs.core.domain.model.UserId;
@@ -13,7 +14,7 @@ import java.util.Optional;
  * Date:12/03/2025
  * Time:15:29
  */
-public interface JobRepository {
+public interface JobService {
     Optional<Job> findById(JobId id);
 
     Optional<Job> findByUrlAndUserId(String url, UserId userId);
@@ -23,6 +24,8 @@ public interface JobRepository {
     List<Job> findAllByUserId(UserId userId, int page, int size);
 
     Job save(Job job);
+
+    Job saveJobAndActivity(Job job, Activity activity);
 
     void delete(Job job);
 }

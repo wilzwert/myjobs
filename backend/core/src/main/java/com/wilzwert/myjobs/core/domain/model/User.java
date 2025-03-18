@@ -10,7 +10,7 @@ import java.util.List;
  * Date:12/03/2025
  * Time:15:32
  */
-public class User {
+public class User extends DomainEntity<UserId> {
     private final UserId id;
     private final String email;
     private final String password;
@@ -40,16 +40,15 @@ public class User {
         jobs.add(job);
 
         // automatically create first activity
-        job.addActivity(new Activity(ActivityId.generate(), ActivityType.CREATION, null, null));
-
-        return job;
+        System.out.println("Adding first activity to job");
+        return job.addActivity(new Activity(ActivityId.generate(), ActivityType.CREATION, job.getId(), "", null, null));
     }
 
     public void removeJob(Job job) {
         if(!jobs.contains(job)) {
+            System.out.println("Job cannot be removed as it does not exist");
             throw new JobNotFoundException();
         }
-
         jobs.remove(job);
     }
 

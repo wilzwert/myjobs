@@ -1,9 +1,7 @@
 package com.wilzwert.myjobs.core.application.command;
 
-
+import com.wilzwert.myjobs.core.domain.model.ActivityType;
 import com.wilzwert.myjobs.core.domain.model.JobId;
-import com.wilzwert.myjobs.core.domain.model.UserId;
-
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -11,5 +9,6 @@ import com.wilzwert.myjobs.core.domain.model.UserId;
  * Time:11:10
  */
 
-public record UpdateJobCommand(JobId jobId, UserId userId, String title, String url, String description, String profile) {
+public record UpdateActivityCommand(JobId jobId, ActivityType activityType, String comment) {
 }
+

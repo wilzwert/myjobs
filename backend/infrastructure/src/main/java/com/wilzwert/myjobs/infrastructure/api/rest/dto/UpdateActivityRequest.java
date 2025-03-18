@@ -11,15 +11,9 @@ import lombok.Data;
 
 @Data
 // TODO @Schema(description = "Object expected for user registration request" )
-public class UpdateJobRequest {
+public class UpdateActivityRequest {
     // TODO @NotBlank(message = "The email is required")
     // TODO @Email(message = "Email should be valid")
     // TODO @Schema(description = "User email")
-    private String title;
-
-    private String url;
-
-    private String description;
-
-    private String profile;
+    private String comment;
 }

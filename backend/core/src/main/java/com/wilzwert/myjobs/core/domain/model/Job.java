@@ -1,6 +1,7 @@
 package com.wilzwert.myjobs.core.domain.model;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -8,12 +9,12 @@ import java.util.List;
  * Date:12/03/2025
  * Time:15:32
  */
-public class Job {
+public class Job extends DomainEntity<JobId> {
     private final JobId id;
 
     private final String url;
 
-    private JobStatus status;
+    private final JobStatus status;
 
     private final String title;
 
@@ -39,26 +40,40 @@ public class Job {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.userId = userId;
-        this.activities = activities;
+        // ensure immutability
+        this.activities = List.copyOf(activities);
     }
 
-    public Activity addActivity(Activity activity) {
-        activities.add(activity);
-
-        // FIXME
+    public Job addActivity(Activity activity) {
+        JobStatus newJobStatus;
         switch(activity.getType()) {
-            case CREATION -> this.status = JobStatus.CREATED;
-            default -> this.status = JobStatus.PENDING;
+            case CREATION -> newJobStatus = JobStatus.CREATED;
+            case RELAUNCH -> newJobStatus = JobStatus.RELAUNCHED;
+            default -> newJobStatus = JobStatus.PENDING;
         }
 
-        return activity;
+        var updatedActivities = new ArrayList<>(getActivities());
+        updatedActivities.add(activity);
+
+        return new Job(
+                getId(),
+                url,
+                newJobStatus,
+                title,
+                description,
+                profile,
+                getCreatedAt(),
+                Instant.now(),
+                getUserId(),
+                updatedActivities
+        );
     }
 
-    public Job updateJob(JobStatus status, String url, String title, String description, String profile) {
+    public Job updateJob(String url, String title, String description, String profile) {
         return new Job(
             getId(),
             url,
-            status,
+            getStatus(),
             title,
             description,
             profile,
@@ -67,6 +82,25 @@ public class Job {
             getUserId(),
             getActivities()
         );
+    }
+
+    public void addAttachment() {
+        // TODO
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void editStatus(JobStatus newStatus) {
+        // TODO
+        if(this.status == newStatus) return;
+
+        // check if last activity matches status
+        // if not, automatically create appropriate activity
+        // this ensures coherence between different actions
+        // e.g. user adds activity COMPANY_REFUSAL -> job  status becomes COMPANY_REFUSED
+        // user changes job status to COMPANY_REFUSED -> create activity with type COMPANY_REFUSAL if needed
+
+
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     public JobId getId() {

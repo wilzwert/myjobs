@@ -9,5 +9,11 @@ package com.wilzwert.myjobs.core.domain.model;
 public enum ActivityType {
     CREATION,
     APPLICATION,
-    RELAUNCHING
+    RELAUNCH,
+    EMAIL,
+    TEL_INTERVIEW,
+    VIDEO_INTERVIEW,
+    PHY_INTERVIEW,
+    APPLICANT_REFUSAL,
+    COMPANY_REFUSAL
 }

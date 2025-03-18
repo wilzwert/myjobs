@@ -1,5 +1,6 @@
 package com.wilzwert.myjobs.core.application.command;
 
+import com.wilzwert.myjobs.core.domain.model.ActivityType;
 import com.wilzwert.myjobs.core.domain.model.JobId;
 
 /**
@@ -8,6 +9,6 @@ import com.wilzwert.myjobs.core.domain.model.JobId;
  * Time:11:10
  */
 
-public record CreateActivityCommand(JobId jobId) {
+public record CreateActivityCommand(JobId jobId, ActivityType activityType, String comment) {
 }
 

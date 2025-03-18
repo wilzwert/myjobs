@@ -6,7 +6,7 @@ import com.wilzwert.myjobs.core.domain.model.AuthenticatedUser;
 import com.wilzwert.myjobs.core.domain.model.User;
 import com.wilzwert.myjobs.core.domain.ports.driven.Authenticator;
 import com.wilzwert.myjobs.core.domain.ports.driven.PasswordHasher;
-import com.wilzwert.myjobs.core.domain.ports.driven.UserRepository;
+import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.ports.driving.LoginUseCase;
 
 /**
@@ -17,12 +17,12 @@ import com.wilzwert.myjobs.core.domain.ports.driving.LoginUseCase;
 
 public class LoginUseCaseImpl implements LoginUseCase {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final PasswordHasher passwordHasher;
     private final Authenticator authenticator;
 
-    public LoginUseCaseImpl(UserRepository userRepository, PasswordHasher passwordHasher, Authenticator authenticator) {
-        this.userRepository = userRepository;
+    public LoginUseCaseImpl(UserService userService, PasswordHasher passwordHasher, Authenticator authenticator) {
+        this.userService = userService;
         this.passwordHasher = passwordHasher;
         this.authenticator = authenticator;
     }
@@ -30,7 +30,7 @@ public class LoginUseCaseImpl implements LoginUseCase {
 
     @Override
     public AuthenticatedUser authenticateUser(String email, String password) {
-        User user = userRepository.findByEmail(email)
+        User user = userService.findByEmail(email)
                 .orElseThrow(LoginException::new);
 
         if(!passwordHasher.verifyPassword(password, user.getPassword())) {

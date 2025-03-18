@@ -2,6 +2,7 @@ package com.wilzwert.myjobs.infrastructure.api.rest.exception;
 
 import com.wilzwert.myjobs.core.domain.exception.EntityAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.exception.EntityNotFoundException;
+import com.wilzwert.myjobs.core.domain.exception.LoginException;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.ErrorResponse;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> generateError(EntityNotFoundException ex) {
+        ErrorResponse errorResponse = ErrorResponse.fromException(ex);
+        return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatusCode());
+    }
+
+    @ExceptionHandler(LoginException.class)
+    public ResponseEntity<ErrorResponse> generateError(LoginException ex) {
         ErrorResponse errorResponse = ErrorResponse.fromException(ex);
         return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatusCode());
     }

@@ -3,6 +3,7 @@ package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wilzwert.myjobs.core.domain.exception.EntityAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.exception.EntityNotFoundException;
+import com.wilzwert.myjobs.core.domain.exception.LoginException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.coyote.BadRequestException;
@@ -49,6 +50,10 @@ public class ErrorResponse {
             errors.append(fieldError.getField()).append(": ").append(fieldError.getDefaultMessage()).append(". ");
         }
         return build(ex.getStatusCode(), errors.toString());
+    }
+
+    public static ErrorResponse fromException(LoginException ex) {
+        return build(HttpStatus.UNAUTHORIZED, "Access denied");
     }
 
     public static ErrorResponse fromException(AccessDeniedException ex) {

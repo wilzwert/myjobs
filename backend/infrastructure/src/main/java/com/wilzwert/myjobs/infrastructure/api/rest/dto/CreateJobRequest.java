@@ -18,4 +18,8 @@ public class CreateJobRequest {
     private String title;
 
     private String url;
+
+    private String description;
+
+    private String profile;
 }

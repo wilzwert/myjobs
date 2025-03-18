@@ -4,9 +4,7 @@ import com.wilzwert.myjobs.core.domain.model.JobStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -48,11 +46,9 @@ public class MongoJob {
     private String profile;
 
     @Field(name = "created_at")
-    @CreatedDate
     private Instant createdAt;
 
     @Field(name = "updated_at")
-    @LastModifiedDate
     private Instant updatedAt;
 
     @Field(name = "user_id")

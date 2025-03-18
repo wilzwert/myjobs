@@ -8,5 +8,8 @@ package com.wilzwert.myjobs.core.domain.model;
  */
 public enum JobStatus {
     CREATED,
-    PENDING
+    PENDING,
+    RELAUNCHED,
+    APPLICANT_REFUSED,
+    COMPANY_REFUSED
 }

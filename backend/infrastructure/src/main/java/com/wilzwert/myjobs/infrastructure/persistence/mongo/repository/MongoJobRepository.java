@@ -16,7 +16,7 @@ import java.util.UUID;
  * Time:15:50
  */
 @Repository
-public interface SpringMongoJobRepository extends MongoRepository<MongoJob, String> {
+public interface MongoJobRepository extends MongoRepository<MongoJob, String> {
     Optional<MongoJob> findById(UUID jobId);
     Optional<MongoJob> findByUrlAndUserId(String url, UUID userId);
     Optional<MongoJob> findByIdAndUserId(UUID jobId, UUID userId);
