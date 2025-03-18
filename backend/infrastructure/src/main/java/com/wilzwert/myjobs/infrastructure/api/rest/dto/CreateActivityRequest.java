@@ -1,6 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
 
+import com.wilzwert.myjobs.core.domain.model.ActivityType;
 import lombok.Data;
 
 /**
@@ -15,5 +16,8 @@ public class CreateActivityRequest {
     // TODO @NotBlank(message = "The email is required")
     // TODO @Email(message = "Email should be valid")
     // TODO @Schema(description = "User email")
+    private ActivityType type;
+
     private String comment;
+
 }

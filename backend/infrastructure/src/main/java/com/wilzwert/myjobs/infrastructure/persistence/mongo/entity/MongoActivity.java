@@ -31,6 +31,9 @@ public class MongoActivity {
     @Field
     private ActivityType type;
 
+    @Field
+    private String comment;
+
     @Field(name = "created_at")
     @CreatedDate
     private Instant createdAt;

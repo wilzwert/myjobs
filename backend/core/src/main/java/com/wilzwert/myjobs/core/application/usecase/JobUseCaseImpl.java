@@ -126,6 +126,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         if(foundJob.isEmpty()) {
             throw new JobNotFoundException();
         }
+
         Job job = foundJob.get();
         Activity activity = new Activity(ActivityId.generate(), command.activityType(), job.getId(), command.comment(), Instant.now(), Instant.now());
 

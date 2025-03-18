@@ -6,10 +6,8 @@ import com.wilzwert.myjobs.core.application.command.DeleteJobCommand;
 import com.wilzwert.myjobs.core.application.command.UpdateJobCommand;
 import com.wilzwert.myjobs.core.domain.model.JobId;
 import com.wilzwert.myjobs.core.domain.ports.driving.*;
-import com.wilzwert.myjobs.infrastructure.api.rest.dto.UpdateJobRequest;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
-import com.wilzwert.myjobs.infrastructure.api.rest.dto.CreateJobRequest;
-import com.wilzwert.myjobs.infrastructure.api.rest.dto.JobResponse;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -76,7 +74,7 @@ public class JobController {
     }
 
     @GetMapping()
-    public List<JobResponse> get(Authentication authentication, @RequestParam(required = false) Integer page) {
+    public List<JobResponse> getUserJobs(Authentication authentication, @RequestParam(required = false) Integer page) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         if(page == null) {
             page = 0;
