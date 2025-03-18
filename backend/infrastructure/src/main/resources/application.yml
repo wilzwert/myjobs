@@ -11,6 +11,8 @@ spring:
       password: ${MONGODB_PASSWORD:mongopwd}
       auto-index-creation: true
       uuid-representation: standard
+      replica-set-name: rs0
+      # uri: "mongodb://mongouser:mongopwd@localhost:27017/myjobs?authSource=myjobs&replicatSet=rs0"
 
 # JWT secret key
 security:
@@ -29,6 +31,4 @@ logging:
     org:
       springframework:
         data:
-          mongodb:
-            core:
-              MongoTemplate: DEBUG
+          mongodb: DEBUG

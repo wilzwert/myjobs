@@ -1,4 +1,3 @@
-
 db.createUser(
     {
         user: "mongouser",

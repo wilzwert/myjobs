@@ -3,21 +3,34 @@ services:
     container_name: myjobs-mongo
     image: mongo:8.0
     restart: always
-    command:
-      - --storageEngine
-      - wiredTiger
-      - --auth
+    command: mongod --storageEngine wiredTiger --bind_ip_all --auth --keyFile /etc/mongo/mongodb-keyfile --replSet rs0
+    healthcheck:
+      test: |
+        mongosh mongodb://admin:password@localhost:27017/admin --eval "try { rs.status().ok } catch (e) { rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: 'localhost:27017' }] }).ok }"
+      interval: 10s
+      timeout: 30s
+      retries: 3
+      start_period: 60s
     ports:
       - "27017:27017"
     volumes:
+      - ./mongodb-keyfile:/etc/mongo/mongodb-keyfile:rw
       - ./mongo-data/:/data/
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    entrypoint:
+      - bash
+      - -c
+      - |
+        chmod 400 /etc/mongo/mongodb-keyfile
+        chown 999:999 /etc/mongo/mongodb-keyfile
+        exec docker-entrypoint.sh $$@
     networks:
       - myjobs-network
     environment:
       - MONGO_INITDB_DATABASE=myjobs
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_REPLICA_SET_NAME=rs0
 
 networks:
   myjobs-network:
