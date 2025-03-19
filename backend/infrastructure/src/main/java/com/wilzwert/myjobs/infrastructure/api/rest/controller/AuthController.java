@@ -3,6 +3,7 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 import com.wilzwert.myjobs.core.application.command.RegisterUserCommand;
 import com.wilzwert.myjobs.core.domain.model.AuthenticatedUser;
+import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.ports.driving.LoginUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.RegisterUseCase;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.LoginRequest;
@@ -12,7 +13,6 @@ import com.wilzwert.myjobs.infrastructure.api.rest.dto.UserResponse;
 import com.wilzwert.myjobs.infrastructure.security.configuration.CookieProperties;
 import com.wilzwert.myjobs.infrastructure.security.jwt.JwtAuthenticatedUser;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -30,6 +30,7 @@ import java.time.Duration;
  * @author Wilhelm Zwertvaegher
  * Date:13/03/2025
  * Time:11:43
+ * TODO : add rate limiting on public endpoints
  */
 @RestController
 @Slf4j
@@ -44,11 +45,14 @@ public class AuthController {
 
     private final CookieProperties cookieProperties;
 
-    public AuthController(RegisterUseCase registerUseCase, LoginUseCase loginUseCase, UserMapper userMapper, CookieProperties cookieProperties) {
+    private final UserService userService;
+
+    public AuthController(RegisterUseCase registerUseCase, LoginUseCase loginUseCase, UserMapper userMapper, CookieProperties cookieProperties, UserService userService) {
         this.registerUseCase = registerUseCase;
         this.loginUseCase = loginUseCase;
         this.userMapper = userMapper;
         this.cookieProperties = cookieProperties;
+        this.userService = userService;
     }
 
     @PostMapping("/register")
@@ -116,11 +120,6 @@ public class AuthController {
                         .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
                         .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
                         .body(new UserResponse(user.getEmail(), user.getUsername(), user.getRole()));
-
-                /*log.info("User login - generating token");
-                String token = jwtService.generateToken(user);
-                log.info("User with email {} successfully authenticated, sending JWT token", loginRequestDto.getEmail());
-                return new JwtResponse(token, "Bearer", refreshTokenService.getOrCreateRefreshToken(user).getToken(), user.getId(), user.getUsername());*/
             }
 
             return ResponseEntity.ok().body(new UserResponse(user.getEmail(), user.getUsername(), user.getRole()));
@@ -135,6 +134,22 @@ public class AuthController {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         return new UserResponse(userDetails.getEmail(), userDetails.getUsername(), userDetails.getRole());
     }
+
+    @GetMapping("/email-check")
+    public ResponseEntity<Void> emailCheck(@RequestParam("email") String email) {
+        return userService.findByEmail(email).map(
+                (u) -> new ResponseEntity<Void>(HttpStatus.UNPROCESSABLE_ENTITY)
+        ).orElse(new ResponseEntity<>(HttpStatus.OK));
+    }
+
+    @GetMapping("/username-check")
+    public ResponseEntity<Void> usernameCheck(@RequestParam("username") String username) {
+        return userService.findByUsername(username).map(
+                (u) -> new ResponseEntity<Void>(HttpStatus.UNPROCESSABLE_ENTITY)
+        ).orElse(new ResponseEntity<>(HttpStatus.OK));
+    }
+
+
 
     /*
     @PostMapping("/refresh")
