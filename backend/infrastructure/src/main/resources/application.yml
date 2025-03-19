@@ -22,7 +22,7 @@ security:
     refresh-expiration-time: ${JWT_REFRESH_EXPIRATION_TIME:86400000}
   cookie:
     secure: false
-    same-site: None
+    same-site: Strict
     domain: localhost
     path: /
 
@@ -30,5 +30,6 @@ logging:
   level:
     org:
       springframework:
+        security: DEBUG
         data:
           mongodb: DEBUG

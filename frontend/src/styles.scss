@@ -14,7 +14,7 @@
   @include mat.button-overrides((
     container-color: var(--main-color),
     label-text-color: #fff,
-    outline-color: #000
+    outlined-outline-color: #000
   ));
 
   @include mat.toolbar-overrides((
@@ -81,11 +81,11 @@ button:disabled mat-icon[svgIcon="send"] {
 .element-info {
   font-size: var(--content-font-size);
   display: flex;
+  margin-bottom: 1rem;
   & > * {
     display: block;
     padding: .5em 0;
   }
-  margin-bottom: 1rem;
 }
 
 .element-content {
@@ -215,7 +215,7 @@ button:disabled mat-icon[svgIcon="send"] {
 .loggedin-form {
   @include mat.form-field-overrides((
     focus-outline-color: var(--main-color),
-    outline-color: var(--main-color),
+    outlined-outline-color: var(--main-color),
     hover-outline-color: var(--main-color)
   ));
 }

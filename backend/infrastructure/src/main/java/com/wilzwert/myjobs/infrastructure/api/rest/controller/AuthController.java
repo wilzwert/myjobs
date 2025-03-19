@@ -12,6 +12,8 @@ import com.wilzwert.myjobs.infrastructure.api.rest.dto.UserResponse;
 import com.wilzwert.myjobs.infrastructure.security.configuration.CookieProperties;
 import com.wilzwert.myjobs.infrastructure.security.jwt.JwtAuthenticatedUser;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -55,6 +57,34 @@ public class AuthController {
         return userMapper.toResponse(registerUseCase.registerUser(registerUserCommand));
     }
 
+    @PostMapping("/logout")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        ResponseCookie accessTokenCookie = ResponseCookie.from("access_token", null)
+                .httpOnly(true)
+                .secure(cookieProperties.isSecure())
+                .sameSite(cookieProperties.getSameSite())
+                .domain(cookieProperties.getDomain())
+                .path(cookieProperties.getPath())
+                .maxAge(0)
+                .build();
+
+        ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", null)
+                .httpOnly(true)
+                .secure(cookieProperties.isSecure())
+                .sameSite(cookieProperties.getSameSite())
+                .domain(cookieProperties.getDomain())
+                .path(cookieProperties.getPath())
+                .maxAge(0)
+                .build();
+
+        return ResponseEntity.noContent()
+                .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
+                .build();
+
+    }
+
     @PostMapping("/login")
     public ResponseEntity<UserResponse> login(@RequestBody final LoginRequest loginRequest) {
         log.info("User login with email {}", loginRequest.getEmail());
@@ -70,7 +100,7 @@ public class AuthController {
                         .sameSite(cookieProperties.getSameSite())  // Dynamique
                         .domain(cookieProperties.getDomain())  // Dynamique
                         .path(cookieProperties.getPath())
-                        .maxAge(Duration.ofHours(1))
+                        .maxAge(Duration.ofDays(7))
                         .build();
 
                 ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", jwtAuthenticatedUser.getRefreshToken())

@@ -21,6 +21,10 @@ export class AuthService {
   public login(loginRequest: LoginRequest): Observable<SessionInformation> {
     return this.dataService.post<SessionInformation>(`${this.apiPath}/login`, loginRequest);
   }
+
+  public logout(): Observable<void> {
+    return this.dataService.post<void>(`${this.apiPath}/logout`, null);
+  }
   /* TODO
   public refreshToken(refreshTokenRequest: RefreshTokenRequest): Observable<RefreshTokenResponse> {
     return this.dataService.post<RefreshTokenResponse>(`${this.apiPath}/refreshToken`, refreshTokenRequest);
