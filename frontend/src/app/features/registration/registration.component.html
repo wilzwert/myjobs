@@ -1,1 +1,74 @@
-<p>registration works!</p>
+<h1>Registration</h1>
+
+<form [formGroup]="form" (ngSubmit)="submit()">
+    <mat-form-field>
+    <mat-label>Email</mat-label>                
+    <input matInput formControlName="email" placeholder="Enter your email">
+    <mat-hint class="email-hint" align="end">
+        @if(email?.invalid) {
+            <mat-icon class="input-invalid" svgIcon="invalid">Invalid</mat-icon>
+        } 
+        @else {
+            <mat-icon class="input-valid"  svgIcon="valid">Valid</mat-icon>
+        }</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field>
+    <mat-label>Username</mat-label>
+    <input matInput minlength="5" formControlName="username" placeholder="Enter your username">
+    <mat-hint align="start">Min. 5 characters</mat-hint>
+    <mat-hint class="username-hint" align="end">
+    @if(username?.invalid) {
+        <mat-icon class="input-invalid" svgIcon="invalid">Invalid</mat-icon>
+    } 
+    @else {
+        <mat-icon class="input-valid"  svgIcon="valid">Valide</mat-icon>
+    }</mat-hint>
+    </mat-form-field>
+
+    <mat-form-field>
+    <mat-label>Password</mat-label>
+    <input matInput type="password" formControlName="password" placeholder="Enter your password">
+    <mat-hint align="start">Min. 8 characters including 1 lowercase, 1 uppercase, 1 digit and 1 special character</mat-hint>
+    <mat-hint class="password-hint" align="end">
+        @if(password?.invalid) {
+            <mat-icon class="input-invalid" svgIcon="invalid">Invalid</mat-icon>
+        } 
+        @else {
+            <mat-icon class="input-valid"  svgIcon="valid">Valid</mat-icon>
+        }</mat-hint>
+    
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>First name</mat-label>
+        <input matInput type="firstName" formControlName="firstName" placeholder="Enter your first name">
+        <mat-hint align="start">Min. 1 character</mat-hint>
+        <mat-hint class="first-name-hint" align="end">
+            @if(firstName?.invalid) {
+                <mat-icon class="input-invalid" svgIcon="invalid">Invalid</mat-icon>
+            } 
+            @else {
+                <mat-icon class="input-valid"  svgIcon="valid">Valid</mat-icon>
+            }</mat-hint>
+        
+    </mat-form-field>
+
+    <mat-form-field>
+        <mat-label>Last name</mat-label>
+        <input matInput type="lastName" formControlName="lastName" placeholder="Enter your last name">
+        <mat-hint align="start">Min. 1 character</mat-hint>
+        <mat-hint class="last-name-hint" align="end">
+            @if(lastName?.invalid) {
+                <mat-icon class="input-invalid" svgIcon="invalid">Invalid</mat-icon>
+            } 
+            @else {
+                <mat-icon class="input-valid"  svgIcon="valid">Valid</mat-icon>
+            }</mat-hint>
+        
+    </mat-form-field>
+
+    <button mat-raised-button type="submit" [disabled]="form.invalid || isSubmitting">@if (isSubmitting) { Loading... } @else { Register }</button>
+</form>
+    
+

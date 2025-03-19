@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { SessionInformation } from '../models/session-information.interface';
 import { SessionStorageService } from './token-storage.service';
+import { RefreshTokenResponse } from '../models/refresh-token-response.interface';
 import { Router } from '@angular/router';
-import { SessionInformation } from '../model/session-information.interface';
-import { RefreshTokenResponse } from '../model/refresh-token-response.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -15,9 +15,9 @@ export class SessionService {
   private isLoggedSubject = new BehaviorSubject<boolean>(this.logged);
 
   constructor(
-    private sessionStorageService: SessionStorageService, 
+    private tokenStorageService: SessionStorageService, 
     private router: Router) {
-    if(this.sessionStorageService.getSessionInformation() != null) {
+    if(this.tokenStorageService.getToken() != null) {
       this.logged = true;
       this.next();
     }
@@ -26,40 +26,36 @@ export class SessionService {
   public isLogged() :boolean {
     return this.logged;
   }
-  /*
+
   public getToken() :string | null {
-    return this.sessionStorageService.getToken();
+    return this.tokenStorageService.getToken();
   }
 
   public getTokenType() :string | null {
-    return this.sessionStorageService.getTokenType();
+    return this.tokenStorageService.getTokenType();
   }
 
   public getRefreshToken() :string | null {
-    return this.sessionStorageService.getRefreshToken();
-  }*/
+    return this.tokenStorageService.getRefreshToken();
+  }
 
   public $isLogged(): Observable<boolean> {
     return this.isLoggedSubject.asObservable();
   }
 
-  public $getSessionInformation() :BehaviorSubject<SessionInformation|null> {
-    return this.sessionStorageService.$getSessionInformation();
-  }
-
   public handleTokenAfterRefresh(data: RefreshTokenResponse): void {
-    this.sessionStorageService.saveTokenAfterRefresh(data);
+    this.tokenStorageService.saveTokenAfterRefresh(data);
   }
 
   public logIn(data: SessionInformation): void {
-    this.sessionStorageService.saveSessionInformation(data);
+    this.tokenStorageService.saveSessionInformation(data);
     this.logged = true;
     this.next();
   }
 
   public logOut(): void {
     // clear user and session related data from storage
-    this.sessionStorageService.clearSessionInformation();
+    this.tokenStorageService.clearSessionInformation();
     this.logged = false;
     this.next();
     this.router.navigate(['']);

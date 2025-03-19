@@ -1,11 +1,118 @@
 import { Component } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatInputModule } from '@angular/material/input';
+import { AuthService } from '../../core/services/auth.service';
+import { RegistrationRequest } from '../../core/model/registration-request.interface';
+import { catchError, take, throwError } from 'rxjs';
+import { Router } from '@angular/router';
+import { NotificationService } from '../../core/services/notification.service';
+import { ApiError } from '../../core/errors/api-error';
 
 @Component({
-  selector: 'app-registration',
-  imports: [],
+  selector: 'app-register',
+  standalone: true,
+  imports: [
+    MatButtonModule,
+    MatFormFieldModule,
+    MatIconModule,
+    MatInputModule,
+    ReactiveFormsModule
+  ],
   templateUrl: './registration.component.html',
   styleUrl: './registration.component.scss'
 })
 export class RegistrationComponent {
+  public form: FormGroup;
+  public isSubmitting = false;
 
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private fb: FormBuilder,
+    private notificationService: NotificationService
+  ) {
+    this.form = this.fb.group({
+      email: [
+        '', 
+        [
+          Validators.required,
+          Validators.email
+        ]
+      ],
+      username: [
+        '', 
+        [
+          Validators.required,
+          Validators.minLength(5)
+        ]
+      ],
+      firstName: [
+        '', 
+        [
+          Validators.required,
+          Validators.minLength(1)
+        ]
+      ],
+      lastName: [
+        '', 
+        [
+          Validators.required,
+          Validators.minLength(1)
+        ]
+      ],
+      password: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern('((?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,30})')
+        ]
+      ]
+    });
+  }
+
+  get email() {
+    return this.form.get('email');
+  }
+
+  get username() {
+    return this.form.get('username');
+  }
+
+  get password() {
+    return this.form.get('password');
+  }
+
+  get firstName() {
+    return this.form.get('firstName');
+  }
+
+  get lastName() {
+    return this.form.get('lastName');
+  }
+
+
+  submit() :void {
+    if(!this.isSubmitting) {
+      this.isSubmitting = true;
+      this.authService.register(this.form.value as RegistrationRequest)
+      .pipe(
+        take(1),
+        catchError(
+          (error: ApiError) => {
+            this.isSubmitting = false;
+            return throwError(() => new Error(
+              'Impossible de créer votre compte. '+(error.httpStatus === 409 ? "Email ou nom d'utilisateur déjà utilisé" : 'Une erreur est survenue')
+            ));
+          }
+      ))
+      .subscribe(() => {
+          this.isSubmitting = false;
+          this.notificationService.confirmation("Votre inscription a bien été enregistrée, vous pouvez maintenant vous connecter");
+          this.router.navigate(["/login"])
+      });
+    }
+  }
 }
