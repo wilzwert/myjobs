@@ -7,9 +7,11 @@ import { MatInputModule } from '@angular/material/input';
 import { AuthService } from '../../core/services/auth.service';
 import { RegistrationRequest } from '../../core/model/registration-request.interface';
 import { catchError, take, throwError } from 'rxjs';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { NotificationService } from '../../core/services/notification.service';
 import { ApiError } from '../../core/errors/api-error';
+import { AuthValidators } from '../../core/services/auth.validators';
+import { NgxCaptchaModule } from 'ngx-captcha';
 
 @Component({
   selector: 'app-register',
@@ -19,7 +21,9 @@ import { ApiError } from '../../core/errors/api-error';
     MatFormFieldModule,
     MatIconModule,
     MatInputModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    RouterLink,
+    NgxCaptchaModule
   ],
   templateUrl: './registration.component.html',
   styleUrl: './registration.component.scss'
@@ -30,6 +34,7 @@ export class RegistrationComponent {
 
   constructor(
     private authService: AuthService,
+    private authValidators: AuthValidators,
     private router: Router,
     private fb: FormBuilder,
     private notificationService: NotificationService
@@ -40,14 +45,16 @@ export class RegistrationComponent {
         [
           Validators.required,
           Validators.email
-        ]
+        ],
+        this.authValidators.checkEmailExistsAsync.bind(this.authValidators)
       ],
       username: [
         '', 
         [
           Validators.required,
           Validators.minLength(5)
-        ]
+        ],
+        this.authValidators.checkUsernameExistsAsync.bind(this.authValidators)
       ],
       firstName: [
         '', 
@@ -93,9 +100,8 @@ export class RegistrationComponent {
     return this.form.get('lastName');
   }
 
-
   submit() :void {
-    if(!this.isSubmitting) {
+    if(!this.isSubmitting && this.form.valid) {
       this.isSubmitting = true;
       this.authService.register(this.form.value as RegistrationRequest)
       .pipe(

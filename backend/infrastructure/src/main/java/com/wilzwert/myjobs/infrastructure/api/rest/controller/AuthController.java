@@ -10,6 +10,7 @@ import com.wilzwert.myjobs.infrastructure.api.rest.dto.LoginRequest;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.RegisterUserRequest;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.UserMapper;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.UserResponse;
+import com.wilzwert.myjobs.infrastructure.security.captcha.RequiresCaptcha;
 import com.wilzwert.myjobs.infrastructure.security.configuration.CookieProperties;
 import com.wilzwert.myjobs.infrastructure.security.jwt.JwtAuthenticatedUser;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
@@ -56,6 +57,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+    @RequiresCaptcha
     public UserResponse register(@RequestBody final RegisterUserRequest registerUserRequest) {
         RegisterUserCommand registerUserCommand = userMapper.toCommand(registerUserRequest);
         return userMapper.toResponse(registerUseCase.registerUser(registerUserCommand));
@@ -90,6 +92,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @RequiresCaptcha
     public ResponseEntity<UserResponse> login(@RequestBody final LoginRequest loginRequest) {
         log.info("User login with email {}", loginRequest.getEmail());
         try {
@@ -136,16 +139,16 @@ public class AuthController {
     }
 
     @GetMapping("/email-check")
+    @RequiresCaptcha
     public ResponseEntity<Void> emailCheck(@RequestParam("email") String email) {
         return checkUserAvailabilityUseCase.isEmailTaken(email) ? new ResponseEntity<Void>(HttpStatus.UNPROCESSABLE_ENTITY) : new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/username-check")
+    @RequiresCaptcha
     public ResponseEntity<Void> usernameCheck(@RequestParam("username") String username) {
         return checkUserAvailabilityUseCase.isUsernameTaken(username) ? new ResponseEntity<Void>(HttpStatus.UNPROCESSABLE_ENTITY) : new ResponseEntity<>(HttpStatus.OK);
     }
-
-
 
     /*
     @PostMapping("/refresh")

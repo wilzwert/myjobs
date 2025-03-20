@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -13,22 +13,22 @@ export class DataService {
   constructor(private http: HttpClient) {}
 
    // GET
-   get<T>(endpoint: string, params?: HttpParams): Observable<T> {
-    return this.http.get<T>(`${this.baseUrl}${endpoint}`, { params: params, withCredentials: true});
+   get<T>(endpoint: string, options?: {params?: HttpParams, headers?: HttpHeaders}): Observable<T> {
+    return this.http.get<T>(`${this.baseUrl}${endpoint}`, { ...options, withCredentials: true});
   }
 
   // POST
-  post<T>(endpoint: string, body: unknown): Observable<T> {
-    return this.http.post<T>(`${this.baseUrl}${endpoint}`, body, {withCredentials: true});
+  post<T>(endpoint: string, body: unknown, options?: {params?: HttpParams, headers?: HttpHeaders}): Observable<T> {
+    return this.http.post<T>(`${this.baseUrl}${endpoint}`, body, {...options, withCredentials: true});
   }
 
   // PUT
-  put<T>(endpoint: string, body: unknown): Observable<T> {
-    return this.http.put<T>(`${this.baseUrl}${endpoint}`, body, {withCredentials: true});
+  put<T>(endpoint: string, body: unknown, options?: {params?: HttpParams, headers?: HttpHeaders}): Observable<T> {
+    return this.http.put<T>(`${this.baseUrl}${endpoint}`, body, {...options, withCredentials: true});
   }
 
   // DELETE
-  delete<T>(endpoint: string): Observable<T> {
-    return this.http.delete<T>(`${this.baseUrl}${endpoint}`, {withCredentials: true});
+  delete<T>(endpoint: string, options?: {params?: HttpParams, headers?: HttpHeaders}): Observable<T> {
+    return this.http.delete<T>(`${this.baseUrl}${endpoint}`, {...options, withCredentials: true});
   }
 }

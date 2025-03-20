@@ -33,3 +33,8 @@ logging:
         security: DEBUG
         data:
           mongodb: DEBUG
+
+
+google:
+  recaptcha:
+    secret: ${GOOGLE_RECAPTCHA_PRIVATE_KEY}

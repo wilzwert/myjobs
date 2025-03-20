@@ -4,6 +4,9 @@
     <mat-form-field>
     <mat-label>Email</mat-label>                
     <input matInput formControlName="email" placeholder="Enter your email">
+    @if(form.get('email')?.hasError('emailExists')) {
+        <mat-hint align="start">Email already exists <a routerLink="/login">Log in</a></mat-hint>
+    }
     <mat-hint class="email-hint" align="end">
         @if(email?.invalid) {
             <mat-icon class="input-invalid" svgIcon="invalid">Invalid</mat-icon>
@@ -16,7 +19,9 @@
     <mat-form-field>
     <mat-label>Username</mat-label>
     <input matInput minlength="5" formControlName="username" placeholder="Enter your username">
-    <mat-hint align="start">Min. 5 characters</mat-hint>
+    @if(form.get('username')?.hasError('usernameExists')) {
+        <mat-hint align="start">Username already taken <a routerLink="/login">Log in</a></mat-hint>
+    }
     <mat-hint class="username-hint" align="end">
     @if(username?.invalid) {
         <mat-icon class="input-invalid" svgIcon="invalid">Invalid</mat-icon>
