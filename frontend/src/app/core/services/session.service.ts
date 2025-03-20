@@ -58,8 +58,6 @@ export class SessionService {
   }
 
   public logOut(): void {
-    // TODO : call dataservice to logout from backend
-
     // clear user and session related data from storage
     this.sessionStorageService.clearSessionInformation();
     this.logged = false;
