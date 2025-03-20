@@ -15,7 +15,10 @@ import java.util.Optional;
 public interface UserService {
     Optional<User> findByEmail(String email);
 
+
     Optional<User> findByEmailOrUsername(String email, String username);
+
+    Optional<User> findByUsername(String username);
 
     Optional<User> findById(UserId id);
 
@@ -26,4 +29,10 @@ public interface UserService {
     User saveUserAndJob(User user, Job job);
 
     User deleteJobAndSaveUser(User user, Job job);
+
+    boolean emailExists(String email);
+
+    boolean usernameExists(String username);
+
+    void deleteUser(User user);
 }

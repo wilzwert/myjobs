@@ -1,0 +1,9 @@
+@if(sessionInformation|async; as sessionInfo) {
+    <p>
+    {{ sessionInfo.email }}
+    </p>
+    <p>
+    {{ sessionInfo.username }}
+    </p>
+}
+<a class="logout" (click)="logout()">Log out</a>

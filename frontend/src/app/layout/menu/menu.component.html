@@ -1,0 +1,18 @@
+<mat-toolbar>
+    <a class="home" routerLink="">MyJobs</a>
+    <span class="spacer"></span>
+    @if ($isLogged() | async) {
+      <nav class="main-nav" [class.open]="isMobile && menuOpen">
+        <ul>
+          <li><a routerLink="posts" aria-label="My jobs" class="link">Jobs</a></li>
+          <li><a routerLink="me" class="account" aria-label="My account"><mat-icon svgIcon="user"></mat-icon></a></li>
+        </ul>
+      </nav>
+      @if( isMobile) {
+        <a class="open-nav" (click)="openNav()" aria-label="Open navigation menu"><mat-icon svgIcon="hamburger"></mat-icon></a>
+        @if (menuOpen) {
+          <div class="overlay" (click)="closeNav()"></div>
+        }
+      }
+  }
+</mat-toolbar>

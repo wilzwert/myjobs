@@ -57,7 +57,6 @@ public class JwtService {
                     .findFirst()
                     .orElse(null);
             token = jwtCookie != null ? jwtCookie.getValue() : null;
-
         }
         if(token == null) {
             String authHeader = request.getHeader("Authorization");

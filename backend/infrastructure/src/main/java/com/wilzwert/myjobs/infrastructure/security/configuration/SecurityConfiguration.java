@@ -39,7 +39,6 @@ public class SecurityConfiguration {
         this.jwtService = jwtService;
     }
 
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -67,6 +66,8 @@ public class SecurityConfiguration {
                         auth.requestMatchers(
                                         "/api/auth/register",
                                         "/api/auth/login",
+                                        "/api/auth/email-check",
+                                        "/api/auth/username-check",
                                         /*"/"+storageProperties.getUploadDir()+"/**",
                                         apiDocProperties.getApiDocsPath()+"/**",
                                         apiDocProperties.getSwaggerPath()+"/**",*/
@@ -77,7 +78,6 @@ public class SecurityConfiguration {
                         // everything else requires authentication
                         .anyRequest().authenticated()
                 )
-                // TODO ?.authenticationProvider(authenticationProvider())
                 // insert our custom filter, which will authenticate user from token if provided in the request
                 .addFilterBefore(new JwtAuthenticationFilter(jwtService, userDetailsService()), UsernamePasswordAuthenticationFilter.class)
                 .build();

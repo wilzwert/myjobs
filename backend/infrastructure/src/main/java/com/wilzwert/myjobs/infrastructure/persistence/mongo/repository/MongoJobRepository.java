@@ -21,4 +21,5 @@ public interface MongoJobRepository extends MongoRepository<MongoJob, String> {
     Optional<MongoJob> findByUrlAndUserId(String url, UUID userId);
     Optional<MongoJob> findByIdAndUserId(UUID jobId, UUID userId);
     List<MongoJob> findByUserId(UUID userId, @Nullable PageRequest pageRequest);
+    void deleteByUserId(UUID userId);
 }
