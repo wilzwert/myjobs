@@ -26,6 +26,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -66,29 +70,24 @@ public class AuthController {
     @PostMapping("/logout")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> logout(HttpServletResponse response) {
-        ResponseCookie accessTokenCookie = ResponseCookie.from("access_token", null)
-                .httpOnly(true)
-                .secure(cookieProperties.isSecure())
-                .sameSite(cookieProperties.getSameSite())
-                .domain(cookieProperties.getDomain())
-                .path(cookieProperties.getPath())
-                .maxAge(0)
-                .build();
-
-        ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", null)
-                .httpOnly(true)
-                .secure(cookieProperties.isSecure())
-                .sameSite(cookieProperties.getSameSite())
-                .domain(cookieProperties.getDomain())
-                .path(cookieProperties.getPath())
-                .maxAge(0)
-                .build();
-
-        return ResponseEntity.noContent()
-                .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
-                .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
-                .build();
-
+        var responseEntity = ResponseEntity.noContent();
+        String[] keys = new String[]{"access_token", "refresh_token"};
+        Arrays.stream(keys).forEach(
+            (k) -> {
+                responseEntity.header(
+                    HttpHeaders.SET_COOKIE,
+                    ResponseCookie.from(k, null)
+                        .httpOnly(true)
+                        .secure(cookieProperties.isSecure())
+                        .sameSite(cookieProperties.getSameSite())
+                        .domain(cookieProperties.getDomain())
+                        .path(cookieProperties.getPath())
+                        .maxAge(0)
+                        .build().toString()
+                );
+            }
+        );
+        return responseEntity.build();
     }
 
     @PostMapping("/login")
@@ -98,31 +97,28 @@ public class AuthController {
         try {
             log.info("User login - authenticating");
             AuthenticatedUser user = loginUseCase.authenticateUser(loginRequest.getEmail(), loginRequest.getPassword());
-
-            // FIXME : needs genericity or strategy
             if (user instanceof JwtAuthenticatedUser jwtAuthenticatedUser) {
-                ResponseCookie accessTokenCookie = ResponseCookie.from("access_token", jwtAuthenticatedUser.getJwtToken())
-                        .httpOnly(true)
-                        .secure(cookieProperties.isSecure())  // Dynamique
-                        .sameSite(cookieProperties.getSameSite())  // Dynamique
-                        .domain(cookieProperties.getDomain())  // Dynamique
-                        .path(cookieProperties.getPath())
-                        .maxAge(Duration.ofDays(7))
-                        .build();
-
-                ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", jwtAuthenticatedUser.getRefreshToken())
-                        .httpOnly(true)
-                        .secure(cookieProperties.isSecure())
-                        .sameSite(cookieProperties.getSameSite())
-                        .domain(cookieProperties.getDomain())
-                        .path(cookieProperties.getPath())
-                        .maxAge(Duration.ofDays(7))
-                        .build();
-
-                return ResponseEntity.ok()
-                        .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
-                        .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
-                        .body(new UserResponse(user.getEmail(), user.getUsername(), user.getRole()));
+                var responseEntity = ResponseEntity.ok();
+                Map<String, Map<String, Integer>> cookies = Map.of(
+                "access_token", Map.of(jwtAuthenticatedUser.getJwtToken(), 10),
+                "refresh_token", Map.of(jwtAuthenticatedUser.getRefreshToken(), 1440)
+                );
+                cookies.forEach((k, v) ->
+                    v.forEach((key, value) -> {
+                        System.out.println("k: "+k+" key: " + key + " value: " + value);
+                        responseEntity.header(
+                            HttpHeaders.SET_COOKIE,
+                            ResponseCookie.from(k, key)
+                                    .httpOnly(true)
+                                    .secure(cookieProperties.isSecure())
+                                    .sameSite(cookieProperties.getSameSite())
+                                    .domain(cookieProperties.getDomain())
+                                    .path(cookieProperties.getPath())
+                                    .maxAge(Duration.ofMinutes(value))
+                                    .build().toString()
+                        );
+                    }));
+                return responseEntity.body(new UserResponse(user.getEmail(), user.getUsername(), user.getRole()));
             }
 
             return ResponseEntity.ok().body(new UserResponse(user.getEmail(), user.getUsername(), user.getRole()));

@@ -2,7 +2,9 @@ package com.wilzwert.myjobs.infrastructure.persistence.mongo.repository;
 
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoJob;
 import jakarta.annotation.Nullable;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -20,6 +22,8 @@ public interface MongoJobRepository extends MongoRepository<MongoJob, String> {
     Optional<MongoJob> findById(UUID jobId);
     Optional<MongoJob> findByUrlAndUserId(String url, UUID userId);
     Optional<MongoJob> findByIdAndUserId(UUID jobId, UUID userId);
-    List<MongoJob> findByUserId(UUID userId, @Nullable PageRequest pageRequest);
+    Page<MongoJob> findByUserId(UUID userId, @Nullable Pageable pageable);
     void deleteByUserId(UUID userId);
+    // Page<MongoJob> findPagedByUserId(UUID userId, @Nullable Pageable pageable);
+
 }

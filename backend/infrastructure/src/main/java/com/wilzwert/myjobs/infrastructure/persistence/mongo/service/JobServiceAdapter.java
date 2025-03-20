@@ -1,14 +1,14 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 
 
-import com.wilzwert.myjobs.core.domain.model.Activity;
-import com.wilzwert.myjobs.core.domain.model.Job;
-import com.wilzwert.myjobs.core.domain.model.JobId;
-import com.wilzwert.myjobs.core.domain.model.UserId;
+import com.wilzwert.myjobs.core.domain.model.*;
 import com.wilzwert.myjobs.core.domain.ports.driven.JobService;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoJob;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoJobRepository;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -46,7 +46,7 @@ public class JobServiceAdapter implements JobService {
     }
 
     @Override
-    public List<Job> findAllByUserId(UserId userId, int page, int size) {
+    public DomainPage<Job> findAllByUserId(UserId userId, int page, int size) {
         return this.jobMapper.toDomain(mongoJobRepository.findByUserId(userId.value(), PageRequest.of(page, size)));
     }
 

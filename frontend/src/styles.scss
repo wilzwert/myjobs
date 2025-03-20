@@ -12,8 +12,8 @@
   --main-color: #7763C5;
 
   @include mat.button-overrides((
-    container-color: var(--main-color),
-    label-text-color: #fff,
+    filled-container-color: var(--main-color),
+    outlined-label-text-color: #fff,
     outlined-outline-color: #000
   ));
 
@@ -214,8 +214,8 @@ button:disabled mat-icon[svgIcon="send"] {
 
 .loggedin-form {
   @include mat.form-field-overrides((
-    focus-outline-color: var(--main-color),
+    outlined-focus-outline-color: var(--main-color),
     outlined-outline-color: var(--main-color),
-    hover-outline-color: var(--main-color)
+    outlined-hover-outline-color: var(--main-color)
   ));
 }

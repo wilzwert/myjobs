@@ -1,1 +1,20 @@
-<p>jobs works!</p>
+@let page = jobs$ | async;
+@if(page !== null) {
+    <mat-paginator #paginator
+               class="demo-paginator"
+               (page)="handlePageEvent($event)"
+               [length]="page.totalElementsCount"
+               [pageSize]="page.pageSize"
+               [pageIndex]="page.currentPage"
+               aria-label="Select page">
+    </mat-paginator>
+    @let content = page.content;
+    @if(content !== null) {
+        @for (job of page.content ; track $index) {
+            <div>
+            <p>{{ job.title }}</p>
+            <p>{{ job.url}}</p>
+            </div>
+        }
+    }
+}

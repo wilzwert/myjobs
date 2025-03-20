@@ -16,7 +16,15 @@ public class CaptchaValidator {
     @Value("${google.recaptcha.secret}")
     private String recaptchaSecret;
 
+    @Value("${google.recaptcha.always-valid}")
+    private boolean recaptchaAlwaysValid;
+
+
     public boolean validateCaptcha(String captchaResponse){
+        if(recaptchaAlwaysValid) {
+            return true;
+        }
+
         log.info("Validating captcha");
         RestTemplate restTemplate = new RestTemplate();
 

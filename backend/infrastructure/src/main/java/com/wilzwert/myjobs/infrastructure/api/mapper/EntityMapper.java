@@ -1,5 +1,10 @@
 package com.wilzwert.myjobs.infrastructure.api.mapper;
 
+import com.wilzwert.myjobs.core.domain.model.DomainPage;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.RestPage;
+import org.mapstruct.Mappings;
+import org.springframework.data.domain.Page;
+
 import java.util.List;
 
 /**
@@ -31,4 +36,37 @@ public interface EntityMapper<D, E, R, C, UR, U, S> {
     C toCommand(R request);
 
     U toUpdateCommand(UR request);
+
+    default RestPage<S> toResponse(DomainPage<D> domain) {
+        return new RestPage<S>(
+            toResponse(domain.getContent()),
+            domain.getCurrentPage(),
+            domain.getPageSize(),
+            domain.getTotalElementsCount(),
+            domain.getPageCount()
+        );
+    }
+
+
+    /* Dans DomainPage <-> Page
+     private final List<T> content; List<T> getContent();
+    private final int currentPage; int getNumber();
+    private final int pageSize; int getSize();
+    private final long totalElementsCount; long getTotalElements();
+    private final int pageCount; int getTotalPages();
+    Dans Page
+    int getTotalPages();
+    long getTotalElements();
+    int getNumber();
+    int getSize();
+    int getNumberOfElements();
+    List<T> getContent();
+     */
+    default DomainPage<D> toDomain(Page<E> entity) {
+        return DomainPage.builder(toDomain(entity.getContent()))
+                    .currentPage(entity.getNumber())
+                    .pageSize(entity.getSize())
+                    .totalElementsCount(entity.getTotalElements())
+                .build();
+    }
 }

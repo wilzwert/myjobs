@@ -7,9 +7,12 @@ import com.wilzwert.myjobs.core.application.command.UpdateJobCommand;
 import com.wilzwert.myjobs.core.domain.model.JobId;
 import com.wilzwert.myjobs.core.domain.ports.driving.*;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoJob;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -74,11 +77,14 @@ public class JobController {
     }
 
     @GetMapping()
-    public List<JobResponse> getUserJobs(Authentication authentication, @RequestParam(required = false) Integer page) {
+    public RestPage<JobResponse> getUserJobs(Authentication authentication, @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer itemsPerPage) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         if(page == null) {
             page = 0;
         }
-        return jobMapper.toResponse(getUserJobsUseCase.getUserJobs(userDetails.getId(), page, 10));
+        if(itemsPerPage == null) {
+            itemsPerPage = 10;
+        }
+        return jobMapper.toResponse(getUserJobsUseCase.getUserJobs(userDetails.getId(), page, itemsPerPage));
     }
 }
