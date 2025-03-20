@@ -29,4 +29,10 @@ public interface UserService {
     User saveUserAndJob(User user, Job job);
 
     User deleteJobAndSaveUser(User user, Job job);
+
+    boolean emailExists(String email);
+
+    boolean usernameExists(String username);
+
+    void deleteUser(User user);
 }

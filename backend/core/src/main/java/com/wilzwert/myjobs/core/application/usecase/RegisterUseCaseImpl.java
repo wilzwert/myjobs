@@ -7,6 +7,7 @@ import com.wilzwert.myjobs.core.domain.model.User;
 import com.wilzwert.myjobs.core.domain.model.UserId;
 import com.wilzwert.myjobs.core.domain.ports.driven.PasswordHasher;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.ports.driving.CheckUserAvailabilityUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.RegisterUseCase;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.ArrayList;
  * Time:09:07
  */
 
-public class RegisterUseCaseImpl implements RegisterUseCase {
+public class RegisterUseCaseImpl implements RegisterUseCase, CheckUserAvailabilityUseCase {
     private final UserService userService;
     private final PasswordHasher passwordHasher;
 
@@ -46,5 +47,15 @@ public class RegisterUseCaseImpl implements RegisterUseCase {
                         new ArrayList<>()
                 )
         );
+    }
+
+    @Override
+    public boolean isEmailTaken(String email) {
+        return userService.emailExists(email);
+    }
+
+    @Override
+    public boolean isUsernameTaken(String username) {
+        return userService.usernameExists(username);
     }
 }

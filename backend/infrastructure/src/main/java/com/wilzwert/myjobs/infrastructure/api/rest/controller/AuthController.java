@@ -3,7 +3,7 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 import com.wilzwert.myjobs.core.application.command.RegisterUserCommand;
 import com.wilzwert.myjobs.core.domain.model.AuthenticatedUser;
-import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.ports.driving.CheckUserAvailabilityUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.LoginUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.RegisterUseCase;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.LoginRequest;
@@ -41,18 +41,18 @@ public class AuthController {
 
     private final LoginUseCase loginUseCase;
 
+    private final CheckUserAvailabilityUseCase checkUserAvailabilityUseCase;
+
     private final UserMapper userMapper;
 
     private final CookieProperties cookieProperties;
 
-    private final UserService userService;
-
-    public AuthController(RegisterUseCase registerUseCase, LoginUseCase loginUseCase, UserMapper userMapper, CookieProperties cookieProperties, UserService userService) {
+    public AuthController(RegisterUseCase registerUseCase, LoginUseCase loginUseCase, CheckUserAvailabilityUseCase checkUserAvailabilityUseCase, UserMapper userMapper, CookieProperties cookieProperties) {
         this.registerUseCase = registerUseCase;
         this.loginUseCase = loginUseCase;
+        this.checkUserAvailabilityUseCase = checkUserAvailabilityUseCase;
         this.userMapper = userMapper;
         this.cookieProperties = cookieProperties;
-        this.userService = userService;
     }
 
     @PostMapping("/register")
@@ -137,16 +137,12 @@ public class AuthController {
 
     @GetMapping("/email-check")
     public ResponseEntity<Void> emailCheck(@RequestParam("email") String email) {
-        return userService.findByEmail(email).map(
-                (u) -> new ResponseEntity<Void>(HttpStatus.UNPROCESSABLE_ENTITY)
-        ).orElse(new ResponseEntity<>(HttpStatus.OK));
+        return checkUserAvailabilityUseCase.isEmailTaken(email) ? new ResponseEntity<Void>(HttpStatus.UNPROCESSABLE_ENTITY) : new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/username-check")
     public ResponseEntity<Void> usernameCheck(@RequestParam("username") String username) {
-        return userService.findByUsername(username).map(
-                (u) -> new ResponseEntity<Void>(HttpStatus.UNPROCESSABLE_ENTITY)
-        ).orElse(new ResponseEntity<>(HttpStatus.OK));
+        return checkUserAvailabilityUseCase.isUsernameTaken(username) ? new ResponseEntity<Void>(HttpStatus.UNPROCESSABLE_ENTITY) : new ResponseEntity<>(HttpStatus.OK);
     }
 
 
