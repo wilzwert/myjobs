@@ -1,3 +1,4 @@
 export interface Activity {
-    comment: string
+    comment: string,
+    createdAt: string
 }

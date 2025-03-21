@@ -1,0 +1,14 @@
+
+@if(job$ | async ; as job) {
+    <p>{{ job.title }}</p>
+    <p>{{ job.url }}</p>
+    <p>{{ job.company }}</p>
+    <div [innerHTML]="job.description"></div>
+    <div [innerHTML]="job.profile"></div>
+    @if(job.activities !== null) {
+        @for (activity of job.activities ; track $index) {
+            <p>{{ activity.comment }}</p>
+            <p>{{ activity.createdAt }}</p>
+        }
+    }
+}

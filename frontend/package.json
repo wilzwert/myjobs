@@ -21,8 +21,10 @@
     "@angular/platform-browser-dynamic": "^19.2.2",
     "@angular/router": "^19.2.2",
     "@semantic-components/re-captcha": "^0.26.0",
+    "@tinymce/tinymce-angular": "^8.0.1",
     "ngx-captcha": "^13.0.0",
     "rxjs": "~7.8.0",
+    "tinymce": "^7.7.2",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
   },

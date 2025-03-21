@@ -1,0 +1,32 @@
+<a (click)="createJob()">Add Job</a>
+
+@let page = jobs$ | async;
+@if(page !== null) {
+    <mat-paginator #paginator
+               class="demo-paginator"
+               (page)="handlePageEvent($event)"
+               [length]="page.totalElementsCount"
+               [pageSize]="currentPageSize"
+               [pageIndex]="currentPage"
+               aria-label="Select page">
+    </mat-paginator>
+    @let content = page.content;
+    @if(content !== null) {
+        @for (job of page.content ; track $index) {
+            <mat-card appearance="outlined" [routerLink]="job.id" aria-label="Job details">
+                <mat-card-header>
+                    <mat-card-title>{{ job.title }}</mat-card-title>
+                    <mat-card-subtitle>{{ job.url }}</mat-card-subtitle>
+                    <mat-card-subtitle>{{ job.company }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <p>{{ job.activities.length}}</p>
+                </mat-card-content>
+                <mat-card-actions>
+                    <a (click)="editJob($event, job)">Edit</a>
+                </mat-card-actions>
+                
+            </mat-card>
+        }
+    }
+}

@@ -1,0 +1,80 @@
+{{ job?.title }}
+
+@if (form) {
+    <form class="loggedin-form post-form" [formGroup]="form" (ngSubmit)="submit()">
+            
+        <p>
+            <mat-form-field>
+                <mat-label>Url</mat-label>
+                <input matInput placeholder="Job url" formControlName="url" type="url">
+                <mat-hint class="url-hint" align="end">
+                    @if(url?.invalid) {
+                        <mat-icon class="input-invalid" svgIcon="invalid">Invalid</mat-icon>
+                    } 
+                    @else {
+                        <mat-icon class="input-valid"  svgIcon="valid">Valid</mat-icon>
+                    }</mat-hint>
+            </mat-form-field>
+        </p>
+        <p>
+            <mat-form-field>
+                <mat-label>Title</mat-label>
+                <input matInput placeholder="Job title" formControlName="title">
+                <mat-hint class="title-hint" align="end">
+                    @if(title?.invalid) {
+                        <mat-icon class="input-invalid" svgIcon="invalid">Invalid</mat-icon>
+                    } 
+                    @else {
+                        <mat-icon class="input-valid"  svgIcon="valid">Valid</mat-icon>
+                    }</mat-hint>
+            </mat-form-field>
+        </p>
+
+        <p>
+            <mat-form-field>
+                <mat-label>Company</mat-label>
+                <input matInput placeholder="Company" formControlName="company">
+                <mat-hint class="company-hint" align="end">
+                    @if(company?.invalid) {
+                        <mat-icon class="input-invalid" svgIcon="invalid">Invalid</mat-icon>
+                    } 
+                    @else {
+                        <mat-icon class="input-valid"  svgIcon="valid">Valid</mat-icon>
+                    }</mat-hint>
+            </mat-form-field>
+        </p>
+
+        <p>
+            <mat-form-field>
+                <mat-label>Description</mat-label>
+                <editor toolbar="bold italic underline" [init]="init" (onKeyDown)="updateRichText($event, 'description')" (onChange)="updateRichText($event, 'description')" placeholder="Job description" [initialValue]="description?.value"></editor>
+                <mat-hint class="content-hint" align="end">
+                    @if(description?.invalid) {
+                        <mat-icon class="input-invalid" svgIcon="invalid">Invalid</mat-icon>
+                    } 
+                    @else {
+                        <mat-icon class="input-valid"  svgIcon="valid">Valid</mat-icon>
+                    }</mat-hint>
+                <textarea matInput placeholder="Description" formControlName="description" class=""></textarea>
+            </mat-form-field>
+        </p>
+        <p>
+            <mat-form-field>
+                <mat-label>Profile</mat-label>
+                <textarea cdkTextareaAutosize cdkAutosizeMinRows="5" cdkAutosizeMaxRows="15" matInput placeholder="Job profile" formControlName="profile"></textarea>
+                <mat-hint class="content-hint" align="end">
+                    @if(profile?.invalid) {
+                        <mat-icon class="input-invalid" svgIcon="invalid">Invalid</mat-icon>
+                    } 
+                    @else {
+                        <mat-icon class="input-valid"  svgIcon="valid">Valid</mat-icon>
+                    }</mat-hint>
+            </mat-form-field>
+        </p>
+        
+        <button mat-raised-button type="submit" [disabled]="form.invalid || loading"> @if (loading) { Loading... } @else { @if(job?.id !== null) {Edit} @else {Create} job }</button>
+        @if (error) {
+            <p class="error">An error occurred : {{error}}</p>
+        }
+    </form>
+}
