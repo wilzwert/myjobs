@@ -18,6 +18,8 @@ public class Job extends DomainEntity<JobId> {
 
     private final String title;
 
+    private final String company;
+
     private final String description;
 
     private final String profile;
@@ -30,11 +32,12 @@ public class Job extends DomainEntity<JobId> {
 
     private final List<Activity> activities;
 
-    public Job(JobId id, String url, JobStatus status, String title, String description, String profile, Instant createdAt, Instant updatedAt, UserId userId, List<Activity> activities) {
+    public Job(JobId id, String url, JobStatus status, String title, String company, String description, String profile, Instant createdAt, Instant updatedAt, UserId userId, List<Activity> activities) {
         this.id = id;
         this.url = url;
         this.status = status;
         this.title = title;
+        this.company = company;
         this.description = description;
         this.profile = profile;
         this.createdAt = createdAt;
@@ -60,6 +63,7 @@ public class Job extends DomainEntity<JobId> {
                 url,
                 newJobStatus,
                 title,
+                company,
                 description,
                 profile,
                 getCreatedAt(),
@@ -69,12 +73,13 @@ public class Job extends DomainEntity<JobId> {
         );
     }
 
-    public Job updateJob(String url, String title, String description, String profile) {
+    public Job updateJob(String url, String title, String company, String description, String profile) {
         return new Job(
             getId(),
             url,
             getStatus(),
             title,
+            company,
             description,
             profile,
             getCreatedAt(),
@@ -117,6 +122,10 @@ public class Job extends DomainEntity<JobId> {
 
     public String getTitle() {
         return title;
+    }
+
+    public String getCompany() {
+        return company;
     }
 
     public String getDescription() {

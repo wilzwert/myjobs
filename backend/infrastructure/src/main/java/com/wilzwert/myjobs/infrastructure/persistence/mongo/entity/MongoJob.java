@@ -40,6 +40,9 @@ public class MongoJob {
     private String title;
 
     @Field
+    private String company;
+
+    @Field
     private String description;
 
     @Field

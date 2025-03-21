@@ -7,17 +7,13 @@ import com.wilzwert.myjobs.core.application.command.UpdateJobCommand;
 import com.wilzwert.myjobs.core.domain.model.JobId;
 import com.wilzwert.myjobs.core.domain.ports.driving.*;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
-import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoJob;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -54,18 +50,17 @@ public class JobController {
         return jobMapper.toResponse(createJobUseCase.createJob(createJobCommand));
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public JobResponse get(@PathVariable("id") String id,Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         return jobMapper.toResponse(getUserJobUseCase.getUserJob(userDetails.getId(), new JobId(UUID.fromString(id))));
     }
 
-    @PutMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@PathVariable("id") String id, @RequestBody final UpdateJobRequest updateJobRequest, Authentication authentication) {
+    @PatchMapping("/{id}")
+    public JobResponse patch(@PathVariable("id") String id, @RequestBody final UpdateJobRequest updateJobRequest, Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         UpdateJobCommand updateJobCommand = jobMapper.toCommand(updateJobRequest, userDetails.getId(), new JobId(UUID.fromString(id)));
-        updateJobUseCase.updateJob(updateJobCommand);
+        return jobMapper.toResponse(updateJobUseCase.updateJob(updateJobCommand));
     }
 
     @DeleteMapping("/{id}")

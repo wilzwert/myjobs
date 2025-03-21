@@ -9,10 +9,12 @@ import com.wilzwert.myjobs.core.domain.exception.JobAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.exception.JobNotFoundException;
 import com.wilzwert.myjobs.core.domain.exception.UserNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.*;
+import com.wilzwert.myjobs.core.domain.ports.driven.HtmlSanitizer;
 import com.wilzwert.myjobs.core.domain.ports.driven.JobService;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.ports.driving.*;
 
+import java.lang.reflect.Method;
 import java.time.Instant;
 import java.util.*;
 
@@ -28,9 +30,12 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
     private final UserService userService;
 
-    public JobUseCaseImpl(JobService jobService, UserService userService) {
+    private final HtmlSanitizer htmlSanitizer;
+
+    public JobUseCaseImpl(JobService jobService, UserService userService, HtmlSanitizer htmlSanitizer) {
         this.jobService = jobService;
         this.userService = userService;
+        this.htmlSanitizer = htmlSanitizer;
     }
 
     @Override
@@ -49,6 +54,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
                 command.url(),
                 JobStatus.CREATED,
                 command.title(),
+                command.company(),
                 command.description(),
                 command.profile(),
                 Instant.now(),
@@ -107,6 +113,10 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
         Job job = foundJob.get();
 
+        command = sanitizeCommandFields(command, List.of("title", "url", "company", "description", "profile"));
+
+System.out.println(command);
+
         // if user wants to update the job's url, we have to check if it does not exist yet
         if(!command.url().equals(job.getUrl())) {
             Optional<Job> otherJob = jobService.findByUrlAndUserId(command.url(), user.getId());
@@ -114,7 +124,8 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
                 throw new JobAlreadyExistsException();
             }
         }
-        job = job.updateJob(command.url(), command.title(), command.description(), command.profile());
+
+        job = job.updateJob(command.url(), command.title(), command.company(), command.description(), command.profile());
 
         userService.saveUserAndJob(user, job);
         return job;
@@ -140,5 +151,35 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
     @Override
     public Job getUserJob(UserId userId, JobId jobId) {
         return jobService.findByIdAndUserId(jobId, userId).orElseThrow(JobNotFoundException::new);
+    }
+
+    private String capitalize(String field) {
+        return field.substring(0, 1).toUpperCase() + field.substring(1);
+    }
+
+    private <T> T sanitizeCommandFields(T command, List<String> fieldsToSanitize) {
+        Class<?> clazz = command.getClass();
+        // UpdateJobCommand.Builder builder = new UpdateJobCommand.Builder((UpdateJobCommand) command);
+        Object builder = null;
+        try {
+            // get a builder
+            Class<?> builderClass = Class.forName(clazz.getName()+"$Builder");
+            builder = builderClass.getConstructor(clazz).newInstance(command);
+
+            for (String field : fieldsToSanitize) {
+                Method getterMethod = clazz.getMethod(field);
+                String fieldValue = (String) getterMethod.invoke(command);
+
+                if (fieldValue != null) {
+                    String sanitizedValue = htmlSanitizer.sanitize(fieldValue);
+                    Method setterMethod = builder.getClass().getMethod(field, String.class);
+                    setterMethod.invoke(builder, sanitizedValue);
+                }
+            }
+            return (T) builder.getClass().getMethod("build").invoke(builder);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return command;
     }
 }

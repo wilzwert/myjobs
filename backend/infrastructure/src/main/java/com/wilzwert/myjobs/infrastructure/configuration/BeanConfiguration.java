@@ -30,7 +30,7 @@ public class BeanConfiguration {
     }
 
     @Bean
-    JobUseCaseImpl jobUseCase(JobService jobService, UserService userService) {
-        return new JobUseCaseImpl(jobService, userService);
+    JobUseCaseImpl jobUseCase(JobService jobService, UserService userService, HtmlSanitizer htmlSanitizer) {
+        return new JobUseCaseImpl(jobService, userService, htmlSanitizer);
     }
 }

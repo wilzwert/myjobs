@@ -21,6 +21,7 @@ import java.util.UUID;
 public class JobResponse {
     private UUID id;
     private String title;
+    private String company;
     private String url;
     private String description;
     private String profile;
