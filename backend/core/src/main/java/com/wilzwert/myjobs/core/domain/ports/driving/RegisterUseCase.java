@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.core.domain.ports.driving;
 
 
-import com.wilzwert.myjobs.core.application.command.RegisterUserCommand;
+import com.wilzwert.myjobs.core.domain.command.RegisterUserCommand;
 import com.wilzwert.myjobs.core.domain.model.User;
 
 /**

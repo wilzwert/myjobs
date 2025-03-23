@@ -29,4 +29,5 @@ public class JobResponse {
     private Instant createdAt;
     private Instant updatedAt;
     private List<ActivityResponse> activities;
+    private List<AttachmentResponse> attachments;
 }

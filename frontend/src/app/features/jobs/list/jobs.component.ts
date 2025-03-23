@@ -51,7 +51,7 @@ export class JobsComponent implements OnInit {
   }
 
   createJob(): void {
-    this.jobModalService.openJobModal('job', null, () => this.reloadJobs());
+    this.jobModalService.openJobStepperModal(() => this.reloadJobs());
   }
 
   editJob(event: Event, job: Job): void {
@@ -59,5 +59,12 @@ export class JobsComponent implements OnInit {
     event.stopPropagation();
     // don't reload list as the edited job is replaced after update by the service
     this.jobModalService.openJobModal('job', job, () => {});
+  }
+
+  editAttachments(event: Event, job: Job): void {
+    // prevent routing to job detail 
+    event.stopPropagation();
+    // don't reload list as the edited job is replaced after update by the service
+    this.jobModalService.openJobModal('attachments', job, () => {});
   }
 }

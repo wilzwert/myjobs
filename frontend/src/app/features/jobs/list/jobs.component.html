@@ -20,10 +20,13 @@
                     <mat-card-subtitle>{{ job.company }}</mat-card-subtitle>
                 </mat-card-header>
                 <mat-card-content>
-                    <p>{{ job.activities.length}}</p>
+                    <p>Created : {{ job.createdAt}}</p>
+                    <p>Activities : {{ job.activities.length}}</p>
+                    <p>Attachments : {{ job.attachments.length}}</p>
                 </mat-card-content>
                 <mat-card-actions>
                     <a (click)="editJob($event, job)">Edit</a>
+                    <a (click)="editAttachments($event, job)">Attachments</a>
                 </mat-card-actions>
                 
             </mat-card>

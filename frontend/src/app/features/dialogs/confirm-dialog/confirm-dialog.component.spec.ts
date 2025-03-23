@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { JobActitivyFormComponent } from './job-actitivy-form.component';
+import { ConfirmDialogComponent } from './confirm-dialog.component';
 
-describe('JobActitivyFormComponent', () => {
-  let component: JobActitivyFormComponent;
-  let fixture: ComponentFixture<JobActitivyFormComponent>;
+describe('ConfirmDialogComponent', () => {
+  let component: ConfirmDialogComponent;
+  let fixture: ComponentFixture<ConfirmDialogComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [JobActitivyFormComponent]
+      imports: [ConfirmDialogComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(JobActitivyFormComponent);
+    fixture = TestBed.createComponent(ConfirmDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

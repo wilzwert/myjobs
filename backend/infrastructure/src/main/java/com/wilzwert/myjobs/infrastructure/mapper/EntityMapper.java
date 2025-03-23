@@ -1,4 +1,4 @@
-package com.wilzwert.myjobs.infrastructure.api.mapper;
+package com.wilzwert.myjobs.infrastructure.mapper;
 
 import com.wilzwert.myjobs.core.domain.model.DomainPage;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.RestPage;

@@ -9,6 +9,7 @@ import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoJobR
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -31,7 +32,6 @@ public class JobServiceAdapter implements JobService {
 
     @Override
     public Optional<Job> findById(JobId jobId) {
-        System.out.println("searching for job "+jobId.value());
         return mongoJobRepository.findById(jobId.value()).map(jobMapper::toDomain).or(Optional::empty);
     }
 
@@ -47,7 +47,7 @@ public class JobServiceAdapter implements JobService {
 
     @Override
     public DomainPage<Job> findAllByUserId(UserId userId, int page, int size) {
-        return this.jobMapper.toDomain(mongoJobRepository.findByUserId(userId.value(), PageRequest.of(page, size)));
+        return this.jobMapper.toDomain(mongoJobRepository.findByUserId(userId.value(), PageRequest.of(page, size, Sort.by("createdAt").descending())));
     }
 
     @Override
@@ -57,12 +57,21 @@ public class JobServiceAdapter implements JobService {
 
     @Override
     public Job saveJobAndActivity(Job job, Activity activity) {
-        // TODO
-        throw new UnsupportedOperationException("Not supported yet.");
+        return jobMapper.toDomain(mongoJobRepository.save(jobMapper.toEntity(job)));
+    }
+
+    @Override
+    public Job saveJobAndAttachment(Job job, Attachment attachment, Activity activity) {
+        return jobMapper.toDomain(mongoJobRepository.save(jobMapper.toEntity(job)));
     }
 
     @Override
     public void delete(Job job) {
         mongoJobRepository.delete(jobMapper.toEntity(job));
+    }
+
+    @Override
+    public Job deleteAttachment(Job job, Attachment attachment, Activity activity) {
+        return jobMapper.toDomain(mongoJobRepository.save(jobMapper.toEntity(job)));
     }
 }

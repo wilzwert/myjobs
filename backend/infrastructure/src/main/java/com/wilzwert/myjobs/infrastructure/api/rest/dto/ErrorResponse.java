@@ -10,11 +10,14 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpMediaTypeException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
@@ -76,9 +79,19 @@ public class ErrorResponse {
         return build(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
+    public static ErrorResponse fromException(HttpMediaTypeException ex) {
+        return build(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ex.getMessage());
+    }
+
+    public static ErrorResponse fromException(HttpClientErrorException ex) {
+        return build(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
     public static ErrorResponse fromException(Exception ex) {
         return build(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
+
+
 
     private static ErrorResponse build(HttpStatusCode status, String message) {
         return new ErrorResponse(status, String.valueOf(status.value()), message, new Date().toString());

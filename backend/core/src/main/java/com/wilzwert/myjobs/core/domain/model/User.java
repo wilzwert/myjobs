@@ -46,7 +46,6 @@ public class User extends DomainEntity<UserId> {
 
     public void removeJob(Job job) {
         if(!jobs.contains(job)) {
-            System.out.println("Job cannot be removed as it does not exist");
             throw new JobNotFoundException();
         }
         jobs.remove(job);

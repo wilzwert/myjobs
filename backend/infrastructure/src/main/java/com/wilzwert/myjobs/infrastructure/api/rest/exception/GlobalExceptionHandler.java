@@ -8,10 +8,12 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.HttpMediaTypeException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
@@ -63,6 +65,13 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatusCode());
     }
 
+    @ExceptionHandler(HttpMediaTypeException.class)
+    public ResponseEntity<ErrorResponse> generateHttpMediaTypeException(HttpMediaTypeException ex) {
+        ErrorResponse errorResponse = ErrorResponse.fromException(ex);
+        return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatusCode());
+    }
+
+
     @ExceptionHandler(NumberFormatException.class)
     public ResponseEntity<ErrorResponse> generateNumberFormatException(NumberFormatException ex) {
        ErrorResponse errorResponse = ErrorResponse.fromException(ex);
@@ -77,6 +86,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({HttpMessageNotReadableException.class})
     public ResponseEntity<ErrorResponse> generateBadRequestException(HttpMessageNotReadableException ex) {
+        ErrorResponse errorResponse = ErrorResponse.fromException(ex);
+        return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatusCode());
+    }
+
+    @ExceptionHandler({HttpClientErrorException.class})
+    public ResponseEntity<ErrorResponse> generateHttpClientErrorException(HttpClientErrorException ex) {
         ErrorResponse errorResponse = ErrorResponse.fromException(ex);
         return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatusCode());
     }

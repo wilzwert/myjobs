@@ -1,9 +1,9 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 
-import com.wilzwert.myjobs.core.application.command.CreateJobCommand;
-import com.wilzwert.myjobs.core.application.command.DeleteJobCommand;
-import com.wilzwert.myjobs.core.application.command.UpdateJobCommand;
+import com.wilzwert.myjobs.core.domain.command.CreateJobCommand;
+import com.wilzwert.myjobs.core.domain.command.DeleteJobCommand;
+import com.wilzwert.myjobs.core.domain.command.UpdateJobCommand;
 import com.wilzwert.myjobs.core.domain.model.JobId;
 import com.wilzwert.myjobs.core.domain.ports.driving.*;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
@@ -80,6 +80,8 @@ public class JobController {
         if(itemsPerPage == null) {
             itemsPerPage = 10;
         }
+        System.out.println("getUserJobs");
+        System.out.println(getUserJobsUseCase.getUserJobs(userDetails.getId(), page, itemsPerPage));
         return jobMapper.toResponse(getUserJobsUseCase.getUserJobs(userDetails.getId(), page, itemsPerPage));
     }
 }

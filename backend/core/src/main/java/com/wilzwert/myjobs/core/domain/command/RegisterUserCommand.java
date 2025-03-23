@@ -1,4 +1,4 @@
-package com.wilzwert.myjobs.core.application.command;
+package com.wilzwert.myjobs.core.domain.command;
 
 
 /**

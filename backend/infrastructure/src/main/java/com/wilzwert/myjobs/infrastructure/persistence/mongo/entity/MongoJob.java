@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -58,6 +59,9 @@ public class MongoJob {
     private UUID userId;
 
     @Field(name = "activities")
-    private List<MongoActivity> activities;
+    private List<MongoActivity> activities = new ArrayList<>();
+
+    @Field(name = "attachments")
+    private List<MongoAttachment> attachments = new ArrayList<>();
 }
 

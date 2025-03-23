@@ -1,0 +1,21 @@
+<h2 mat-dialog-title>Create a Job</h2>
+
+<mat-dialog-content>
+  <mat-stepper linear #matStepper>
+    <mat-step [completed]="hasJob" editable="false" label="Informations du Job">
+      <app-job-form (submit)="loading = true" (jobSaved)="jobCreated($event)"></app-job-form>
+    </mat-step>
+    <mat-step optional="true" editable="false" label="Pièces Jointes">
+      <app-job-attachments-form [job]="job!" (attachmentsSaved)="next()"></app-job-attachments-form>
+      <button mat-button matStepperNext >Passer</button>
+    </mat-step>
+    <mat-step label="Activités">
+      <app-job-activities-form [job]="job!" (attachmentsSaved)="next()"></app-job-activities-form>
+      <button mat-button matStepperNext>Terminer</button>
+    </mat-step>
+  </mat-stepper>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Fermer</button>
+</mat-dialog-actions>

@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 
-import com.wilzwert.myjobs.core.application.command.RegisterUserCommand;
+import com.wilzwert.myjobs.core.domain.command.RegisterUserCommand;
 import com.wilzwert.myjobs.core.domain.model.AuthenticatedUser;
 import com.wilzwert.myjobs.core.domain.ports.driving.CheckUserAvailabilityUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.LoginUseCase;
@@ -27,9 +27,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Duration;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author Wilhelm Zwertvaegher

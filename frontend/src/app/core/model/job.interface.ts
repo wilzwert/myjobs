@@ -1,4 +1,5 @@
 import { Activity } from "./activity.interface"
+import { Attachment } from "./attachment.interface"
 
 export interface Job {
     id: string,
@@ -10,5 +11,6 @@ export interface Job {
     profile: string,
     createdAt: string
     updatedAt: string,
-    activities: Activity[]
+    activities: Activity[],
+    attachments: Attachment[]
 }

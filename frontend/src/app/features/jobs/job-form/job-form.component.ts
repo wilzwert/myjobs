@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { JobService } from '../../../core/services/job.service';
 import { Job } from '../../../core/model/job.interface';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { EditorComponent, TINYMCE_SCRIPT_SRC } from '@tinymce/tinymce-angular'
 import { NotificationService } from '../../../core/services/notification.service';
 import { MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
@@ -30,9 +30,11 @@ export class JobFormComponent implements OnInit {
   public form: FormGroup | undefined;
 
   init: EditorComponent['init'] = {
-    plugins: 'lists link image table code help wordcount',
+    plugins: ['link', 'autolink', 'lists'],
+    toolbar: 'undo redo | bold italic | link | bullist',
     promotion: false,
-    menubar: 'null'
+    menubar: 'null',
+    statusbar: false
   };
 
   constructor(private jobService: JobService, private notificationService: NotificationService, private fb: FormBuilder) {

@@ -47,7 +47,7 @@
         <p>
             <mat-form-field>
                 <mat-label>Description</mat-label>
-                <editor toolbar="bold italic underline" [init]="init" (onKeyDown)="updateRichText($event, 'description')" (onChange)="updateRichText($event, 'description')" placeholder="Job description" [initialValue]="description?.value"></editor>
+                <editor [init]="init" (onKeyDown)="updateRichText($event, 'description')"  (onChange)="updateRichText($event, 'description')" placeholder="Job description" [initialValue]="description?.value"></editor>
                 <mat-hint class="content-hint" align="end">
                     @if(description?.invalid) {
                         <mat-icon class="input-invalid" svgIcon="invalid">Invalid</mat-icon>
@@ -55,13 +55,13 @@
                     @else {
                         <mat-icon class="input-valid"  svgIcon="valid">Valid</mat-icon>
                     }</mat-hint>
-                <textarea matInput placeholder="Description" formControlName="description" class=""></textarea>
+                <textarea matInput placeholder="Job description" formControlName="description" class=""></textarea>
             </mat-form-field>
         </p>
         <p>
             <mat-form-field>
                 <mat-label>Profile</mat-label>
-                <textarea cdkTextareaAutosize cdkAutosizeMinRows="5" cdkAutosizeMaxRows="15" matInput placeholder="Job profile" formControlName="profile"></textarea>
+                <editor [init]="init" (onKeyDown)="updateRichText($event, 'profile')" (onChange)="updateRichText($event, 'profile')" placeholder="Job profile" [initialValue]="profile?.value"></editor>
                 <mat-hint class="content-hint" align="end">
                     @if(profile?.invalid) {
                         <mat-icon class="input-invalid" svgIcon="invalid">Invalid</mat-icon>
@@ -69,6 +69,7 @@
                     @else {
                         <mat-icon class="input-valid"  svgIcon="valid">Valid</mat-icon>
                     }</mat-hint>
+                <textarea matInput placeholder="Job profile" formControlName="profile" class=""></textarea>
             </mat-form-field>
         </p>
         

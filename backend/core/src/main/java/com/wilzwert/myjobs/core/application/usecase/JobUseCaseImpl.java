@@ -1,20 +1,20 @@
 package com.wilzwert.myjobs.core.application.usecase;
 
 
-import com.wilzwert.myjobs.core.application.command.CreateActivityCommand;
-import com.wilzwert.myjobs.core.application.command.CreateJobCommand;
-import com.wilzwert.myjobs.core.application.command.DeleteJobCommand;
-import com.wilzwert.myjobs.core.application.command.UpdateJobCommand;
-import com.wilzwert.myjobs.core.domain.exception.JobAlreadyExistsException;
-import com.wilzwert.myjobs.core.domain.exception.JobNotFoundException;
-import com.wilzwert.myjobs.core.domain.exception.UserNotFoundException;
+import com.wilzwert.myjobs.core.domain.command.*;
+import com.wilzwert.myjobs.core.domain.exception.*;
 import com.wilzwert.myjobs.core.domain.model.*;
+import com.wilzwert.myjobs.core.domain.ports.driven.FileStorage;
 import com.wilzwert.myjobs.core.domain.ports.driven.HtmlSanitizer;
 import com.wilzwert.myjobs.core.domain.ports.driven.JobService;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.ports.driving.*;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.*;
 
@@ -24,17 +24,20 @@ import java.util.*;
  * Time:16:55
  */
 
-public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, UpdateJobUseCase, DeleteJobUseCase, GetUserJobsUseCase, AddActivityToJobUseCase {
+public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, UpdateJobUseCase, DeleteJobUseCase, GetUserJobsUseCase, AddActivityToJobUseCase, AddAttachmentToJobUseCase, DownloadAttachmentUseCase, DeleteAttachmentUseCase {
 
     private final JobService jobService;
 
     private final UserService userService;
 
+    private final FileStorage fileStorage;
+
     private final HtmlSanitizer htmlSanitizer;
 
-    public JobUseCaseImpl(JobService jobService, UserService userService, HtmlSanitizer htmlSanitizer) {
+    public JobUseCaseImpl(JobService jobService, UserService userService, FileStorage fileStorage, HtmlSanitizer htmlSanitizer) {
         this.jobService = jobService;
         this.userService = userService;
+        this.fileStorage = fileStorage;
         this.htmlSanitizer = htmlSanitizer;
     }
 
@@ -60,6 +63,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
                 Instant.now(),
                 Instant.now(),
                 user.get().getId(),
+                new ArrayList<>(),
                 new ArrayList<>()
         );
         job = user.get().addJob(job);
@@ -133,7 +137,7 @@ System.out.println(command);
 
     @Override
     public Activity addActivityToJob(CreateActivityCommand command) {
-        Optional<Job> foundJob = jobService.findById(command.jobId());
+        Optional<Job> foundJob = jobService.findByIdAndUserId(command.jobId(), command.userId());
         if(foundJob.isEmpty()) {
             throw new JobNotFoundException();
         }
@@ -143,8 +147,7 @@ System.out.println(command);
 
         job = job.addActivity(activity);
 
-        // no transaction here as we let infra handle job + activities persistence
-        this.jobService.save(job);
+        this.jobService.saveJobAndActivity(job, activity);
         return activity;
     }
 
@@ -181,5 +184,70 @@ System.out.println(command);
             e.printStackTrace();
         }
         return command;
+    }
+
+    @Override
+    public Attachment addAttachmentToJob(CreateAttachmentCommand command) {
+        Optional<Job> foundJob = jobService.findByIdAndUserId(command.jobId(), command.userId());
+        if(foundJob.isEmpty()) {
+            throw new JobNotFoundException();
+        }
+
+        Job job = foundJob.get();
+
+        AttachmentId attachmentId = AttachmentId.generate();
+
+        DownloadableFile file = fileStorage.store(command.file(), command.userId().value().toString()+"/"+attachmentId.value().toString(), command.filename());
+        Attachment attachment = new Attachment(attachmentId, job.getId(), command.name(), file.path(), command.filename(), file.contentType(), Instant.now(), Instant.now());
+        job = job.addAttachment(attachment);
+
+        Activity activity = new Activity(ActivityId.generate(), ActivityType.ATTACHMENT_CREATION, job.getId(), attachment.getName(), Instant.now(), Instant.now());
+        job = job.addActivity(activity);
+
+        jobService.saveJobAndAttachment(job, attachment, activity);
+        return attachment;
+    }
+
+
+    @Override
+    public DownloadableFile downloadAttachment(DownloadAttachmentCommand command) {
+        Optional<Job> foundJob = jobService.findByIdAndUserId(command.jobId(), command.userId());
+        if(foundJob.isEmpty()) {
+            throw new JobNotFoundException();
+        }
+
+        Attachment attachment = foundJob.get().getAttachments().stream().filter(a -> a.getId().value().toString().equals(command.id())).findAny().orElse(null);
+        if(attachment == null) {
+            throw new AttachmentNotFoundException();
+        }
+
+        return fileStorage.retrieve(attachment.getFileId(), attachment.getFilename());
+    }
+
+    @Override
+    public void deleteAttachment(DeleteAttachmentCommand command) {
+        Optional<Job> foundJob = jobService.findByIdAndUserId(command.jobId(), command.userId());
+        if(foundJob.isEmpty()) {
+            throw new JobNotFoundException();
+        }
+
+        Attachment attachment = foundJob.get().getAttachments().stream().filter(a -> a.getId().value().toString().equals(command.id())).findAny().orElse(null);
+        if(attachment == null) {
+            throw new AttachmentNotFoundException();
+        }
+
+        Job job = foundJob.get().removeAttachment(attachment);
+        Activity activity = new Activity(ActivityId.generate(), ActivityType.ATTACHMENT_DELETION, job.getId(), attachment.getName(), Instant.now(), Instant.now());
+        job = job.addActivity(activity);
+
+        jobService.deleteAttachment(job, attachment, activity);
+
+
+        try {
+            fileStorage.delete(attachment.getFileId());
+        }
+        catch (Exception e) {
+            // TODO log incoherence
+        }
     }
 }

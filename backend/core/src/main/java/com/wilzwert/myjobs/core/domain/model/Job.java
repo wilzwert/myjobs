@@ -2,6 +2,7 @@ package com.wilzwert.myjobs.core.domain.model;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -32,7 +33,9 @@ public class Job extends DomainEntity<JobId> {
 
     private final List<Activity> activities;
 
-    public Job(JobId id, String url, JobStatus status, String title, String company, String description, String profile, Instant createdAt, Instant updatedAt, UserId userId, List<Activity> activities) {
+    private final List<Attachment> attachments;
+
+    public Job(JobId id, String url, JobStatus status, String title, String company, String description, String profile, Instant createdAt, Instant updatedAt, UserId userId, List<Activity> activities, List<Attachment> attachments) {
         this.id = id;
         this.url = url;
         this.status = status;
@@ -45,8 +48,26 @@ public class Job extends DomainEntity<JobId> {
         this.userId = userId;
         // ensure immutability
         this.activities = List.copyOf(activities);
+        // ensure immutability
+        this.attachments = List.copyOf(attachments);
     }
 
+    private Job copy(List<Attachment> attachments, List<Activity> activities, JobStatus status, Instant updatedAt) {
+        return new Job(
+                getId(),
+                getUrl(),
+                (status != null ? status : getStatus()),
+                getTitle(),
+                getCompany(),
+                getDescription(),
+                getProfile(),
+                getCreatedAt(),
+                (updatedAt != null ? updatedAt : getUpdatedAt()),
+                getUserId(),
+                (activities != null ? activities : getActivities()),
+                (attachments != null ? attachments : getAttachments())
+        );
+    }
     public Job addActivity(Activity activity) {
         JobStatus newJobStatus;
         switch(activity.getType()) {
@@ -57,41 +78,29 @@ public class Job extends DomainEntity<JobId> {
 
         var updatedActivities = new ArrayList<>(getActivities());
         updatedActivities.add(activity);
-
-        return new Job(
-                getId(),
-                url,
-                newJobStatus,
-                title,
-                company,
-                description,
-                profile,
-                getCreatedAt(),
-                Instant.now(),
-                getUserId(),
-                updatedActivities
-        );
+        updatedActivities.sort(Comparator.comparing(Activity::getCreatedAt).reversed());
+        return copy(null, updatedActivities, newJobStatus, Instant.now());
     }
 
     public Job updateJob(String url, String title, String company, String description, String profile) {
-        return new Job(
-            getId(),
-            url,
-            getStatus(),
-            title,
-            company,
-            description,
-            profile,
-            getCreatedAt(),
-            Instant.now(),
-            getUserId(),
-            getActivities()
-        );
+        return copy(null, null, null, Instant.now());
     }
 
-    public void addAttachment() {
-        // TODO
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Job addAttachment(Attachment attachment) {
+        var updatedAttachments = new ArrayList<>(getAttachments());
+        updatedAttachments.add(attachment);
+        updatedAttachments.sort(Comparator.comparing(Attachment::getCreatedAt).reversed());
+        return copy(updatedAttachments, null, null, Instant.now());
+    }
+
+    public Job removeAttachment(Attachment attachment) {
+        var updatedAttachments = new ArrayList<>(getAttachments());
+        if(!updatedAttachments.contains(attachment)) {
+            throw new IllegalArgumentException("Attachment not in list");
+        }
+
+        updatedAttachments.remove(attachment);
+        return copy(updatedAttachments, null, null, Instant.now());
     }
 
     public void editStatus(JobStatus newStatus) {
@@ -151,4 +160,8 @@ public class Job extends DomainEntity<JobId> {
     public List<Activity> getActivities() {
         return activities;
     }
+    public List<Attachment> getAttachments() {
+        return attachments;
+    }
+
 }

@@ -1,10 +1,14 @@
 import { Injectable } from '@angular/core';
 import { DataService } from './data.service';
 import { Job } from '../model/job.interface';
-import { BehaviorSubject, map, Observable, of, switchMap } from 'rxjs';
+import { BehaviorSubject, forkJoin, map, Observable, of, switchMap } from 'rxjs';
 import { Page } from '../model/page.interface';
 import { CreateJobRequest } from '../model/create-job-request.interface';
 import { UpdateJobRequest } from '../model/update-job-request.interface';
+import { CreateJobAttachmentsRequest } from '../model/create-job-attachments-request.interface';
+import { CreateJobAttachmentRequest } from '../model/create-job-attachment-request.interface';
+import { CreateJobActivitiesRequest } from '../model/create-job-activities-request.interface';
+import { CreateJobActivityRequest } from '../model/create-job-activity-request.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -69,6 +73,20 @@ export class JobService {
     );
   }
 
+  private reloadIfNecessary(j: Job) :void {
+    const page: Page<Job> | null = this.jobsSubject.value;
+    let existingJobIndex = -1
+    if(page !== null) {
+      existingJobIndex = page.content.findIndex((job: Job) => j.id == job.id);
+      if(existingJobIndex !== -1) {
+        page.content[existingJobIndex] = j;
+      }
+    }
+    if(existingJobIndex === -1) {
+      this.jobsSubject.next(null);
+    }
+  }
+
   
    /**
    * Updates a job
@@ -78,20 +96,51 @@ export class JobService {
     // using patch because only some fields are edited
     return this.dataService.patch<Job>(`jobs/${jobId}`, request).pipe(
       map((j: Job) => {
-        const page: Page<Job> | null = this.jobsSubject.value;
-        let existingJobIndex = -1
-        if(page !== null) {
-          existingJobIndex = page.content.findIndex((job: Job) => jobId == job.id);
-          if(existingJobIndex !== -1) {
-            page.content[existingJobIndex] = j;
-          }
-        }
-        if(existingJobIndex === -1) {
-          alert('reload');
-          this.jobsSubject.next(null);
-        }
+        this.reloadIfNecessary(j);
         return j;
       })
+    );
+  }
+
+  public createAttachment(jobId: string, request: CreateJobAttachmentRequest): Observable<Job> {
+    return this.dataService.post<Job>(`jobs/${jobId}/attachments`, request).pipe(
+      map((j: Job) => {
+        this.reloadIfNecessary(j);
+        return j;
+      })
+    );
+  }
+
+  public createAttachments(jobId: string, request: CreateJobAttachmentsRequest): Observable<Job> {
+    const attachmentRequests = request.attachments.map(attachment => 
+      this.createAttachment(jobId, attachment) // Appel de createAttachment pour chaque pièce jointe
+    );
+
+    return forkJoin(attachmentRequests).pipe(
+        map((jobs: Job[]) => jobs[jobs.length - 1]) // Retourne le dernier Job mis à jour
+    );
+  }
+
+  public deleteAttachment(jobId: string, attachmentId: string): Observable<void> {
+    return this.dataService.delete<void>(`jobs/${jobId}/attachments/${attachmentId}`);
+  }
+
+  public createActivity(jobId: string, request: CreateJobActivityRequest): Observable<Job> {
+    return this.dataService.post<Job>(`jobs/${jobId}/activities`, request).pipe(
+      map((j: Job) => {
+        this.reloadIfNecessary(j);
+        return j;
+      })
+    );
+  }
+
+  public createActivities(jobId: string, request: CreateJobActivitiesRequest): Observable<Job> {
+    const attachmentRequests = request.activities.map(activity => 
+      this.createActivity(jobId, activity) // Appel de createAttachment pour chaque pièce jointe
+    );
+
+    return forkJoin(attachmentRequests).pipe(
+        map((jobs: Job[]) => jobs[jobs.length - 1]) // Retourne le dernier Job mis à jour
     );
   }
 }

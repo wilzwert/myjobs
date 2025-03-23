@@ -81,7 +81,11 @@ button:disabled mat-icon[svgIcon="send"] {
 .spacer {
   flex: 1 1 auto;
 }
-// common styling for elements (posts or topics)
+
+// BELOW IS COPY-PASTED FROM ANOTHER PROJECT
+// TODO : adapt to current project
+
+// common styling for elements (jobs)
 .element-info {
   font-size: var(--content-font-size);
   display: flex;

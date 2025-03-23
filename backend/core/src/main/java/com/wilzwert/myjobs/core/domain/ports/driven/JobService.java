@@ -24,5 +24,9 @@ public interface JobService {
 
     Job saveJobAndActivity(Job job, Activity activity);
 
+    Job saveJobAndAttachment(Job job, Attachment attachment, Activity activity);
+
     void delete(Job job);
+
+    Job deleteAttachment(Job job, Attachment attachment, Activity activity);
 }
