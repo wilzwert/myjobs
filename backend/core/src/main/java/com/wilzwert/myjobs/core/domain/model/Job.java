@@ -1,9 +1,7 @@
 package com.wilzwert.myjobs.core.domain.model;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -34,6 +32,13 @@ public class Job extends DomainEntity<JobId> {
     private final List<Activity> activities;
 
     private final List<Attachment> attachments;
+
+    private final static Map<ActivityType, JobStatus> activityToStatus = Map.of(
+        ActivityType.APPLICANT_REFUSAL, JobStatus.APPLICANT_REFUSED,
+        ActivityType.COMPANY_REFUSAL, JobStatus.COMPANY_REFUSED,
+        ActivityType.RELAUNCH, JobStatus.RELAUNCHED
+    );
+
 
     public Job(JobId id, String url, JobStatus status, String title, String company, String description, String profile, Instant createdAt, Instant updatedAt, UserId userId, List<Activity> activities, List<Attachment> attachments) {
         this.id = id;
@@ -69,16 +74,16 @@ public class Job extends DomainEntity<JobId> {
         );
     }
     public Job addActivity(Activity activity) {
-        JobStatus newJobStatus;
-        switch(activity.getType()) {
-            case CREATION -> newJobStatus = JobStatus.CREATED;
-            case RELAUNCH -> newJobStatus = JobStatus.RELAUNCHED;
-            default -> newJobStatus = JobStatus.PENDING;
+        JobStatus newJobStatus = activityToStatus.get(activity.getType());
+        if(newJobStatus == null) {
+            newJobStatus = JobStatus.PENDING;
         }
 
         var updatedActivities = new ArrayList<>(getActivities());
+        System.out.println("Adding "+activity.getType());
         updatedActivities.add(activity);
         updatedActivities.sort(Comparator.comparing(Activity::getCreatedAt).reversed());
+        System.out.println(updatedActivities.getFirst().getType());
         return copy(null, updatedActivities, newJobStatus, Instant.now());
     }
 
@@ -116,18 +121,22 @@ public class Job extends DomainEntity<JobId> {
         return copy(updatedAttachments, null, null, Instant.now());
     }
 
-    public void editStatus(JobStatus newStatus) {
-        // TODO
-        if(this.status == newStatus) return;
+    public Job updateStatus(JobStatus newStatus) {
+        if(this.status == newStatus) return this;
 
-        // check if last activity matches status
-        // if not, automatically create appropriate activity
-        // this ensures coherence between different actions
-        // e.g. user adds activity COMPANY_REFUSAL -> job  status becomes COMPANY_REFUSED
-        // user changes job status to COMPANY_REFUSED -> create activity with type COMPANY_REFUSAL if needed
+        Job result;
+        ActivityType activityType = activityToStatus.entrySet().stream().filter(entry -> newStatus.equals(entry.getValue())).map(Map.Entry::getKey).findFirst().orElse(null);
+        Activity activity = activities.getLast();
+        if(activityType != null && !activity.getType().equals(activityType)) {
+            // create activity
+            Activity newActivity = new Activity(ActivityId.generate(), activityType, getId(), "", Instant.now(), Instant.now());
+            result = addActivity(newActivity);
+        }
+        else {
+            result = this;
+        }
 
-
-        throw new UnsupportedOperationException("Not supported yet.");
+        return result.copy(null, result.getActivities(), newStatus, Instant.now());
     }
 
     public JobId getId() {

@@ -10,11 +10,7 @@ import com.wilzwert.myjobs.core.domain.ports.driven.JobService;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.ports.driving.*;
 
-import java.io.IOException;
 import java.lang.reflect.Method;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.*;
 
@@ -24,7 +20,7 @@ import java.util.*;
  * Time:16:55
  */
 
-public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, UpdateJobUseCase, DeleteJobUseCase, GetUserJobsUseCase, AddActivityToJobUseCase, AddAttachmentToJobUseCase, DownloadAttachmentUseCase, DeleteAttachmentUseCase {
+public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, UpdateJobUseCase, UpdateJobStatusUseCase, DeleteJobUseCase, GetUserJobsUseCase, AddActivityToJobUseCase, AddAttachmentToJobUseCase, DownloadAttachmentUseCase, DeleteAttachmentUseCase {
 
     private final JobService jobService;
 
@@ -88,8 +84,21 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
         Job job = foundJob.get();
 
-        user.removeJob(job);
+        job.getAttachments().forEach(attachment -> {
+            job.removeAttachment(attachment);
+            jobService.deleteAttachment(job, attachment, null);
+            System.out.println("deleted attachment "+attachment);
+            System.out.println("deleting file  "+attachment.getFileId());
+            try {
+                fileStorage.delete(attachment.getFileId());
+            }
+            catch (Exception e) {
+                System.out.println("failed to delete attachment "+attachment.getFileId()+e.getMessage());
+                // TODO log incoherence
+            }
+        });
 
+        user.removeJob(job);
         userService.deleteJobAndSaveUser(user, job);
     }
 
@@ -249,5 +258,17 @@ System.out.println(command);
         catch (Exception e) {
             // TODO log incoherence
         }
+    }
+
+    @Override
+    public Job updateJobStatus(UpdateJobStatusCommand command) {
+        Optional<Job> foundJob = jobService.findByIdAndUserId(command.jobId(), command.userId());
+        if(foundJob.isEmpty()) {
+            throw new JobNotFoundException();
+        }
+
+        Job job = foundJob.get().updateStatus(command.status());
+        jobService.saveJobAndActivity(job, job.getActivities().getFirst());
+        return job;
     }
 }

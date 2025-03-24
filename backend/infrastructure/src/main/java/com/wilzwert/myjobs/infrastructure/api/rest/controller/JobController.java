@@ -4,6 +4,7 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 import com.wilzwert.myjobs.core.domain.command.CreateJobCommand;
 import com.wilzwert.myjobs.core.domain.command.DeleteJobCommand;
 import com.wilzwert.myjobs.core.domain.command.UpdateJobCommand;
+import com.wilzwert.myjobs.core.domain.command.UpdateJobStatusCommand;
 import com.wilzwert.myjobs.core.domain.model.JobId;
 import com.wilzwert.myjobs.core.domain.model.JobStatus;
 import com.wilzwert.myjobs.core.domain.ports.driving.*;
@@ -32,14 +33,16 @@ public class JobController {
     private final DeleteJobUseCase deleteJobUseCase;
     private final GetUserJobUseCase getUserJobUseCase;
     private final GetUserJobsUseCase getUserJobsUseCase;
+    private final UpdateJobStatusUseCase updateJobStatusUseCase;
     private final JobMapper jobMapper;
 
-    public JobController(CreateJobUseCase createJobUseCase, GetUserJobUseCase getUserJobUseCase,  UpdateJobUseCase updateJobUseCase, DeleteJobUseCase deleteJobUseCase, GetUserJobsUseCase getUserJobsUseCase, JobMapper jobMapper) {
+    public JobController(CreateJobUseCase createJobUseCase, GetUserJobUseCase getUserJobUseCase,  UpdateJobUseCase updateJobUseCase, DeleteJobUseCase deleteJobUseCase, GetUserJobsUseCase getUserJobsUseCase, UpdateJobStatusUseCase updateJobStatusUseCase, JobMapper jobMapper) {
         this.createJobUseCase = createJobUseCase;
         this.getUserJobUseCase = getUserJobUseCase;
         this.updateJobUseCase = updateJobUseCase;
         this.deleteJobUseCase = deleteJobUseCase;
         this.getUserJobsUseCase = getUserJobsUseCase;
+        this.updateJobStatusUseCase = updateJobStatusUseCase;
         this.jobMapper = jobMapper;
     }
 
@@ -62,6 +65,14 @@ public class JobController {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         UpdateJobCommand updateJobCommand = jobMapper.toCommand(updateJobRequest, userDetails.getId(), new JobId(UUID.fromString(id)));
         return jobMapper.toResponse(updateJobUseCase.updateJob(updateJobCommand));
+    }
+
+    @PutMapping("/{id}/status")
+    public JobResponse updateStatus(@PathVariable("id") String id, @RequestBody final UpdateJobStatusRequest updateJobStatusRequest, Authentication authentication) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        System.out.println(updateJobStatusRequest);
+        UpdateJobStatusCommand updateJobStatusCommand = jobMapper.toCommand(updateJobStatusRequest, userDetails.getId(), new JobId(UUID.fromString(id)));
+        return jobMapper.toResponse(updateJobStatusUseCase.updateJobStatus(updateJobStatusCommand));
     }
 
     @DeleteMapping("/{id}")
