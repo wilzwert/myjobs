@@ -1,6 +1,7 @@
 
 @if(job$ | async ; as job) {
     <button mat-raised-button (click)="editJob(job)">Edit</button>"
+    <button mat-raised-button (click)="deleteJob(job)">Delete</button>"
 
 
     <mat-card appearance="outlined" [attr.aria-label]="'Job '+job.title">
@@ -18,16 +19,18 @@
         <mat-card-content><div [innerHTML]="job.profile"></div></mat-card-content>
     </mat-card>
 
-    @if(job.attachments !== null && job.attachments.length > 0) {
+    @if(job.attachments !== null) {
         <mat-card appearance="outlined" [attr.aria-label]="'Job attachments'">
             <mat-card-content>
-        @for (attachment of job.attachments ; track $index) {
-            <p>{{ attachment.name }} - {{ attachment.filename }} <a (click)="downloadAttachement(job, attachment)">Download</a></p>
-            <p>{{ attachment.createdAt }}</p>
-            <button mat-raised-button color="warn" (click)="deleteAttachment(job, attachment)">Delete</button>
+        @if(job.attachments.length > 0) {
+            @for (attachment of job.attachments ; track $index) {
+                <p>{{ attachment.name }} - {{ attachment.filename }} <a (click)="downloadAttachement(job, attachment)">Download</a></p>
+                <p>{{ attachment.createdAt }}</p>
+                <button mat-raised-button color="warn" (click)="deleteAttachment(job, attachment)">Delete</button>
+            }
         }
             <mat-card-actions>
-                <a (click)="addAttachment(job)">Add</a>
+                <a (click)="addAttachment(job)">Add attachment</a>
             </mat-card-actions>
             </mat-card-content>
         </mat-card>
@@ -45,7 +48,7 @@
         }
 
         <mat-card-actions>
-            <a (click)="addActivity(job)">Add</a>
+            <a (click)="addActivity(job)">Add activity</a>
         </mat-card-actions>
         </mat-card>
     }

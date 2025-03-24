@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { DataService } from './data.service';
 import { Job, JobStatus } from '../model/job.interface';
-import { BehaviorSubject, forkJoin, map, Observable, of, switchMap } from 'rxjs';
+import { BehaviorSubject, forkJoin, map, Observable, of, switchMap, tap } from 'rxjs';
 import { Page } from '../model/page.interface';
 import { CreateJobRequest } from '../model/create-job-request.interface';
 import { UpdateJobRequest } from '../model/update-job-request.interface';
@@ -9,6 +9,7 @@ import { CreateJobAttachmentsRequest } from '../model/create-job-attachments-req
 import { CreateJobAttachmentRequest } from '../model/create-job-attachment-request.interface';
 import { CreateJobActivitiesRequest } from '../model/create-job-activities-request.interface';
 import { CreateJobActivityRequest } from '../model/create-job-activity-request.interface';
+import { UpdateJobStatusRequest } from '../model/update-job-status-request.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -75,18 +76,50 @@ export class JobService {
     );
   }
 
-  private reloadIfNecessary(j: Job) :void {
+  /**
+   * Retrieves a job by its id
+   * @returns the job
+   */
+  public deleteJob(jobId: string): Observable<void> {
+    return this.dataService.delete<void>(`jobs/${jobId}`).pipe(
+      tap(() => {
+        this.reloadIfNecessary({id: jobId} as Job, true);
+      })
+    );
+  }
+  
+  private reloadIfNecessary(j: Job, remove: boolean = false) :void {
     const page: Page<Job> | null = this.jobsSubject.value;
     let existingJobIndex = -1
     if(page !== null) {
       existingJobIndex = page.content.findIndex((job: Job) => j.id == job.id);
       if(existingJobIndex !== -1) {
-        page.content[existingJobIndex] = j;
+        if(remove) {
+          page.content.splice(existingJobIndex, 1);
+          page.totalElementsCount--;
+        }
+        else {
+          page.content[existingJobIndex] = j;
+        }
       }
     }
     if(existingJobIndex === -1) {
       this.jobsSubject.next(null);
     }
+  }
+
+  /**
+   * Updates a job status
+   * @returns the job
+   */
+  public updateJobStatus(jobId: string, request: UpdateJobStatusRequest): Observable<Job> {
+    // using patch because only some fields are edited
+    return this.dataService.put<Job>(`jobs/${jobId}/status`, request).pipe(
+      map((j: Job) => {
+        this.reloadIfNecessary(j);
+        return j;
+      })
+    );
   }
 
   

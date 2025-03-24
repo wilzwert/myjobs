@@ -13,6 +13,7 @@ import { MatButton } from '@angular/material/button';
 import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
 import { MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardSubtitle, MatCardTitle } from '@angular/material/card';
 import { JobModalService } from '../../../core/services/job-modal.service';
+import { NotificationService } from '../../../core/services/notification.service';
 
 @Component({
   selector: 'app-job-detail',
@@ -35,6 +36,7 @@ export class JobDetailComponent implements OnInit, OnDestroy {
     private fileService: FileService,
     private confirmDialogService: ConfirmDialogService,
     private jobModalService: JobModalService,
+    private notificationService: NotificationService,
     private title: Title
   ) {}
 
@@ -98,5 +100,19 @@ export class JobDetailComponent implements OnInit, OnDestroy {
 
   editJob(job: Job) :void {
     this.jobModalService.openJobModal('job', job, () => this.loadJob(job.id))
+  }
+
+  confirmDeleteJob(job: Job) :void {
+    this.jobService.deleteJob(job.id).pipe(
+      take(1),
+      tap(() => {
+        this.notificationService.confirmation("Job deleted successfully.");
+        this.router.navigate(["/jobs"]);
+      })
+    ).subscribe();
+  }
+
+  deleteJob(job: Job) :void {
+    this.confirmDialogService.openConfirmDialog(`Delete job "${job.title}" ? ALL DATA WILL BE LOST`, () => this.confirmDeleteJob(job));
   }
 }
