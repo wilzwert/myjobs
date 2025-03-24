@@ -83,7 +83,20 @@ public class Job extends DomainEntity<JobId> {
     }
 
     public Job updateJob(String url, String title, String company, String description, String profile) {
-        return copy(null, null, null, Instant.now());
+        return new Job(
+                getId(),
+                url,
+                getStatus(),
+                title,
+                company,
+                description,
+                profile,
+                getCreatedAt(),
+                Instant.now(),
+                getUserId(),
+                getActivities(),
+                getAttachments()
+        );
     }
 
     public Job addAttachment(Attachment attachment) {

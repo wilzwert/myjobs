@@ -1,5 +1,16 @@
 <a (click)="createJob()">Add Job</a>
 
+<div>
+    <mat-form-field>
+    <mat-label>Filter by status</mat-label>
+    <mat-select (selectionChange)="setStatus($event)" [value]="currentStatus">
+    @for(status of statusKeys ; track $index) {
+        <mat-option [value]="status">{{ status | statusLabel }} </mat-option>
+    }
+    </mat-select>
+    </mat-form-field>
+</div>
+
 @let page = jobs$ | async;
 @if(page !== null) {
     <mat-paginator #paginator
@@ -20,6 +31,7 @@
                     <mat-card-subtitle>{{ job.company }}</mat-card-subtitle>
                 </mat-card-header>
                 <mat-card-content>
+                    <p>Status : {{ job.status}}</p>
                     <p>Created : {{ job.createdAt}}</p>
                     <p>Activities : {{ job.activities.length}}</p>
                     <p>Attachments : {{ job.attachments.length}}</p>

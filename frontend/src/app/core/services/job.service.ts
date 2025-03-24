@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DataService } from './data.service';
-import { Job } from '../model/job.interface';
+import { Job, JobStatus } from '../model/job.interface';
 import { BehaviorSubject, forkJoin, map, Observable, of, switchMap } from 'rxjs';
 import { Page } from '../model/page.interface';
 import { CreateJobRequest } from '../model/create-job-request.interface';
@@ -18,6 +18,7 @@ export class JobService {
   private jobsSubject: BehaviorSubject<Page<Job> | null> = new BehaviorSubject<Page<Job> | null> (null);
   private currentPage: number = -1;
   private itemsPerPage: number = -1;
+  private currentStatus: JobStatus | null = null;
 
   constructor(private dataService: DataService) { }
 
@@ -34,13 +35,14 @@ export class JobService {
    * Retrieves the sorted jobs loded from the backend 
    * @returns the jobs
    */
-  public getAllJobs(page: number, itemsPerPage: number): Observable<Page<Job>> {
+  public getAllJobs(page: number, itemsPerPage: number, status: JobStatus | null = null): Observable<Page<Job>> {
     return this.jobsSubject.pipe(
       switchMap((jobsPage: Page<Job> | null) => {
-        if(jobsPage === null || page != this.currentPage) {
+        if(jobsPage === null || page != this.currentPage || status != this.currentStatus) {
           this.currentPage = page;
+          this.currentStatus = status;
           this.itemsPerPage = itemsPerPage;
-          return this.dataService.get<Page<Job>>(`jobs?page=${page}&itemsPerPage=${itemsPerPage}`).pipe(
+          return this.dataService.get<Page<Job>>(`jobs?page=${page}&itemsPerPage=${itemsPerPage}`+(status ? `&status=${status}` : '')).pipe(
             switchMap((fetchedJobs: Page<Job>) => {
               this.jobsSubject.next(fetchedJobs);
               return of(fetchedJobs);

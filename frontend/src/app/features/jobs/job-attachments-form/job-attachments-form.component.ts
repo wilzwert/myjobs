@@ -8,10 +8,11 @@ import { Job } from '../../../core/model/job.interface';
 import { catchError, take, throwError } from 'rxjs';
 import { ApiError } from '../../../core/errors/api-error';
 import { CreateJobAttachmentRequest } from '../../../core/model/create-job-attachment-request.interface';
+import { MatButton } from '@angular/material/button';
 
 @Component({
   selector: 'app-job-attachments-form',
-  imports: [ReactiveFormsModule, MatFormField, MatInput, MatLabel],
+  imports: [ReactiveFormsModule, MatFormField, MatInput, MatLabel, MatButton],
   templateUrl: './job-attachments-form.component.html',
   styleUrl: './job-attachments-form.component.scss'
 })

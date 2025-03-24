@@ -46,7 +46,10 @@ public class JobServiceAdapter implements JobService {
     }
 
     @Override
-    public DomainPage<Job> findAllByUserId(UserId userId, int page, int size) {
+    public DomainPage<Job> findAllByUserId(UserId userId, int page, int size, JobStatus status) {
+        if(status != null) {
+            return this.jobMapper.toDomain(mongoJobRepository.findByUserIdAndStatus(userId.value(), status, PageRequest.of(page, size, Sort.by("createdAt").descending())));
+        }
         return this.jobMapper.toDomain(mongoJobRepository.findByUserId(userId.value(), PageRequest.of(page, size, Sort.by("createdAt").descending())));
     }
 

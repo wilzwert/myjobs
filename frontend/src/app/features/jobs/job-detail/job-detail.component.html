@@ -1,5 +1,8 @@
 
 @if(job$ | async ; as job) {
+    <button mat-raised-button (click)="editJob(job)">Edit</button>"
+
+
     <mat-card appearance="outlined" [attr.aria-label]="'Job '+job.title">
         <mat-card-header>
             <mat-card-title>{{ job.title }}</mat-card-title>
@@ -23,6 +26,9 @@
             <p>{{ attachment.createdAt }}</p>
             <button mat-raised-button color="warn" (click)="deleteAttachment(job, attachment)">Delete</button>
         }
+            <mat-card-actions>
+                <a (click)="addAttachment(job)">Add</a>
+            </mat-card-actions>
             </mat-card-content>
         </mat-card>
     }   

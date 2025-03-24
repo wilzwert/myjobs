@@ -5,6 +5,7 @@ import com.wilzwert.myjobs.core.domain.command.CreateJobCommand;
 import com.wilzwert.myjobs.core.domain.command.DeleteJobCommand;
 import com.wilzwert.myjobs.core.domain.command.UpdateJobCommand;
 import com.wilzwert.myjobs.core.domain.model.JobId;
+import com.wilzwert.myjobs.core.domain.model.JobStatus;
 import com.wilzwert.myjobs.core.domain.ports.driving.*;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
@@ -72,7 +73,7 @@ public class JobController {
     }
 
     @GetMapping()
-    public RestPage<JobResponse> getUserJobs(Authentication authentication, @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer itemsPerPage) {
+    public RestPage<JobResponse> getUserJobs(Authentication authentication, @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer itemsPerPage, @RequestParam(required = false) String status) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         if(page == null) {
             page = 0;
@@ -80,8 +81,13 @@ public class JobController {
         if(itemsPerPage == null) {
             itemsPerPage = 10;
         }
+
+        JobStatus jobStatus = null;
+        if(status != null) {
+            jobStatus = JobStatus.valueOf(status);
+        }
+
         System.out.println("getUserJobs");
-        System.out.println(getUserJobsUseCase.getUserJobs(userDetails.getId(), page, itemsPerPage));
-        return jobMapper.toResponse(getUserJobsUseCase.getUserJobs(userDetails.getId(), page, itemsPerPage));
+        return jobMapper.toResponse(getUserJobsUseCase.getUserJobs(userDetails.getId(), page, itemsPerPage, jobStatus));
     }
 }

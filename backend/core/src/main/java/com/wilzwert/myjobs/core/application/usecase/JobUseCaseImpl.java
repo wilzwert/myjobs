@@ -94,12 +94,12 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
     }
 
     @Override
-    public DomainPage<Job> getUserJobs(UserId userId, int page, int size) {
+    public DomainPage<Job> getUserJobs(UserId userId, int page, int size, JobStatus status) {
         Optional<User> user = userService.findById(userId);
         if(user.isEmpty()) {
             throw new UserNotFoundException();
         }
-        return jobService.findAllByUserId(user.get().getId(), page, size);
+        return jobService.findAllByUserId(user.get().getId(), page, size, status);
     }
 
     @Override

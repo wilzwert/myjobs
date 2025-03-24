@@ -27,7 +27,6 @@ export class JobActivitiesFormComponent implements OnInit {
 
   loading = false;
   activityForm!: FormGroup;
-  ActivityType = ActivityType;
   activityTypeKeys: string[] = [];
 
   constructor(private fb: FormBuilder, private jobService: JobService, private notificationService: NotificationService) {
