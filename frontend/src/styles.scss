@@ -9,8 +9,6 @@
   --app-max-width: 835px;
   --title-font-size: 2.4rem;
   --form-max-width: 420px;
-  --main-color: #7763C5;
-
   @include mat.button-overrides((
     filled-container-color: var(--main-color),
     outlined-label-text-color: #fff,
@@ -24,7 +22,12 @@
     mobile-height: 62px
   ));
 
-
+  color-scheme: light;
+  @include mat.theme((
+    color: mat.$azure-palette,
+    typography: Roboto,
+    density: 0
+  ))
 }
 
 html {
@@ -68,6 +71,10 @@ mat-icon.input-invalid {
 
 mat-icon.input-valid {
   fill: #3CB371;
+}
+
+.mdc-button {
+    margin: .75em .75em .75em 0;
 }
 
 button mat-icon[svgIcon="send"] {

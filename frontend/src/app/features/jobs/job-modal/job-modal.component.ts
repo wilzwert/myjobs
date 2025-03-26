@@ -4,10 +4,11 @@ import { JobFormComponent } from '../job-form/job-form.component';
 import { JobActivitiesFormComponent } from '../job-actitivies-form/job-actitivities-form.component';
 import { JobAttachmentsFormComponent } from '../job-attachments-form/job-attachments-form.component';
 import { Job } from '../../../core/model/job.interface';
+import { MatButton } from '@angular/material/button';
 
 @Component({
   selector: 'app-job-modal',
-  imports: [MatDialogContent, MatDialogActions, JobFormComponent, JobActivitiesFormComponent, JobAttachmentsFormComponent],
+  imports: [MatDialogContent, MatDialogActions, MatButton, JobFormComponent, JobActivitiesFormComponent, JobAttachmentsFormComponent],
   templateUrl: './job-modal.component.html',
   styleUrl: './job-modal.component.scss'
 })

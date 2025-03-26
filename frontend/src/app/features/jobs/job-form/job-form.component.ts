@@ -11,10 +11,11 @@ import { CreateJobRequest } from '../../../core/model/create-job-request.interfa
 import { MatInput } from '@angular/material/input';
 import { catchError, Observable, take, throwError } from 'rxjs';
 import { ApiError } from '../../../core/errors/api-error';
+import { MatButton } from '@angular/material/button';
 
 @Component({
   selector: 'app-job-form',
-  imports: [ReactiveFormsModule, MatFormField, MatInput, MatLabel, MatHint, MatIcon, EditorComponent],
+  imports: [ReactiveFormsModule, MatFormField, MatInput, MatLabel, MatHint, MatIcon, MatButton, EditorComponent],
   providers: [
     { provide: TINYMCE_SCRIPT_SRC, useValue: 'tinymce/tinymce.min.js' }
   ],

@@ -9,6 +9,7 @@ import { catchError, take, throwError } from 'rxjs';
 import { ApiError } from '../../../core/errors/api-error';
 import { CreateJobAttachmentRequest } from '../../../core/model/create-job-attachment-request.interface';
 import { MatButton } from '@angular/material/button';
+import { NotificationService } from '../../../core/services/notification.service';
 
 @Component({
   selector: 'app-job-attachments-form',
@@ -24,7 +25,7 @@ export class JobAttachmentsFormComponent implements OnInit {
   attachmentForm!: FormGroup;
   maxFileSize = 2*1024*1024;
 
-  constructor(private fb: FormBuilder, private jobService: JobService) {
+  constructor(private fb: FormBuilder, private jobService: JobService, private notificationService: NotificationService) {
   }
 
   ngOnInit(): void {
@@ -102,7 +103,7 @@ export class JobAttachmentsFormComponent implements OnInit {
           )
           .subscribe((job) => {
             this.loading = false;
-            // this.notificationService.confirmation(`Job ${term} successfully`);
+            this.notificationService.confirmation(`Attachment${attachments.length > 1 ? 's' : ''} created successfully`);
             this.attachmentsSaved.emit(job);
           });
     }
