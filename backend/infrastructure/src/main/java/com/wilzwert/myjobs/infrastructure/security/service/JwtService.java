@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import javax.swing.text.html.Option;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Optional;
@@ -73,6 +74,10 @@ public class JwtService {
             }
         }
 
+        return parseToken(token);
+    }
+
+    public Optional<JwtToken> parseToken(String token) {
         try {
             Jwt<?, ?> parsedToken = Jwts
                     .parser().verifyWith(getSignInKey()).build().parse(token);
@@ -105,18 +110,17 @@ public class JwtService {
     }
 
     /**
-     * Generates a token for a user
+     * Generates a token with a subject
      * @param subject the subject we want to generate the token for (email, username...)
      * @return the JWT Token
      */
     public String generateToken(String subject) {
-        log.info("Generating JWT token for {} with secret {}, exp {}, refresh exp {}", subject, jwtProperties.getSecretKey(), jwtProperties.getExpirationTime(), jwtProperties.getRefreshExpirationTime());
         return Jwts
                 .builder()
                 .subject(subject)
                 // .claim("authType", authType)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + jwtProperties.getExpirationTime()))
+                .expiration(new Date(System.currentTimeMillis() + jwtProperties.getExpirationTime()*1000))
                 .signWith(getSignInKey())
                 .compact();
     }

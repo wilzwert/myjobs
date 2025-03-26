@@ -3,6 +3,7 @@ package com.wilzwert.myjobs.infrastructure.security.service;
 import com.wilzwert.myjobs.core.domain.model.User;
 import com.wilzwert.myjobs.infrastructure.security.model.RefreshToken;
 
+import java.sql.Ref;
 import java.util.Optional;
 
 /**
@@ -18,4 +19,6 @@ public interface RefreshTokenService {
     RefreshToken createRefreshToken(User user);
 
     boolean verifyExpiration(RefreshToken refreshToken);
+
+    void deleteRefreshToken(RefreshToken refreshToken);
 }

@@ -36,9 +36,8 @@ export class AuthService {
     return this.dataService.post<void>(`${this.apiPath}/logout`, null);
   }
   
-  /* TODO
-  public refreshToken(refreshTokenRequest: RefreshTokenRequest): Observable<RefreshTokenResponse> {
-    return this.dataService.post<RefreshTokenResponse>(`${this.apiPath}/refreshToken`, refreshTokenRequest);
-  }*/
+  public refreshToken(): Observable<SessionInformation> {
+    return this.dataService.post<SessionInformation>(`${this.apiPath}/refresh-token`, null);
+  }
 
 }

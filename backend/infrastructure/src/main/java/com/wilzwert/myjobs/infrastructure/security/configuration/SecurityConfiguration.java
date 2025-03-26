@@ -11,6 +11,7 @@ import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
 import com.wilzwert.myjobs.infrastructure.security.service.RefreshTokenService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,6 +21,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
@@ -66,6 +68,7 @@ public class SecurityConfiguration {
                         auth.requestMatchers(
                                         "/api/auth/register",
                                         "/api/auth/login",
+                                        "/api/auth/refresh-token",
                                         "/api/auth/email-check",
                                         "/api/auth/username-check",
                                         /*"/"+storageProperties.getUploadDir()+"/**",
@@ -78,6 +81,7 @@ public class SecurityConfiguration {
                         // everything else requires authentication
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(exp -> exp.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 // insert our custom filter, which will authenticate user from token if provided in the request
                 .addFilterBefore(new JwtAuthenticationFilter(jwtService, userDetailsService()), UsernamePasswordAuthenticationFilter.class)
                 .build();
