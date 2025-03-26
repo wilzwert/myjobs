@@ -91,9 +91,9 @@ export class JobFormComponent implements OnInit {
       catchError(
         (error: ApiError) => {
           this.loading = false;
-            return throwError(() => new Error(
-              `Job could not be ${term}.${error.message}`
-            ));
+          // set an explicit error message
+          error.message = `Job could not be ${term}.${error.message}`
+          return throwError(() => error);
         }
       )
     )

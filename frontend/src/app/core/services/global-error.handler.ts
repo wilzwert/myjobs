@@ -1,5 +1,6 @@
 import { ErrorHandler, Injectable } from '@angular/core';
 import { NotificationService } from './notification.service';
+import { ApiError } from '../errors/api-error';
 
 
 @Injectable()
@@ -12,8 +13,12 @@ export class GlobalErrorHandler extends ErrorHandler {
 
     override handleError(error: Error) {
         // Custom error handling logic
-        console.log(error);
-        this.noticationService.error(error.message??'');
+        if(error instanceof ApiError) {
+            console.log(error);
+            console.log(error.httpStatus);
+        }
+        
+        this.noticationService.error(error.message??'', error);
         // TODO : should the error be thrown again ?
         // throw error;
     }

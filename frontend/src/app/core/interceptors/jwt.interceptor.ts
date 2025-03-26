@@ -4,6 +4,7 @@ import { SessionService } from '../services/session.service';
 import { AuthService } from "../services/auth.service";
 import { BehaviorSubject, catchError, filter, switchMap, take, throwError } from "rxjs";
 import { SessionInformation } from "../model/session-information.interface";
+import { ApiError } from "../errors/api-error";
 
 
 @Injectable({ providedIn: 'root' })
@@ -27,14 +28,13 @@ export class JwtInterceptor implements HttpInterceptor {
         if (this.shouldTryToRefreshToken(request, error)) {
           return this.tryToRefreshToken(request, next);
         }
-
         return throwError(() => error);
       })
     );
   }
 
   private shouldTryToRefreshToken(request: HttpRequest<unknown>, error: HttpErrorResponse) :boolean {
-    return error instanceof HttpErrorResponse && error.status === 401 && !request.url.includes('auth/login') && !request.url.includes('auth/refreshToken')
+    return error instanceof HttpErrorResponse && error.status === 401 && !request.url.includes('auth/login') && !request.url.includes('auth/refresh-token')
   }
 
   private tryToRefreshToken(request: HttpRequest<unknown>, next: HttpHandler) {
@@ -52,7 +52,7 @@ export class JwtInterceptor implements HttpInterceptor {
             this.refreshTokenSubject.next(true);
             return next.handle(request);
           }),
-          catchError((error) => {
+          catchError((error: ApiError) => {
             this.isRefreshing = false;
             this.refreshTokenSubject.next(false);
             this.sessionService.logOut();

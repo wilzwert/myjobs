@@ -95,9 +95,9 @@ export class JobAttachmentsFormComponent implements OnInit {
             catchError(
               (error: ApiError) => {
                   this.loading = false;
-                  return throwError(() => new Error(
-                    `Attachments could not be created.${error.message}`
-                  ));
+                  // set an explicit error message
+                  error.message = `Attachments could not be created.${error.message}`;
+                  return throwError(() => error);
               }
             )
           )

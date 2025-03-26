@@ -60,8 +60,10 @@ export class LoginComponent {
           catchError(
             (error: ApiError) => {
               this.isSubmitting = false;
+              // here we have to build a "regular" Error
+              // otherwise the NotificationService would not display as it is specifically designed to skip  401 errors
               return throwError(() => new Error(
-                'La connexion a échoué.'+(error.httpStatus === 401 ? ' Email ou mot de passe incorrect' : '')
+                'Login failed.'+(error.httpStatus === 401 ? ' Pleas verify your email or password' : '')
               ));
             }
           )

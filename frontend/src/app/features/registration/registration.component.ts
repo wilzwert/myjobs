@@ -110,13 +110,13 @@ export class RegistrationComponent {
           (error: ApiError) => {
             this.isSubmitting = false;
             return throwError(() => new Error(
-              'Impossible de créer votre compte. '+(error.httpStatus === 409 ? "Email ou nom d'utilisateur déjà utilisé" : 'Une erreur est survenue')
+              'Registration failed. '+(error.httpStatus === 409 ? "Email ou nom d'utilisateur déjà utilisé" : 'Une erreur est survenue')
             ));
           }
       ))
       .subscribe(() => {
           this.isSubmitting = false;
-          this.notificationService.confirmation("Votre inscription a bien été enregistrée, vous pouvez maintenant vous connecter");
+          this.notificationService.confirmation("Registration completed successfully, you may now log in.");
           this.router.navigate(["/login"])
       });
     }

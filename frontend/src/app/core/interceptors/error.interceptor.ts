@@ -14,9 +14,14 @@ export class ErrorInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     return next.handle(request)
       .pipe(
-        catchError((error: HttpErrorResponse) => {
+        // at this point, errors can be "native" HttpErrorResponse or ApiError already created by this ErrorInterceptor
+        catchError((error: HttpErrorResponse | ApiError) => {
           // Handle the error
-          return throwError(() => new ApiError(error));
+          if(error instanceof HttpErrorResponse) {
+            return throwError(() => new ApiError(error));
+          }
+          return throwError(() => error);
+          
         })
       );
   }
