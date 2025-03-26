@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.core.domain.ports.driving;
 
 
-import com.wilzwert.myjobs.core.application.command.DeleteJobCommand;
+import com.wilzwert.myjobs.core.domain.command.DeleteJobCommand;
 
 /**
  * @author Wilhelm Zwertvaegher

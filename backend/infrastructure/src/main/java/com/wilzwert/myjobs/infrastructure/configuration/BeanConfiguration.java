@@ -7,6 +7,7 @@ import com.wilzwert.myjobs.core.domain.ports.driving.LoginUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.RegisterUseCase;
 import com.wilzwert.myjobs.core.application.usecase.LoginUseCaseImpl;
 import com.wilzwert.myjobs.core.application.usecase.RegisterUseCaseImpl;
+import com.wilzwert.myjobs.infrastructure.adapter.LocalFileStorage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -20,6 +21,11 @@ import org.springframework.context.annotation.Configuration;
 public class BeanConfiguration {
 
     @Bean
+    FileStorage fileStorage() {
+        return new LocalFileStorage();
+    }
+
+    @Bean
     RegisterUseCase registerUseCase(UserService userService, PasswordHasher passwordHasher) {
         return new RegisterUseCaseImpl(userService, passwordHasher);
     }
@@ -30,7 +36,7 @@ public class BeanConfiguration {
     }
 
     @Bean
-    JobUseCaseImpl jobUseCase(JobService jobService, UserService userService) {
-        return new JobUseCaseImpl(jobService, userService);
+    JobUseCaseImpl jobUseCase(JobService jobService, UserService userService, FileStorage fileStorage, HtmlSanitizer htmlSanitizer) {
+        return new JobUseCaseImpl(jobService, userService, fileStorage, htmlSanitizer);
     }
 }

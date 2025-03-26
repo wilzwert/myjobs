@@ -17,6 +17,8 @@ public class CreateJobRequest {
     // TODO @Schema(description = "User email")
     private String title;
 
+    private String company;
+
     private String url;
 
     private String description;

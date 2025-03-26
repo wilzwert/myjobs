@@ -1,0 +1,22 @@
+<form [formGroup]="attachmentForm" (ngSubmit)="submit()">
+    <div formArrayName="attachments">
+        @for(attachment of attachments.controls ; track $index) {
+        <div [formGroupName]="$index">
+            <mat-form-field>
+                <mat-label [attr.for]="'name'+$index">Name</mat-label>
+                <input matInput type="text" [id]="'name'+$index" formControlName="name" placeholder="Attachment name" required>            
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label [attr.for]="'file'+$index">File</mat-label>
+                <input class="file-u" [required]="true" type="text" matInput formControlName="fileU">
+                <input type="file" formControlName="file" (change)="onFileChange($event, $index)" required>
+                <input type="hidden" name="MAX_FILE_SIZE" [value]="maxFileSize" />
+            </mat-form-field>
+                <button mat-raised-button type="button" (click)="removeAttachment($index)">Remove</button>
+        </div>
+        }
+    </div>
+  
+    <button mat-raised-button type="button" (click)="addAttachment()">Add attachment</button>
+    <button mat-raised-button type="submit" [disabled]="attachmentForm.invalid || loading">Submit</button>
+  </form>

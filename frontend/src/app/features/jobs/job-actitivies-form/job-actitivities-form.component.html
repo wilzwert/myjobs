@@ -1,0 +1,26 @@
+<form [formGroup]="activityForm" (ngSubmit)="submit()">
+    <div formArrayName="activities">
+        @for(activity of activities.controls ; track $index) {
+        <div [formGroupName]="$index">
+            <mat-form-field>
+                <mat-label [attr.for]="'type'+$index">Type</mat-label>
+                <mat-select matInput [id]="'type'+$index" formControlName="type" required>
+                @for(key of activityTypeKeys; track $index) {
+                    <mat-option [value]="key">{{ key | activityLabel }}</mat-option>
+                        
+                }
+                </mat-select>
+            </mat-form-field>
+            <mat-form-field>
+                <mat-label [attr.for]="'comment'+$index">Comment</mat-label>
+                <textarea matInput [id]="'comment'+$index" formControlName="comment" placeholder="Comment"></textarea>
+            </mat-form-field>
+            <button mat-button type="button" (click)="removeActivity($index)">Remove</button>
+            
+        </div>
+        }
+    </div>
+  
+    <button mat-button type="button" (click)="addActivity()">Add activity</button>
+    <button mat-button type="submit" [disabled]="activityForm.invalid || loading">Submit</button>
+  </form>

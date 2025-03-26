@@ -1,0 +1,22 @@
+<h2 mat-dialog-title>
+    {{ data.type === 'job' ? (data.job?.id ? 'Edit' : 'Create') + ' job' :
+       data.type === 'attachments' ? 'Add attachments' :
+       'Add activities' }}
+  </h2>
+  @if(data.job !== null) {
+  <mat-dialog-content>
+    @if( data.type === 'job') {
+        <app-job-form [job]="data.job" (jobSaved)="terminate()"></app-job-form>
+    }
+    @if( data.type === 'attachments') {
+        <app-job-attachments-form [job]="data.job" (attachmentsSaved)="terminate()"></app-job-attachments-form>
+    }
+    @if( data.type === 'activity') {
+        <app-job-activities-form [job]="data.job" (activitiesSaved)="terminate()"></app-job-activities-form>
+    }
+  </mat-dialog-content>
+}
+
+<mat-dialog-actions align="end">
+    <button mat-button (click)="close()">Fermer</button>
+</mat-dialog-actions>

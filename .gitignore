@@ -37,3 +37,4 @@ docker/dev/mongo-data
 # environment configuration
 backend/.env
 docker/dev/mongodb-keyfile
+backend/uploads/

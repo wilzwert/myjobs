@@ -1,11 +1,11 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper;
 
-import com.wilzwert.myjobs.core.application.command.RegisterUserCommand;
-import com.wilzwert.myjobs.core.application.command.UpdateUserCommand;
+import com.wilzwert.myjobs.core.domain.command.RegisterUserCommand;
+import com.wilzwert.myjobs.core.domain.command.UpdateUserCommand;
 import com.wilzwert.myjobs.core.domain.model.User;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.RegisterUserRequest;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.UpdateUserRequest;
-import com.wilzwert.myjobs.infrastructure.api.mapper.EntityMapper;
+import com.wilzwert.myjobs.infrastructure.mapper.EntityMapper;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoUser;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.UserResponse;
 import org.mapstruct.Mapper;

@@ -1,0 +1,61 @@
+<button mat-flat-button (click)="createJob()">Add Job</button>
+
+<div>
+    <mat-form-field>
+    <mat-label>Filter by status</mat-label>
+    <mat-select (selectionChange)="setStatus($event)" [value]="currentStatus">
+    @for(status of statusKeys ; track $index) {
+        <mat-option [value]="status">{{ status | statusLabel }} </mat-option>
+    }
+    </mat-select>
+    </mat-form-field>
+</div>
+
+@let page = jobs$ | async;
+@if(page !== null) {
+    <mat-paginator #paginator
+               class="demo-paginator"
+               (page)="handlePageEvent($event)"
+               [length]="page.totalElementsCount"
+               [pageSize]="currentPageSize"
+               [pageIndex]="currentPage"
+               aria-label="Select page">
+    </mat-paginator>
+    @let content = page.content;
+    @if(content !== null) {
+        @for (job of page.content ; track $index) {
+            <mat-card appearance="outlined" aria-label="Job details">
+                <mat-card-header>
+                    <mat-card-title>{{ job.title }}</mat-card-title>
+                    <mat-card-subtitle>{{ job.url }}</mat-card-subtitle>
+                    <mat-card-subtitle>{{ job.company }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                    <p>Status : {{ job.status | statusLabel}}
+                        <mat-form-field>
+                            <mat-label>Change status</mat-label>
+                            <mat-select (selectionChange)="updateJobStatus(job, $event)" [value]="currentStatus">
+                            @for(status of statusKeys ; track $index) {
+                                @if(status != job.status) {
+                                    <mat-option [value]="status">{{ status | statusLabel }} </mat-option>
+                                }
+                            }
+                            </mat-select>
+                            </mat-form-field>
+
+                    </p>
+                    <p>Created : {{ job.createdAt}}</p>
+                    <p>Activities : {{ job.activities.length}}</p>
+                    <p>Attachments : {{ job.attachments.length}}</p>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button mat-flat-button (click)="editJob($event, job)">Edit</button>
+                    <button mat-flat-button (click)="editAttachments($event, job)">Attachments</button>
+                    <button mat-flat-button [routerLink]="job.id" aria-label="Go to job details">Details</button>
+                    <button mat-flat-button (click)="deleteJob(job)" aria-label="Delete job">Delete</button>
+                </mat-card-actions>
+                
+            </mat-card>
+        }
+    }
+}

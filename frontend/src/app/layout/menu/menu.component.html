@@ -4,7 +4,7 @@
     @if ($isLogged() | async) {
       <nav class="main-nav" [class.open]="isMobile && menuOpen">
         <ul>
-          <li><a routerLink="posts" aria-label="My jobs" class="link">Jobs</a></li>
+          <li><a routerLink="jobs" aria-label="My jobs" class="link">Jobs</a></li>
           <li><a routerLink="me" class="account" aria-label="My account"><mat-icon svgIcon="user"></mat-icon></a></li>
         </ul>
       </nav>

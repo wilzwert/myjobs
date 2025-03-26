@@ -61,7 +61,7 @@ public class UserServiceAdapter implements UserService {
 
     @Override
     public Optional<User> findByIdWithJobs(UserId id) {
-        return findById(id).map(u -> u.withJobs(jobMapper.toDomain(mongoJobRepository.findByUserId(u.getId().value(), null))));
+        return findById(id).map(u -> u.withJobs(jobMapper.toDomain(mongoJobRepository.findByUserId(u.getId().value(), null).getContent())));
     }
 
     @Override

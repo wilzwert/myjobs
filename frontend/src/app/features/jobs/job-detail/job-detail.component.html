@@ -1,0 +1,55 @@
+
+@if(job$ | async ; as job) {
+    <button mat-raised-button (click)="editJob(job)">Edit</button>"
+    <button mat-raised-button (click)="deleteJob(job)">Delete</button>"
+
+
+    <mat-card appearance="outlined" [attr.aria-label]="'Job '+job.title">
+        <mat-card-header>
+            <mat-card-title>{{ job.title }}</mat-card-title>
+            <mat-card-subtitle>{{ job.url }}</mat-card-subtitle>
+            <mat-card-subtitle>{{ job.company }}</mat-card-subtitle>
+        </mat-card-header>
+    </mat-card>
+    <mat-card appearance="outlined" [attr.aria-label]="'Job description'">
+        <mat-card-content><div [innerHTML]="job.description"></div></mat-card-content>
+    </mat-card>
+
+    <mat-card appearance="outlined" [attr.aria-label]="'Job profile'">
+        <mat-card-content><div [innerHTML]="job.profile"></div></mat-card-content>
+    </mat-card>
+
+    @if(job.attachments !== null) {
+        <mat-card appearance="outlined" [attr.aria-label]="'Job attachments'">
+            <mat-card-content>
+        @if(job.attachments.length > 0) {
+            @for (attachment of job.attachments ; track $index) {
+                <p>{{ attachment.name }} - {{ attachment.filename }} <a (click)="downloadAttachement(job, attachment)">Download</a></p>
+                <p>{{ attachment.createdAt }}</p>
+                <button mat-raised-button color="warn" (click)="deleteAttachment(job, attachment)">Delete</button>
+            }
+        }
+            <mat-card-actions>
+                <button mat-flat-button (click)="addAttachment(job)">Add attachment</button>
+            </mat-card-actions>
+            </mat-card-content>
+        </mat-card>
+    }   
+    @if(job.activities !== null) {
+        <mat-card appearance="outlined" [attr.aria-label]="'Job activities'">
+        @if(job.activities.length > 0) {
+            
+                <mat-card-content>
+            @for (activity of job.activities ; track $index) {
+                <p>{{ activity.type|activityLabel }} {{ activity.comment }} <p>
+                <p>{{ activity.createdAt }}</p>
+            }
+                </mat-card-content>
+        }
+
+        <mat-card-actions>
+            <button mat-flat-button (click)="addActivity(job)">Add activity</button>
+        </mat-card-actions>
+        </mat-card>
+    }
+}

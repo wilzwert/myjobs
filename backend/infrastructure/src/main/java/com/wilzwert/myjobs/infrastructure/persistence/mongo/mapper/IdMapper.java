@@ -1,9 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper;
 
-import com.wilzwert.myjobs.core.domain.model.ActivityId;
-import com.wilzwert.myjobs.core.domain.model.EntityId;
-import com.wilzwert.myjobs.core.domain.model.JobId;
-import com.wilzwert.myjobs.core.domain.model.UserId;
+import com.wilzwert.myjobs.core.domain.model.*;
 import org.mapstruct.Mapper;
 
 import java.util.UUID;
@@ -24,5 +21,9 @@ public interface IdMapper {
 
     default ActivityId mapActivityId(UUID id) {
         return new ActivityId(id);
+    }
+
+    default AttachmentId mapAttachmentId(UUID id) {
+        return new AttachmentId(id);
     }
 }

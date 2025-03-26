@@ -27,6 +27,11 @@ export class DataService {
     return this.http.put<T>(`${this.baseUrl}${endpoint}`, body, {...options, withCredentials: true});
   }
 
+  // PATCH
+  patch<T>(endpoint: string, body: unknown, options?: {params?: HttpParams, headers?: HttpHeaders}): Observable<T> {
+    return this.http.patch<T>(`${this.baseUrl}${endpoint}`, body, {...options, withCredentials: true});
+  }
+
   // DELETE
   delete<T>(endpoint: string, options?: {params?: HttpParams, headers?: HttpHeaders}): Observable<T> {
     return this.http.delete<T>(`${this.baseUrl}${endpoint}`, {...options, withCredentials: true});

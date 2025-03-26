@@ -1,10 +1,7 @@
 package com.wilzwert.myjobs.core.domain.ports.driven;
 
 
-import com.wilzwert.myjobs.core.domain.model.Activity;
-import com.wilzwert.myjobs.core.domain.model.Job;
-import com.wilzwert.myjobs.core.domain.model.JobId;
-import com.wilzwert.myjobs.core.domain.model.UserId;
+import com.wilzwert.myjobs.core.domain.model.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,11 +18,15 @@ public interface JobService {
 
     Optional<Job> findByIdAndUserId(JobId jobId, UserId userId);
 
-    List<Job> findAllByUserId(UserId userId, int page, int size);
+    DomainPage<Job> findAllByUserId(UserId userId, int page, int size, JobStatus status);
 
     Job save(Job job);
 
     Job saveJobAndActivity(Job job, Activity activity);
 
+    Job saveJobAndAttachment(Job job, Attachment attachment, Activity activity);
+
     void delete(Job job);
+
+    Job deleteAttachment(Job job, Attachment attachment, Activity activity);
 }

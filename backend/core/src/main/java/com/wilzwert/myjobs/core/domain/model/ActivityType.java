@@ -8,6 +8,8 @@ package com.wilzwert.myjobs.core.domain.model;
  */
 public enum ActivityType {
     CREATION,
+    ATTACHMENT_CREATION,
+    ATTACHMENT_DELETION,
     APPLICATION,
     RELAUNCH,
     EMAIL,

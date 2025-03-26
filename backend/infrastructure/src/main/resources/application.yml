@@ -38,3 +38,7 @@ logging:
 google:
   recaptcha:
     secret: ${GOOGLE_RECAPTCHA_PRIVATE_KEY}
+    always-valid: true
+
+storage:
+  type: ${STORAGE_TYPE:local}

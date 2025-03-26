@@ -9,11 +9,9 @@
   --app-max-width: 835px;
   --title-font-size: 2.4rem;
   --form-max-width: 420px;
-  --main-color: #7763C5;
-
   @include mat.button-overrides((
-    container-color: var(--main-color),
-    label-text-color: #fff,
+    filled-container-color: var(--main-color),
+    outlined-label-text-color: #fff,
     outlined-outline-color: #000
   ));
 
@@ -24,7 +22,12 @@
     mobile-height: 62px
   ));
 
-
+  color-scheme: light;
+  @include mat.theme((
+    color: mat.$azure-palette,
+    typography: Roboto,
+    density: 0
+  ))
 }
 
 html {
@@ -54,6 +57,10 @@ p {
   font-size: var(--content-font-size);
 }
 
+mat-paginator, mat-card {
+    margin-bottom: 1em;
+}
+
 mat-form-field {
     width: 100%;
     padding: .75em  0;
@@ -64,6 +71,10 @@ mat-icon.input-invalid {
 
 mat-icon.input-valid {
   fill: #3CB371;
+}
+
+.mdc-button {
+    margin: .75em .75em .75em 0;
 }
 
 button mat-icon[svgIcon="send"] {
@@ -77,7 +88,11 @@ button:disabled mat-icon[svgIcon="send"] {
 .spacer {
   flex: 1 1 auto;
 }
-// common styling for elements (posts or topics)
+
+// BELOW IS COPY-PASTED FROM ANOTHER PROJECT
+// TODO : adapt to current project
+
+// common styling for elements (jobs)
 .element-info {
   font-size: var(--content-font-size);
   display: flex;
@@ -214,8 +229,8 @@ button:disabled mat-icon[svgIcon="send"] {
 
 .loggedin-form {
   @include mat.form-field-overrides((
-    focus-outline-color: var(--main-color),
+    outlined-focus-outline-color: var(--main-color),
     outlined-outline-color: var(--main-color),
-    hover-outline-color: var(--main-color)
+    outlined-hover-outline-color: var(--main-color)
   ));
 }

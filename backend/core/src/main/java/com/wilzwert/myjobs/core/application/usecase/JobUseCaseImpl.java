@@ -1,18 +1,16 @@
 package com.wilzwert.myjobs.core.application.usecase;
 
 
-import com.wilzwert.myjobs.core.application.command.CreateActivityCommand;
-import com.wilzwert.myjobs.core.application.command.CreateJobCommand;
-import com.wilzwert.myjobs.core.application.command.DeleteJobCommand;
-import com.wilzwert.myjobs.core.application.command.UpdateJobCommand;
-import com.wilzwert.myjobs.core.domain.exception.JobAlreadyExistsException;
-import com.wilzwert.myjobs.core.domain.exception.JobNotFoundException;
-import com.wilzwert.myjobs.core.domain.exception.UserNotFoundException;
+import com.wilzwert.myjobs.core.domain.command.*;
+import com.wilzwert.myjobs.core.domain.exception.*;
 import com.wilzwert.myjobs.core.domain.model.*;
+import com.wilzwert.myjobs.core.domain.ports.driven.FileStorage;
+import com.wilzwert.myjobs.core.domain.ports.driven.HtmlSanitizer;
 import com.wilzwert.myjobs.core.domain.ports.driven.JobService;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.ports.driving.*;
 
+import java.lang.reflect.Method;
 import java.time.Instant;
 import java.util.*;
 
@@ -22,15 +20,21 @@ import java.util.*;
  * Time:16:55
  */
 
-public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, UpdateJobUseCase, DeleteJobUseCase, GetUserJobsUseCase, AddActivityToJobUseCase {
+public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, UpdateJobUseCase, UpdateJobStatusUseCase, DeleteJobUseCase, GetUserJobsUseCase, AddActivityToJobUseCase, AddAttachmentToJobUseCase, DownloadAttachmentUseCase, DeleteAttachmentUseCase {
 
     private final JobService jobService;
 
     private final UserService userService;
 
-    public JobUseCaseImpl(JobService jobService, UserService userService) {
+    private final FileStorage fileStorage;
+
+    private final HtmlSanitizer htmlSanitizer;
+
+    public JobUseCaseImpl(JobService jobService, UserService userService, FileStorage fileStorage, HtmlSanitizer htmlSanitizer) {
         this.jobService = jobService;
         this.userService = userService;
+        this.fileStorage = fileStorage;
+        this.htmlSanitizer = htmlSanitizer;
     }
 
     @Override
@@ -49,11 +53,13 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
                 command.url(),
                 JobStatus.CREATED,
                 command.title(),
+                command.company(),
                 command.description(),
                 command.profile(),
                 Instant.now(),
                 Instant.now(),
                 user.get().getId(),
+                new ArrayList<>(),
                 new ArrayList<>()
         );
         job = user.get().addJob(job);
@@ -78,18 +84,31 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
         Job job = foundJob.get();
 
-        user.removeJob(job);
+        job.getAttachments().forEach(attachment -> {
+            job.removeAttachment(attachment);
+            jobService.deleteAttachment(job, attachment, null);
+            System.out.println("deleted attachment "+attachment);
+            System.out.println("deleting file  "+attachment.getFileId());
+            try {
+                fileStorage.delete(attachment.getFileId());
+            }
+            catch (Exception e) {
+                System.out.println("failed to delete attachment "+attachment.getFileId()+e.getMessage());
+                // TODO log incoherence
+            }
+        });
 
+        user.removeJob(job);
         userService.deleteJobAndSaveUser(user, job);
     }
 
     @Override
-    public List<Job> getUserJobs(UserId userId, int page, int size) {
+    public DomainPage<Job> getUserJobs(UserId userId, int page, int size, JobStatus status) {
         Optional<User> user = userService.findById(userId);
         if(user.isEmpty()) {
             throw new UserNotFoundException();
         }
-        return jobService.findAllByUserId(user.get().getId(), page, size);
+        return jobService.findAllByUserId(user.get().getId(), page, size, status);
     }
 
     @Override
@@ -107,6 +126,10 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
         Job job = foundJob.get();
 
+        command = sanitizeCommandFields(command, List.of("title", "url", "company", "description", "profile"));
+
+System.out.println(command);
+
         // if user wants to update the job's url, we have to check if it does not exist yet
         if(!command.url().equals(job.getUrl())) {
             Optional<Job> otherJob = jobService.findByUrlAndUserId(command.url(), user.getId());
@@ -114,7 +137,8 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
                 throw new JobAlreadyExistsException();
             }
         }
-        job = job.updateJob(command.url(), command.title(), command.description(), command.profile());
+
+        job = job.updateJob(command.url(), command.title(), command.company(), command.description(), command.profile());
 
         userService.saveUserAndJob(user, job);
         return job;
@@ -122,7 +146,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
     @Override
     public Activity addActivityToJob(CreateActivityCommand command) {
-        Optional<Job> foundJob = jobService.findById(command.jobId());
+        Optional<Job> foundJob = jobService.findByIdAndUserId(command.jobId(), command.userId());
         if(foundJob.isEmpty()) {
             throw new JobNotFoundException();
         }
@@ -132,13 +156,119 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
         job = job.addActivity(activity);
 
-        // no transaction here as we let infra handle job + activities persistence
-        this.jobService.save(job);
+        this.jobService.saveJobAndActivity(job, activity);
         return activity;
     }
 
     @Override
     public Job getUserJob(UserId userId, JobId jobId) {
         return jobService.findByIdAndUserId(jobId, userId).orElseThrow(JobNotFoundException::new);
+    }
+
+    private String capitalize(String field) {
+        return field.substring(0, 1).toUpperCase() + field.substring(1);
+    }
+
+    private <T> T sanitizeCommandFields(T command, List<String> fieldsToSanitize) {
+        Class<?> clazz = command.getClass();
+        // UpdateJobCommand.Builder builder = new UpdateJobCommand.Builder((UpdateJobCommand) command);
+        Object builder = null;
+        try {
+            // get a builder
+            Class<?> builderClass = Class.forName(clazz.getName()+"$Builder");
+            builder = builderClass.getConstructor(clazz).newInstance(command);
+
+            for (String field : fieldsToSanitize) {
+                Method getterMethod = clazz.getMethod(field);
+                String fieldValue = (String) getterMethod.invoke(command);
+
+                if (fieldValue != null) {
+                    String sanitizedValue = htmlSanitizer.sanitize(fieldValue);
+                    Method setterMethod = builder.getClass().getMethod(field, String.class);
+                    setterMethod.invoke(builder, sanitizedValue);
+                }
+            }
+            return (T) builder.getClass().getMethod("build").invoke(builder);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return command;
+    }
+
+    @Override
+    public Attachment addAttachmentToJob(CreateAttachmentCommand command) {
+        Optional<Job> foundJob = jobService.findByIdAndUserId(command.jobId(), command.userId());
+        if(foundJob.isEmpty()) {
+            throw new JobNotFoundException();
+        }
+
+        Job job = foundJob.get();
+
+        AttachmentId attachmentId = AttachmentId.generate();
+
+        DownloadableFile file = fileStorage.store(command.file(), command.userId().value().toString()+"/"+attachmentId.value().toString(), command.filename());
+        Attachment attachment = new Attachment(attachmentId, job.getId(), command.name(), file.path(), command.filename(), file.contentType(), Instant.now(), Instant.now());
+        job = job.addAttachment(attachment);
+
+        Activity activity = new Activity(ActivityId.generate(), ActivityType.ATTACHMENT_CREATION, job.getId(), attachment.getName(), Instant.now(), Instant.now());
+        job = job.addActivity(activity);
+
+        jobService.saveJobAndAttachment(job, attachment, activity);
+        return attachment;
+    }
+
+
+    @Override
+    public DownloadableFile downloadAttachment(DownloadAttachmentCommand command) {
+        Optional<Job> foundJob = jobService.findByIdAndUserId(command.jobId(), command.userId());
+        if(foundJob.isEmpty()) {
+            throw new JobNotFoundException();
+        }
+
+        Attachment attachment = foundJob.get().getAttachments().stream().filter(a -> a.getId().value().toString().equals(command.id())).findAny().orElse(null);
+        if(attachment == null) {
+            throw new AttachmentNotFoundException();
+        }
+
+        return fileStorage.retrieve(attachment.getFileId(), attachment.getFilename());
+    }
+
+    @Override
+    public void deleteAttachment(DeleteAttachmentCommand command) {
+        Optional<Job> foundJob = jobService.findByIdAndUserId(command.jobId(), command.userId());
+        if(foundJob.isEmpty()) {
+            throw new JobNotFoundException();
+        }
+
+        Attachment attachment = foundJob.get().getAttachments().stream().filter(a -> a.getId().value().toString().equals(command.id())).findAny().orElse(null);
+        if(attachment == null) {
+            throw new AttachmentNotFoundException();
+        }
+
+        Job job = foundJob.get().removeAttachment(attachment);
+        Activity activity = new Activity(ActivityId.generate(), ActivityType.ATTACHMENT_DELETION, job.getId(), attachment.getName(), Instant.now(), Instant.now());
+        job = job.addActivity(activity);
+
+        jobService.deleteAttachment(job, attachment, activity);
+
+
+        try {
+            fileStorage.delete(attachment.getFileId());
+        }
+        catch (Exception e) {
+            // TODO log incoherence
+        }
+    }
+
+    @Override
+    public Job updateJobStatus(UpdateJobStatusCommand command) {
+        Optional<Job> foundJob = jobService.findByIdAndUserId(command.jobId(), command.userId());
+        if(foundJob.isEmpty()) {
+            throw new JobNotFoundException();
+        }
+
+        Job job = foundJob.get().updateStatus(command.status());
+        jobService.saveJobAndActivity(job, job.getActivities().getFirst());
+        return job;
     }
 }

@@ -1,0 +1,64 @@
+@startuml Customer service
+
+' Entities
+class User {
+  -id: UUID {id}
+  -email: String {unique}
+  -username: String {unique}
+  -firstName: String
+  -lastName: String
+  -password: String
+  -createdAt: Timestamp
+  -updatedAd: Timestamp
+}
+
+class Token {
+}
+
+class RefreshToken {
+}
+
+class Job {
+  -id: UUID {id}
+  -user: User
+  -createdAt: Timestamp
+  -updatedAt: Timestamp
+  -status: JobStatus
+}
+
+class Activity {
+  -id: UUID {id}
+  -job: Job
+  -createdAt: Timestamp
+  -updatedAd: Timestamp
+  -type: ActivityType
+  -desc: Text
+}
+
+enum JobStatus {
+    CREATED
+    PENDING
+    RELAUNCHED
+    APPLICANT_REFUSED
+    COMPANY_REFUSED
+}
+
+enum ActivityType {
+    CREATION
+    APPLICATION
+    RELAUNCH
+    EMAIL
+    TEL_INTERVIEW
+    VIDEO_INTERVIEW
+    PHY_INTERVIEW
+    APPLICANT_REFUSAL
+    COMPANY_REFUSAL
+}
+
+' Relationships
+User "*" -- "1" Job : has
+User "*" -- "1" Token : has
+User "*" -- "1" RefreshToken : has
+Job "*" -- "1" Activity : has
+
+@enduml
