@@ -69,9 +69,9 @@ export class JobActivitiesFormComponent implements OnInit {
             catchError(
               (error: ApiError) => {
                   this.loading = false;
-                  return throwError(() => new Error(
-                    `Activities could not be created.${error.message}`
-                  ));
+                  // set an explicit error message
+                  error.message = `Activities could not be created.${error.message}`;
+                  return throwError(() => error);
               }
             )
           )

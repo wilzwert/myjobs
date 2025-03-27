@@ -39,30 +39,11 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
     @Override
     public Job createJob(CreateJobCommand command) {
-        Optional<User> user = userService.findById(command.userId());
+        Optional<User> user = userService.findByIdWithJobs(command.userId());
         if(user.isEmpty()) {
             throw new UserNotFoundException();
         }
-
-        if(jobService.findByUrlAndUserId(command.url(), user.get().getId()).isPresent()) {
-            throw new JobAlreadyExistsException();
-        }
-
-        Job job = new Job(
-                JobId.generate(),
-                command.url(),
-                JobStatus.CREATED,
-                command.title(),
-                command.company(),
-                command.description(),
-                command.profile(),
-                Instant.now(),
-                Instant.now(),
-                user.get().getId(),
-                new ArrayList<>(),
-                new ArrayList<>()
-        );
-        job = user.get().addJob(job);
+        Job job = user.get().addJob(Job.create(command.url(), command.title(), command.company(), command.description(), command.profile(), user.get().getId()));
         userService.saveUserAndJob(user.get(), job);
         return job;
     }
@@ -76,7 +57,6 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
         User user = foundUser.get();
 
-        System.out.println("searching for job "+command.jobId().value()+", user id is "+user.getId().value());
         Optional<Job> foundJob = jobService.findByIdAndUserId(command.jobId(), user.getId());
         if(foundJob.isEmpty()) {
             throw new JobNotFoundException();
@@ -87,8 +67,6 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         job.getAttachments().forEach(attachment -> {
             job.removeAttachment(attachment);
             jobService.deleteAttachment(job, attachment, null);
-            System.out.println("deleted attachment "+attachment);
-            System.out.println("deleting file  "+attachment.getFileId());
             try {
                 fileStorage.delete(attachment.getFileId());
             }
@@ -125,21 +103,25 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         }
 
         Job job = foundJob.get();
-
         command = sanitizeCommandFields(command, List.of("title", "url", "company", "description", "profile"));
 
-System.out.println(command);
-
+        // FIXME This is not very DDD : the application service (ie this use case) should not check itself if
+        // if a job with the same url already exists for the user as it is a business rule and should be in the domain
         // if user wants to update the job's url, we have to check if it does not exist yet
+        // it seems that to do things right the user aggregate should handle the job update after all
+        // because otherwise the job aggregate cannot check other jobs
         if(!command.url().equals(job.getUrl())) {
             Optional<Job> otherJob = jobService.findByUrlAndUserId(command.url(), user.getId());
             if(otherJob.isPresent() && !otherJob.get().getId().equals(job.getId())) {
                 throw new JobAlreadyExistsException();
             }
         }
-
         job = job.updateJob(command.url(), command.title(), command.company(), command.description(), command.profile());
 
+        // FIXME
+        // this is an ugly workaround to force the infra (persistence in particular) to save all data
+        // as I understand DDD, only the root aggregate should be explicitly persisted
+        // but I just don't how to do it cleanly for now
         userService.saveUserAndJob(user, job);
         return job;
     }
@@ -156,6 +138,10 @@ System.out.println(command);
 
         job = job.addActivity(activity);
 
+        // FIXME
+        // this is an ugly workaround to force the infra (persistence in particular) to save all data
+        // as I understand DDD, only the aggregate should be explicitly persisted
+        // but I just don't how to do it cleanly for now
         this.jobService.saveJobAndActivity(job, activity);
         return activity;
     }
@@ -206,6 +192,9 @@ System.out.println(command);
 
         AttachmentId attachmentId = AttachmentId.generate();
 
+        // FIXME : it seems very un-DDD to handle activity creation here
+        // the Job aggregate should be the one to do it, although it would be too complicated for us for the time being
+
         DownloadableFile file = fileStorage.store(command.file(), command.userId().value().toString()+"/"+attachmentId.value().toString(), command.filename());
         Attachment attachment = new Attachment(attachmentId, job.getId(), command.name(), file.path(), command.filename(), file.contentType(), Instant.now(), Instant.now());
         job = job.addAttachment(attachment);
@@ -213,6 +202,10 @@ System.out.println(command);
         Activity activity = new Activity(ActivityId.generate(), ActivityType.ATTACHMENT_CREATION, job.getId(), attachment.getName(), Instant.now(), Instant.now());
         job = job.addActivity(activity);
 
+        // FIXME
+        // this is an ugly workaround to force the infra (persistence in particular) to save all data
+        // as I understant DDD, only the aggregate should be explicitely persisted
+        // but I just don't how to do it cleanly for now
         jobService.saveJobAndAttachment(job, attachment, activity);
         return attachment;
     }
@@ -245,13 +238,18 @@ System.out.println(command);
             throw new AttachmentNotFoundException();
         }
 
+        // FIXME : the activity should be created by the Job aggregate
+        // however for now we do it here,
+        // to be able to explicitly ask the JobService to delete the attachment and store both the job and the new activity
         Job job = foundJob.get().removeAttachment(attachment);
         Activity activity = new Activity(ActivityId.generate(), ActivityType.ATTACHMENT_DELETION, job.getId(), attachment.getName(), Instant.now(), Instant.now());
         job = job.addActivity(activity);
 
+        // FIXME
+        // this is an ugly workaround to force the infra (persistence in particular) to save all data
+        // as I understand DDD, only the aggregate should be explicitly persisted
+        // but I just don't how to do it cleanly for now
         jobService.deleteAttachment(job, attachment, activity);
-
-
         try {
             fileStorage.delete(attachment.getFileId());
         }

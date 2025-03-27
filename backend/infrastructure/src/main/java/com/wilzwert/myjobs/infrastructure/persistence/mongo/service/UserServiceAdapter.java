@@ -40,6 +40,11 @@ public class UserServiceAdapter implements UserService {
     }
 
     @Override
+    public boolean isEmailAndUsernameAvailable(String email, String username) {
+        return findByEmailOrUsername(email, username).isEmpty();
+    }
+
+    @Override
     public Optional<User> findByEmail(String email) {
         return mongoUserRepository.findByEmail(email).map(userMapper::toDomain).or(Optional::empty);
     }

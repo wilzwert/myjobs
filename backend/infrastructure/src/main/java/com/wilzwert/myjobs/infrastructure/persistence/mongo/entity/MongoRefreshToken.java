@@ -32,8 +32,8 @@ public class MongoRefreshToken implements RefreshToken {
     @Indexed(unique = true)
     private String token;
 
-    @Field(name = "expiry_date")
-    private Instant expiryDate;
+    @Field(name = "expires_at")
+    private Instant expiresAt;
 
     @Override
     public String getToken() {
@@ -41,7 +41,7 @@ public class MongoRefreshToken implements RefreshToken {
     }
 
     @Override
-    public Instant getExpiresAt() {
-        return expiryDate;
+    public void setExpiresAt(Instant expiresAt) {
+        this.expiresAt = expiresAt;
     }
 }

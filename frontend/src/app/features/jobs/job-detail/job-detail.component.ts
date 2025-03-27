@@ -14,6 +14,7 @@ import { ConfirmDialogService } from '../../../core/services/confirm-dialog.serv
 import { MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardSubtitle, MatCardTitle } from '@angular/material/card';
 import { JobModalService } from '../../../core/services/job-modal.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { ApiError } from '../../../core/errors/api-error';
 
 @Component({
   selector: 'app-job-detail',
@@ -44,9 +45,11 @@ export class JobDetailComponent implements OnInit, OnDestroy {
     this.job$ = this.jobService.getJobById(jobId).pipe(
       // set page title once the job  is available
       tap((job: Job) =>{this.title.setTitle(`Job - ${job.title}`)}),
-      catchError(() => {
+      catchError((error: ApiError) => {
         this.router.navigate(["/jobs"]);
-        return throwError(() => new Error('Unable to load job'));
+        // set an explicit error message
+        error.message = 'Unable to load job';
+        return throwError(() => error);
       })
     );
 

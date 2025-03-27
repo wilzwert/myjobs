@@ -5,6 +5,8 @@ import { RegistrationComponent } from './features/registration/registration.comp
 import { JobsComponent } from './features/jobs/list/jobs.component';
 import { MeComponent } from './features/me/me.component';
 import { JobDetailComponent } from './features/jobs/job-detail/job-detail.component';
+import { UnauthGuard } from './core/guards/unauth.guard';
+import { AuthGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
     { 
@@ -14,31 +16,31 @@ export const routes: Routes = [
     },
     { 
         path: 'login',
-        // canActivate: [UnauthGuard], 
+        canActivate: [UnauthGuard], 
         component: LoginComponent,
         title: 'Login',
     },
     { 
         path: 'register',
-        // canActivate: [UnauthGuard],
+        canActivate: [UnauthGuard],
         component: RegistrationComponent, 
         title: 'Registration', 
     },
     { 
         path: 'me',
-        // canActivate: [UnauthGuard],
+        canActivate: [AuthGuard],
         component: MeComponent, 
         title: 'My profile', 
     },
     { 
         path: 'jobs',
-        // canActivate: [AuthGuard],
+        canActivate: [AuthGuard],
         component: JobsComponent, 
         title: 'My Jobs', 
     },
     { 
         path: 'jobs/:id', 
-        // canActivate: [AuthGuard],
+        canActivate: [AuthGuard],
         component: JobDetailComponent, 
         title: 'Job details',
         data: {goBackToRoute: "jobs"} 

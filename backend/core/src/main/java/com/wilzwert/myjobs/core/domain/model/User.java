@@ -1,8 +1,10 @@
 package com.wilzwert.myjobs.core.domain.model;
 
 
+import com.wilzwert.myjobs.core.domain.exception.JobAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.exception.JobNotFoundException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,7 +38,25 @@ public class User extends DomainEntity<UserId> {
         this.jobs = jobs;
     }
 
+    public static User create(String email, String password, String username, String firstName, String lastName) {
+        return new User(
+                UserId.generate(),
+                email,
+                password,
+                username,
+                firstName,
+                lastName,
+                "USER",
+                Instant.now(),
+                Instant.now(),
+                new ArrayList<>()
+        );
+    }
+
     public Job addJob(Job job) {
+        // check if job to be added already exists by its url
+        jobs.stream().filter(j -> j.getUrl().equals(job.getUrl())).findAny().ifPresent(found -> {throw new JobAlreadyExistsException();});
+
         jobs.add(job);
 
         // automatically create first activity

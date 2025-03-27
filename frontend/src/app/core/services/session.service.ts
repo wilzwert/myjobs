@@ -4,6 +4,7 @@ import { SessionStorageService } from './token-storage.service';
 import { Router } from '@angular/router';
 import { SessionInformation } from '../model/session-information.interface';
 import { RefreshTokenResponse } from '../model/refresh-token-response.interface';
+import { NotificationService } from './notification.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,8 @@ export class SessionService {
 
   constructor(
     private sessionStorageService: SessionStorageService, 
-    private router: Router) {
+    private router: Router,
+    private notificationService: NotificationService) {
     if(this.sessionStorageService.getSessionInformation() != null) {
       this.logged = true;
       this.next();
@@ -26,19 +28,7 @@ export class SessionService {
   public isLogged() :boolean {
     return this.logged;
   }
-  /*
-  public getToken() :string | null {
-    return this.sessionStorageService.getToken();
-  }
-
-  public getTokenType() :string | null {
-    return this.sessionStorageService.getTokenType();
-  }
-
-  public getRefreshToken() :string | null {
-    return this.sessionStorageService.getRefreshToken();
-  }*/
-
+  
   public $isLogged(): Observable<boolean> {
     return this.isLoggedSubject.asObservable();
   }
@@ -63,6 +53,7 @@ export class SessionService {
     this.logged = false;
     this.next();
     this.router.navigate(['']);
+    this.notificationService.information("You have been disconnected.");
   }
 
   private next(): void {

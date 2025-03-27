@@ -75,7 +75,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public boolean shouldNotFilter(@NonNull HttpServletRequest request) {
         // bypass filter if path should remain publicly accessible
         String path = request.getRequestURI();
-        return path.matches("/api/auth/(login|register|refreshToken)")
+        return path.matches("/api/auth/(login|register|refresh-token)")
                 // || path.matches(apiDocProperties.getApiDocsPath()+"/?.*")
                 // || path.matches(apiDocProperties.getSwaggerPath()+"/?.*")
                 || path.matches("/swagger-ui/.*");

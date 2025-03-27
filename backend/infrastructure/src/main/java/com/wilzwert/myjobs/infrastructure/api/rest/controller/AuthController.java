@@ -3,6 +3,9 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 import com.wilzwert.myjobs.core.domain.command.RegisterUserCommand;
 import com.wilzwert.myjobs.core.domain.model.AuthenticatedUser;
+import com.wilzwert.myjobs.core.domain.model.User;
+import com.wilzwert.myjobs.core.domain.model.UserId;
+import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.ports.driving.CheckUserAvailabilityUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.LoginUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.RegisterUseCase;
@@ -12,7 +15,11 @@ import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.UserMapper;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.UserResponse;
 import com.wilzwert.myjobs.infrastructure.security.captcha.RequiresCaptcha;
 import com.wilzwert.myjobs.infrastructure.security.configuration.CookieProperties;
+import com.wilzwert.myjobs.infrastructure.security.configuration.JwtProperties;
 import com.wilzwert.myjobs.infrastructure.security.jwt.JwtAuthenticatedUser;
+import com.wilzwert.myjobs.infrastructure.security.model.RefreshToken;
+import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
+import com.wilzwert.myjobs.infrastructure.security.service.RefreshTokenService;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +33,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -50,12 +56,24 @@ public class AuthController {
 
     private final CookieProperties cookieProperties;
 
-    public AuthController(RegisterUseCase registerUseCase, LoginUseCase loginUseCase, CheckUserAvailabilityUseCase checkUserAvailabilityUseCase, UserMapper userMapper, CookieProperties cookieProperties) {
+    private final RefreshTokenService refreshTokenService;
+
+    private final UserService userService;
+
+    private final JwtService jwtService;
+
+    private final JwtProperties jwtProperties;
+
+    public AuthController(RegisterUseCase registerUseCase, LoginUseCase loginUseCase, CheckUserAvailabilityUseCase checkUserAvailabilityUseCase, UserMapper userMapper, CookieProperties cookieProperties, RefreshTokenService refreshTokenService, UserService userService, JwtService jwtService, JwtProperties jwtProperties) {
         this.registerUseCase = registerUseCase;
         this.loginUseCase = loginUseCase;
         this.checkUserAvailabilityUseCase = checkUserAvailabilityUseCase;
         this.userMapper = userMapper;
         this.cookieProperties = cookieProperties;
+        this.refreshTokenService = refreshTokenService;
+        this.userService = userService;
+        this.jwtService = jwtService;
+        this.jwtProperties = jwtProperties;
     }
 
     @PostMapping("/register")
@@ -69,23 +87,10 @@ public class AuthController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> logout(HttpServletResponse response) {
         var responseEntity = ResponseEntity.noContent();
-        String[] keys = new String[]{"access_token", "refresh_token"};
-        Arrays.stream(keys).forEach(
-            (k) -> {
-                responseEntity.header(
-                    HttpHeaders.SET_COOKIE,
-                    ResponseCookie.from(k, null)
-                        .httpOnly(true)
-                        .secure(cookieProperties.isSecure())
-                        .sameSite(cookieProperties.getSameSite())
-                        .domain(cookieProperties.getDomain())
-                        .path(cookieProperties.getPath())
-                        .maxAge(0)
-                        .build().toString()
-                );
-            }
-        );
-        return responseEntity.build();
+        return responseEntity
+                .header(HttpHeaders.SET_COOKIE, createCookie("access_token", "", 0).toString())
+                .header(HttpHeaders.SET_COOKIE, createCookie("refresh_token", "", 0).toString())
+                .build();
     }
 
     @PostMapping("/login")
@@ -97,26 +102,11 @@ public class AuthController {
             AuthenticatedUser user = loginUseCase.authenticateUser(loginRequest.getEmail(), loginRequest.getPassword());
             if (user instanceof JwtAuthenticatedUser jwtAuthenticatedUser) {
                 var responseEntity = ResponseEntity.ok();
-                Map<String, Map<String, Integer>> cookies = Map.of(
-                "access_token", Map.of(jwtAuthenticatedUser.getJwtToken(), 10),
-                "refresh_token", Map.of(jwtAuthenticatedUser.getRefreshToken(), 1440)
-                );
-                cookies.forEach((k, v) ->
-                    v.forEach((key, value) -> {
-                        System.out.println("k: "+k+" key: " + key + " value: " + value);
-                        responseEntity.header(
-                            HttpHeaders.SET_COOKIE,
-                            ResponseCookie.from(k, key)
-                                    .httpOnly(true)
-                                    .secure(cookieProperties.isSecure())
-                                    .sameSite(cookieProperties.getSameSite())
-                                    .domain(cookieProperties.getDomain())
-                                    .path(cookieProperties.getPath())
-                                    .maxAge(Duration.ofMinutes(value))
-                                    .build().toString()
-                        );
-                    }));
-                return responseEntity.body(new UserResponse(user.getEmail(), user.getUsername(), user.getRole()));
+
+                return responseEntity
+                        .header(HttpHeaders.SET_COOKIE, createCookie("access_token", jwtAuthenticatedUser.getJwtToken(), jwtProperties.getExpirationTime()).toString())
+                        .header(HttpHeaders.SET_COOKIE, createCookie("refresh_token", jwtAuthenticatedUser.getRefreshToken(), jwtProperties.getRefreshExpirationTime()).toString())
+                        .body(new UserResponse(user.getEmail(), user.getUsername(), user.getRole()));
             }
 
             return ResponseEntity.ok().body(new UserResponse(user.getEmail(), user.getUsername(), user.getRole()));
@@ -144,10 +134,47 @@ public class AuthController {
         return checkUserAvailabilityUseCase.isUsernameTaken(username) ? new ResponseEntity<Void>(HttpStatus.UNPROCESSABLE_ENTITY) : new ResponseEntity<>(HttpStatus.OK);
     }
 
-    /*
-    @PostMapping("/refresh")
-    public ResponseEntity<?> refreshAccessToken(@RequestBody RefreshTokenRequest request) {
-        return refreshTokenProvider.refreshAccessToken(request.getRefreshToken())
-                .map(token -> ResponseEntity.ok(new AccessTokenResponse(token)))
-    }*/
+    @PostMapping("/refresh-token")
+    public ResponseEntity<UserResponse> refreshAccessToken(@CookieValue(name = "refresh_token", required = false) String refreshToken) {
+        if (refreshToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        RefreshToken foundRefreshToken = refreshTokenService.findByToken(refreshToken).orElse(null);
+        if (foundRefreshToken == null || !refreshTokenService.verifyExpiration(foundRefreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        User user = userService.findById(new UserId(UUID.fromString(foundRefreshToken.getUserId().toString()))).orElse(null);
+        if(user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        refreshTokenService.deleteRefreshToken(foundRefreshToken);
+        var newRefreshToken = refreshTokenService.createRefreshToken(user);
+        var newAccessToken = jwtService.generateToken(user.getEmail());
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, createCookie("access_token", newAccessToken, jwtProperties.getExpirationTime()).toString())
+                .header(HttpHeaders.SET_COOKIE, createCookie("refresh_token", newRefreshToken.getToken(), jwtProperties.getRefreshExpirationTime()).toString())
+                .body(new UserResponse(user.getEmail(), user.getUsername(), user.getRole()));
+    }
+
+    private ResponseCookie createCookie(String name, String value, long maxAge) {
+        System.out.println("MAX age "+maxAge);
+        return ResponseCookie.from(name, value)
+                .httpOnly(true)
+                .secure(cookieProperties.isSecure())
+                .sameSite(cookieProperties.getSameSite())
+                .domain(cookieProperties.getDomain())
+                .path(cookieProperties.getPath())
+                .maxAge(maxAge)
+                .build();
+        /*
+        return ResponseCookie.from(name, value)
+                .httpOnly(true) // Empêche l'accès depuis JavaScript
+                .secure(true) // Seulement via HTTPS
+                .sameSite("Strict") // Protection contre CSRF
+                .path("/") // Disponible pour toute l’application
+                .maxAge(maxAge) // Durée de vie du cookie
+                .build();*/
+    }
 }

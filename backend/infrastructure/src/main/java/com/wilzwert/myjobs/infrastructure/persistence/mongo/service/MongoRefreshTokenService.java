@@ -1,9 +1,11 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 
 import com.wilzwert.myjobs.core.domain.model.User;
+import com.wilzwert.myjobs.infrastructure.security.configuration.JwtProperties;
 import com.wilzwert.myjobs.infrastructure.security.model.RefreshToken;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoRefreshToken;
 import com.wilzwert.myjobs.infrastructure.security.repository.RefreshTokenRepository;
+import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
 import com.wilzwert.myjobs.infrastructure.security.service.RefreshTokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,14 +25,16 @@ import java.util.UUID;
 @Service
 @Slf4j
 public class MongoRefreshTokenService implements RefreshTokenService {
-
-    @Value("${security.jwt.refresh-expiration-time}")
-    private long jwtRefreshExpiration;
+    private final JwtService jwtService;
 
     private final RefreshTokenRepository refreshTokenRepository;
 
-    public MongoRefreshTokenService(final RefreshTokenRepository mongoRefreshTokenRepository) {
+    private final JwtProperties jwtProperties;
+
+    public MongoRefreshTokenService(final RefreshTokenRepository mongoRefreshTokenRepository, final JwtService jwtService, final JwtProperties jwtProperties) {
         this.refreshTokenRepository = mongoRefreshTokenRepository;
+        this.jwtService = jwtService;
+        this.jwtProperties = jwtProperties;
     }
 
     @Override
@@ -40,9 +44,8 @@ public class MongoRefreshTokenService implements RefreshTokenService {
 
     @Override
     public RefreshToken createRefreshToken(User user) {
-        MongoRefreshToken refreshToken = new MongoRefreshToken().setId(UUID.randomUUID()).setUserId(user.getId().value()).setToken(UUID.randomUUID().toString());
-        log.info("setting expiry to {} (now is {}, expiration is {})", Instant.now().plusMillis(jwtRefreshExpiration), Instant.now(), jwtRefreshExpiration);
-        refreshToken.setExpiryDate(Instant.now().plusMillis(jwtRefreshExpiration));
+        MongoRefreshToken refreshToken = new MongoRefreshToken().setId(UUID.randomUUID()).setUserId(user.getId().value()).setToken(jwtService.generateToken(UUID.randomUUID().toString()));
+        refreshToken.setExpiresAt(Instant.now().plusMillis(jwtProperties.getRefreshExpirationTime()*1000));
         return refreshTokenRepository.save(refreshToken);
     }
 
@@ -53,5 +56,10 @@ public class MongoRefreshTokenService implements RefreshTokenService {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public void deleteRefreshToken(RefreshToken refreshToken) {
+        refreshTokenRepository.delete(refreshToken);
     }
 }

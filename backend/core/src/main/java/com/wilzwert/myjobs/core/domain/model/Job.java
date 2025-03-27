@@ -39,6 +39,23 @@ public class Job extends DomainEntity<JobId> {
         ActivityType.RELAUNCH, JobStatus.RELAUNCHED
     );
 
+    public static Job create(String url, String title, String company, String description, String profile, UserId userId) {
+        return new Job(
+                JobId.generate(),
+                url,
+                JobStatus.CREATED,
+                title,
+                company,
+                description,
+                profile,
+                Instant.now(),
+                Instant.now(),
+                userId,
+                new ArrayList<>(),
+                new ArrayList<>()
+        );
+    }
+
 
     public Job(JobId id, String url, JobStatus status, String title, String company, String description, String profile, Instant createdAt, Instant updatedAt, UserId userId, List<Activity> activities, List<Attachment> attachments) {
         this.id = id;
