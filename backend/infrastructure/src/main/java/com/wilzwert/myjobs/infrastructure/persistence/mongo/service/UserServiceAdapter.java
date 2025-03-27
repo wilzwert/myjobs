@@ -89,6 +89,7 @@ public class UserServiceAdapter implements UserService {
     }
 
     @Override
+    @Transactional
     public User deleteJobAndSaveUser(User user, Job job) {
         this.mongoJobRepository.delete(this.jobMapper.toEntity(job));
         return this.userMapper.toDomain(this.mongoUserRepository.save(this.userMapper.toEntity(user)));
