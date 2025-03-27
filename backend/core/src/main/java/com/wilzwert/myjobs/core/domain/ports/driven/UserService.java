@@ -13,8 +13,9 @@ import java.util.Optional;
  * Time:15:29
  */
 public interface UserService {
-    Optional<User> findByEmail(String email);
+    boolean isEmailAndUsernameAvailable(String email, String username);
 
+    Optional<User> findByEmail(String email);
 
     Optional<User> findByEmailOrUsername(String email, String username);
 

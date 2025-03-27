@@ -4,13 +4,11 @@ package com.wilzwert.myjobs.core.application.usecase;
 import com.wilzwert.myjobs.core.domain.command.RegisterUserCommand;
 import com.wilzwert.myjobs.core.domain.exception.UserAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.model.User;
-import com.wilzwert.myjobs.core.domain.model.UserId;
 import com.wilzwert.myjobs.core.domain.ports.driven.PasswordHasher;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.ports.driving.CheckUserAvailabilityUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.RegisterUseCase;
 
-import java.util.ArrayList;
 /**
  * @author Wilhelm Zwertvaegher
  * Date:13/03/2025
@@ -34,17 +32,12 @@ public class RegisterUseCaseImpl implements RegisterUseCase, CheckUserAvailabili
         }
 
         return userService.save(
-                new User(
-                        UserId.generate(),
+                User.create(
                         registerUserCommand.email(),
                         passwordHasher.hashPassword(registerUserCommand.password()),
                         registerUserCommand.username(),
                         registerUserCommand.firstName(),
-                        registerUserCommand.lastName(),
-                        "USER",
-                        null,
-                        null,
-                        new ArrayList<>()
+                        registerUserCommand.lastName()
                 )
         );
     }
