@@ -5,6 +5,7 @@ import { NotificationComponent } from './layout/notification/notification.compon
 import { filter, Subject, takeUntil } from 'rxjs';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
+import { environment } from '../environments/environment';
 
 @Component({
     selector: 'app-root',

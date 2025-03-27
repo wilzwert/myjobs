@@ -1,5 +1,6 @@
 import { ApplicationConfig, ErrorHandler, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
+import { environment } from '../environments/environment';
 
 import { routes } from './app.routes';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
@@ -20,7 +21,7 @@ export const appConfig: ApplicationConfig = {
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'outline'}},
     provideScReCaptchaSettings({
-      v3SiteKey: '6LfQXvoqAAAAALCGODo6rmKHUt44zFBgG1jb6bSB',
+      v3SiteKey: environment.recaptcha_key,
       languageCode: 'fr',
     }),
   ]
