@@ -34,6 +34,7 @@ build/
 
 # environment configuration
 backend/.env
+backend/infrastructure/.env
 docker/dev/mongo-data
 docker/dev/mongodb-keyfile
 docker/dev/smtp4dev-data

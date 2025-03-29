@@ -17,6 +17,8 @@ public interface UserService {
 
     Optional<User> findByEmail(String email);
 
+    Optional<User> findByResetPasswordToken(String code);
+
     Optional<User> findByEmailOrUsername(String email, String username);
 
     Optional<User> findByUsername(String username);

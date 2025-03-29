@@ -71,6 +71,7 @@ public class SecurityConfiguration {
                                         "/api/auth/refresh-token",
                                         "/api/auth/email-check",
                                         "/api/auth/username-check",
+                                        "/api/auth/password/**",
                                         /*"/"+storageProperties.getUploadDir()+"/**",
                                         apiDocProperties.getApiDocsPath()+"/**",
                                         apiDocProperties.getSwaggerPath()+"/**",*/

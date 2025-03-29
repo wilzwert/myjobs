@@ -46,6 +46,12 @@ public class MongoUser  {
     @Field(name = "role")
     private String role;
 
+    @Field(name = "reset_password_token")
+    private String resetPasswordToken;
+
+    @Field(name = "reset_password_expires_at")
+    private Instant resetPasswordTokenExpiresAt;
+
     @Field(name = "created_at")
     @CreatedDate
     private Instant createdAt;
