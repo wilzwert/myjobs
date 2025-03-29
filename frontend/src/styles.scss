@@ -16,7 +16,6 @@
   ));
 
   @include mat.toolbar-overrides((
-    container-background-color: #fff,
     container-text-color: var(--main-color),
     standard-height: 94px,
     mobile-height: 62px

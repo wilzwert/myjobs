@@ -31,6 +31,18 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=password
       - MONGO_REPLICA_SET_NAME=rs0
+  email:
+    container_name: myjobs-email
+    image: rnwood/smtp4dev
+    restart: always
+    ports:
+      - '5000:80'
+      - '25:25'
+      - '143:143'
+    volumes:
+      - ./smtp4dev-data:/smtp4dev
+    networks:
+      - myjobs-network
 
 networks:
   myjobs-network:
