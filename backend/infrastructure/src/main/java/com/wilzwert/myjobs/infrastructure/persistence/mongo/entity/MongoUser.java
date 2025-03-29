@@ -50,7 +50,7 @@ public class MongoUser  {
     private String resetPasswordToken;
 
     @Field(name = "reset_password_expires_at")
-    private Instant resetPasswordTokenExpiresAt;
+    private Instant resetPasswordExpiresAt;
 
     @Field(name = "created_at")
     @CreatedDate

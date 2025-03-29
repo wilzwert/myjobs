@@ -110,7 +110,7 @@ export class RegistrationComponent {
           (error: ApiError) => {
             this.isSubmitting = false;
             return throwError(() => new Error(
-              'Registration failed. '+(error.httpStatus === 409 ? "Email ou nom d'utilisateur déjà utilisé" : 'Une erreur est survenue')
+              'Registration failed. '+(error.httpStatus === 409 ? "Email or username already in use" : 'An error occured')
             ));
           }
       ))

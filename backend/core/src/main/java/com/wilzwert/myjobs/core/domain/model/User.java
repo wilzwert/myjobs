@@ -133,7 +133,7 @@ public class User extends DomainEntity<UserId> {
                 null,
                 null,
                 getCreatedAt(),
-                getUpdatedAt(),
+                Instant.now(),
                 getJobs()
         );
     }

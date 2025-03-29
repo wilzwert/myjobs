@@ -28,6 +28,7 @@ public class PasswordUseCaseImpl implements ResetPasswordUseCase, CreateNewPassw
         // if not found, do nothing (business rule is to not send a "not found error")
         userService.findByResetPasswordToken(passwordCommand.resetPasswordToken()).ifPresent((user) -> {
             // store new password
+            System.out.println("saving new password"+passwordCommand.password());
             userService.save(user.createNewPassword(passwordHasher.hashPassword(passwordCommand.password())));
         });
     }

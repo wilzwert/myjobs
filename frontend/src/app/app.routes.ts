@@ -7,6 +7,8 @@ import { MeComponent } from './features/me/me.component';
 import { JobDetailComponent } from './features/jobs/job-detail/job-detail.component';
 import { UnauthGuard } from './core/guards/unauth.guard';
 import { AuthGuard } from './core/guards/auth.guard';
+import { ResetPasswordComponent } from './features/password/reset-password/reset-password.component';
+import { NewPasswordComponent } from './features/password/new-password/new-password.component';
 
 export const routes: Routes = [
     { 
@@ -25,6 +27,18 @@ export const routes: Routes = [
         canActivate: [UnauthGuard],
         component: RegistrationComponent, 
         title: 'Registration', 
+    },
+    { 
+        path: 'password/reset',
+        canActivate: [UnauthGuard],
+        component: ResetPasswordComponent, 
+        title: 'Reset password', 
+    },
+    { 
+        path: 'password/new',
+        canActivate: [UnauthGuard],
+        component: NewPasswordComponent, 
+        title: 'Create new password', 
     },
     { 
         path: 'me',
