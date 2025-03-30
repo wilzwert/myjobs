@@ -1,16 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ConfirmPasswordValidator } from '../../../core/validators/confirm-password-validator';
 import { MatIcon } from '@angular/material/icon';
 import { MatFormField, MatHint, MatInput, MatLabel } from '@angular/material/input';
 import { MatButton } from '@angular/material/button';
-import { PasswordValidator } from '../../../core/validators/password-validator';
 import { JsonPipe } from '@angular/common';
-import { AuthService } from '../../../core/services/auth.service';
-import { NewPasswordRequest } from '../../../core/model/new-password-request.interface';
 import { catchError, take, throwError } from 'rxjs';
-import { NotificationService } from '../../../core/services/notification.service';
+import { AuthService } from '../../../../core/services/auth.service';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { PasswordValidator } from '../../../../core/validators/password-validator';
+import { ConfirmPasswordValidator } from '../../../../core/validators/confirm-password-validator';
+import { NewPasswordRequest } from '../../../../core/model/new-password-request.interface';
 
 @Component({
   selector: 'app-new-password',

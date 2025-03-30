@@ -32,6 +32,12 @@ public class MongoUser  {
     @Indexed(unique = true)
     private String email;
 
+    @Field(name = "email_status")
+    private String emailStatus;
+
+    @Field(name = "email_validation_code")
+    private String emailValidationCode;
+
     @Field(name = "password")
     private String password;
 

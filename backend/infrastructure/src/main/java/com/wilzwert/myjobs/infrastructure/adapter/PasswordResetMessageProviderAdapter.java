@@ -2,52 +2,36 @@ package com.wilzwert.myjobs.infrastructure.adapter;
 
 import com.wilzwert.myjobs.core.domain.model.User;
 import com.wilzwert.myjobs.core.domain.ports.driven.PasswordResetMessageProvider;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
+import com.wilzwert.myjobs.infrastructure.mail.MailProvider;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 @Component
 public class PasswordResetMessageProviderAdapter implements PasswordResetMessageProvider {
-
-    private final JavaMailSender mailSender;
+    private final MailProvider mailProvider;
 
     private final TemplateEngine templateEngine;
 
-    @Value("${application.frontend.url}")
-    private String frontendUrl;
-
-    @Value("${application.mail.from}")
-    private String from;
-
-    @Value("${application.mail.from-name}")
-    private String fromName;
-
-    public PasswordResetMessageProviderAdapter(final JavaMailSender mailSender, final TemplateEngine templateEngine) {
-        this.mailSender = mailSender;
+    public PasswordResetMessageProviderAdapter(final MailProvider mailProvider, final TemplateEngine templateEngine) {
+        this.mailProvider = mailProvider;
         this.templateEngine = templateEngine;
     }
 
     @Override
     public void send(User user) {
-        // generate URL
-        String url = frontendUrl + "/password/new?token=" + user.getResetPasswordToken();
 
         try {
-            var message = mailSender.createMimeMessage();
-            message.setFrom(new InternetAddress(from, fromName));
-            message.setRecipients(MimeMessage.RecipientType.TO, new InternetAddress(user.getEmail(), user.getFirstName()).getAddress());
-            message.setSubject("Password reset");
+            var message = mailProvider.createMessage(user.getEmail(), user.getFirstName(), "Password reset");
 
+            // generate URL
+            String url = mailProvider.createUrl("/password/new?token=" + user.getResetPasswordToken());
             Context context = new Context();
             context.setVariable("url", url);
             String htmlContent = templateEngine.process("mail/reset_password", context);
 
             message.setContent(htmlContent, "text/html;charset=utf-8");
-            mailSender.send(message);
+            mailProvider.send(message);
         }
         // TODO : improve exception handling
         catch (Exception e) {

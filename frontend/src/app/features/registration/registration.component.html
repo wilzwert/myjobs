@@ -34,7 +34,17 @@
     <mat-form-field>
     <mat-label>Password</mat-label>
     <input matInput type="password" formControlName="password" placeholder="Enter your password">
-    <mat-hint align="start">Min. 8 characters including 1 lowercase, 1 uppercase, 1 digit and 1 special character</mat-hint>
+    <mat-hint align="start">
+    @if(password?.invalid) {
+        @if(password?.errors !== null && password?.errors?.['passwordStrength'] !== undefined &&  password!.errors?.['passwordStrength'].message !== undefined) {
+            {{  password!.errors?.['passwordStrength'].message }}
+        }
+        @else {
+            Min. 8 characters including 1 lowercase, 1 uppercase, 1 digit and 1 special character
+        }
+    }
+    </mat-hint>
+    
     <mat-hint class="password-hint" align="end">
         @if(password?.invalid) {
             <mat-icon class="input-invalid" svgIcon="invalid">Invalid</mat-icon>

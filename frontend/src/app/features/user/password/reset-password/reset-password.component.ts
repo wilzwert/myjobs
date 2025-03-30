@@ -1,17 +1,16 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AuthService } from '../../../core/services/auth.service';
 import { Router, RouterLink } from '@angular/router';
-import { NotificationService } from '../../../core/services/notification.service';
 import { catchError, take, throwError } from 'rxjs';
-import { ApiError } from '../../../core/errors/api-error';
-import { RegistrationRequest } from '../../../core/model/registration-request.interface';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { NgxCaptchaModule } from 'ngx-captcha';
-import { ResetPasswordRequest } from '../../../core/model/reset-password-request.interface';
+import { AuthService } from '../../../../core/services/auth.service';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { ResetPasswordRequest } from '../../../../core/model/reset-password-request.interface';
+
 
 @Component({
   selector: 'app-reset-password',

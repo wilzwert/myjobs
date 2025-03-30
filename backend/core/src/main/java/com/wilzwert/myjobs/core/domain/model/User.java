@@ -4,6 +4,7 @@ package com.wilzwert.myjobs.core.domain.model;
 import com.wilzwert.myjobs.core.domain.exception.JobAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.exception.JobNotFoundException;
 import com.wilzwert.myjobs.core.domain.exception.ResetPasswordExpiredException;
+import com.wilzwert.myjobs.core.domain.exception.UserNotFoundException;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -19,6 +20,8 @@ import java.util.UUID;
 public class User extends DomainEntity<UserId> {
     private final UserId id;
     private final String email;
+    private final EmailStatus emailStatus;
+    private final String emailValidationCode;
     private final String password;
     private final String username;
     private final String firstName;
@@ -31,9 +34,11 @@ public class User extends DomainEntity<UserId> {
 
     private final List<Job> jobs;
 
-    public User(UserId id, String email, String password, String username, String firstName, String lastName, String role, String resetPasswordToken, Instant resetPasswordExpiresAt, Instant createdAt, Instant updatedAt, List<Job> jobs) {
+    public User(UserId id, String email, EmailStatus emailStatus, String emailValidationCode, String password, String username, String firstName, String lastName, String role, String resetPasswordToken, Instant resetPasswordExpiresAt, Instant createdAt, Instant updatedAt, List<Job> jobs) {
         this.id = id;
         this.email = email;
+        this.emailValidationCode = emailValidationCode;
+        this.emailStatus = emailStatus;
         this.password = password;
         this.username = username;
         this.firstName = firstName;
@@ -50,6 +55,8 @@ public class User extends DomainEntity<UserId> {
         return new User(
                 UserId.generate(),
                 email,
+                EmailStatus.PENDING,
+                UUID.randomUUID().toString(),
                 password,
                 username,
                 firstName,
@@ -85,6 +92,8 @@ public class User extends DomainEntity<UserId> {
         return new User(
                 getId(),
                 getEmail(),
+                getEmailStatus(),
+                getEmailValidationCode(),
                 getPassword(),
                 getUsername(),
                 getFirstName(),
@@ -103,11 +112,14 @@ public class User extends DomainEntity<UserId> {
         return new User(
                 getId(),
                 getEmail(),
+                getEmailStatus(),
+                getEmailValidationCode(),
                 getPassword(),
                 getUsername(),
                 getFirstName(),
                 getLastName(),
                 getRole(),
+                // FIXME : maybe we should use a value object with a generator
                 UUID.randomUUID().toString(),
                 // FIXME : duration should not be hard coded this way
                 // it should be handled by domain anyway
@@ -125,7 +137,37 @@ public class User extends DomainEntity<UserId> {
         return new User(
                 getId(),
                 getEmail(),
+                getEmailStatus(),
+                getEmailValidationCode(),
                 newPassword,
+                getUsername(),
+                getFirstName(),
+                getLastName(),
+                getRole(),
+                null,
+                null,
+                getCreatedAt(),
+                Instant.now(),
+                getJobs()
+        );
+    }
+
+    public User validateEmail(String emailValidationCode) {
+        System.out.println(getEmail()+"-"+getEmailValidationCode());
+        if (getEmailValidationCode() == null || !getEmailValidationCode().equals(emailValidationCode)) {
+            throw new UserNotFoundException();
+        }
+
+        if(getEmailStatus().equals(EmailStatus.VALIDATED)) {
+            return this;
+        }
+
+        return new User(
+                getId(),
+                getEmail(),
+                (getEmailStatus().equals(EmailStatus.PENDING) ? EmailStatus.VALIDATED : getEmailStatus()),
+                getEmailValidationCode(),
+                getPassword(),
                 getUsername(),
                 getFirstName(),
                 getLastName(),
@@ -144,6 +186,14 @@ public class User extends DomainEntity<UserId> {
 
     public String getEmail() {
         return email;
+    }
+
+    public EmailStatus getEmailStatus() {
+        return emailStatus;
+    }
+
+    public String getEmailValidationCode() {
+        return emailValidationCode;
     }
 
     public String getPassword() {

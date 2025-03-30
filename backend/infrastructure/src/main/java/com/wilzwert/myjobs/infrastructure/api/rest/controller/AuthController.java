@@ -17,7 +17,6 @@ import com.wilzwert.myjobs.infrastructure.security.model.RefreshToken;
 import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
 import com.wilzwert.myjobs.infrastructure.security.service.RefreshTokenService;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

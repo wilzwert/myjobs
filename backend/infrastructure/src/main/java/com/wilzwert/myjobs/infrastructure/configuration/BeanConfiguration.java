@@ -27,8 +27,8 @@ public class BeanConfiguration {
     }
 
     @Bean
-    RegisterUseCase registerUseCase(UserService userService, PasswordHasher passwordHasher) {
-        return new RegisterUseCaseImpl(userService, passwordHasher);
+    RegisterUseCase registerUseCase(UserService userService, PasswordHasher passwordHasher, AccountCreationMessageProvider messageProvider) {
+        return new RegisterUseCaseImpl(userService, passwordHasher, messageProvider);
     }
 
     @Bean

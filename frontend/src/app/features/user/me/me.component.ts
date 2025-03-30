@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { SessionService } from '../../core/services/session.service';
+import { SessionService } from '../../../core/services/session.service';
 import { BehaviorSubject, catchError, throwError } from 'rxjs';
-import { SessionInformation } from '../../core/model/session-information.interface';
+import { SessionInformation } from '../../../core/model/session-information.interface';
 import { AsyncPipe } from '@angular/common';
-import { AuthService } from '../../core/services/auth.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { Router } from '@angular/router';
 
 @Component({

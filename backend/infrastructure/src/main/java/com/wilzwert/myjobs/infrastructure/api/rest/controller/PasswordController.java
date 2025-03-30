@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @Slf4j
-@RequestMapping("/api/auth")
+@RequestMapping("/api/user")
 public class PasswordController {
 
     private final ResetPasswordUseCase resetPasswordUseCase;

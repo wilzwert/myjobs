@@ -1,5 +1,5 @@
 <mat-toolbar>
-    <a class="home" routerLink="">MyJobs</a>
+    <a class="home" routerLink="" title="MyJobs" aria-label="MyJobs"><img src="assets/imgs/logo.png" alt="MyJobs"></a>
     <span class="spacer"></span>
     @if ($isLogged() | async) {
       <nav class="main-nav" [class.open]="isMobile && menuOpen">

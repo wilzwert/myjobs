@@ -1,0 +1,13 @@
+<p>
+    Welcome <span th:text="${firstName}"></span> <span th:text="${lastName}"></span>
+</p>
+<p> Thank you for signing up for our service. </p>
+<p>
+    Please click on the link below to validate your email address.
+</p>
+<p>
+    <a th:href="${validationUrl}" th:text="${validationUrl}"></a>
+</p>
+<p>
+    <a th:href="${url}" style="display: inline-block; padding: 10px 20px; background-color: #007BFF; color: white; text-decoration: none; border-radius: 5px;">Go to my account</a>
+</p>
