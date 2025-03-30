@@ -49,7 +49,6 @@ export const routes: Routes = [
     },
     { 
         path: 'me/email/validation',
-        canActivate: [UnauthGuard],
         component: EmailValidationComponent, 
         title: 'Email validation', 
     },

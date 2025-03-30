@@ -36,7 +36,6 @@ export class UserService {
   }
 
   public validateEmail(validateEmailRequest: ValidateEmailRequest): Observable<void> {
-    console.log(validateEmailRequest);
     /*return this.captchaService.getCaptchaToken().pipe(
       switchMap(() => {*/
         return this.dataService.post<void>(`${this.apiPath}/email/validation`, validateEmailRequest);

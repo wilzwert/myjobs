@@ -16,27 +16,35 @@ export class EmailValidationComponent implements OnInit {
 
   constructor(private userService: UserService, private activatedRoute: ActivatedRoute, private router: Router, private notificationService: NotificationService, private sessionService: SessionService) {}
 
+  private redirect(): void {
+    if(this.sessionService.isLogged()) {
+      this.router.navigate(["/jobs"])
+    }
+    else {
+      this.router.navigate(["/login"])
+    }
+  }
+ 
   ngOnInit(): void {
     this.activatedRoute.queryParams.subscribe((params) => {
-      console.log(params['code']);
-      this.userService.validateEmail({code: params['code']} as ValidateEmailRequest).pipe(
-        take(1),
-        catchError(
-          (error) => {
-            console.log(error);
-            return throwError(() => new Error(
-              'Email validation failed'
-            ));
-          }
-      )).subscribe(() => {
-        this.notificationService.confirmation("Your email has been validated.");
-        if(this.sessionService.isLogged()) {
-          this.router.navigate(["/jobs"])
-        }
-        else {
-          this.router.navigate(["/login"])
-        }
-      })
+      if(params['code'] == undefined || params['code'] == null || params['code'] == '') {
+        this.router.navigate([""]);
+      }
+      else {
+        this.userService.validateEmail({code: params['code']} as ValidateEmailRequest).pipe(
+          take(1),
+          catchError(
+            () => {
+              this.redirect();
+              return throwError(() => new Error(
+                'Email validation failed'
+              ));
+            }
+        )).subscribe(() => {
+          this.notificationService.confirmation("Your email has been validated.");
+          this.redirect();
+        })
+      }
     });
   }
 
