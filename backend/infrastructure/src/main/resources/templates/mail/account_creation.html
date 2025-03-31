@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html th:replace="~{mail/layout.html :: layout(~{::section})}">
+<body>
+
+<section>
+    <p th:style="${paragraphStyle}">
+        Welcome <span th:text="${firstName}"></span> <span th:text="${lastName}"></span>
+    </p>
+    <p th:style="${paragraphStyle}">
+        Thank you for signing up for our service.
+    </p>
+    <p th:style="${paragraphStyle}">
+        Please click on the link below to validate your email address.
+    </p>
+
+    <p th:style="${paragraphStyle}">
+        <a th:style="${buttonStyle}" th:href="${validationUrl}">Validate my email address</a>
+    </p>
+
+    <p th:style="${paragraphStyle}">
+        <a th:style="${buttonStyle}" th:href="${url}" >Go to my account</a>
+    </p>
+</section>
+
+</body>
+</html>

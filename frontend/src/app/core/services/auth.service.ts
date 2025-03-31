@@ -6,6 +6,8 @@ import { LoginRequest } from '../model/login-request.interface';
 import { SessionInformation } from '../model/session-information.interface';
 import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { CaptchaService } from './captcha.service';
+import { ResetPasswordRequest } from '../model/reset-password-request.interface';
+import { NewPasswordRequest } from '../model/new-password-request.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -38,6 +40,22 @@ export class AuthService {
   
   public refreshToken(): Observable<SessionInformation> {
     return this.dataService.post<SessionInformation>(`${this.apiPath}/refresh-token`, null);
+  }
+
+  public resetPassword(resetPasswordRequest: ResetPasswordRequest): Observable<void> {
+    return this.captchaService.getCaptchaToken().pipe(
+      switchMap(() => {
+        return this.dataService.post<void>(`${this.apiPath}/password/reset`, resetPasswordRequest);
+      })
+    );
+  }
+
+  public newPassword(newPasswordRequest: NewPasswordRequest): Observable<void> {
+    return this.captchaService.getCaptchaToken().pipe(
+      switchMap(() => {
+        return this.dataService.post<void>(`${this.apiPath}/password`, newPasswordRequest);
+      })
+    );
   }
 
 }

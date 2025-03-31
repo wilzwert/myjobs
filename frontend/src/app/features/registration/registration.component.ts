@@ -12,6 +12,7 @@ import { NotificationService } from '../../core/services/notification.service';
 import { ApiError } from '../../core/errors/api-error';
 import { AuthValidators } from '../../core/services/auth.validators';
 import { NgxCaptchaModule } from 'ngx-captcha';
+import { PasswordValidator } from '../../core/validators/password-validator';
 
 @Component({
   selector: 'app-register',
@@ -74,7 +75,7 @@ export class RegistrationComponent {
         '',
         [
           Validators.required,
-          Validators.pattern('((?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,30})')
+          PasswordValidator
         ]
       ]
     });
@@ -110,7 +111,7 @@ export class RegistrationComponent {
           (error: ApiError) => {
             this.isSubmitting = false;
             return throwError(() => new Error(
-              'Registration failed. '+(error.httpStatus === 409 ? "Email ou nom d'utilisateur déjà utilisé" : 'Une erreur est survenue')
+              'Registration failed. '+(error.httpStatus === 409 ? "Email or username already in use" : 'An error occured')
             ));
           }
       ))

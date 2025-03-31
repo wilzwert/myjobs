@@ -2,6 +2,7 @@ package com.wilzwert.myjobs.infrastructure.configuration;
 
 
 import com.wilzwert.myjobs.core.application.usecase.JobUseCaseImpl;
+import com.wilzwert.myjobs.core.application.usecase.PasswordUseCaseImpl;
 import com.wilzwert.myjobs.core.domain.ports.driven.*;
 import com.wilzwert.myjobs.core.domain.ports.driving.LoginUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.RegisterUseCase;
@@ -26,8 +27,8 @@ public class BeanConfiguration {
     }
 
     @Bean
-    RegisterUseCase registerUseCase(UserService userService, PasswordHasher passwordHasher) {
-        return new RegisterUseCaseImpl(userService, passwordHasher);
+    RegisterUseCase registerUseCase(UserService userService, PasswordHasher passwordHasher, AccountCreationMessageProvider messageProvider) {
+        return new RegisterUseCaseImpl(userService, passwordHasher, messageProvider);
     }
 
     @Bean
@@ -38,5 +39,10 @@ public class BeanConfiguration {
     @Bean
     JobUseCaseImpl jobUseCase(JobService jobService, UserService userService, FileStorage fileStorage, HtmlSanitizer htmlSanitizer) {
         return new JobUseCaseImpl(jobService, userService, fileStorage, htmlSanitizer);
+    }
+
+    @Bean
+    PasswordUseCaseImpl passwordUseCase(UserService userService, PasswordResetMessageProvider passwordResetMessageProvider, PasswordHasher passwordHasher) {
+        return new PasswordUseCaseImpl(userService, passwordResetMessageProvider, passwordHasher);
     }
 }

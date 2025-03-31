@@ -32,6 +32,12 @@ public class MongoUser  {
     @Indexed(unique = true)
     private String email;
 
+    @Field(name = "email_status")
+    private String emailStatus;
+
+    @Field(name = "email_validation_code")
+    private String emailValidationCode;
+
     @Field(name = "password")
     private String password;
 
@@ -45,6 +51,12 @@ public class MongoUser  {
 
     @Field(name = "role")
     private String role;
+
+    @Field(name = "reset_password_token")
+    private String resetPasswordToken;
+
+    @Field(name = "reset_password_expires_at")
+    private Instant resetPasswordExpiresAt;
 
     @Field(name = "created_at")
     @CreatedDate
