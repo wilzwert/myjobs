@@ -1,9 +1,31 @@
-@if(sessionInformation|async; as sessionInfo) {
-    <p>
-    {{ sessionInfo.email }}
-    </p>
-    <p>
-    {{ sessionInfo.username }}
-    </p>
+@if(user$|async; as user) {
+    <mat-card>
+        <mat-card-content>
+            <p>
+                {{ user.firstName }} {{ user.lastName }}
+            </p>
+            <p>
+            {{ user.email }}
+            </p>
+            <p>
+            {{ user.username }}
+            </p>
+            <p>
+                Registered {{ user.createdAt | date }}
+            </p>
+        </mat-card-content>
+    </mat-card>
+
+    <mat-card>
+        <mat-card-content>
+            <button mat-button (click)="changePassword()">Change password</button>
+        </mat-card-content>
+    </mat-card>
+
 }
-<a class="logout" (click)="logout()">Log out</a>
+<mat-card>
+    <mat-card-content>
+        <button mat-button class="logout" (click)="logout()">Log out</button>
+    </mat-card-content>
+</mat-card>
+

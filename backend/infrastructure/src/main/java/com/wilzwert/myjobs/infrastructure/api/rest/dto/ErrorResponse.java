@@ -4,13 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wilzwert.myjobs.core.domain.exception.EntityAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.exception.EntityNotFoundException;
 import com.wilzwert.myjobs.core.domain.exception.LoginException;
+import com.wilzwert.myjobs.core.domain.exception.PasswordMatchException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -87,11 +87,13 @@ public class ErrorResponse {
         return build(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
-    public static ErrorResponse fromException(Exception ex) {
-        return build(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+    public static ErrorResponse fromException(PasswordMatchException ex) {
+        return build(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
-
+    public static ErrorResponse fromException(Exception ex) {
+        return build(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred.");
+    }
 
     private static ErrorResponse build(HttpStatusCode status, String message) {
         return new ErrorResponse(status, String.valueOf(status.value()), message, new Date().toString());

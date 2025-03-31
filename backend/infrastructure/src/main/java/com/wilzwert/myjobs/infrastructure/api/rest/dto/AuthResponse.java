@@ -14,15 +14,11 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserResponse {
-
-    private String firstName;
-
-    private String lastName;
+public class AuthResponse {
 
     private String email;
 
     private String username;
 
-    private String createdAt;
+    private String role;
 }

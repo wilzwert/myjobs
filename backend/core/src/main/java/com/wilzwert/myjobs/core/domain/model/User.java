@@ -107,6 +107,26 @@ public class User extends DomainEntity<UserId> {
         );
     }
 
+    public User updatePassword(String newPassword) {
+        // a reset password request just overrides all previous ones
+        return new User(
+                getId(),
+                getEmail(),
+                getEmailStatus(),
+                getEmailValidationCode(),
+                newPassword,
+                getUsername(),
+                getFirstName(),
+                getLastName(),
+                getRole(),
+                null,
+                null,
+                getCreatedAt(),
+                Instant.now(),
+                getJobs()
+        );
+    }
+
     public User resetPassword() {
         // a reset password request just overrides all previous ones
         return new User(

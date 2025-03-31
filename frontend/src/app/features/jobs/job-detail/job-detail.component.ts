@@ -12,7 +12,7 @@ import { ActivityLabelPipe } from '../../../core/pipe/activity-label.pipe';
 import { MatButton } from '@angular/material/button';
 import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
 import { MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardSubtitle, MatCardTitle } from '@angular/material/card';
-import { JobModalService } from '../../../core/services/job-modal.service';
+import { ModalService } from '../../../core/services/modal.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { ApiError } from '../../../core/errors/api-error';
 
@@ -36,7 +36,7 @@ export class JobDetailComponent implements OnInit, OnDestroy {
     private jobService: JobService, 
     private fileService: FileService,
     private confirmDialogService: ConfirmDialogService,
-    private jobModalService: JobModalService,
+    private jobModalService: ModalService,
     private notificationService: NotificationService,
     private title: Title
   ) {}

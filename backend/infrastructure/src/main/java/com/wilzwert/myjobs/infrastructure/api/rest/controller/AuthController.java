@@ -16,13 +16,11 @@ import com.wilzwert.myjobs.infrastructure.security.jwt.JwtAuthenticatedUser;
 import com.wilzwert.myjobs.infrastructure.security.model.RefreshToken;
 import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
 import com.wilzwert.myjobs.infrastructure.security.service.RefreshTokenService;
-import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -89,7 +87,7 @@ public class AuthController {
 
     @PostMapping("/login")
     @RequiresCaptcha
-    public ResponseEntity<UserResponse> login(@RequestBody final LoginRequest loginRequest) {
+    public ResponseEntity<AuthResponse> login(@RequestBody final LoginRequest loginRequest) {
         log.info("User login with email {}", loginRequest.getEmail());
         try {
             log.info("User login - authenticating");
@@ -100,20 +98,14 @@ public class AuthController {
                 return responseEntity
                         .header(HttpHeaders.SET_COOKIE, createCookie("access_token", jwtAuthenticatedUser.getJwtToken(), jwtProperties.getExpirationTime()).toString())
                         .header(HttpHeaders.SET_COOKIE, createCookie("refresh_token", jwtAuthenticatedUser.getRefreshToken(), jwtProperties.getRefreshExpirationTime()).toString())
-                        .body(new UserResponse(user.getEmail(), user.getUsername(), user.getRole()));
+                        .body(new AuthResponse(user.getEmail(), user.getUsername(), user.getRole()));
             }
 
-            return ResponseEntity.ok().body(new UserResponse(user.getEmail(), user.getUsername(), user.getRole()));
+            return ResponseEntity.ok().body(new AuthResponse(user.getEmail(), user.getUsername(), user.getRole()));
         } catch (AuthenticationException e) {
             log.info("Login failed for User with email {}", loginRequest.getEmail());
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Login failed. " + e.getMessage());
         }
-    }
-
-    @GetMapping("/me")
-    public UserResponse me(Authentication authentication) {
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        return new UserResponse(userDetails.getEmail(), userDetails.getUsername(), userDetails.getRole());
     }
 
     @GetMapping("/email-check")
@@ -129,7 +121,7 @@ public class AuthController {
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<UserResponse> refreshAccessToken(@CookieValue(name = "refresh_token", required = false) String refreshToken) {
+    public ResponseEntity<AuthResponse> refreshAccessToken(@CookieValue(name = "refresh_token", required = false) String refreshToken) {
         if (refreshToken == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -149,7 +141,7 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, createCookie("access_token", newAccessToken, jwtProperties.getExpirationTime()).toString())
                 .header(HttpHeaders.SET_COOKIE, createCookie("refresh_token", newRefreshToken.getToken(), jwtProperties.getRefreshExpirationTime()).toString())
-                .body(new UserResponse(user.getEmail(), user.getUsername(), user.getRole()));
+                .body(new AuthResponse(user.getEmail(), user.getUsername(), user.getRole()));
     }
 
     private ResponseCookie createCookie(String name, String value, long maxAge) {
