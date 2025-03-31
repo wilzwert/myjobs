@@ -53,4 +53,7 @@ export class UserService {
     );*/
   }
 
+  public deleteUser() :Observable<void> {
+    return this.dataService.delete<void>(`${this.apiPath}`);
+  }
 }

@@ -6,6 +6,7 @@ import com.wilzwert.myjobs.core.domain.ports.driven.PasswordHasher;
 import com.wilzwert.myjobs.infrastructure.adapter.DefaultPasswordHasher;
 import com.wilzwert.myjobs.infrastructure.security.jwt.JwtAuthenticationFilter;
 import com.wilzwert.myjobs.infrastructure.security.jwt.JwtAuthenticator;
+import com.wilzwert.myjobs.infrastructure.security.service.CookieService;
 import com.wilzwert.myjobs.infrastructure.security.service.CustomUserDetailsService;
 import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
 import com.wilzwert.myjobs.infrastructure.security.service.RefreshTokenService;
@@ -57,7 +58,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, CookieService cookieService) throws Exception {
         return http
                 // disable CSRF protection, as the app is RESTful API
                 .csrf(AbstractHttpConfigurer::disable)
@@ -68,6 +69,7 @@ public class SecurityConfiguration {
                         auth.requestMatchers(
                                         "/api/auth/register",
                                         "/api/auth/login",
+                                        "/api/auth/logout",
                                         "/api/auth/refresh-token",
                                         "/api/auth/email-check",
                                         "/api/auth/username-check",
@@ -85,7 +87,7 @@ public class SecurityConfiguration {
                 )
                 .exceptionHandling(exp -> exp.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 // insert our custom filter, which will authenticate user from token if provided in the request
-                .addFilterBefore(new JwtAuthenticationFilter(jwtService, userDetailsService()), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtService, userDetailsService(), cookieService), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 

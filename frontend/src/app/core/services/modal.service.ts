@@ -3,11 +3,12 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { JobModalComponent } from '../../features/jobs/job-modal/job-modal.component';
 import { Job } from '../model/job.interface';
 import { JobStepperModalComponent } from '../../features/jobs/job-stepper-modal/job-stepper-modal.component';
+import { PasswordModalComponent } from '../../features/user/password-modal/password-modal.component';
 
 @Injectable({
   providedIn: 'root'
 })
-export class JobModalService {
+export class ModalService {
 
   constructor(private dialog: MatDialog) {}
 
@@ -25,7 +26,6 @@ export class JobModalService {
     })
   }
 
-  // TODO
   openJobStepperModal(terminated: () => void) {
     const dialogRef: MatDialogRef<JobStepperModalComponent> =  this.dialog.open(JobStepperModalComponent, {
       width: '80vw',
@@ -38,9 +38,19 @@ export class JobModalService {
         terminated();
       }
     })
-    /*
-    return this.dialog.open(JobStepperModalComponent, {
-      width: '600px'
-    });*/
+  }
+
+  openPasswordModal(terminated: () => void) {
+    const dialogRef: MatDialogRef<PasswordModalComponent> =  this.dialog.open(PasswordModalComponent, {
+      width: '80vw',
+      maxWidth: '1000px',
+      data: { terminated: terminated }
+    });
+
+    dialogRef.afterClosed().subscribe(() => {
+      if(terminated) {
+        terminated();
+      }
+    })
   }
 }

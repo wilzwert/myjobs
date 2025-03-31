@@ -12,7 +12,6 @@ import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.UserMapper;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,17 +29,27 @@ public class UserController {
 
     private final ChangePasswordUseCase changePasswordUseCase;
 
+    private final DeleteAccountUseCase deleteAccountUseCase;
+
     private final UserMapper userMapper;
 
     private final UserService userService;
 
 
 
-    public UserController(ValidateEmailUseCase validateEmailUseCase, ChangePasswordUseCase changePasswordUseCase, UserMapper userMapper, UserService userService) {
+    public UserController(ValidateEmailUseCase validateEmailUseCase, ChangePasswordUseCase changePasswordUseCase, DeleteAccountUseCase deleteAccountUseCase, UserMapper userMapper, UserService userService) {
         this.validateEmailUseCase = validateEmailUseCase;
         this.changePasswordUseCase = changePasswordUseCase;
+        this.deleteAccountUseCase = deleteAccountUseCase;
         this.userMapper = userMapper;
         this.userService = userService;
+    }
+
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAccount(Authentication authentication) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        deleteAccountUseCase.deleteAccount(userDetails.getId());
     }
 
     @GetMapping("/me")
@@ -51,15 +60,15 @@ public class UserController {
     }
 
     @PutMapping("/password")
-    public ResponseEntity<?> changePassword(@RequestBody PasswordRequest passwordRequest, Authentication authentication) {
+    @ResponseStatus(HttpStatus.OK)
+    public void changePassword(@RequestBody PasswordRequest passwordRequest, Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         changePasswordUseCase.changePassword(new ChangePasswordCommand(passwordRequest.getPassword(), passwordRequest.getOldPassword(), userDetails.getId()));
-        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/email/validation")
-    public ResponseEntity<?> validateEmail(@RequestBody ValidateEmailRequest validateEmailRequest) {
+    @ResponseStatus(HttpStatus.OK)
+    public void validateEmail(@RequestBody ValidateEmailRequest validateEmailRequest) {
         validateEmailUseCase.validateEmail(new ValidateEmailCommand(validateEmailRequest.getCode()));
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
