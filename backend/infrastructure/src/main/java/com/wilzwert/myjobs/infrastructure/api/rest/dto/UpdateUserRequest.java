@@ -21,10 +21,6 @@ public class UpdateUserRequest {
     // TODO @Schema(description = "User name")
     private String username;
 
-    // TODO @NotBlank(message = "The password is required")
-    // TODO @Schema(description = "User password")
-    private String password;
-
     private String firstName;
 
     private String lastName;

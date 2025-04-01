@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { JobStepperModalComponent } from './job-stepper-modal.component';
+import { JobStepperComponent } from './job-stepper.component';
 
-describe('JobStepperModalComponent', () => {
-  let component: JobStepperModalComponent;
-  let fixture: ComponentFixture<JobStepperModalComponent>;
+describe('JobStepperComponent', () => {
+  let component: JobStepperComponent;
+  let fixture: ComponentFixture<JobStepperComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [JobStepperModalComponent]
+      imports: [JobStepperComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(JobStepperModalComponent);
+    fixture = TestBed.createComponent(JobStepperComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

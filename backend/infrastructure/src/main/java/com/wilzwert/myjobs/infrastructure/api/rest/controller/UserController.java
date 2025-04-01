@@ -5,6 +5,7 @@ import com.wilzwert.myjobs.core.domain.command.ChangePasswordCommand;
 import com.wilzwert.myjobs.core.domain.command.ValidateEmailCommand;
 import com.wilzwert.myjobs.core.domain.exception.UserNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.User;
+import com.wilzwert.myjobs.core.domain.model.UserId;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.ports.driving.*;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
@@ -29,6 +30,10 @@ public class UserController {
 
     private final ChangePasswordUseCase changePasswordUseCase;
 
+    private final SendVerificationEmailUseCase sendVerificationEmailUseCase;
+
+    private final UpdateUserUseCase updateUserUseCase;
+
     private final DeleteAccountUseCase deleteAccountUseCase;
 
     private final UserMapper userMapper;
@@ -37,9 +42,11 @@ public class UserController {
 
 
 
-    public UserController(ValidateEmailUseCase validateEmailUseCase, ChangePasswordUseCase changePasswordUseCase, DeleteAccountUseCase deleteAccountUseCase, UserMapper userMapper, UserService userService) {
+    public UserController(ValidateEmailUseCase validateEmailUseCase, ChangePasswordUseCase changePasswordUseCase, SendVerificationEmailUseCase sendVerificationEmailUseCase, UpdateUserUseCase updateUserUseCase, DeleteAccountUseCase deleteAccountUseCase, UserMapper userMapper, UserService userService) {
         this.validateEmailUseCase = validateEmailUseCase;
         this.changePasswordUseCase = changePasswordUseCase;
+        this.sendVerificationEmailUseCase = sendVerificationEmailUseCase;
+        this.updateUserUseCase = updateUserUseCase;
         this.deleteAccountUseCase = deleteAccountUseCase;
         this.userMapper = userMapper;
         this.userService = userService;
@@ -52,11 +59,17 @@ public class UserController {
         deleteAccountUseCase.deleteAccount(userDetails.getId());
     }
 
-    @GetMapping("/me")
+    @GetMapping()
     public UserResponse me(Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         User user = userService.findById(userDetails.getId()).orElseThrow(UserNotFoundException::new);
         return userMapper.toResponse(user);
+    }
+
+    @PatchMapping()
+    public UserResponse update(@RequestBody UpdateUserRequest updateUserRequest, Authentication authentication) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        return userMapper.toResponse(updateUserUseCase.updateUser(userDetails.getId(), userMapper.toUpdateCommand(updateUserRequest)));
     }
 
     @PutMapping("/password")
@@ -70,5 +83,12 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public void validateEmail(@RequestBody ValidateEmailRequest validateEmailRequest) {
         validateEmailUseCase.validateEmail(new ValidateEmailCommand(validateEmailRequest.getCode()));
+    }
+
+    @PostMapping("/email/verification")
+    @ResponseStatus(HttpStatus.OK)
+    public void sendVerificationEmail(Authentication authentication) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        sendVerificationEmailUseCase.sendVerificationEmail(userDetails.getId());
     }
 }

@@ -5,7 +5,16 @@
                 {{ user.firstName }} {{ user.lastName }}
             </p>
             <p>
-            {{ user.email }}
+            {{ user.email }} 
+            @switch(user.emailStatus) {
+                @case(EmailStatus.PENDING) {
+                    <mat-icon class="input-invalid" svgIcon="valid">Invalid</mat-icon><button mat-button (click)="sendVerificationEmail()">Validate</button>
+                }
+                @case(EmailStatus.VALIDATED) {
+                    <mat-icon class="input-valid" svgIcon="valid">Valid</mat-icon><span>Verified</span>
+                }
+
+            }
             </p>
             <p>
             {{ user.username }}
@@ -14,6 +23,9 @@
                 Registered {{ user.createdAt | date }}
             </p>
         </mat-card-content>
+        <mat-card-actions>
+            <button mat-raised-button (click)="editUser(user)">Edit</button>"
+        </mat-card-actions>
     </mat-card>
 
     <mat-card>

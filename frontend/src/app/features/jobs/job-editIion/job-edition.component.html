@@ -1,0 +1,18 @@
+<h2 mat-dialog-title>
+    {{ data.metadata!.type === 'job' ? (data.job?.id ? 'Edit' : 'Create') + ' job' :
+       data.metadata!.type === 'attachments' ? 'Add attachments' :
+       'Add activities' }}
+  </h2>
+  @if(data.job !== null) {
+    @switch (data.metadata!.type) {
+        @case ('job') {
+            <app-job-form [job]="data.job!" (jobSaved)="success()"></app-job-form>
+        }
+        @case ('attachments') {
+            <app-job-attachments-form [job]="data.job!" (attachmentsSaved)="success()"></app-job-attachments-form>
+        }
+        @case( 'activity') {
+            <app-job-activities-form [job]="data.job!" (activitiesSaved)="success()"></app-job-activities-form>
+        }
+    }
+}

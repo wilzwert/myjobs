@@ -48,4 +48,9 @@ public class BeanConfiguration {
     PasswordUseCaseImpl passwordUseCase(UserService userService, PasswordResetMessageProvider passwordResetMessageProvider, PasswordHasher passwordHasher) {
         return new PasswordUseCaseImpl(userService, passwordResetMessageProvider, passwordHasher);
     }
+
+    @Bean
+    UserUseCaseImpl userUseCase(UserService userService, EmailVerificationMessageProvider emailVerificationMessageProvider) {
+        return new UserUseCaseImpl(userService, emailVerificationMessageProvider);
+    }
 }

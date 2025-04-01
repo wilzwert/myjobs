@@ -7,37 +7,30 @@ import { JobActivitiesFormComponent } from '../job-actitivies-form/job-actitivit
 import { JobAttachmentsFormComponent } from '../job-attachments-form/job-attachments-form.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
+import { BaseChildComponent } from '../../../core/component/base-child.component';
 
 @Component({
-  selector: 'app-job-stepper-modal',
-  imports: [ReactiveFormsModule, MatDialogContent, MatButton, MatStepperModule, JobFormComponent, JobActivitiesFormComponent, JobAttachmentsFormComponent, MatDialogActions],
-  templateUrl: './job-stepper-modal.component.html',
-  styleUrl: './job-stepper-modal.component.scss'
+  selector: 'app-job-stepper',
+  imports: [ReactiveFormsModule, MatButton, MatStepperModule, JobFormComponent, JobActivitiesFormComponent, JobAttachmentsFormComponent],
+  templateUrl: './job-stepper.component.html',
+  styleUrl: './job-stepper.component.scss'
 })
-export class JobStepperModalComponent implements AfterViewInit {
+export class JobStepperComponent extends BaseChildComponent  implements AfterViewInit {
   @ViewChild('matStepper') stepper!: MatStepper;
-
-  @Output() terminated = new EventEmitter<boolean>();
 
   public loading = false;
 
   public job: Job | null = null;
 
-  constructor(
-    public dialogRef: MatDialogRef<JobStepperModalComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { type: string, job: Job|null }
-  ) {}
+  constructor() {
+    super();
+  }
 
   ngAfterViewInit(): void {
     // no steps are completed at this moment
     this.stepper.steps.forEach(step => {
       step.completed = false;
     });
-  }
-
-  close(): void {
-    console.log('closeDIalogref');
-    this.dialogRef.close();
   }
  
   jobCreated(job: Job) :void {
@@ -54,7 +47,6 @@ export class JobStepperModalComponent implements AfterViewInit {
   }
 
   terminate() :void {
-    this.terminated.emit(true);
-    this.close();
+    this.success();
   }
 }

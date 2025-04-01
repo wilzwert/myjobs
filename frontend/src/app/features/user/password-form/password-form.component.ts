@@ -6,26 +6,26 @@ import { PasswordValidator } from '../../../core/validators/password-validator';
 import { ConfirmPasswordValidator } from '../../../core/validators/confirm-password-validator';
 import { ChangePasswordRequest } from '../../../core/model/change-password-request.interface';
 import { catchError, take, throwError } from 'rxjs';
-import { MatDialogRef } from '@angular/material/dialog';
 import { MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import { ApiError } from '../../../core/errors/api-error';
+import { BaseChildComponent } from '../../../core/component/base-child.component';
 
 @Component({
-  selector: 'app-password-modal',
+  selector: 'app-password-form',
   imports: [ReactiveFormsModule, MatFormField, MatInput, MatButton, MatLabel, MatIcon, MatHint],
-  templateUrl: './password-modal.component.html',
-  styleUrl: './password-modal.component.scss'
+  templateUrl: './password-form.component.html',
+  styleUrl: './password-form.component.scss'
 })
-export class PasswordModalComponent implements OnInit {
+export class PasswordFormComponent extends BaseChildComponent implements OnInit {
 
   public form!: FormGroup;
   public isSubmitting = false;
 
-  constructor(public dialogRef: MatDialogRef<PasswordModalComponent>, private fb: FormBuilder, private userService: UserService, private notificationService: NotificationService) {
-
+  constructor(private fb: FormBuilder, private userService: UserService, private notificationService: NotificationService) {
+    super();
   }
 
   get oldPassword() {
@@ -76,6 +76,7 @@ export class PasswordModalComponent implements OnInit {
                   catchError(
                     (error: ApiError) => {
                       this.isSubmitting = false;
+                      this.fail();
                       return throwError(() => new Error(
                         `Password update failed : ${error.message}`
                       ));
@@ -84,7 +85,7 @@ export class PasswordModalComponent implements OnInit {
                 .subscribe(() => {
                     this.isSubmitting = false;
                     this.notificationService.confirmation("Your password has been updated.");
-                    this.dialogRef.close();
+                    this.success();
                 });
     }
   }

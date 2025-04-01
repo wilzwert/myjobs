@@ -36,7 +36,7 @@ export class JobDetailComponent implements OnInit, OnDestroy {
     private jobService: JobService, 
     private fileService: FileService,
     private confirmDialogService: ConfirmDialogService,
-    private jobModalService: ModalService,
+    private modalService: ModalService,
     private notificationService: NotificationService,
     private title: Title
   ) {}
@@ -94,15 +94,15 @@ export class JobDetailComponent implements OnInit, OnDestroy {
   }
 
   addActivity(job: Job) :void {
-    this.jobModalService.openJobModal('activity', job, () => this.loadJob(job.id))
+    this.modalService.openJobModal('activity', job, () => this.loadJob(job.id))
   }
 
   addAttachment(job: Job) :void {
-    this.jobModalService.openJobModal('attachments', job, () => this.loadJob(job.id))
+    this.modalService.openJobModal('attachments', job, () => this.loadJob(job.id))
   }
 
   editJob(job: Job) :void {
-    this.jobModalService.openJobModal('job', job, () => this.loadJob(job.id))
+    this.modalService.openJobModal('job', job, () => this.loadJob(job.id))
   }
 
   confirmDeleteJob(job: Job) :void {
