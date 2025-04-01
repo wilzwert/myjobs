@@ -70,6 +70,32 @@ public class User extends DomainEntity<UserId> {
         );
     }
 
+    public User update(String email, String username, String firstName, String lastName) {
+
+        // if email changed we have to change its status
+        EmailStatus newEmailStatus = getEmailStatus();
+        if(!email.equals(getEmail())) {
+            newEmailStatus = EmailStatus.PENDING;
+        }
+
+        return new User(
+                getId(),
+                email,
+                newEmailStatus,
+                getEmailValidationCode(),
+                getPassword(),
+                username,
+                firstName,
+                lastName,
+                getRole(),
+                "",
+                null,
+                getCreatedAt(),
+                Instant.now(),
+                getJobs()
+        );
+    }
+
     public Job addJob(Job job) {
         // check if job to be added already exists by its url
         jobs.stream().filter(j -> j.getUrl().equals(job.getUrl())).findAny().ifPresent(found -> {throw new JobAlreadyExistsException();});
@@ -104,6 +130,26 @@ public class User extends DomainEntity<UserId> {
                 getCreatedAt(),
                 getUpdatedAt(),
                 jobs
+        );
+    }
+
+    public User updatePassword(String newPassword) {
+        // a reset password request just overrides all previous ones
+        return new User(
+                getId(),
+                getEmail(),
+                getEmailStatus(),
+                getEmailValidationCode(),
+                newPassword,
+                getUsername(),
+                getFirstName(),
+                getLastName(),
+                getRole(),
+                null,
+                null,
+                getCreatedAt(),
+                Instant.now(),
+                getJobs()
         );
     }
 

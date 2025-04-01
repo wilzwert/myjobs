@@ -1,9 +1,49 @@
-@if(sessionInformation|async; as sessionInfo) {
-    <p>
-    {{ sessionInfo.email }}
-    </p>
-    <p>
-    {{ sessionInfo.username }}
-    </p>
+@if(user$|async; as user) {
+    <mat-card>
+        <mat-card-content>
+            <p>
+                {{ user.firstName }} {{ user.lastName }}
+            </p>
+            <p>
+            {{ user.email }} 
+            @switch(user.emailStatus) {
+                @case(EmailStatus.PENDING) {
+                    <mat-icon class="input-invalid" svgIcon="valid">Invalid</mat-icon><button mat-button (click)="sendVerificationEmail()">Validate</button>
+                }
+                @case(EmailStatus.VALIDATED) {
+                    <mat-icon class="input-valid" svgIcon="valid">Valid</mat-icon><span>Verified</span>
+                }
+
+            }
+            </p>
+            <p>
+            {{ user.username }}
+            </p>
+            <p>
+                Registered {{ user.createdAt | date }}
+            </p>
+        </mat-card-content>
+        <mat-card-actions>
+            <button mat-raised-button (click)="editUser(user)">Edit</button>"
+        </mat-card-actions>
+    </mat-card>
+
+    <mat-card>
+        <mat-card-content>
+            <button mat-button (click)="changePassword()">Change password</button>
+        </mat-card-content>
+    </mat-card>
+
 }
-<a class="logout" (click)="logout()">Log out</a>
+<mat-card>
+    <mat-card-content>
+        <button mat-button class="logout" (click)="logout()">Log out</button>
+    </mat-card-content>
+</mat-card>
+
+<mat-card>
+    <mat-card-content>
+        <button mat-button class="delete-account" (click)="deleteAccount()">Delete my account</button>
+    </mat-card-content>
+</mat-card>
+

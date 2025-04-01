@@ -47,12 +47,14 @@ export class SessionService {
     this.next();
   }
 
-  public logOut(): void {
+  public logOut(redirect: boolean = true): void {
     // clear user and session related data from storage
     this.sessionStorageService.clearSessionInformation();
     this.logged = false;
     this.next();
-    this.router.navigate(['']);
+    if(redirect) {
+      this.router.navigate(['']);
+    }
     this.notificationService.information("You have been disconnected.");
   }
 

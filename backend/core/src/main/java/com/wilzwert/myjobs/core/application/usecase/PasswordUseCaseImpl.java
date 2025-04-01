@@ -1,14 +1,18 @@
 package com.wilzwert.myjobs.core.application.usecase;
 
-import com.wilzwert.myjobs.core.domain.command.PasswordCommand;
+import com.wilzwert.myjobs.core.domain.command.CreatePasswordCommand;
+import com.wilzwert.myjobs.core.domain.command.ChangePasswordCommand;
+import com.wilzwert.myjobs.core.domain.exception.PasswordMatchException;
+import com.wilzwert.myjobs.core.domain.exception.UserNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.User;
 import com.wilzwert.myjobs.core.domain.ports.driven.PasswordHasher;
 import com.wilzwert.myjobs.core.domain.ports.driven.PasswordResetMessageProvider;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.ports.driving.CreateNewPasswordUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.ResetPasswordUseCase;
+import com.wilzwert.myjobs.core.domain.ports.driving.ChangePasswordUseCase;
 
-public class PasswordUseCaseImpl implements ResetPasswordUseCase, CreateNewPasswordUseCase {
+public class PasswordUseCaseImpl implements ResetPasswordUseCase, CreateNewPasswordUseCase, ChangePasswordUseCase {
 
     private final UserService userService;
 
@@ -23,13 +27,12 @@ public class PasswordUseCaseImpl implements ResetPasswordUseCase, CreateNewPassw
     }
 
     @Override
-    public void createNewPassword(PasswordCommand passwordCommand) {
+    public void createNewPassword(CreatePasswordCommand createPasswordCommand) {
         // find user by token
         // if not found, do nothing (business rule is to not send a "not found error")
-        userService.findByResetPasswordToken(passwordCommand.resetPasswordToken()).ifPresent((user) -> {
+        userService.findByResetPasswordToken(createPasswordCommand.resetPasswordToken()).ifPresent((user) -> {
             // store new password
-            System.out.println("saving new password"+passwordCommand.password());
-            userService.save(user.createNewPassword(passwordHasher.hashPassword(passwordCommand.password())));
+            userService.save(user.createNewPassword(passwordHasher.hashPassword(createPasswordCommand.password())));
         });
     }
 
@@ -44,5 +47,17 @@ public class PasswordUseCaseImpl implements ResetPasswordUseCase, CreateNewPassw
 
             userService.save(updatedUser);
         });
+    }
+
+    @Override
+    public void changePassword(ChangePasswordCommand changePasswordCommand) {
+        User user = userService.findById(changePasswordCommand.userId()).orElseThrow(UserNotFoundException::new);
+
+        if(!passwordHasher.verifyPassword(changePasswordCommand.oldPassword(), user.getPassword())) {
+            throw new PasswordMatchException("Old password does not match");
+        }
+
+        user = user.updatePassword(passwordHasher.hashPassword(changePasswordCommand.password()));
+        userService.save(user);
     }
 }

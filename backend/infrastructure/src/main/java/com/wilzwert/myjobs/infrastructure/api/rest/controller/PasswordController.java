@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 
-import com.wilzwert.myjobs.core.domain.command.PasswordCommand;
+import com.wilzwert.myjobs.core.domain.command.CreatePasswordCommand;
 import com.wilzwert.myjobs.core.domain.ports.driving.*;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +38,7 @@ public class PasswordController {
     public ResponseEntity<?> newPassword(@RequestBody PasswordRequest passwordRequest) {
         System.out.println((passwordRequest));
 
-         createNewPasswordUseCase.createNewPassword(new PasswordCommand(passwordRequest.getPassword(), passwordRequest.getToken(), null));
+         createNewPasswordUseCase.createNewPassword(new CreatePasswordCommand(passwordRequest.getPassword(), passwordRequest.getToken()));
         return ResponseEntity.ok().build();
     }
 }

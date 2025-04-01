@@ -7,7 +7,7 @@ import { Page } from '../../../core/model/page.interface';
 import { Job, JobStatus } from '../../../core/model/job.interface';
 import { JobService } from '../../../core/services/job.service';
 import { RouterLink } from '@angular/router';
-import { JobModalService } from '../../../core/services/job-modal.service';
+import { ModalService } from '../../../core/services/modal.service';
 import { StatusLabelPipe } from '../../../core/pipe/status-label.pipe';
 import { MatFormField, MatLabel, MatOption, MatSelect, MatSelectChange } from '@angular/material/select';
 import { UpdateJobStatusRequest } from '../../../core/model/update-job-status-request.interface';
@@ -31,7 +31,7 @@ export class JobsComponent implements OnInit {
   public currentStatus: JobStatus | null = null;
   statusKeys: string[] = [];
 
-  constructor(private jobService: JobService, private jobModalService: JobModalService, private confirmDialogService: ConfirmDialogService, private notificationService: NotificationService) {
+  constructor(private jobService: JobService, private modalService: ModalService, private confirmDialogService: ConfirmDialogService, private notificationService: NotificationService) {
     this.currentPage = jobService.getCurrentPage();
     if(this.currentPage == -1) {
       this.currentPage = 0;
@@ -74,12 +74,12 @@ export class JobsComponent implements OnInit {
   }
 
   createJob(): void {
-    this.jobModalService.openJobStepperModal(() => this.reloadJobs());
+    this.modalService.openJobStepperModal(() => this.reloadJobs());
   }
 
   editJob(event: Event, job: Job): void {
     // don't reload list as the edited job is replaced after update by the service
-    this.jobModalService.openJobModal('job', job, () => {});
+    this.modalService.openJobModal('job', job, () => {});
   }
 
   confirmDeleteJob(job: Job) :void {
@@ -100,6 +100,6 @@ export class JobsComponent implements OnInit {
     // prevent routing to job detail 
     event.stopPropagation();
     // don't reload list; as the edited job is replaced after update directly by the service
-    this.jobModalService.openJobModal('attachments', job, () => {});
+    this.modalService.openJobModal('attachments', job, () => {});
   }
 }

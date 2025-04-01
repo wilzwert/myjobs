@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.security.jwt;
 
-
 import com.wilzwert.myjobs.infrastructure.security.model.JwtToken;
+import com.wilzwert.myjobs.infrastructure.security.service.CookieService;
 import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -10,11 +10,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -33,9 +35,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final UserDetailsService userDetailsService;
 
-    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService) {
+    private final CookieService cookieService;
+
+    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService, CookieService cookieService) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
+        this.cookieService = cookieService;
     }
 
     @Override
@@ -64,10 +69,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // security filter chain continues
             filterChain.doFilter(request, response);
         }
-        catch (JwtException e) {
-            log.warn("JWT authentication filter : token exception {}", e.getMessage());
+        catch (UsernameNotFoundException | JwtException | IllegalArgumentException e) {
+            log.warn("JWT authentication filter : token or user exception {}", e.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().print("token_error");
+            response.getWriter().print("auth_error");
+            response.addHeader(HttpHeaders.SET_COOKIE, cookieService.revokeAccessTokenCookie().toString());
+            response.addHeader(HttpHeaders.SET_COOKIE, cookieService.revokeRefreshTokenCookie().toString());
         }
     }
 

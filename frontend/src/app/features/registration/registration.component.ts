@@ -47,7 +47,7 @@ export class RegistrationComponent {
           Validators.required,
           Validators.email
         ],
-        this.authValidators.checkEmailExistsAsync.bind(this.authValidators)
+        this.authValidators.checkEmailExistsAsync().bind(this.authValidators)
       ],
       username: [
         '', 
@@ -55,7 +55,7 @@ export class RegistrationComponent {
           Validators.required,
           Validators.minLength(5)
         ],
-        this.authValidators.checkUsernameExistsAsync.bind(this.authValidators)
+        this.authValidators.checkUsernameExistsAsync().bind(this.authValidators)
       ],
       firstName: [
         '', 

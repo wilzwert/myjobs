@@ -1,13 +1,11 @@
 package com.wilzwert.myjobs.infrastructure.configuration;
 
 
-import com.wilzwert.myjobs.core.application.usecase.JobUseCaseImpl;
-import com.wilzwert.myjobs.core.application.usecase.PasswordUseCaseImpl;
+import com.wilzwert.myjobs.core.application.usecase.*;
 import com.wilzwert.myjobs.core.domain.ports.driven.*;
+import com.wilzwert.myjobs.core.domain.ports.driving.DeleteAccountUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.LoginUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.RegisterUseCase;
-import com.wilzwert.myjobs.core.application.usecase.LoginUseCaseImpl;
-import com.wilzwert.myjobs.core.application.usecase.RegisterUseCaseImpl;
 import com.wilzwert.myjobs.infrastructure.adapter.LocalFileStorage;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,6 +35,11 @@ public class BeanConfiguration {
     }
 
     @Bean
+    DeleteAccountUseCase deleteAccountUseCase(UserService userService) {
+        return new DeleteAccountUseCaseImpl(userService);
+    }
+
+    @Bean
     JobUseCaseImpl jobUseCase(JobService jobService, UserService userService, FileStorage fileStorage, HtmlSanitizer htmlSanitizer) {
         return new JobUseCaseImpl(jobService, userService, fileStorage, htmlSanitizer);
     }
@@ -44,5 +47,10 @@ public class BeanConfiguration {
     @Bean
     PasswordUseCaseImpl passwordUseCase(UserService userService, PasswordResetMessageProvider passwordResetMessageProvider, PasswordHasher passwordHasher) {
         return new PasswordUseCaseImpl(userService, passwordResetMessageProvider, passwordHasher);
+    }
+
+    @Bean
+    UserUseCaseImpl userUseCase(UserService userService, EmailVerificationMessageProvider emailVerificationMessageProvider) {
+        return new UserUseCaseImpl(userService, emailVerificationMessageProvider);
     }
 }

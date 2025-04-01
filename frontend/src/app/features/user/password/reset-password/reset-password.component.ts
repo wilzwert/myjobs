@@ -7,9 +7,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { NgxCaptchaModule } from 'ngx-captcha';
-import { AuthService } from '../../../../core/services/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { ResetPasswordRequest } from '../../../../core/model/reset-password-request.interface';
+import { UserService } from '../../../../core/services/user.service';
 
 
 @Component({
@@ -24,7 +24,7 @@ export class ResetPasswordComponent {
   public isSubmitting = false;
 
   constructor(
-    private authService: AuthService,
+    private userService: UserService,
     private router: Router,
     private fb: FormBuilder,
     private notificationService: NotificationService
@@ -47,7 +47,7 @@ export class ResetPasswordComponent {
   submit() :void {
     if(!this.isSubmitting && this.form.valid) {
           this.isSubmitting = true;
-          this.authService.resetPassword(this.form.value as ResetPasswordRequest)
+          this.userService.resetPassword(this.form.value as ResetPasswordRequest)
           .pipe(
             take(1),
             catchError(

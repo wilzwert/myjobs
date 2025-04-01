@@ -4,18 +4,17 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatIcon } from '@angular/material/icon';
 import { MatFormField, MatHint, MatInput, MatLabel } from '@angular/material/input';
 import { MatButton } from '@angular/material/button';
-import { JsonPipe } from '@angular/common';
 import { catchError, take, throwError } from 'rxjs';
-import { AuthService } from '../../../../core/services/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { PasswordValidator } from '../../../../core/validators/password-validator';
 import { ConfirmPasswordValidator } from '../../../../core/validators/confirm-password-validator';
 import { NewPasswordRequest } from '../../../../core/model/new-password-request.interface';
+import { UserService } from '../../../../core/services/user.service';
 
 @Component({
   selector: 'app-new-password',
   standalone: true,
-  imports: [ReactiveFormsModule, MatIcon, MatInput, MatFormField, MatButton, MatLabel, MatHint, JsonPipe],
+  imports: [ReactiveFormsModule, MatIcon, MatInput, MatFormField, MatButton, MatLabel, MatHint],
   templateUrl: './new-password.component.html',
   styleUrl: './new-password.component.scss'
 })
@@ -25,7 +24,7 @@ export class NewPasswordComponent implements OnInit {
   public form!: FormGroup;
   public isSubmitting = false;
 
-  constructor(private activatedRoute: ActivatedRoute, private fb: FormBuilder, private authService: AuthService, private notificationService: NotificationService, private router: Router) {
+  constructor(private activatedRoute: ActivatedRoute, private fb: FormBuilder, private userService: UserService, private notificationService: NotificationService, private router: Router) {
 
   }
 
@@ -65,7 +64,7 @@ export class NewPasswordComponent implements OnInit {
   submit() :void {
     if(!this.isSubmitting && this.form.valid) {
       this.isSubmitting = true;
-      this.authService.newPassword({password: this.password!.value, token: this.token} as NewPasswordRequest)
+      this.userService.newPassword({password: this.password!.value, token: this.token} as NewPasswordRequest)
                 .pipe(
                   take(1),
                   catchError(

@@ -42,20 +42,4 @@ export class AuthService {
     return this.dataService.post<SessionInformation>(`${this.apiPath}/refresh-token`, null);
   }
 
-  public resetPassword(resetPasswordRequest: ResetPasswordRequest): Observable<void> {
-    return this.captchaService.getCaptchaToken().pipe(
-      switchMap(() => {
-        return this.dataService.post<void>(`${this.apiPath}/password/reset`, resetPasswordRequest);
-      })
-    );
-  }
-
-  public newPassword(newPasswordRequest: NewPasswordRequest): Observable<void> {
-    return this.captchaService.getCaptchaToken().pipe(
-      switchMap(() => {
-        return this.dataService.post<void>(`${this.apiPath}/password`, newPasswordRequest);
-      })
-    );
-  }
-
 }
