@@ -69,7 +69,7 @@ public class UserController {
     @PatchMapping()
     public UserResponse update(@RequestBody UpdateUserRequest updateUserRequest, Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        return userMapper.toResponse(updateUserUseCase.updateUser(userDetails.getId(), userMapper.toUpdateCommand(updateUserRequest)));
+        return userMapper.toResponse(updateUserUseCase.updateUser(userMapper.toUpdateCommand(updateUserRequest, userDetails.getId())));
     }
 
     @PutMapping("/password")

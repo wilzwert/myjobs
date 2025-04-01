@@ -1,5 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.entity;
 
+import com.wilzwert.myjobs.core.domain.model.JobRating;
 import com.wilzwert.myjobs.core.domain.model.JobStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -48,6 +49,9 @@ public class MongoJob {
 
     @Field
     private String profile;
+
+    @Field
+    private JobRating rating;
 
     @Field(name = "created_at")
     private Instant createdAt;

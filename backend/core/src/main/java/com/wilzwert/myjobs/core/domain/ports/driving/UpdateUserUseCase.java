@@ -12,5 +12,5 @@ import com.wilzwert.myjobs.core.domain.model.UserId;
  * Time:15:26
  */
 public interface UpdateUserUseCase {
-    User updateUser(UserId userId, UpdateUserCommand command);
+    User updateUser(UpdateUserCommand command);
 }

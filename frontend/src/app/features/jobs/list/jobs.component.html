@@ -47,6 +47,7 @@
                     <p>Created : {{ job.createdAt}}</p>
                     <p>Activities : {{ job.activities.length}}</p>
                     <p>Attachments : {{ job.attachments.length}}</p>
+                    <app-rating [rating]="job.rating ? job.rating.value : 0" (ratingChange)="updateJobRating(job, $event)"></app-rating>
                 </mat-card-content>
                 <mat-card-actions>
                     <button mat-flat-button (click)="editJob($event, job)">Edit</button>

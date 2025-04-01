@@ -20,7 +20,7 @@ import java.util.*;
  * Time:16:55
  */
 
-public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, UpdateJobUseCase, UpdateJobStatusUseCase, DeleteJobUseCase, GetUserJobsUseCase, AddActivityToJobUseCase, AddAttachmentToJobUseCase, DownloadAttachmentUseCase, DeleteAttachmentUseCase {
+public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, UpdateJobUseCase, UpdateJobStatusUseCase, UpdateJobRatingUseCase, DeleteJobUseCase, GetUserJobsUseCase, AddActivityToJobUseCase, AddAttachmentToJobUseCase, DownloadAttachmentUseCase, DeleteAttachmentUseCase {
 
     private final JobService jobService;
 
@@ -266,6 +266,20 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         }
 
         Job job = foundJob.get().updateStatus(command.status());
+        jobService.saveJobAndActivity(job, job.getActivities().getFirst());
+        return job;
+    }
+
+    @Override
+    public Job updateJobRating(UpdateJobRatingCommand command) {
+        Optional<Job> foundJob = jobService.findByIdAndUserId(command.jobId(), command.userId());
+        if(foundJob.isEmpty()) {
+            throw new JobNotFoundException();
+        }
+
+        System.out.println("Oui?");
+
+        Job job = foundJob.get().updateRating(command.rating());
         jobService.saveJobAndActivity(job, job.getActivities().getFirst());
         return job;
     }

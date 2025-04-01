@@ -1,6 +1,8 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
+import com.wilzwert.myjobs.core.domain.model.JobRating;
 import com.wilzwert.myjobs.core.domain.model.JobStatus;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobRatingMapper;
 import lombok.*;
 
 import java.time.Instant;
@@ -26,6 +28,7 @@ public class JobResponse {
     private String description;
     private String profile;
     private JobStatus status;
+    private JobRatingResponse rating;
     private Instant createdAt;
     private Instant updatedAt;
     private List<ActivityResponse> activities;

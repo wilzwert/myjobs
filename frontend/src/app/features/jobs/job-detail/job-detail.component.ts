@@ -15,10 +15,11 @@ import { MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardSubtitle
 import { ModalService } from '../../../core/services/modal.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { ApiError } from '../../../core/errors/api-error';
+import { RatingComponent } from '../rating/rating.component';
 
 @Component({
   selector: 'app-job-detail',
-  imports: [AsyncPipe, ActivityLabelPipe, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatCardSubtitle, MatCardActions, MatButton],
+  imports: [AsyncPipe, ActivityLabelPipe, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatCardSubtitle, MatCardActions, MatButton, RatingComponent],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss'
 })
@@ -117,5 +118,19 @@ export class JobDetailComponent implements OnInit, OnDestroy {
 
   deleteJob(job: Job) :void {
     this.confirmDialogService.openConfirmDialog(`Delete job "${job.title}" ? ALL DATA WILL BE LOST`, () => this.confirmDeleteJob(job));
+  }
+
+  updateJobRating(job: Job, rating: number) :void {
+    this.jobService.updateJobRating(job.id, {rating: rating}).pipe(
+      take(1),
+      catchError((error: ApiError) => {
+        this.notificationService.confirmation("Job rating update failed.");
+        return throwError(() => error);
+
+      })
+    ).subscribe(() => {
+      this.notificationService.confirmation("Job rating updated successfully.");
+      this.loadJob(job.id);
+    });
   }
 }
