@@ -30,7 +30,8 @@ public class JwtAuthenticator implements Authenticator {
 
     @Override
     public AuthenticatedUser authenticate(User user) throws AuthenticationException {
-        String token = jwtService.generateToken(user.getEmail());
+        System.out.println("JwtAuthenticator Should generate token with "+user.getId().value().toString());
+        String token = jwtService.generateToken(user.getId().value().toString());
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
         return new JwtAuthenticatedUser(user.getEmail(), user.getUsername(), token, refreshToken.getToken(), user.getRole());
     }

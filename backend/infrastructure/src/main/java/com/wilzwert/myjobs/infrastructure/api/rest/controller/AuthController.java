@@ -132,7 +132,7 @@ public class AuthController {
         }
         refreshTokenService.deleteRefreshToken(foundRefreshToken);
         var newRefreshToken = refreshTokenService.createRefreshToken(user);
-        var newAccessToken = jwtService.generateToken(user.getEmail());
+        var newAccessToken = jwtService.generateToken(user.getId().value().toString());
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookieService.createAccessTokenCookie(newAccessToken).toString())
                 .header(HttpHeaders.SET_COOKIE, cookieService.createRefreshTokenCookie(newRefreshToken.getToken()).toString())

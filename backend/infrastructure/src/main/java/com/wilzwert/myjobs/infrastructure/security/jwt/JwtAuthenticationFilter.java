@@ -69,7 +69,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // security filter chain continues
             filterChain.doFilter(request, response);
         }
-        catch (UsernameNotFoundException | JwtException e) {
+        catch (UsernameNotFoundException | JwtException | IllegalArgumentException e) {
             log.warn("JWT authentication filter : token or user exception {}", e.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().print("auth_error");

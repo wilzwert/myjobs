@@ -89,6 +89,9 @@ export class UserFormComponent extends BaseChildComponent implements OnInit {
 
   submit() :void {
       if(!this.isSubmitting && this.form.valid) {
+
+        const emailChanged: boolean = this.email?.value  !== this.user.email;
+
         this.isSubmitting = true;
         this.userService.editUser(this.form.value as EditUserRequest)
             .pipe(
@@ -104,7 +107,7 @@ export class UserFormComponent extends BaseChildComponent implements OnInit {
             ))
             .subscribe(() => {
                 this.isSubmitting = false;
-                this.notificationService.confirmation("Your information has been updated.");
+                this.notificationService.confirmation("Your information has been updated."+(emailChanged ? " Your new email address needs verification ; please check your emails." : ''));
                 this.success();
             });
       }
