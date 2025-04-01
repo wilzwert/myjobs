@@ -16,11 +16,12 @@ import { ConfirmDialogService } from '../../../core/services/confirm-dialog.serv
 import { NotificationService } from '../../../core/services/notification.service';
 import { RatingComponent } from '../rating/rating.component';
 import { UpdateJobRatingRequest } from '../../../core/model/update-job-rating-request.interface';
+import { FormsModule } from '@angular/forms';
 
 
 @Component({
   selector: 'app-jobs',
-  imports: [AsyncPipe, MatCardModule, MatPaginatorModule, RatingComponent, RouterLink, StatusLabelPipe, MatFormField, MatLabel, MatSelect, MatOption, MatButton],
+  imports: [AsyncPipe, MatCardModule, MatPaginatorModule, RatingComponent, RouterLink, StatusLabelPipe, MatFormField, MatLabel, MatSelect, MatOption, MatButton, FormsModule],
   templateUrl: './jobs.component.html',
   styleUrl: './jobs.component.scss'
 })
@@ -31,6 +32,8 @@ export class JobsComponent implements OnInit {
   public currentPage: number;
   public currentPageSize: number;
   public currentStatus: JobStatus | null = null;
+  public currentSort: string = 'createdAt,desc';
+
   statusKeys: string[] = [];
 
   constructor(private jobService: JobService, private modalService: ModalService, private confirmDialogService: ConfirmDialogService, private notificationService: NotificationService) {
@@ -47,7 +50,7 @@ export class JobsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.jobs$ = this.jobService.getAllJobs(this.currentPage, this.currentPageSize, this.currentStatus);
+    this.jobs$ = this.jobService.getAllJobs(this.currentPage, this.currentPageSize, this.currentStatus, this.currentSort);
   }
 
   setStatus(event: MatSelectChange):void {
@@ -73,15 +76,19 @@ export class JobsComponent implements OnInit {
     );
   }
 
+  changeSort():void {
+    this.reloadJobs();
+  }
+
   handlePageEvent(event: PageEvent) {
-    this.jobs$ = this.jobService.getAllJobs(event.pageIndex, event.pageSize, this.currentStatus);
+    this.jobs$ = this.jobService.getAllJobs(event.pageIndex, event.pageSize, this.currentStatus, this.currentSort);
     this.currentPage = event.pageIndex;
     this.currentPageSize = event.pageSize;
   }
 
   reloadJobs(job: Job | null = null): void {
     this.currentPage = 0;
-    this.jobs$ = this.jobService.getAllJobs(this.currentPage, this.currentPageSize, this.currentStatus);
+    this.jobs$ = this.jobService.getAllJobs(this.currentPage, this.currentPageSize, this.currentStatus, this.currentSort);
   }
 
   createJob(): void {

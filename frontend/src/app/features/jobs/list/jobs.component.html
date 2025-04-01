@@ -13,6 +13,16 @@
 
 @let page = jobs$ | async;
 @if(page !== null) {
+    <mat-form-field appearance="outline">
+        <mat-label>Trier par</mat-label>
+        <mat-select [(ngModel)]="currentSort" (selectionChange)="changeSort()">
+            <mat-option value="createdAt,desc">Date (newest first)</mat-option>
+            <mat-option value="createdAt,asc">Date (oldest first)</mat-option>
+            <mat-option value="rating,desc">Rating (highest first)</mat-option>
+            <mat-option value="rating,asc">Rating (lowest first)</mat-option>
+        </mat-select>
+      </mat-form-field>
+
     <mat-paginator #paginator
                class="demo-paginator"
                (page)="handlePageEvent($event)"

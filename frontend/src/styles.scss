@@ -99,3 +99,9 @@ button:disabled mat-icon[svgIcon="send"] {
 .spacer {
   flex: 1 1 auto;
 }
+
+app-rating {
+  @include mat.icon-overrides((
+      color: gold
+  ));
+}

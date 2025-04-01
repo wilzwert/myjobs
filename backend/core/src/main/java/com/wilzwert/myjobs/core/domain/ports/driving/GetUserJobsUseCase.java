@@ -14,5 +14,5 @@ import java.util.List;
  * Time:15:25
  */
 public interface GetUserJobsUseCase {
-    DomainPage<Job> getUserJobs(UserId userId, int page, int size, JobStatus status);
+    DomainPage<Job> getUserJobs(UserId userId, int page, int size, JobStatus status, String sort);
 }
