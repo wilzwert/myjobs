@@ -17,5 +17,6 @@ public enum ActivityType {
     VIDEO_INTERVIEW,
     PHY_INTERVIEW,
     APPLICANT_REFUSAL,
-    COMPANY_REFUSAL
+    COMPANY_REFUSAL,
+    RATING
 }

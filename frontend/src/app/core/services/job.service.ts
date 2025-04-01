@@ -10,6 +10,7 @@ import { CreateJobAttachmentRequest } from '../model/create-job-attachment-reque
 import { CreateJobActivitiesRequest } from '../model/create-job-activities-request.interface';
 import { CreateJobActivityRequest } from '../model/create-job-activity-request.interface';
 import { UpdateJobStatusRequest } from '../model/update-job-status-request.interface';
+import { UpdateJobRatingRequest } from '../model/update-job-rating-request.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -115,6 +116,20 @@ export class JobService {
   public updateJobStatus(jobId: string, request: UpdateJobStatusRequest): Observable<Job> {
     // using patch because only some fields are edited
     return this.dataService.put<Job>(`jobs/${jobId}/status`, request).pipe(
+      map((j: Job) => {
+        this.reloadIfNecessary(j);
+        return j;
+      })
+    );
+  }
+
+  /**
+   * Updates a job status
+   * @returns the job
+   */
+  public updateJobRating(jobId: string, request: UpdateJobRatingRequest): Observable<Job> {
+    // using patch because only some fields are edited
+    return this.dataService.put<Job>(`jobs/${jobId}/rating`, request).pipe(
       map((j: Job) => {
         this.reloadIfNecessary(j);
         return j;

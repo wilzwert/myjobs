@@ -14,11 +14,13 @@ import { UpdateJobStatusRequest } from '../../../core/model/update-job-status-re
 import { MatButton } from '@angular/material/button';
 import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { RatingComponent } from '../rating/rating.component';
+import { UpdateJobRatingRequest } from '../../../core/model/update-job-rating-request.interface';
 
 
 @Component({
   selector: 'app-jobs',
-  imports: [AsyncPipe, MatCardModule, MatPaginatorModule, RouterLink, StatusLabelPipe, MatFormField, MatLabel, MatSelect, MatOption, MatButton],
+  imports: [AsyncPipe, MatCardModule, MatPaginatorModule, RatingComponent, RouterLink, StatusLabelPipe, MatFormField, MatLabel, MatSelect, MatOption, MatButton],
   templateUrl: './jobs.component.html',
   styleUrl: './jobs.component.scss'
 })
@@ -58,6 +60,15 @@ export class JobsComponent implements OnInit {
     this.jobService.updateJobStatus(job.id, {status: event.value} as UpdateJobStatusRequest).subscribe(
       (j) => {
         this.notificationService.confirmation("Status updated successfully.");
+      }
+    );
+  }
+
+  updateJobRating(job: Job, event: number): void {
+    // don't reload list as the edited job is replaced after update by the service
+    this.jobService.updateJobRating(job.id, {rating: event} as UpdateJobRatingRequest).subscribe(
+      (j) => {
+        this.notificationService.confirmation("Rating updated successfully.");
       }
     );
   }

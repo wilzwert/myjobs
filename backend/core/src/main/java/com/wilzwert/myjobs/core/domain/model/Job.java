@@ -23,6 +23,8 @@ public class Job extends DomainEntity<JobId> {
 
     private final String profile;
 
+    private final JobRating rating;
+
     private final Instant createdAt;
 
     private final Instant updatedAt;
@@ -48,6 +50,7 @@ public class Job extends DomainEntity<JobId> {
                 company,
                 description,
                 profile,
+                JobRating.of(0),
                 Instant.now(),
                 Instant.now(),
                 userId,
@@ -57,7 +60,7 @@ public class Job extends DomainEntity<JobId> {
     }
 
 
-    public Job(JobId id, String url, JobStatus status, String title, String company, String description, String profile, Instant createdAt, Instant updatedAt, UserId userId, List<Activity> activities, List<Attachment> attachments) {
+    public Job(JobId id, String url, JobStatus status, String title, String company, String description, String profile, JobRating rating, Instant createdAt, Instant updatedAt, UserId userId, List<Activity> activities, List<Attachment> attachments) {
         this.id = id;
         this.url = url;
         this.status = status;
@@ -65,6 +68,7 @@ public class Job extends DomainEntity<JobId> {
         this.company = company;
         this.description = description;
         this.profile = profile;
+        this.rating = rating;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.userId = userId;
@@ -83,6 +87,7 @@ public class Job extends DomainEntity<JobId> {
                 getCompany(),
                 getDescription(),
                 getProfile(),
+                getRating(),
                 getCreatedAt(),
                 (updatedAt != null ? updatedAt : getUpdatedAt()),
                 getUserId(),
@@ -92,15 +97,9 @@ public class Job extends DomainEntity<JobId> {
     }
     public Job addActivity(Activity activity) {
         JobStatus newJobStatus = activityToStatus.get(activity.getType());
-        if(newJobStatus == null) {
-            newJobStatus = JobStatus.PENDING;
-        }
-
         var updatedActivities = new ArrayList<>(getActivities());
-        System.out.println("Adding "+activity.getType());
         updatedActivities.add(activity);
         updatedActivities.sort(Comparator.comparing(Activity::getCreatedAt).reversed());
-        System.out.println(updatedActivities.getFirst().getType());
         return copy(null, updatedActivities, newJobStatus, Instant.now());
     }
 
@@ -113,6 +112,7 @@ public class Job extends DomainEntity<JobId> {
                 company,
                 description,
                 profile,
+                getRating(),
                 getCreatedAt(),
                 Instant.now(),
                 getUserId(),
@@ -156,6 +156,28 @@ public class Job extends DomainEntity<JobId> {
         return result.copy(null, result.getActivities(), newStatus, Instant.now());
     }
 
+    public Job updateRating(JobRating newJobRating) {
+        if(newJobRating.equals(getRating())) return this;
+
+        Job result = new Job(
+                getId(),
+                getUrl(),
+                getStatus(),
+                getTitle(),
+                getCompany(),
+                getDescription(),
+                getProfile(),
+                newJobRating,
+                getCreatedAt(),
+                Instant.now(),
+                getUserId(),
+                getActivities(),
+                getAttachments()
+        );
+        Activity newActivity = new Activity(ActivityId.generate(), ActivityType.RATING, getId(), ""+newJobRating.getValue(), Instant.now(), Instant.now());
+        return result.addActivity(newActivity);
+    }
+
     public JobId getId() {
         return id;
     }
@@ -182,6 +204,10 @@ public class Job extends DomainEntity<JobId> {
 
     public String getProfile() {
         return profile;
+    }
+
+    public JobRating getRating() {
+        return rating;
     }
 
     public Instant getCreatedAt() {

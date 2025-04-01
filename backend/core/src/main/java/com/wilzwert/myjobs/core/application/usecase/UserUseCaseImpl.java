@@ -35,8 +35,8 @@ public class UserUseCaseImpl implements SendVerificationEmailUseCase, UpdateUser
     }
 
     @Override
-    public User updateUser(UserId userId, UpdateUserCommand command) {
-        User user = userService.findById(userId).orElseThrow(UserNotFoundException::new);
+    public User updateUser(UpdateUserCommand command) {
+        User user = userService.findById(command.userId()).orElseThrow(UserNotFoundException::new);
 
         boolean shouldResendVerificationEmail = !user.getEmail().equals(command.email());
 

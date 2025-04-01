@@ -1,10 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 
-import com.wilzwert.myjobs.core.domain.command.CreateJobCommand;
-import com.wilzwert.myjobs.core.domain.command.DeleteJobCommand;
-import com.wilzwert.myjobs.core.domain.command.UpdateJobCommand;
-import com.wilzwert.myjobs.core.domain.command.UpdateJobStatusCommand;
+import com.wilzwert.myjobs.core.domain.command.*;
 import com.wilzwert.myjobs.core.domain.model.JobId;
 import com.wilzwert.myjobs.core.domain.model.JobStatus;
 import com.wilzwert.myjobs.core.domain.ports.driving.*;
@@ -34,15 +31,17 @@ public class JobController {
     private final GetUserJobUseCase getUserJobUseCase;
     private final GetUserJobsUseCase getUserJobsUseCase;
     private final UpdateJobStatusUseCase updateJobStatusUseCase;
+    private final UpdateJobRatingUseCase updateJobRatingUseCase;
     private final JobMapper jobMapper;
 
-    public JobController(CreateJobUseCase createJobUseCase, GetUserJobUseCase getUserJobUseCase,  UpdateJobUseCase updateJobUseCase, DeleteJobUseCase deleteJobUseCase, GetUserJobsUseCase getUserJobsUseCase, UpdateJobStatusUseCase updateJobStatusUseCase, JobMapper jobMapper) {
+    public JobController(CreateJobUseCase createJobUseCase, GetUserJobUseCase getUserJobUseCase,  UpdateJobUseCase updateJobUseCase, DeleteJobUseCase deleteJobUseCase, GetUserJobsUseCase getUserJobsUseCase, UpdateJobStatusUseCase updateJobStatusUseCase, UpdateJobRatingUseCase updateJobRatingUseCase, JobMapper jobMapper) {
         this.createJobUseCase = createJobUseCase;
         this.getUserJobUseCase = getUserJobUseCase;
         this.updateJobUseCase = updateJobUseCase;
         this.deleteJobUseCase = deleteJobUseCase;
         this.getUserJobsUseCase = getUserJobsUseCase;
         this.updateJobStatusUseCase = updateJobStatusUseCase;
+        this.updateJobRatingUseCase = updateJobRatingUseCase;
         this.jobMapper = jobMapper;
     }
 
@@ -73,6 +72,14 @@ public class JobController {
         System.out.println(updateJobStatusRequest);
         UpdateJobStatusCommand updateJobStatusCommand = jobMapper.toCommand(updateJobStatusRequest, userDetails.getId(), new JobId(UUID.fromString(id)));
         return jobMapper.toResponse(updateJobStatusUseCase.updateJobStatus(updateJobStatusCommand));
+    }
+
+    @PutMapping("/{id}/rating")
+    public JobResponse updateRating(@PathVariable("id") String id, @RequestBody final UpdateJobRatingRequest updateJobRatingRequest, Authentication authentication) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        System.out.println(updateJobRatingRequest);
+        UpdateJobRatingCommand updateJobRatingCommand = jobMapper.toCommand(updateJobRatingRequest, userDetails.getId(), new JobId(UUID.fromString(id)));
+        return jobMapper.toResponse(updateJobRatingUseCase.updateJobRating(updateJobRatingCommand));
     }
 
     @DeleteMapping("/{id}")

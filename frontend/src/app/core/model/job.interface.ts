@@ -1,6 +1,10 @@
 import { Activity } from "./activity.interface"
 import { Attachment } from "./attachment.interface"
 
+export interface JobRating {
+    value: number;
+}
+
 export interface Job {
     id: string,
     url: string,
@@ -9,6 +13,7 @@ export interface Job {
     company: string,
     description: string,
     profile: string,
+    rating: JobRating,
     createdAt: string
     updatedAt: string,
     activities: Activity[],
