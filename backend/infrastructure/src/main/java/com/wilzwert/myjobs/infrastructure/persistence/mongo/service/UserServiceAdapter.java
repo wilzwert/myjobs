@@ -108,12 +108,14 @@ public class UserServiceAdapter implements UserService {
     @Override
     @Cacheable(value = "emailExists", key = "#email")
     public boolean emailExists(String email) {
+        System.out.println("in emailExists "+email);
         return findByEmail(email).isPresent();
     }
 
     @Override
     @Cacheable(value = "usernameExists", key = "#username")
     public boolean usernameExists(String username) {
+        System.out.println("in usernameExists "+username);
         return findByUsername(username).isPresent();
     }
 

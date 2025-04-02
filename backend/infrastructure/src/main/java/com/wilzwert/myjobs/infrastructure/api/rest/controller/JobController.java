@@ -10,6 +10,7 @@ import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,9 +33,10 @@ public class JobController {
     private final GetUserJobsUseCase getUserJobsUseCase;
     private final UpdateJobStatusUseCase updateJobStatusUseCase;
     private final UpdateJobRatingUseCase updateJobRatingUseCase;
+    private final ExtractJobMetadataUseCase extractJobMetadataUseCase;
     private final JobMapper jobMapper;
 
-    public JobController(CreateJobUseCase createJobUseCase, GetUserJobUseCase getUserJobUseCase,  UpdateJobUseCase updateJobUseCase, DeleteJobUseCase deleteJobUseCase, GetUserJobsUseCase getUserJobsUseCase, UpdateJobStatusUseCase updateJobStatusUseCase, UpdateJobRatingUseCase updateJobRatingUseCase, JobMapper jobMapper) {
+    public JobController(CreateJobUseCase createJobUseCase, GetUserJobUseCase getUserJobUseCase,  UpdateJobUseCase updateJobUseCase, DeleteJobUseCase deleteJobUseCase, GetUserJobsUseCase getUserJobsUseCase, UpdateJobStatusUseCase updateJobStatusUseCase, UpdateJobRatingUseCase updateJobRatingUseCase, ExtractJobMetadataUseCase extractJobMetadataUseCase, JobMapper jobMapper) {
         this.createJobUseCase = createJobUseCase;
         this.getUserJobUseCase = getUserJobUseCase;
         this.updateJobUseCase = updateJobUseCase;
@@ -42,6 +44,7 @@ public class JobController {
         this.getUserJobsUseCase = getUserJobsUseCase;
         this.updateJobStatusUseCase = updateJobStatusUseCase;
         this.updateJobRatingUseCase = updateJobRatingUseCase;
+        this.extractJobMetadataUseCase = extractJobMetadataUseCase;
         this.jobMapper = jobMapper;
     }
 
@@ -51,6 +54,12 @@ public class JobController {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         CreateJobCommand createJobCommand = jobMapper.toCommand(createJobRequest, userDetails.getId());
         return jobMapper.toResponse(createJobUseCase.createJob(createJobCommand));
+    }
+
+    @PostMapping("/metadata")
+    public ResponseEntity<?> extract(@RequestParam() String url) {
+        // System.out.println(extractJobMetadataUseCase.extract(url));
+        return ResponseEntity.ok(extractJobMetadataUseCase.extract(url));
     }
 
     @GetMapping("/{id}")

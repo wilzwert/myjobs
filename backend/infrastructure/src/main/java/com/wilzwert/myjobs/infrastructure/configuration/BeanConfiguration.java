@@ -3,12 +3,21 @@ package com.wilzwert.myjobs.infrastructure.configuration;
 
 import com.wilzwert.myjobs.core.application.usecase.*;
 import com.wilzwert.myjobs.core.domain.ports.driven.*;
+import com.wilzwert.myjobs.core.domain.ports.driven.metadata.fetcher.HtmlFetcher;
+import com.wilzwert.myjobs.core.domain.ports.driven.metadata.fetcher.HtmlFetcherService;
+import com.wilzwert.myjobs.core.domain.ports.driven.metadata.fetcher.JsHtmlFetcher;
+import com.wilzwert.myjobs.core.domain.ports.driven.metadata.fetcher.StaticHtmlFetcher;
 import com.wilzwert.myjobs.core.domain.ports.driving.DeleteAccountUseCase;
+import com.wilzwert.myjobs.core.domain.ports.driving.ExtractJobMetadataUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.LoginUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.RegisterUseCase;
-import com.wilzwert.myjobs.infrastructure.adapter.LocalFileStorage;
+import com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.JobMetadataExtractor;
+import com.wilzwert.myjobs.core.domain.service.metadata.JobMetadataExtractorService;
+import com.wilzwert.myjobs.infrastructure.adapter.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -52,5 +61,25 @@ public class BeanConfiguration {
     @Bean
     UserUseCaseImpl userUseCase(UserService userService, EmailVerificationMessageProvider emailVerificationMessageProvider) {
         return new UserUseCaseImpl(userService, emailVerificationMessageProvider);
+    }
+
+    @Bean
+    public List<HtmlFetcher> htmlFetchers(JsHtmlFetcher jsHtmlFetcher, StaticHtmlFetcher staticHtmlFetcher) {
+        return List.of(jsHtmlFetcher, staticHtmlFetcher);
+    }
+
+    @Bean
+    public List<JobMetadataExtractor> htmlExtractors() {
+        return List.of(new JsonLdJobMetadataExtractorAdapter(), new DomJobMetadataExtractorAdapter());
+    }
+
+    @Bean
+    public JobMetadataExtractorService jobMetadataExtractorService(HtmlFetcherService htmlFetcherService) {
+        return new JobMetadataExtractorService(htmlFetcherService, htmlExtractors());
+    }
+
+    @Bean
+    ExtractJobMetadataUseCase extractJobMetadataUseCase(JobMetadataExtractorService jobMetadataExtractorService) {
+        return new ExtractJobMetadataUseCaseImpl(jobMetadataExtractorService);
     }
 }
