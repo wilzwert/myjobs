@@ -12,13 +12,21 @@
                 <input type="file" formControlName="file" (change)="onFileChange($event, $index)" required>
                 <input type="hidden" name="MAX_FILE_SIZE" [value]="maxFileSize" />
             </mat-form-field>
-                <button mat-raised-button type="button" (click)="removeAttachment($index)">Remove</button>
+             @if($index >= defaultAttachements) {
+                
+                <button mat-icon-button (click)="removeAttachment($index)">
+                <mat-icon aria-hidden="false" aria-label="Remove this attachment" fontIcon="remove">Remove this attachment</mat-icon>
+                </button>
+            }
         </div>
         }
     </div>
-  
-    <button mat-raised-button type="button" (click)="addAttachment()">Add attachment</button>
     @if(attachments.controls.length > 0) {
         <button mat-raised-button type="submit" [disabled]="attachmentForm.invalid || loading">Save attachements</button>
     }
+
+    <button aria-hidden="false" aria-label="Add an attachment"  mat-icon-button (click)="addAttachment()">
+        <mat-icon fontIcon="add">Add an attachment</mat-icon>
+    </button>
+
   </form>

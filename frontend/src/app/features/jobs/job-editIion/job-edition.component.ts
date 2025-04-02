@@ -4,6 +4,7 @@ import { JobActivitiesFormComponent } from '../job-actitivies-form/job-actitivit
 import { JobAttachmentsFormComponent } from '../job-attachments-form/job-attachments-form.component';
 import { BaseChildComponent } from '../../../core/component/base-child.component';
 import { JobAttachmentsComponent } from '../job-attachments/job-attachments.component';
+import { JsonPipe } from '@angular/common';
 
 @Component({
   selector: 'app-job-edition',

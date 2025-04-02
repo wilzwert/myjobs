@@ -63,7 +63,7 @@ export class JobAttachmentsComponent implements OnInit {
     this.displayForm = true;
   }
   else {
-    this.modalService.openJobModal('attachments-form', job, () => this.onAttachmentsSaved(job));
+    this.modalService.openJobModal('attachments-form', job, () => this.onAttachmentsSaved(job), {defaultAttachments: 1});
   }
  }
 

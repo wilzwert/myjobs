@@ -23,7 +23,7 @@
             <app-job-attachments [job]="data.job!" (attachmentsSaved)="success()"></app-job-attachments>
         }
         @case ('attachments-form') {
-            <app-job-attachments-form [job]="data.job!" (attachmentsSaved)="success()"></app-job-attachments-form>
+            <app-job-attachments-form [defaultAttachements]="data.metadata!.defaultAttachments" [job]="data.job!" (attachmentsSaved)="success()"></app-job-attachments-form>
         }
         @case( 'activity') {
             <app-job-activities-form [job]="data.job!" (activitiesSaved)="success()"></app-job-activities-form>

@@ -6,7 +6,6 @@ import { Job } from '../../../core/model/job.interface';
 import { Title } from '@angular/platform-browser';
 import { AsyncPipe } from '@angular/common';
 import { FileService } from '../../../core/services/file.service';
-import { Attachment } from '../../../core/model/attachment.interface';
 import { ActivityType } from '../../../core/model/activity-type';
 import { ActivityLabelPipe } from '../../../core/pipe/activity-label.pipe';
 import { MatButton } from '@angular/material/button';
@@ -16,12 +15,11 @@ import { ModalService } from '../../../core/services/modal.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { ApiError } from '../../../core/errors/api-error';
 import { RatingComponent } from '../rating/rating.component';
-import { JobAttachmentsFormComponent } from '../job-attachments-form/job-attachments-form.component';
 import { JobAttachmentsComponent } from '../job-attachments/job-attachments.component';
 
 @Component({
   selector: 'app-job-detail',
-  imports: [AsyncPipe, ActivityLabelPipe, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatCardSubtitle, MatCardActions, MatButton, RatingComponent, JobAttachmentsComponent, JobAttachmentsFormComponent],
+  imports: [AsyncPipe, ActivityLabelPipe, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatCardSubtitle, MatCardActions, MatButton, RatingComponent, JobAttachmentsComponent],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss'
 })

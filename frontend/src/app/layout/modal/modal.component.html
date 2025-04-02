@@ -1,7 +1,9 @@
 <mat-dialog-content>
 @if(isLoaded) {
+    <button mat-icon-button (click)="close()">
+        <mat-icon aria-hidden="false" aria-label="Close" fontIcon="close">Close</mat-icon>
+    </button>
     <ng-container #component>
     </ng-container>
-    <button mat-button (click)="close()">Close</button>
 }
 </mat-dialog-content>
