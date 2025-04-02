@@ -8,30 +8,39 @@ import { Job } from '../../../core/model/job.interface';
 import { catchError, take, throwError } from 'rxjs';
 import { ApiError } from '../../../core/errors/api-error';
 import { CreateJobAttachmentRequest } from '../../../core/model/create-job-attachment-request.interface';
-import { MatButton } from '@angular/material/button';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { NotificationService } from '../../../core/services/notification.service';
+import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
+import { FileService } from '../../../core/services/file.service';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-job-attachments-form',
-  imports: [ReactiveFormsModule, MatFormField, MatInput, MatLabel, MatButton],
+  imports: [ReactiveFormsModule, MatFormField, MatInput, MatLabel, MatButton, MatIcon, MatIconButton],
   templateUrl: './job-attachments-form.component.html',
   styleUrl: './job-attachments-form.component.scss'
 })
 export class JobAttachmentsFormComponent implements OnInit {
   @Input({ required: true }) job!: Job;
+  @Input() defaultAttachements = 0;
   @Output() attachmentsSaved = new EventEmitter<Job>();
 
   loading = false;
   attachmentForm!: FormGroup;
   maxFileSize = 2*1024*1024;
 
-  constructor(private fb: FormBuilder, private jobService: JobService, private notificationService: NotificationService) {
+  constructor(private fb: FormBuilder, private jobService: JobService, private notificationService: NotificationService, private confirmDialogService: ConfirmDialogService, private fileService: FileService) {
   }
 
   ngOnInit(): void {
     this.attachmentForm = this.fb.group({
       attachments: this.fb.array([])
     });
+    console.log(this.defaultAttachements);
+
+    for(let a=0; a<this.defaultAttachements; a++) {
+      this.addAttachment();
+    }
   }
 
   get attachments(): FormArray {

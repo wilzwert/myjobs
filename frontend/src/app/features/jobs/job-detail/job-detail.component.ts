@@ -6,7 +6,6 @@ import { Job } from '../../../core/model/job.interface';
 import { Title } from '@angular/platform-browser';
 import { AsyncPipe } from '@angular/common';
 import { FileService } from '../../../core/services/file.service';
-import { Attachment } from '../../../core/model/attachment.interface';
 import { ActivityType } from '../../../core/model/activity-type';
 import { ActivityLabelPipe } from '../../../core/pipe/activity-label.pipe';
 import { MatButton } from '@angular/material/button';
@@ -16,10 +15,11 @@ import { ModalService } from '../../../core/services/modal.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { ApiError } from '../../../core/errors/api-error';
 import { RatingComponent } from '../rating/rating.component';
+import { JobAttachmentsComponent } from '../job-attachments/job-attachments.component';
 
 @Component({
   selector: 'app-job-detail',
-  imports: [AsyncPipe, ActivityLabelPipe, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatCardSubtitle, MatCardActions, MatButton, RatingComponent],
+  imports: [AsyncPipe, ActivityLabelPipe, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatCardSubtitle, MatCardActions, MatButton, RatingComponent, JobAttachmentsComponent],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss'
 })
@@ -68,38 +68,8 @@ export class JobDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  deleteAttachment(job: Job, attachment: Attachment) :void {
-    this.confirmDialogService.openConfirmDialog(`Delete attachment "${attachment.name}" ?`, () => this.confirmDeleteAttachment(job, attachment));
-  }
-
-  confirmDeleteAttachment(job: Job, attachment: Attachment) :void {
-    this.jobService.deleteAttachment(job.id, attachment.id).pipe(
-      take(1),
-      tap(() => this.loadJob(job.id))
-    ).subscribe();
-  }
-
-  downloadAttachement(job: Job, attachment: Attachment) :void {
-    this.fileService.downloadFile(`/api/jobs/${job.id}/attachments/${attachment.id}/file`).subscribe((blob) => {
-      const a = document.createElement('a');
-      const objectUrl = URL.createObjectURL(blob);
-      window.open(objectUrl, '_blank');
-        /*
-      console.log(objectUrl);
-      const downloadFile = new File([blob], attachment.filename, { type: attachment.contentType }); 
-      a.href = objectUrl;
-      a.download = attachment.filename;
-      a.click();*/
-      URL.revokeObjectURL(objectUrl);
-    });
-  }
-
   addActivity(job: Job) :void {
     this.modalService.openJobModal('activity', job, () => this.loadJob(job.id))
-  }
-
-  addAttachment(job: Job) :void {
-    this.modalService.openJobModal('attachments', job, () => this.loadJob(job.id))
   }
 
   editJob(job: Job) :void {

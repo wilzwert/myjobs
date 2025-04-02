@@ -1,0 +1,14 @@
+@if(job.attachments.length > 0) {
+    @for (attachment of job.attachments ; track $index) {
+        <p>{{ attachment.name }} - {{ attachment.filename }} <a (click)="downloadAttachement(job, attachment)">Download</a></p>
+        <p>{{ attachment.createdAt }}</p>
+        <button mat-raised-button color="warn" (click)="deleteAttachment(job, attachment)">Delete</button>
+    }
+}
+
+@if(displayForm) {
+    <app-job-attachments-form [job]="job" (attachmentsSaved)="onAttachmentsSaved(job)"></app-job-attachments-form>
+}
+@else {
+    <button mat-raised-button color="warn" (click)="addAttachment(job)">Add attachment</button>
+}

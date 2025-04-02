@@ -3,12 +3,13 @@ import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef } from '@angular/materi
 import { CommonModule } from '@angular/common';
 import { ComponentInputData, ComponentInputDomainData } from '../../core/model/component-input-data.interface';
 import { BaseChildComponent } from '../../core/component/base-child.component';
-import { MatButton } from '@angular/material/button';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { Subject, takeUntil } from 'rxjs';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-modal',
-  imports: [CommonModule, MatButton, MatDialogContent],
+  imports: [CommonModule, MatIconButton, MatIcon, MatDialogContent],
   templateUrl: './modal.component.html',
   styleUrl: './modal.component.scss'
 })

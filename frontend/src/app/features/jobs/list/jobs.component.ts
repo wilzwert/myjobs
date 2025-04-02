@@ -114,7 +114,7 @@ export class JobsComponent implements OnInit {
     this.confirmDialogService.openConfirmDialog(`Delete job "${job.title}" ?`, () => this.confirmDeleteJob(job));
   }
 
-  editAttachments(event: Event, job: Job): void {
+  manageAttachments(event: Event, job: Job): void {
     // prevent routing to job detail 
     event.stopPropagation();
     // don't reload list; as the edited job is replaced after update directly by the service
