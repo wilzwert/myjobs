@@ -12,6 +12,7 @@ import { MatInput } from '@angular/material/input';
 import { catchError, Observable, take, throwError } from 'rxjs';
 import { ApiError } from '../../../core/errors/api-error';
 import { MatButton } from '@angular/material/button';
+import { JobMetadata } from '../../../core/model/job-metadata.interface';
 
 @Component({
   selector: 'app-job-form',
@@ -24,6 +25,7 @@ import { MatButton } from '@angular/material/button';
 })
 export class JobFormComponent implements OnInit {
   @Input() job: Job | null = null;
+  @Input() jobMetadata: JobMetadata | null = null;
   @Output() jobSaved = new EventEmitter<Job>();
 
   public loading = false;
@@ -109,42 +111,44 @@ export class JobFormComponent implements OnInit {
   }
 
   private initForm(): void {
+    const valueSource = this.job?? this.jobMetadata;
+    console.log('initform', this.jobMetadata);
     this.form = this.fb.group({
       url: [
-        this.job?.url,
+        valueSource?.url,
         [
           Validators.required,
           Validators.pattern('(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)')
         ]
       ],
       title: [
-        this.job?.title, 
+        valueSource?.title, 
         [
           Validators.required,
           Validators.minLength(3)
         ]
       ],
       company: [
-        this.job?.company, 
+        valueSource?.company, 
         [
           Validators.required,
           Validators.minLength(2)
         ]
       ],
       description: [
-        this.job?.description,
+        valueSource?.description,
         [
           Validators.required
         ]
       ],
       profile: [
-        this.job?.profile,
+        valueSource?.profile,
         [
           
         ]
       ],
       salary: [
-        this.job?.salary,
+        valueSource?.salary,
         [
           
         ]

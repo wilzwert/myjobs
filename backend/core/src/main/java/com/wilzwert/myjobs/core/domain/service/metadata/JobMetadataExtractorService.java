@@ -32,8 +32,6 @@ public class JobMetadataExtractorService {
             return new JobMetadata.Builder().url(url).build();
         }
 
-        // System.out.println(html);
-
         JobMetadata result =  extractors.stream()
                 .filter((f) -> !f.isIncompatible(domain))
                 .map(extractor -> extractor.extract(html))
@@ -45,8 +43,7 @@ public class JobMetadataExtractorService {
         if(result.url().isEmpty()) {
             result = new JobMetadata.Builder(result).url(url).build();
         }
-        System.out.println("got result");
-        System.out.println(result);
+
         return result;
     }
 }

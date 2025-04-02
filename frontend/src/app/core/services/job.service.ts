@@ -11,6 +11,7 @@ import { CreateJobActivitiesRequest } from '../model/create-job-activities-reque
 import { CreateJobActivityRequest } from '../model/create-job-activity-request.interface';
 import { UpdateJobStatusRequest } from '../model/update-job-status-request.interface';
 import { UpdateJobRatingRequest } from '../model/update-job-rating-request.interface';
+import { JobMetadata } from '../model/job-metadata.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -195,4 +196,8 @@ export class JobService {
         map((jobs: Job[]) => jobs[jobs.length - 1]) // Retourne le dernier Job mis à jour
     );
   }
+
+  public getJobMetadata(url: string) :Observable<JobMetadata> {
+    return this.dataService.get<JobMetadata>(`jobs/metadata?url=${url}`)
+  } 
 }

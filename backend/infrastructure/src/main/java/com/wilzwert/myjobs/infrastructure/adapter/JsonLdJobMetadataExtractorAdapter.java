@@ -16,14 +16,38 @@ import java.util.regex.Pattern;
  */
 public class JsonLdJobMetadataExtractorAdapter implements JsonLdJobMetadataExtractor {
     Pattern JSON_LD_PATTERN = Pattern.compile(
-            "(?s)<script\\s+type=[\"']application/ld\\+json[\"'].*?>(.*?)</script>",
-            Pattern.DOTALL
+            "<script\\s+type=[\"']application/ld\\+json[\"'].*?>(.*?)</script>",
+            Pattern.DOTALL | Pattern.MULTILINE
     );
 
-    private String buildSalary(JsonNode baseSalaryNode) {
+    private String buildSalary(JsonNode node) {
+        JsonNode baseSalaryNode = node.get("baseSalary");
+        if (baseSalaryNode == null) {
+            return "";
+        }
         String salaryType = baseSalaryNode.get("@type").asText();
+        String result = "";
+        try {
+            result = switch (salaryType) {
+                case "MonetaryAmount" ->
+                        switch(baseSalaryNode.get("value").get("@type").asText()) {
+                            case "QuantitativeValue" ->
+                                    baseSalaryNode.get("value").get("minValue").asText()
+                                    +" - "+baseSalaryNode.get("value").get("maxValue").asText();
+                            default -> baseSalaryNode.get("value").get("value").asText();
+                        }
+                        + " "+baseSalaryNode.get("currency").asText()
+                        + " / " + baseSalaryNode.get("value").get("unitText").asText();
+                case "Number" -> baseSalaryNode.get("value").asText();
+                default -> "";
+            };
+        }
+        catch (Exception e) {
+            // TODO : log
+            e.printStackTrace();
+        }
         System.out.println(salaryType);
-        return "oui";
+        return result;
     }
 
     private ExtractedMetadata buildExtractedMetadataFromJsonNode(JsonNode node) {
@@ -44,11 +68,10 @@ public class JsonLdJobMetadataExtractorAdapter implements JsonLdJobMetadataExtra
             else if (node.get("experienceRequirements") != null) {
                 builder.profile(node.get("experienceRequirements").asText());
             }
-            if (node.get("baseSalary") != null) {
-                builder.salary(buildSalary(node.get("baseSalary")));
-            }
+            builder.salary(buildSalary(node));
         }
         catch (Exception e) {
+            // TODO : log
             e.printStackTrace();
         }
 
@@ -58,9 +81,7 @@ public class JsonLdJobMetadataExtractorAdapter implements JsonLdJobMetadataExtra
     @Override
     public ExtractedMetadata getMetadata(String html) {
         Matcher matcher = JSON_LD_PATTERN.matcher(html);
-        if (!matcher.find()) {
-            return null;
-        }
+
         try {
             ObjectMapper mapper = new ObjectMapper();
             // parse as JsonNode for simplicity as some fields may come in various types
@@ -68,7 +89,6 @@ public class JsonLdJobMetadataExtractorAdapter implements JsonLdJobMetadataExtra
                 if(matcher.group(1) != null) {
                     JsonNode jsonNode = mapper.readValue(matcher.group(1), JsonNode.class);
                     if(jsonNode.get("@type") != null && jsonNode.get("@type").asText().equals("JobPosting")) {
-                        System.out.println(matcher.group(1));
                         return buildExtractedMetadataFromJsonNode(jsonNode);
                     }
                 }
@@ -78,7 +98,7 @@ public class JsonLdJobMetadataExtractorAdapter implements JsonLdJobMetadataExtra
             // JsonNode jsonNode = mapper.readValue(matcher.group(1), JsonNode.class);
             // return buildExtractedMetadataFromJsonNode(jsonNode);
         } catch (JsonProcessingException e) {
-            System.out.println("AH OK"+e.getMessage());
+            // TODO : log
             return null;
         }
     }

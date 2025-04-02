@@ -1,7 +1,7 @@
 <h2 mat-dialog-title>Create a Job</h2>
 <mat-stepper linear #matStepper>
   <mat-step editable="false" label="Job creation">
-    <app-job-form (submit)="loading = true" (jobSaved)="jobCreated($event)"></app-job-form>
+    <app-job-form (submit)="loading = true" [jobMetadata]="jobMetadata" (jobSaved)="jobCreated($event)"></app-job-form>
   </mat-step>
   <mat-step optional="true" editable="false" label="Attachments">
     <app-job-attachments-form [job]="job!" (attachmentsSaved)="next()"></app-job-attachments-form>

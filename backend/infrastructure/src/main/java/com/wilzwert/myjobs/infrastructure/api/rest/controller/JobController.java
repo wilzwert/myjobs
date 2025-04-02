@@ -56,7 +56,7 @@ public class JobController {
         return jobMapper.toResponse(createJobUseCase.createJob(createJobCommand));
     }
 
-    @PostMapping("/metadata")
+    @GetMapping("/metadata")
     public ResponseEntity<?> extract(@RequestParam() String url) {
         // System.out.println(extractJobMetadataUseCase.extract(url));
         return ResponseEntity.ok(extractJobMetadataUseCase.extract(url));
