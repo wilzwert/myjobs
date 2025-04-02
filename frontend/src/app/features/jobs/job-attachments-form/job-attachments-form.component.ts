@@ -36,8 +36,7 @@ export class JobAttachmentsFormComponent implements OnInit {
     this.attachmentForm = this.fb.group({
       attachments: this.fb.array([])
     });
-    console.log(this.defaultAttachements);
-
+    
     for(let a=0; a<this.defaultAttachements; a++) {
       this.addAttachment();
     }
@@ -67,7 +66,6 @@ export class JobAttachmentsFormComponent implements OnInit {
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
   
-      console.log(file.size);
       if(file.size > this.maxFileSize) {
         input.value = '';
         alert('File too big');
@@ -77,7 +75,6 @@ export class JobAttachmentsFormComponent implements OnInit {
         const reader = new FileReader();
         reader.onload = () => {
           const base64String = reader.result as string;
-          console.log(file.name);
           this.attachments.at(index).patchValue({ filename: file.name, content: base64String, fileU: 'chosen' });
         };
         reader.readAsDataURL(file);
@@ -96,9 +93,7 @@ export class JobAttachmentsFormComponent implements OnInit {
       });
 
       
-
-      // Envoyer `formData` à l'API via un service
-      console.log('FormData ready to send:', {attachments: attachments} as CreateJobAttachmentsRequest);
+      // send `formData` to backend
       this.jobService.createAttachments(this.job.id, {attachments: attachments} as CreateJobAttachmentsRequest).pipe(
             take(1),
             catchError(

@@ -117,7 +117,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
             }
         }
         job = job.updateJob(command.url(), command.title(), command.company(), command.description(), command.profile(), command.salary());
-        System.out.println("Command has "+command.url());
+
         // FIXME
         // this is an ugly workaround to force the infra (persistence in particular) to save all data
         // as I understand DDD, only the root aggregate should be explicitly persisted

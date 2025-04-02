@@ -19,7 +19,6 @@ class JobRatingConverter extends StdConverter<String, JobRating> {
 
     @Override
     public JobRating convert(String s) {
-        System.out.println("converting "+s+"::"+Integer.parseInt(s));
         return JobRating.of(Integer.parseInt(s));
     }
 }

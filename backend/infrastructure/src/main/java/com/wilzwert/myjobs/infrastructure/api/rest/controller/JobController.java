@@ -62,16 +62,13 @@ public class JobController {
     @PatchMapping("/{id}")
     public JobResponse patch(@PathVariable("id") String id, @RequestBody final UpdateJobRequest updateJobRequest, Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        System.out.println("Update job salary "+updateJobRequest.getSalary());
         UpdateJobCommand updateJobCommand = jobMapper.toCommand(updateJobRequest, userDetails.getId(), new JobId(UUID.fromString(id)));
-        System.out.println("Update job command  "+updateJobCommand.salary());
         return jobMapper.toResponse(updateJobUseCase.updateJob(updateJobCommand));
     }
 
     @PutMapping("/{id}/status")
     public JobResponse updateStatus(@PathVariable("id") String id, @RequestBody final UpdateJobStatusRequest updateJobStatusRequest, Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        System.out.println(updateJobStatusRequest);
         UpdateJobStatusCommand updateJobStatusCommand = jobMapper.toCommand(updateJobStatusRequest, userDetails.getId(), new JobId(UUID.fromString(id)));
         return jobMapper.toResponse(updateJobStatusUseCase.updateJobStatus(updateJobStatusCommand));
     }
@@ -79,7 +76,6 @@ public class JobController {
     @PutMapping("/{id}/rating")
     public JobResponse updateRating(@PathVariable("id") String id, @RequestBody final UpdateJobRatingRequest updateJobRatingRequest, Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        System.out.println(updateJobRatingRequest);
         UpdateJobRatingCommand updateJobRatingCommand = jobMapper.toCommand(updateJobRatingRequest, userDetails.getId(), new JobId(UUID.fromString(id)));
         return jobMapper.toResponse(updateJobRatingUseCase.updateJobRating(updateJobRatingCommand));
     }

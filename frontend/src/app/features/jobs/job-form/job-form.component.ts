@@ -82,7 +82,6 @@ export class JobFormComponent implements OnInit {
     this.loading = true;
     let observableResult: Observable<Job>;
     let term = 'created';
-    console.log(this.form?.value);
     if(this.job !== null && this.job.id !== null) {
       observableResult = this.jobService.updateJob(this.job.id, this.form?.value as UpdateJobRequest);
       term = 'updated';

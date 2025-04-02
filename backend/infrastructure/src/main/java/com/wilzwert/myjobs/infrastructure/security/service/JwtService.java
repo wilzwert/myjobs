@@ -115,7 +115,6 @@ public class JwtService {
      * @return the JWT Token
      */
     public String generateToken(String subject) {
-        System.out.println("generating token "+subject);
         return Jwts
                 .builder()
                 .subject(subject)
