@@ -18,7 +18,7 @@ public interface JobService {
 
     Optional<Job> findByIdAndUserId(JobId jobId, UserId userId);
 
-    DomainPage<Job> findAllByUserId(UserId userId, int page, int size, JobStatus status);
+    DomainPage<Job> findAllByUserId(UserId userId, int page, int size, JobStatus status, String sort);
 
     Job save(Job job);
 

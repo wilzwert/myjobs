@@ -21,6 +21,7 @@ export class JobService {
   private currentPage: number = -1;
   private itemsPerPage: number = -1;
   private currentStatus: JobStatus | null = null;
+  private currentSort: string | null = null;
 
   constructor(private dataService: DataService) { }
 
@@ -37,14 +38,15 @@ export class JobService {
    * Retrieves the sorted jobs loded from the backend 
    * @returns the jobs
    */
-  public getAllJobs(page: number, itemsPerPage: number, status: JobStatus | null = null): Observable<Page<Job>> {
+  public getAllJobs(page: number, itemsPerPage: number, status: JobStatus | null = null, sort: string): Observable<Page<Job>> {
     return this.jobsSubject.pipe(
       switchMap((jobsPage: Page<Job> | null) => {
-        if(jobsPage === null || page != this.currentPage || status != this.currentStatus) {
+        if(jobsPage === null || page != this.currentPage || status != this.currentStatus || sort != this.currentSort) {
           this.currentPage = page;
           this.currentStatus = status;
           this.itemsPerPage = itemsPerPage;
-          return this.dataService.get<Page<Job>>(`jobs?page=${page}&itemsPerPage=${itemsPerPage}`+(status ? `&status=${status}` : '')).pipe(
+          this.currentSort = sort;
+          return this.dataService.get<Page<Job>>(`jobs?page=${page}&itemsPerPage=${itemsPerPage}`+(status ? `&status=${status}` : '')+`&sort=${sort}`).pipe(
             switchMap((fetchedJobs: Page<Job>) => {
               this.jobsSubject.next(fetchedJobs);
               return of(fetchedJobs);
