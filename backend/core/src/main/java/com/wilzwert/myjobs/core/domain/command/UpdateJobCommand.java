@@ -11,7 +11,7 @@ import com.wilzwert.myjobs.core.domain.model.UserId;
  * Time:11:10
  */
 
-public record UpdateJobCommand(JobId jobId, UserId userId, String title, String company, String url, String description, String profile) {
+public record UpdateJobCommand(JobId jobId, UserId userId, String title, String company, String url, String description, String profile, String salary) {
     public static class Builder {
         private JobId jobId;
         private UserId userId;
@@ -20,10 +20,17 @@ public record UpdateJobCommand(JobId jobId, UserId userId, String title, String 
         private String url;
         private String description;
         private String profile;
+        private String salary;
 
         public Builder(UpdateJobCommand command) {
             this.jobId = command.jobId();
             this.userId = command.userId();
+            this.title = command.title();
+            this.company = command.company();
+            this.url = command.url();
+            this.description = command.description();
+            this.profile = command.profile();
+            this.salary = command.salary();
         }
 
         public UpdateJobCommand.Builder title(String title) {
@@ -51,13 +58,18 @@ public record UpdateJobCommand(JobId jobId, UserId userId, String title, String 
             return this;
         }
 
+        public UpdateJobCommand.Builder salary(String salary) {
+            this.salary = salary;
+            return this;
+        }
+
         public UpdateJobCommand.Builder userId(UserId userId) {
             this.userId = userId;
             return this;
         }
 
         public UpdateJobCommand build() {
-            return new UpdateJobCommand(jobId, userId, title, company, url, description, profile);
+            return new UpdateJobCommand(jobId, userId, title, company, url, description, profile, salary);
         }
     }
 }

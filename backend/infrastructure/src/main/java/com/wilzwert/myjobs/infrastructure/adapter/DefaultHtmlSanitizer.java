@@ -24,9 +24,10 @@ public class DefaultHtmlSanitizer implements HtmlSanitizer {
 
         getAllowedTags().forEach(policyBuilder::allowElements);
 
+        policyBuilder.allowUrlProtocols("https", "http");
+
         if(getAllowedTags().contains("a")) {
             policyBuilder.allowAttributes("href").onElements("a")
-                    .allowUrlProtocols("https")
                     .requireRelNofollowOnLinks();
         }
 
@@ -35,9 +36,6 @@ public class DefaultHtmlSanitizer implements HtmlSanitizer {
 
     @Override
     public String sanitize(String html) {
-        System.out.println(html);
-        String sanitizedHtml = policy.sanitize(html);
-        System.out.println(sanitizedHtml);
-        return sanitizedHtml;
+        return policy.sanitize(html);
     }
 }

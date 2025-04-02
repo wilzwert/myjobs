@@ -43,7 +43,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         if(user.isEmpty()) {
             throw new UserNotFoundException();
         }
-        Job job = user.get().addJob(Job.create(command.url(), command.title(), command.company(), command.description(), command.profile(), user.get().getId()));
+        Job job = user.get().addJob(Job.create(command.url(), command.title(), command.company(), command.description(), command.profile(), command.salary(), user.get().getId()));
         userService.saveUserAndJob(user.get(), job);
         return job;
     }
@@ -103,7 +103,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         }
 
         Job job = foundJob.get();
-        command = sanitizeCommandFields(command, List.of("title", "url", "company", "description", "profile"));
+        command = sanitizeCommandFields(command, List.of("title", "company", "description", "profile", "salary"));
 
         // FIXME This is not very DDD : the application service (ie this use case) should not check itself if
         // if a job with the same url already exists for the user as it is a business rule and should be in the domain
@@ -116,8 +116,8 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
                 throw new JobAlreadyExistsException();
             }
         }
-        job = job.updateJob(command.url(), command.title(), command.company(), command.description(), command.profile());
-
+        job = job.updateJob(command.url(), command.title(), command.company(), command.description(), command.profile(), command.salary());
+        System.out.println("Command has "+command.url());
         // FIXME
         // this is an ugly workaround to force the infra (persistence in particular) to save all data
         // as I understand DDD, only the root aggregate should be explicitly persisted
@@ -157,7 +157,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
     private <T> T sanitizeCommandFields(T command, List<String> fieldsToSanitize) {
         Class<?> clazz = command.getClass();
-        // UpdateJobCommand.Builder builder = new UpdateJobCommand.Builder((UpdateJobCommand) command);
+
         Object builder = null;
         try {
             // get a builder
@@ -276,8 +276,6 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         if(foundJob.isEmpty()) {
             throw new JobNotFoundException();
         }
-
-        System.out.println("Oui?");
 
         Job job = foundJob.get().updateRating(command.rating());
         jobService.saveJobAndActivity(job, job.getActivities().getFirst());

@@ -64,6 +64,10 @@ export class JobFormComponent implements OnInit {
     return this.form?.get('profile');
   }
 
+  get salary() {
+    return this.form?.get('salary');
+  }
+
   updateRichText(event: any, field: string) :boolean {
     const control: AbstractControl<any>|null|undefined = this.form?.get(field);
     
@@ -78,6 +82,7 @@ export class JobFormComponent implements OnInit {
     this.loading = true;
     let observableResult: Observable<Job>;
     let term = 'created';
+    console.log(this.form?.value);
     if(this.job !== null && this.job.id !== null) {
       observableResult = this.jobService.updateJob(this.job.id, this.form?.value as UpdateJobRequest);
       term = 'updated';
@@ -135,6 +140,12 @@ export class JobFormComponent implements OnInit {
       ],
       profile: [
         this.job?.profile,
+        [
+          
+        ]
+      ],
+      salary: [
+        this.job?.salary,
         [
           
         ]

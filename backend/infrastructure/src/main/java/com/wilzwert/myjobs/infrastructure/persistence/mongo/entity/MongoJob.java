@@ -51,6 +51,9 @@ public class MongoJob {
     private String profile;
 
     @Field
+    private String salary;
+
+    @Field
     private JobRating rating;
 
     @Field(name = "created_at")

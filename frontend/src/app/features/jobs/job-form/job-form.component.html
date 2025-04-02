@@ -72,6 +72,20 @@
                 <textarea matInput placeholder="Job profile" formControlName="profile" class=""></textarea>
             </mat-form-field>
         </p>
+
+        <p>
+            <mat-form-field>
+                <mat-label>Salary</mat-label>
+                <input matInput placeholder="Salary" formControlName="salary">
+                <mat-hint class="salary-hint" align="end">
+                    @if(salary?.invalid) {
+                        <mat-icon class="input-invalid" svgIcon="invalid">Invalid</mat-icon>
+                    } 
+                    @else {
+                        <mat-icon class="input-valid"  svgIcon="valid">Valid</mat-icon>
+                    }</mat-hint>
+            </mat-form-field>
+        </p>
         
         <button mat-raised-button type="submit" [disabled]="form.invalid || loading"> @if (loading) { Loading... } @else { @if(job?.id !== null) {Edit} @else {Create} job }</button>
         @if (error) {

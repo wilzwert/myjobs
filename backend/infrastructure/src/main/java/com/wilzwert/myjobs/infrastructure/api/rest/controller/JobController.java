@@ -62,7 +62,9 @@ public class JobController {
     @PatchMapping("/{id}")
     public JobResponse patch(@PathVariable("id") String id, @RequestBody final UpdateJobRequest updateJobRequest, Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        System.out.println("Update job salary "+updateJobRequest.getSalary());
         UpdateJobCommand updateJobCommand = jobMapper.toCommand(updateJobRequest, userDetails.getId(), new JobId(UUID.fromString(id)));
+        System.out.println("Update job command  "+updateJobCommand.salary());
         return jobMapper.toResponse(updateJobUseCase.updateJob(updateJobCommand));
     }
 
