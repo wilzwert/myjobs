@@ -61,7 +61,7 @@
                 </mat-card-content>
                 <mat-card-actions>
                     <button mat-flat-button (click)="editJob($event, job)">Edit</button>
-                    <button mat-flat-button (click)="editAttachments($event, job)">Attachments</button>
+                    <button mat-flat-button (click)="manageAttachments($event, job)">Attachments</button>
                     <button mat-flat-button [routerLink]="job.id" aria-label="Go to job details">Details</button>
                     <button mat-flat-button (click)="deleteJob(job)" aria-label="Delete job">Delete</button>
                 </mat-card-actions>

@@ -5,11 +5,14 @@ import { MatInput } from '@angular/material/input';
 import { JobService } from '../../../core/services/job.service';
 import { CreateJobAttachmentsRequest } from '../../../core/model/create-job-attachments-request.interface';
 import { Job } from '../../../core/model/job.interface';
-import { catchError, take, throwError } from 'rxjs';
+import { catchError, take, tap, throwError } from 'rxjs';
 import { ApiError } from '../../../core/errors/api-error';
 import { CreateJobAttachmentRequest } from '../../../core/model/create-job-attachment-request.interface';
 import { MatButton } from '@angular/material/button';
 import { NotificationService } from '../../../core/services/notification.service';
+import { Attachment } from '../../../core/model/attachment.interface';
+import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
+import { FileService } from '../../../core/services/file.service';
 
 @Component({
   selector: 'app-job-attachments-form',
@@ -25,7 +28,7 @@ export class JobAttachmentsFormComponent implements OnInit {
   attachmentForm!: FormGroup;
   maxFileSize = 2*1024*1024;
 
-  constructor(private fb: FormBuilder, private jobService: JobService, private notificationService: NotificationService) {
+  constructor(private fb: FormBuilder, private jobService: JobService, private notificationService: NotificationService, private confirmDialogService: ConfirmDialogService, private fileService: FileService) {
   }
 
   ngOnInit(): void {
