@@ -2,7 +2,7 @@ package com.wilzwert.myjobs.core.domain.service.metadata;
 
 
 import com.wilzwert.myjobs.core.domain.model.JobMetadata;
-import com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.JobMetadataExtractor;
+import com.wilzwert.myjobs.core.domain.service.metadata.extractor.JobMetadataExtractor;
 import com.wilzwert.myjobs.core.domain.ports.driven.metadata.fetcher.HtmlFetcherService;
 
 import java.util.List;
@@ -40,7 +40,7 @@ public class JobMetadataExtractorService {
                 .map(Optional::get)
                 .orElse(new JobMetadata.Builder().url(url).build());
 
-        if(result.url().isEmpty()) {
+        if(result.url() == null) {
             result = new JobMetadata.Builder(result).url(url).build();
         }
 

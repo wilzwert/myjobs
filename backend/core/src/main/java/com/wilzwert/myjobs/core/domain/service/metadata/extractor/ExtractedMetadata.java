@@ -1,4 +1,6 @@
-package com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor;
+package com.wilzwert.myjobs.core.domain.service.metadata.extractor;
+
+import java.util.Objects;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -15,6 +17,18 @@ public record ExtractedMetadata(String title, String company, String description
         private String salary;
         private String url;
 
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Builder builder = (Builder) o;
+            return Objects.equals(title, builder.title) && Objects.equals(company, builder.company) && Objects.equals(description, builder.description) && Objects.equals(profile, builder.profile) && Objects.equals(salary, builder.salary) && Objects.equals(url, builder.url);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(title, company, description, profile, salary, url);
+        }
 
         public Builder() {
             title = "";
@@ -56,7 +70,6 @@ public record ExtractedMetadata(String title, String company, String description
 
         public Builder salary(String salary) {
             this.salary = salary;
-            System.out.println("SALARY "+salary);
             return this;
         }
 

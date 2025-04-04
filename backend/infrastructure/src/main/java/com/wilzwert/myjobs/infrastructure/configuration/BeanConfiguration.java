@@ -11,8 +11,10 @@ import com.wilzwert.myjobs.core.domain.ports.driving.DeleteAccountUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.ExtractJobMetadataUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.LoginUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.RegisterUseCase;
-import com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.JobMetadataExtractor;
+import com.wilzwert.myjobs.core.domain.service.metadata.extractor.DomJobMetadataExtractor;
+import com.wilzwert.myjobs.core.domain.service.metadata.extractor.JobMetadataExtractor;
 import com.wilzwert.myjobs.core.domain.service.metadata.JobMetadataExtractorService;
+import com.wilzwert.myjobs.core.domain.service.metadata.extractor.JsonLdJobMetadataExtractor;
 import com.wilzwert.myjobs.infrastructure.adapter.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -70,7 +72,7 @@ public class BeanConfiguration {
 
     @Bean
     public List<JobMetadataExtractor> htmlExtractors() {
-        return List.of(new JsonLdJobMetadataExtractorAdapter(), new DomJobMetadataExtractorAdapter());
+        return List.of(new JsonLdJobMetadataExtractor(), new DomJobMetadataExtractor());
     }
 
     @Bean
