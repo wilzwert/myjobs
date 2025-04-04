@@ -1,4 +1,7 @@
-package com.wilzwert.myjobs.core.domain.service.metadata.extractor;
+package com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.impl;
+
+import com.wilzwert.myjobs.core.domain.model.JobMetadata;
+import com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.JobMetadataExtractor;
 
 import java.util.Optional;
 
@@ -10,7 +13,7 @@ import java.util.Optional;
 
 public class DomJobMetadataExtractor implements JobMetadataExtractor {
     @Override
-    public Optional<ExtractedMetadata> getMetadata(String html) {
+    public Optional<JobMetadata> extractJobMetadata(String html) {
         return Optional.empty();
     }
 

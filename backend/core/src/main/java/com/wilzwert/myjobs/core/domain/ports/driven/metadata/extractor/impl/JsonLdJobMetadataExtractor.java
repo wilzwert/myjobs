@@ -1,4 +1,4 @@
-package com.wilzwert.myjobs.core.domain.service.metadata.extractor;
+package com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.impl;
 
 
 import java.util.Optional;
@@ -6,7 +6,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.jr.ob.JSON;
-import com.wilzwert.myjobs.core.domain.service.metadata.extractor.jsonld.JobPosting;
+import com.wilzwert.myjobs.core.domain.model.JobMetadata;
+import com.wilzwert.myjobs.core.domain.model.jsonld.JobPosting;
+import com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.JobMetadataExtractor;
 
 
 /**
@@ -17,12 +19,11 @@ import com.wilzwert.myjobs.core.domain.service.metadata.extractor.jsonld.JobPost
 public class JsonLdJobMetadataExtractor implements JobMetadataExtractor {
     Pattern JSON_LD_PATTERN = Pattern.compile(
             "<script\\s+type=[\"']application/ld\\+json[\"'][^>]*>((?:(?!</script>).)*?\"@type\"\\s*:\\s*\"JobPosting\"(?:(?!</script>).)*?)</script>",
-            // "<script\\s+type=[\"']application/ld\\+json[\"'].*?>(.*?)</script>",
             Pattern.DOTALL | Pattern.MULTILINE
     );
 
-    private ExtractedMetadata buildExtractedMetadataFromJobPosting(JobPosting jobPosting) {
-        ExtractedMetadata.Builder builder = new ExtractedMetadata.Builder();
+    private JobMetadata buildExtractedMetadataFromJobPosting(JobPosting jobPosting) {
+        JobMetadata.Builder builder = new JobMetadata.Builder();
         try {
             builder.title(jobPosting.title());
             builder.description(jobPosting.description());
@@ -47,7 +48,7 @@ public class JsonLdJobMetadataExtractor implements JobMetadataExtractor {
 
 
     @Override
-    public Optional<ExtractedMetadata> getMetadata(String html) {
+    public Optional<JobMetadata> extractJobMetadata(String html) {
         if(html == null || html.isEmpty()) {
             return Optional.empty();
         }
