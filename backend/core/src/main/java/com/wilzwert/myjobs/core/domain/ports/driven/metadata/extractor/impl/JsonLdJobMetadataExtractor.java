@@ -1,13 +1,14 @@
 package com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.impl;
 
 
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.jr.ob.JSON;
 import com.wilzwert.myjobs.core.domain.model.JobMetadata;
-import com.wilzwert.myjobs.core.domain.model.jsonld.JobPosting;
+import com.wilzwert.myjobs.core.domain.model.metadata.jsonld.JobPosting;
 import com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.JobMetadataExtractor;
 
 
@@ -17,6 +18,9 @@ import com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.JobMetada
  * Time:13:54
  */
 public class JsonLdJobMetadataExtractor implements JobMetadataExtractor {
+
+    List<String> NOT_COMPATIBLE_DOMAINS = List.of("fhf.fr");
+
     Pattern JSON_LD_PATTERN = Pattern.compile(
             "<script\\s+type=[\"']application/ld\\+json[\"'][^>]*>((?:(?!</script>).)*?\"@type\"\\s*:\\s*\"JobPosting\"(?:(?!</script>).)*?)</script>",
             Pattern.DOTALL | Pattern.MULTILINE
@@ -49,6 +53,7 @@ public class JsonLdJobMetadataExtractor implements JobMetadataExtractor {
 
     @Override
     public Optional<JobMetadata> extractJobMetadata(String html) {
+        System.out.println("We are in the JsonLdJobMetadataExtractor");
         if(html == null || html.isEmpty()) {
             return Optional.empty();
         }
@@ -62,9 +67,6 @@ public class JsonLdJobMetadataExtractor implements JobMetadataExtractor {
                 }
             }
             return Optional.empty();
-
-            // JsonNode jsonNode = mapper.readValue(matcher.group(1), JsonNode.class);
-            // return buildExtractedMetadataFromJsonNode(jsonNode);
         } catch (Exception e) {
             e.printStackTrace();
             // TODO : log
@@ -74,6 +76,7 @@ public class JsonLdJobMetadataExtractor implements JobMetadataExtractor {
 
     @Override
     public boolean isCompatible(String domain) {
-        return false;
+        System.out.println("We are in the JsonLdJobMetadataExtractor::isCompatible for "+domain);
+        return !NOT_COMPATIBLE_DOMAINS.contains(domain);
     }
 }

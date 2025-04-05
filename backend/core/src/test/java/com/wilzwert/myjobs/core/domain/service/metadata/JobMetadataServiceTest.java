@@ -43,27 +43,32 @@ public class JobMetadataServiceTest {
 
     @Test
     public void testGetDomainFromInvalidUrl() {
-        assertThrows(MalformedUrlException.class, () -> jobMetadataService.getDomainFromUrl("not_an_url"));
+        assertThrows(MalformedUrlException.class, () -> jobMetadataService.getUrlDomain("not_an_url"));
     }
 
     @Test
     public void testGetDomainFromIncompatibleUrl() {
-        assertThrows(MalformedUrlException.class, () -> jobMetadataService.getDomainFromUrl("ftp://my.ftp.example.com"));
+        assertThrows(MalformedUrlException.class, () -> jobMetadataService.getUrlDomain("ftp://my.ftp.example.com"));
     }
 
     @Test
-    public void testGetDomainFromUrlWithoutSubdomain() {
-        assertEquals("example.com", jobMetadataService.getDomainFromUrl("http://example.com"));
+    public void testGetUrlDomainWithoutSubdomain() {
+        assertEquals("example.com", jobMetadataService.getUrlDomain("http://example.com/uri"));
     }
 
     @Test
-    public void testGetDomainFromUrlWithOneSubdomain() {
-        assertEquals("example.com", jobMetadataService.getDomainFromUrl("https://www.example.com"));
+    public void testGetUrlDomainWithOneSubdomain() {
+        assertEquals("example.com", jobMetadataService.getUrlDomain("https://www.example.com/uri"));
     }
 
     @Test
-    public void testGetDomainFromUrlWithMultipleSubdomain() {
-        assertEquals("example.com", jobMetadataService.getDomainFromUrl("https://w3.www.fr.example.com"));
+    public void testGetUrlDomainWithMultipleSubdomain() {
+        assertEquals("example.com", jobMetadataService.getUrlDomain("https://w3.www.fr.example.com/uri"));
+    }
+
+    @Test
+    public void testGetUrlDomainWithSubdomain() {
+        assertEquals("fhf.fr", jobMetadataService.getUrlDomain("https://emploi.fhf.fr/emploi/414440"));
     }
 
     @Test

@@ -17,9 +17,7 @@ import java.util.regex.Pattern;
 
 public class JobMetadataService {
     Pattern DOMAIN_PATTERN = Pattern.compile(
-            // "https?://([a-z0-9.-]+.)?([^/]+)/",
-            // "^https?://([-a-zA-Z0-9.]*)?\\.?[a-z0-9]+\\.[a-z]+",
-            "(?<scheme>https?://)(?<subdomain>\\S*?)(?<domainword>[^.\\s]+)(?<tld>\\.[a-z]+|\\.[a-z]{2,3}\\.[a-z]{2,3})(?=/|$)",
+            "(?<scheme>https?://)(?<subdomain>\\S*?)(?<domainword>[^.\\s]+)(?<tld>\\.[a-z]{2,6}|\\.[a-z]{2}\\.[a-z]{2,6})(?=/|$)",
             Pattern.CASE_INSENSITIVE
     );
 
@@ -32,7 +30,7 @@ public class JobMetadataService {
         this.jobMetadataExtractorService = jobMetadataExtractorService;
     }
 
-    public String getDomainFromUrl(String url) throws MalformedUrlException {
+    public String getUrlDomain(String url) throws MalformedUrlException {
         Matcher matcher = DOMAIN_PATTERN.matcher(url);
         if (matcher.find()) {
             return matcher.group(3)+matcher.group(4);
@@ -41,7 +39,7 @@ public class JobMetadataService {
     }
 
     public JobMetadata extractMetadata(String url) throws MalformedUrlException {
-        String domain = getDomainFromUrl(url);
+        String domain = getUrlDomain(url);
 
         // extract html
         String html = htmlFetcherService.fetchHtml(domain, url).orElse(null);

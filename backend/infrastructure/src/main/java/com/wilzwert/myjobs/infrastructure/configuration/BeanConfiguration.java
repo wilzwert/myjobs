@@ -5,7 +5,7 @@ import com.wilzwert.myjobs.core.application.usecase.*;
 import com.wilzwert.myjobs.core.domain.ports.driven.*;
 import com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.JobMetadataExtractorService;
 import com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.impl.DefaultJobMetadataExtractorService;
-import com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.impl.DomJobMetadataExtractor;
+import com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.impl.HtmlJobMetadataExtractor;
 import com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.impl.JsonLdJobMetadataExtractor;
 import com.wilzwert.myjobs.core.domain.ports.driven.metadata.fetcher.HtmlFetcherService;
 import com.wilzwert.myjobs.core.domain.ports.driven.metadata.fetcher.JsHtmlFetcher;
@@ -76,7 +76,7 @@ public class BeanConfiguration {
         return new DefaultJobMetadataExtractorService()
                 // use concrete extractors provided by domain for simplicity
                 .with(new JsonLdJobMetadataExtractor())
-                .with(new DomJobMetadataExtractor())
+                .with(new HtmlJobMetadataExtractor())
                 ;
     }
 
