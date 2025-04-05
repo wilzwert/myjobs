@@ -14,7 +14,7 @@ public interface JsHtmlFetcher extends HtmlFetcher {
     List<String> COMPATIBLE_DOMAINS = List.of("compatible-site.com");
 
     @Override
-    default boolean isIncompatible(String domain) {
-        return !COMPATIBLE_DOMAINS.contains(domain);
+    default boolean isCompatible(String domain) {
+        return COMPATIBLE_DOMAINS.contains(domain);
     }
 }

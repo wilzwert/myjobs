@@ -73,7 +73,7 @@ public class JsonLdJobMetadataExtractor implements JobMetadataExtractor {
     }
 
     @Override
-    public boolean isIncompatible(String domain) {
+    public boolean isCompatible(String domain) {
         return false;
     }
 }

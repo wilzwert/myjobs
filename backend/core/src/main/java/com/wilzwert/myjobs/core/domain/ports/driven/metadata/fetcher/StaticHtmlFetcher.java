@@ -14,7 +14,7 @@ public interface StaticHtmlFetcher extends HtmlFetcher  {
     List<String> NOT_COMPATIBLE_DOMAINS = List.of("indeed.com", "indeed.fr");
 
     @Override
-    default boolean isIncompatible(String domain) {
-        return NOT_COMPATIBLE_DOMAINS.contains(domain);
+    default boolean isCompatible(String domain) {
+        return !NOT_COMPATIBLE_DOMAINS.contains(domain);
     }
 }

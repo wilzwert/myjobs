@@ -3,11 +3,9 @@ package com.wilzwert.myjobs.core.domain.service.metadata;
 
 import com.wilzwert.myjobs.core.domain.exception.MalformedUrlException;
 import com.wilzwert.myjobs.core.domain.model.JobMetadata;
-import com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.JobMetadataExtractor;
+import com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.JobMetadataExtractorService;
 import com.wilzwert.myjobs.core.domain.ports.driven.metadata.fetcher.HtmlFetcherService;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,7 +15,7 @@ import java.util.regex.Pattern;
  * Time:12:58
  */
 
-public class JobMetadataExtractorService {
+public class JobMetadataService {
     Pattern DOMAIN_PATTERN = Pattern.compile(
             // "https?://([a-z0-9.-]+.)?([^/]+)/",
             // "^https?://([-a-zA-Z0-9.]*)?\\.?[a-z0-9]+\\.[a-z]+",
@@ -27,11 +25,11 @@ public class JobMetadataExtractorService {
 
     private final HtmlFetcherService htmlFetcherService;
 
-    private final List<JobMetadataExtractor> extractors;
+    private final JobMetadataExtractorService jobMetadataExtractorService;
 
-    public JobMetadataExtractorService(HtmlFetcherService htmlFetcherService, List<JobMetadataExtractor> extractors) {
+    public JobMetadataService(HtmlFetcherService htmlFetcherService, JobMetadataExtractorService jobMetadataExtractorService) {
         this.htmlFetcherService = htmlFetcherService;
-        this.extractors = extractors;
+        this.jobMetadataExtractorService = jobMetadataExtractorService;
     }
 
     public String getDomainFromUrl(String url) throws MalformedUrlException {
@@ -51,15 +49,11 @@ public class JobMetadataExtractorService {
             return new JobMetadata.Builder().url(url).build();
         }
 
-        JobMetadata result =  extractors.stream()
-                .filter((f) -> !f.isIncompatible(domain))
-                .map(extractor -> extractor.extractJobMetadata(html))
-                .filter(Optional::isPresent)
-                .findFirst()
-                .map(Optional::get)
+        // extract metadata
+        JobMetadata result =  jobMetadataExtractorService.extractJobMetadata(domain, html)
                 .orElse(new JobMetadata.Builder().url(url).build());
 
-        // if url has been extracted, no need to overwrite it
+        // set url only if not already set
         if(result.url() == null) {
             result = new JobMetadata.Builder(result).url(url).build();
         }

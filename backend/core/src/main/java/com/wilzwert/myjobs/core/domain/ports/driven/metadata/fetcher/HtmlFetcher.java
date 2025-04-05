@@ -11,6 +11,6 @@ import java.util.Optional;
 public interface HtmlFetcher {
     Optional<String> fetchHtml(String url);
 
-    boolean isIncompatible(String url);
+    boolean isCompatible(String url);
 
 }

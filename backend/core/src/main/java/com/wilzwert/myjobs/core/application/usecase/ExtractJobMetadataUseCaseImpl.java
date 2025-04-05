@@ -3,7 +3,7 @@ package com.wilzwert.myjobs.core.application.usecase;
 
 import com.wilzwert.myjobs.core.domain.model.JobMetadata;
 import com.wilzwert.myjobs.core.domain.ports.driving.ExtractJobMetadataUseCase;
-import com.wilzwert.myjobs.core.domain.service.metadata.JobMetadataExtractorService;
+import com.wilzwert.myjobs.core.domain.service.metadata.JobMetadataService;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -12,14 +12,14 @@ import com.wilzwert.myjobs.core.domain.service.metadata.JobMetadataExtractorServ
  */
 public class ExtractJobMetadataUseCaseImpl implements ExtractJobMetadataUseCase {
 
-    private final JobMetadataExtractorService jobMetadataExtractorService;
+    private final JobMetadataService jobMetadataService;
 
-    public ExtractJobMetadataUseCaseImpl(JobMetadataExtractorService jobMetadataExtractorService) {
-        this.jobMetadataExtractorService = jobMetadataExtractorService;
+    public ExtractJobMetadataUseCaseImpl(JobMetadataService jobMetadataService) {
+        this.jobMetadataService = jobMetadataService;
     }
 
     @Override
     public JobMetadata extract(String url) {
-        return this.jobMetadataExtractorService.extractMetadata(url);
+        return this.jobMetadataService.extractMetadata(url);
     }
 }

@@ -10,9 +10,7 @@ import java.util.Optional;
  * Date:02/04/2025
  * Time:13:10
  */
-public interface JobMetadataExtractor {
+public interface JobMetadataExtractorService {
 
-    Optional<JobMetadata> extractJobMetadata(String html);
-
-    boolean isCompatible(String domain);
+    Optional<JobMetadata> extractJobMetadata(String domain, String html);
 }
