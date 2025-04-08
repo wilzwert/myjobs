@@ -6,5 +6,5 @@ package com.wilzwert.myjobs.core.domain.model;
  * Date:23/03/2025
  * Time:15:09
  */
-public record DownloadableFile(String path, String contentType, String filename) {
+public record DownloadableFile(String fileId, String path, String contentType, String filename) {
 }

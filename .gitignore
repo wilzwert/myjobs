@@ -39,3 +39,4 @@ docker/dev/mongo-data
 docker/dev/mongodb-keyfile
 docker/dev/smtp4dev-data
 backend/uploads/
+backend/infrastructure/uploads/

@@ -16,7 +16,7 @@ public class HtmlJobMetadataExtractor implements JobMetadataExtractor {
 
     @Override
     public Optional<JobMetadata> extractJobMetadata(String html) {
-        System.out.println("We are in the HtmlJobMetadataExtractor");
+        System.out.println( "We are in the HtmlJobMetadataExtractor");
         Document document = Jsoup.parse(html);
         String title = document.title();
         String description = document.select("meta[name=description]").attr("content");

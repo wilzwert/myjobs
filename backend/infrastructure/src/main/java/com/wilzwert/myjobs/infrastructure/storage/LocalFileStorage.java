@@ -1,15 +1,15 @@
-package com.wilzwert.myjobs.infrastructure.adapter;
+package com.wilzwert.myjobs.infrastructure.storage;
 
 
 import com.wilzwert.myjobs.core.domain.exception.AttachmentFileNotReadableException;
 import com.wilzwert.myjobs.core.domain.model.DownloadableFile;
 import com.wilzwert.myjobs.core.domain.ports.driven.FileStorage;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
 import org.springframework.stereotype.Component;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,6 +23,8 @@ import java.util.Optional;
  * Date:21/03/2025
  * Time:16:07
  */
+@Profile("dev")
+@Component
 public class LocalFileStorage implements FileStorage {
 
     private final Path storageLocation = Paths.get("uploads"); // Dossier local
@@ -46,7 +48,8 @@ public class LocalFileStorage implements FileStorage {
                 Files.createDirectories(directory);
             }
             Files.copy(file.toPath(), targetLocation);
-            return new DownloadableFile(targetLocation.toString(), getContentType(originalFilename, targetLocation.toString()), "");
+            // we use the targetlocation as fileid
+            return new DownloadableFile(targetLocation.toString(), targetLocation.toString(), getContentType(originalFilename, targetLocation.toString()), "");
         } catch (IOException e) {
             throw new RuntimeException("Failed to store file", e);
         }
@@ -70,7 +73,8 @@ public class LocalFileStorage implements FileStorage {
         }
 
         try {
-            return new DownloadableFile(filePath.toString(), getContentType(originalFilename, fileId), originalFilename);
+            // for now, target path and fileId are the same
+            return new DownloadableFile(filePath.toString(), filePath.toString(), getContentType(originalFilename, fileId), originalFilename);
         }
         catch (IOException e) {
             throw new AttachmentFileNotReadableException();
@@ -78,7 +82,7 @@ public class LocalFileStorage implements FileStorage {
     }
 
     @Override
-    public String generateProtectedUrl() {
+    public String generateProtectedUrl(String fileId) {
         return "";
     }
 
