@@ -4,11 +4,11 @@ import com.wilzwert.myjobs.core.domain.model.EmailStatus;
 import com.wilzwert.myjobs.core.domain.model.User;
 import com.wilzwert.myjobs.core.domain.model.UserId;
 import com.wilzwert.myjobs.infrastructure.adapter.PasswordResetMessageProviderAdapter;
-import jakarta.mail.MessagingException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.Instant;
@@ -16,6 +16,8 @@ import java.util.Collections;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
+@ActiveProfiles("test")
+// FIXME : useless as it doesn't actually test something
 public class PasswordResetMessageProviderAdapterTest {
     @Autowired
     private PasswordResetMessageProviderAdapter underTest;

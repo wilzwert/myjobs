@@ -213,12 +213,9 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
     @Override
     public DownloadableFile downloadAttachment(DownloadAttachmentCommand command) {
-        Optional<Job> foundJob = jobService.findByIdAndUserId(command.jobId(), command.userId());
-        if(foundJob.isEmpty()) {
-            throw new JobNotFoundException();
-        }
+        Job job = jobService.findByIdAndUserId(command.jobId(), command.userId()).orElseThrow(JobNotFoundException::new);
 
-        Attachment attachment = foundJob.get().getAttachments().stream().filter(a -> a.getId().value().toString().equals(command.id())).findAny().orElse(null);
+        Attachment attachment = job.getAttachments().stream().filter(a -> a.getId().value().toString().equals(command.id())).findAny().orElse(null);
         if(attachment == null) {
             throw new AttachmentNotFoundException();
         }

@@ -1,5 +1,6 @@
-# TODO set .env
 spring:
+  profiles:
+    active: dev
   application:
     name: MyJobsInfra
   mail:
@@ -50,8 +51,13 @@ google:
     secret: ${GOOGLE_RECAPTCHA_PRIVATE_KEY}
     always-valid: true
 
-storage:
-  type: ${STORAGE_TYPE:local}
+aws:
+  s3:
+    bucket-name: ${AWS_S3_BUCKET_NAME}
+    region: ${AWS_S3_REGION}
+    access-key-id: ${AWS_ACCESS_KEY_ID}
+    secret-access-key: ${AWS_SECRET_ACCESS_KEY}
+
 
 
 application:

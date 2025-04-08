@@ -29,11 +29,6 @@ import org.springframework.context.annotation.Configuration;
 public class BeanConfiguration {
 
     @Bean
-    FileStorage fileStorage() {
-        return new LocalFileStorage();
-    }
-
-    @Bean
     RegisterUseCase registerUseCase(UserService userService, PasswordHasher passwordHasher, AccountCreationMessageProvider messageProvider) {
         return new RegisterUseCaseImpl(userService, passwordHasher, messageProvider);
     }

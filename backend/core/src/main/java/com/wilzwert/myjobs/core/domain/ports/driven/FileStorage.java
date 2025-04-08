@@ -14,6 +14,5 @@ public interface FileStorage {
     DownloadableFile store(File file, String targetFilename, String originalFilename);
     void delete(String fileId);
     DownloadableFile retrieve(String fileId, String originalFilename);
-    String generateProtectedUrl();
-
+    String generateProtectedUrl(String fileId);
 }
