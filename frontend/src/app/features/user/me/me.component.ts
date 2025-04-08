@@ -87,7 +87,7 @@ export class MeComponent {
   }
 
   public editUser(user: User) :void {
-    this.modalService.openUserEditModal(user, (data: ComponentInputDomainData) => {console.log('me reloads');this.user$ = this.userService.getUser();});
+    this.modalService.openUserEditModal(user, (data: ComponentInputDomainData) => {this.user$ = this.userService.getUser();});
   }
 
   public logout(): void {

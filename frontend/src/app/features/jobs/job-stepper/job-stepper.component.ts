@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Inject, Output, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Inject, OnInit, Output, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { MatStepper, MatStepperModule } from '@angular/material/stepper';
 import { Job } from '../../../core/model/job.interface';
@@ -8,6 +8,7 @@ import { JobAttachmentsFormComponent } from '../job-attachments-form/job-attachm
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { BaseChildComponent } from '../../../core/component/base-child.component';
+import { JobMetadata } from '../../../core/model/job-metadata.interface';
 
 @Component({
   selector: 'app-job-stepper',
@@ -15,15 +16,22 @@ import { BaseChildComponent } from '../../../core/component/base-child.component
   templateUrl: './job-stepper.component.html',
   styleUrl: './job-stepper.component.scss'
 })
-export class JobStepperComponent extends BaseChildComponent  implements AfterViewInit {
+export class JobStepperComponent extends BaseChildComponent  implements OnInit, AfterViewInit {
   @ViewChild('matStepper') stepper!: MatStepper;
 
   public loading = false;
 
   public job: Job | null = null;
 
+  public jobMetadata:JobMetadata | null = null;
+
   constructor() {
     super();
+  }
+  ngOnInit(): void {
+    if(this.data.metadata?.jobMetadata != null) {
+      this.jobMetadata = this.data.metadata.jobMetadata;
+    }
   }
 
   ngAfterViewInit(): void {

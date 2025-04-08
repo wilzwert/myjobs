@@ -31,8 +31,8 @@ export class ModalService {
     });
   }
 
-  openJobStepperModal(succeeded: () => void) {
-    const componentInputData: ComponentInputData = { component: JobStepperComponent, succeeded: succeeded } as ComponentInputData;
+  openJobStepperModal(succeeded: () => void, metadata = {}) {
+    const componentInputData: ComponentInputData = { component: JobStepperComponent, succeeded: succeeded, data: { metadata: {...metadata}} } as ComponentInputData;
     const dialogRef: MatDialogRef<ModalComponent> =  this.dialog.open(ModalComponent, {
       ...ModalService.MODAL_OPTIONS,
       data: componentInputData

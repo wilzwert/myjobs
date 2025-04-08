@@ -15,7 +15,6 @@ export class GlobalErrorHandler extends ErrorHandler {
         // Custom error handling logic
         if(error instanceof ApiError) {
             console.log(error);
-            console.log(error.httpStatus);
         }
         
         this.noticationService.error(error.message??'', error);

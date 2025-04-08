@@ -1,4 +1,23 @@
-<button mat-flat-button (click)="createJob()">Add Job</button>
+@if( urlForm) {
+    <form class="loggedin-form post-form" [formGroup]="urlForm!" (ngSubmit)="createJobWithMetadata()">
+        <p>
+            <mat-form-field>
+                <mat-label>Create job with its url</mat-label>
+                <input matInput placeholder="Create job with its url" formControlName="url" type="url">
+                <mat-hint class="url-hint" align="end">
+                    @if(url?.invalid) {
+                        <mat-icon class="input-invalid" svgIcon="invalid">Invalid</mat-icon>
+                    } 
+                    @else {
+                        <mat-icon class="input-valid"  svgIcon="valid">Valid</mat-icon>
+                    }</mat-hint>
+            </mat-form-field>
+        </p>
+        <button mat-raised-button type="submit" [disabled]="urlForm.invalid || urlFormLoading"> @if (urlFormLoading) { Loading... } @else { Create job }</button>
+    </form>
+}
+
+<button hidden mat-flat-button (click)="createJob()">Create Job</button>
 
 <div>
     <mat-form-field>
@@ -39,6 +58,7 @@
                     <mat-card-title>{{ job.title }}</mat-card-title>
                     <mat-card-subtitle>{{ job.url }}</mat-card-subtitle>
                     <mat-card-subtitle>{{ job.company }}</mat-card-subtitle>
+                    <mat-card-subtitle>{{ job.salary }}</mat-card-subtitle>
                 </mat-card-header>
                 <mat-card-content>
                     <p>Status : {{ job.status | statusLabel}}

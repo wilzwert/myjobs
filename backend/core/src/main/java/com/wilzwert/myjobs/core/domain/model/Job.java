@@ -1,5 +1,7 @@
 package com.wilzwert.myjobs.core.domain.model;
 
+import java.net.URI;
+import java.net.URL;
 import java.time.Instant;
 import java.util.*;
 
@@ -23,6 +25,8 @@ public class Job extends DomainEntity<JobId> {
 
     private final String profile;
 
+    private final String salary;
+
     private final JobRating rating;
 
     private final Instant createdAt;
@@ -41,7 +45,7 @@ public class Job extends DomainEntity<JobId> {
         ActivityType.RELAUNCH, JobStatus.RELAUNCHED
     );
 
-    public static Job create(String url, String title, String company, String description, String profile, UserId userId) {
+    public static Job create(String url, String title, String company, String description, String profile, String salary, UserId userId) {
         return new Job(
                 JobId.generate(),
                 url,
@@ -50,6 +54,7 @@ public class Job extends DomainEntity<JobId> {
                 company,
                 description,
                 profile,
+                salary,
                 JobRating.of(0),
                 Instant.now(),
                 Instant.now(),
@@ -60,7 +65,11 @@ public class Job extends DomainEntity<JobId> {
     }
 
 
-    public Job(JobId id, String url, JobStatus status, String title, String company, String description, String profile, JobRating rating, Instant createdAt, Instant updatedAt, UserId userId, List<Activity> activities, List<Attachment> attachments) {
+    public Job(JobId id, String url, JobStatus status, String title, String company, String description, String profile, String salary, JobRating rating, Instant createdAt, Instant updatedAt, UserId userId, List<Activity> activities, List<Attachment> attachments) {
+        if (url != null && !isValidUrl(url)) {
+            throw new IllegalArgumentException("Invalid URL format: " + url);
+        }
+
         this.id = id;
         this.url = url;
         this.status = status;
@@ -68,6 +77,7 @@ public class Job extends DomainEntity<JobId> {
         this.company = company;
         this.description = description;
         this.profile = profile;
+        this.salary = salary;
         this.rating = rating;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -87,6 +97,7 @@ public class Job extends DomainEntity<JobId> {
                 getCompany(),
                 getDescription(),
                 getProfile(),
+                getSalary(),
                 getRating(),
                 getCreatedAt(),
                 (updatedAt != null ? updatedAt : getUpdatedAt()),
@@ -103,7 +114,7 @@ public class Job extends DomainEntity<JobId> {
         return copy(null, updatedActivities, newJobStatus, Instant.now());
     }
 
-    public Job updateJob(String url, String title, String company, String description, String profile) {
+    public Job updateJob(String url, String title, String company, String description, String profile, String salary) {
         return new Job(
                 getId(),
                 url,
@@ -112,6 +123,7 @@ public class Job extends DomainEntity<JobId> {
                 company,
                 description,
                 profile,
+                salary,
                 getRating(),
                 getCreatedAt(),
                 Instant.now(),
@@ -167,6 +179,7 @@ public class Job extends DomainEntity<JobId> {
                 getCompany(),
                 getDescription(),
                 getProfile(),
+                getSalary(),
                 newJobRating,
                 getCreatedAt(),
                 Instant.now(),
@@ -176,6 +189,15 @@ public class Job extends DomainEntity<JobId> {
         );
         Activity newActivity = new Activity(ActivityId.generate(), ActivityType.RATING, getId(), ""+newJobRating.getValue(), Instant.now(), Instant.now());
         return result.addActivity(newActivity);
+    }
+
+    private static boolean isValidUrl(String url) {
+        try {
+            URL u = new URI(url).toURL();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public JobId getId() {
@@ -205,6 +227,8 @@ public class Job extends DomainEntity<JobId> {
     public String getProfile() {
         return profile;
     }
+
+    public String getSalary() { return salary; }
 
     public JobRating getRating() {
         return rating;

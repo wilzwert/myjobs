@@ -103,7 +103,6 @@ public class User extends DomainEntity<UserId> {
         jobs.add(job);
 
         // automatically create first activity
-        System.out.println("Adding first activity to job");
         return job.addActivity(new Activity(ActivityId.generate(), ActivityType.CREATION, job.getId(), "", Instant.now(), Instant.now()));
     }
 
@@ -199,7 +198,6 @@ public class User extends DomainEntity<UserId> {
     }
 
     public User validateEmail(String emailValidationCode) {
-        System.out.println(getEmail()+"-"+getEmailValidationCode());
         if (getEmailValidationCode() == null || !getEmailValidationCode().equals(emailValidationCode)) {
             throw new UserNotFoundException();
         }

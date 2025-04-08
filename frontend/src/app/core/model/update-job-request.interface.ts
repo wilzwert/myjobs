@@ -4,5 +4,6 @@ export interface UpdateJobRequest {
     title: string,
     company: string,
     description: string,
-    profile: string
+    profile: string,
+    salary: string
 }

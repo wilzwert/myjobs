@@ -35,8 +35,6 @@ public class ActivityController {
     @PostMapping("/{id}/activities")
     public ActivityResponse addActivity(@PathVariable("id") String id, @RequestBody CreateActivityRequest createActivityRequest, Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        System.out.println(createActivityRequest);
-        System.out.println(activityMapper.toCommand(createActivityRequest));
         CreateActivityCommand createActivityCommand = activityMapper.toCommand(createActivityRequest, userDetails.getId(), new JobId(UUID.fromString(id)));
         return activityMapper.toResponse(createActivityUseCase.addActivityToJob(createActivityCommand));
     }
