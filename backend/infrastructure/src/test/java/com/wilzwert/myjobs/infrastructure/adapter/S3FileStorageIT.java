@@ -4,9 +4,9 @@ package com.wilzwert.myjobs.infrastructure.adapter;
 import com.wilzwert.myjobs.core.domain.model.DownloadableFile;
 import com.wilzwert.myjobs.core.domain.ports.driven.FileStorage;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.io.File;
 
@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
  * Time:09:44
  */
 @SpringBootTest
-@ActiveProfiles("staging")
+@EnabledIfSystemProperty(named = "spring.profiles.active", matches = "staging")
 public class S3FileStorageIT {
 
     @Autowired
