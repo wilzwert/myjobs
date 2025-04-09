@@ -49,6 +49,10 @@ public class Job extends DomainEntity<JobId> {
         return new Builder();
     }
 
+    public static Builder from(Job job) {
+        return new Builder(job);
+    }
+
     public static class Builder {
         private JobId id;
 
@@ -195,25 +199,6 @@ public class Job extends DomainEntity<JobId> {
         }
     }
 
-    public static Job create(String url, String title, String company, String description, String profile, String salary, UserId userId) {
-        return new Job(
-                JobId.generate(),
-                url,
-                JobStatus.CREATED,
-                title,
-                company,
-                description,
-                profile,
-                salary,
-                JobRating.of(0),
-                Instant.now(),
-                Instant.now(),
-                userId,
-                new ArrayList<>(),
-                new ArrayList<>()
-        );
-    }
-
     public Job(JobId id, String url, JobStatus status, String title, String company, String description, String profile, String salary, JobRating rating, Instant createdAt, Instant updatedAt, UserId userId, List<Activity> activities, List<Attachment> attachments) {
         if (url != null && !isValidUrl(url)) {
             throw new IllegalArgumentException("Invalid URL format: " + url);
@@ -307,7 +292,7 @@ public class Job extends DomainEntity<JobId> {
         Activity activity = activities.getLast();
         if(activityType != null && !activity.getType().equals(activityType)) {
             // create activity
-            Activity newActivity = new Activity(ActivityId.generate(), activityType, getId(), "", Instant.now(), Instant.now());
+            Activity newActivity = Activity.builder().type(activityType).build();
             result = addActivity(newActivity);
         }
         else {
@@ -336,7 +321,7 @@ public class Job extends DomainEntity<JobId> {
                 getActivities(),
                 getAttachments()
         );
-        Activity newActivity = new Activity(ActivityId.generate(), ActivityType.RATING, getId(), ""+newJobRating.getValue(), Instant.now(), Instant.now());
+        Activity newActivity = Activity.builder().type(ActivityType.RATING).comment(""+newJobRating.getValue()).build();
         return result.addActivity(newActivity);
     }
 

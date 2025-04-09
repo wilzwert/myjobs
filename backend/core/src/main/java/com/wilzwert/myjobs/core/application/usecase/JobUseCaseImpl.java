@@ -11,7 +11,6 @@ import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.ports.driving.*;
 
 import java.lang.reflect.Method;
-import java.time.Instant;
 import java.util.*;
 
 /**
@@ -143,7 +142,10 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         }
 
         Job job = foundJob.get();
-        Activity activity = new Activity(ActivityId.generate(), command.activityType(), job.getId(), command.comment(), Instant.now(), Instant.now());
+        Activity activity = Activity.builder()
+                .type(command.activityType())
+                .comment(command.comment())
+                .build();
 
         job = job.addActivity(activity);
 
@@ -160,14 +162,10 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         return jobService.findByIdAndUserId(jobId, userId).orElseThrow(JobNotFoundException::new);
     }
 
-    private String capitalize(String field) {
-        return field.substring(0, 1).toUpperCase() + field.substring(1);
-    }
-
     private <T> T sanitizeCommandFields(T command, List<String> fieldsToSanitize) {
         Class<?> clazz = command.getClass();
 
-        Object builder = null;
+        Object builder;
         try {
             // get a builder
             Class<?> builderClass = Class.forName(clazz.getName()+"$Builder");
@@ -205,10 +203,10 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         // the Job aggregate should be the one to do it, although it would be too complicated for us for the time being
 
         DownloadableFile file = fileStorage.store(command.file(), command.userId().value().toString()+"/"+attachmentId.value().toString(), command.filename());
-        Attachment attachment = new Attachment(attachmentId, job.getId(), command.name(), file.path(), command.filename(), file.contentType(), Instant.now(), Instant.now());
+        Attachment attachment = Attachment.builder().id(attachmentId).name(command.name()).fileId(file.path()).filename(command.filename()).contentType(file.contentType()).build();
         job = job.addAttachment(attachment);
 
-        Activity activity = new Activity(ActivityId.generate(), ActivityType.ATTACHMENT_CREATION, job.getId(), attachment.getName(), Instant.now(), Instant.now());
+        Activity activity = Activity.builder().type(ActivityType.ATTACHMENT_CREATION).comment(attachment.getName()).build();
         job = job.addActivity(activity);
 
         // FIXME
@@ -248,7 +246,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         // however for now we do it here,
         // to be able to explicitly ask the JobService to delete the attachment and store both the job and the new activity
         Job job = foundJob.get().removeAttachment(attachment);
-        Activity activity = new Activity(ActivityId.generate(), ActivityType.ATTACHMENT_DELETION, job.getId(), attachment.getName(), Instant.now(), Instant.now());
+        Activity activity = Activity.builder().type(ActivityType.ATTACHMENT_DELETION).comment(attachment.getName()).build();
         job = job.addActivity(activity);
 
         // FIXME

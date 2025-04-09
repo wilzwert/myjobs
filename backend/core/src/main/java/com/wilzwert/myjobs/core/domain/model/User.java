@@ -39,6 +39,10 @@ public class User extends DomainEntity<UserId> {
         return new Builder();
     }
 
+    public static Builder from(User user) {
+        return new Builder(user);
+    }
+
     public static class Builder {
         private UserId id;
         private String email;
@@ -199,7 +203,7 @@ public class User extends DomainEntity<UserId> {
         jobs.add(job);
 
         // automatically create first activity
-        return job.addActivity(new Activity(ActivityId.generate(), ActivityType.CREATION, job.getId(), "", Instant.now(), Instant.now()));
+        return job.addActivity(Activity.builder().type(ActivityType.CREATION).build());
     }
 
     public void removeJob(Job job) {

@@ -19,15 +19,15 @@ public class JobTest {
     @Test
     public void shouldCreateJob() {
         UserId userId = new UserId(UUID.randomUUID());
-        Job job = Job.create(
-                "http://www.example.com",
-                "Job title",
-                "Job company",
-                "Job description",
-                "Job profile",
-                "TBD",
-                userId
-        );
+        Job job = Job.builder()
+                .url("http://www.example.com")
+                .title("Job title")
+                .company("Job company")
+                .description("Job description")
+                .profile("Job profile")
+                .salary("TBD")
+                .userId(userId)
+                .build();
 
         assertNotNull(job);
         assertEquals("Job title", job.getTitle());
