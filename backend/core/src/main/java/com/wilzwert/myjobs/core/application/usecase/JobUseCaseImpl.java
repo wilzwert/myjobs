@@ -43,7 +43,16 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         if(user.isEmpty()) {
             throw new UserNotFoundException();
         }
-        Job job = user.get().addJob(Job.create(command.url(), command.title(), command.company(), command.description(), command.profile(), command.salary(), user.get().getId()));
+        Job jobToCreate = Job.builder()
+                .url(command.url())
+                .title(command.title())
+                .company(command.company())
+                .description(command.description())
+                .profile(command.profile())
+                .salary(command.salary())
+                .userId(user.get().getId())
+                .build();
+        Job job = user.get().addJob(jobToCreate);
         userService.saveUserAndJob(user.get(), job);
         return job;
     }

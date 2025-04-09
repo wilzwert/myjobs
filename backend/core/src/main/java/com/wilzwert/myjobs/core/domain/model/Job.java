@@ -45,6 +45,156 @@ public class Job extends DomainEntity<JobId> {
         ActivityType.RELAUNCH, JobStatus.RELAUNCHED
     );
 
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private JobId id;
+
+        private String url;
+
+        private JobStatus status;
+
+        private String title;
+
+        private String company;
+
+        private String description;
+
+        private String profile;
+
+        private String salary;
+
+        private JobRating rating;
+
+        private Instant createdAt;
+
+        private Instant updatedAt;
+
+        private UserId userId;
+
+        private List<Activity> activities;
+
+        private List<Attachment> attachments;
+
+        public Builder() {
+            id = JobId.generate();
+            status = JobStatus.CREATED;
+            rating = JobRating.of(0);
+            createdAt = Instant.now();
+            updatedAt = Instant.now();
+            activities = new ArrayList<>();
+            attachments = new ArrayList<>();
+        }
+
+        public Builder(Job job) {
+            id = job.getId();
+            url = job.getUrl();
+            status = job.getStatus();
+            title = job.getTitle();
+            company = job.getCompany();
+            description = job.getDescription();
+            profile = job.getProfile();
+            salary = job.getSalary();
+            rating = job.getRating();
+            createdAt = job.getCreatedAt();
+            updatedAt = job.getUpdatedAt();
+            userId = job.getUserId();
+            activities = job.getActivities();
+            attachments = job.getAttachments();
+        }
+
+        public Builder id(JobId id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder url(String url) {
+            this.url = url;
+            return this;
+        }
+
+        public Builder status(JobStatus status) {
+            this.status = status;
+            return this;
+        }
+
+        public Builder title(String title) {
+            this.title = title;
+            return this;
+        }
+
+        public Builder company(String company) {
+            this.company = company;
+            return this;
+        }
+
+        public Builder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public Builder profile(String profile) {
+            this.profile = profile;
+            return this;
+        }
+
+        public Builder salary(String salary) {
+            this.salary = salary;
+            return this;
+        }
+
+        public Builder rating(JobRating rating) {
+            this.rating = rating;
+            return this;
+        }
+
+        public Builder createdAt(Instant createdAt) {
+            this.createdAt = createdAt;
+            return this;
+        }
+
+        public Builder updatedAt(Instant updatedAt) {
+            this.updatedAt = updatedAt;
+            return this;
+        }
+
+        public Builder userId(UserId userId) {
+            this.userId = userId;
+            return this;
+        }
+
+        public Builder activities(List<Activity> activities) {
+            this.activities = activities;
+            return this;
+        }
+
+        public Builder attachments(List<Attachment> attachments) {
+            this.attachments = attachments;
+            return this;
+        }
+
+        public Job build() {
+            return new Job(
+                    id,
+                    url,
+                    status,
+                    title,
+                    company,
+                    description,
+                    profile,
+                    salary,
+                    rating,
+                    createdAt,
+                    updatedAt,
+                    userId,
+                    activities,
+                    attachments
+            );
+        }
+    }
+
     public static Job create(String url, String title, String company, String description, String profile, String salary, UserId userId) {
         return new Job(
                 JobId.generate(),
