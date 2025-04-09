@@ -16,6 +16,7 @@ import java.util.UUID;
  * @author Wilhelm Zwertvaegher
  * Date:12/03/2025
  * Time:15:32
+ * TODO : implement password validation through a value object
  */
 public class User extends DomainEntity<UserId> {
     private final UserId id;
@@ -33,6 +34,10 @@ public class User extends DomainEntity<UserId> {
     private final Instant updatedAt;
 
     private final List<Job> jobs;
+
+    public static Builder builder() {
+        return new Builder();
+    }
 
     public static class Builder {
         private UserId id;
@@ -52,6 +57,12 @@ public class User extends DomainEntity<UserId> {
         private List<Job> jobs;
 
         public Builder() {
+            id = UserId.generate();
+            emailStatus = EmailStatus.PENDING;
+            emailValidationCode = UUID.randomUUID().toString();
+            role = "USER";
+            createdAt = Instant.now();
+            updatedAt = Instant.now();
             jobs = new ArrayList<>();
         }
 

@@ -20,7 +20,7 @@ public class PasswordResetMessageProviderAdapterTest {
 
     @Test
     public void testSendEmail()  {
-        User user = new User.Builder()
+        User user = User.builder()
             .id(UserId.generate())
             .email("user@example.com")
             .emailStatus(EmailStatus.VALIDATED)

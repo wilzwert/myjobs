@@ -45,7 +45,7 @@ public class RegisterUseCaseImpl implements RegisterUseCase, CheckUserAvailabili
             throw new UserAlreadyExistsException();
         }
         User user = userService.save(
-            new User.Builder()
+            User.builder()
                 .id(UserId.generate())
                 .email(registerUserCommand.email())
                 .password(passwordHasher.hashPassword(registerUserCommand.password()))

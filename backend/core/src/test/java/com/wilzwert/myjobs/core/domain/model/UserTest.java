@@ -19,7 +19,7 @@ public class UserTest {
     @Test
     public void shouldCreateUser() {
         UserId userId = new UserId(UUID.randomUUID());
-        User user = new User.Builder()
+        User user = User.builder()
                 .id(userId)
                 .email("test@example.com")
                 .password("password")

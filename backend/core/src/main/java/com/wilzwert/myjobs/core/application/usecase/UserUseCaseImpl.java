@@ -18,9 +18,9 @@ import com.wilzwert.myjobs.core.domain.ports.driving.UpdateUserUseCase;
 
 public class UserUseCaseImpl implements SendVerificationEmailUseCase, UpdateUserUseCase {
 
-    private UserService userService;
+    private final UserService userService;
 
-    private EmailVerificationMessageProvider emailVerificationMessageProvider;
+    private final EmailVerificationMessageProvider emailVerificationMessageProvider;
 
     public UserUseCaseImpl(UserService userService, EmailVerificationMessageProvider emailVerificationMessageProvider) {
         this.userService = userService;
@@ -29,9 +29,7 @@ public class UserUseCaseImpl implements SendVerificationEmailUseCase, UpdateUser
 
     @Override
     public void sendVerificationEmail(UserId userId) {
-        userService.findById(userId).ifPresent(user -> {
-            emailVerificationMessageProvider.send(user);
-        });
+        userService.findById(userId).ifPresent(emailVerificationMessageProvider::send);
     }
 
     @Override
