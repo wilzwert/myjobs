@@ -1,4 +1,4 @@
-package com.wilzwert.myjobs.adapter;
+package com.wilzwert.myjobs.infrastructure.adapter;
 
 
 import com.wilzwert.myjobs.core.domain.model.DownloadableFile;

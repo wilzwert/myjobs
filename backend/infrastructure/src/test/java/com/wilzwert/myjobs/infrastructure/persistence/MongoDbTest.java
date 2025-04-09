@@ -1,4 +1,4 @@
-package com.wilzwert.myjobs.infra.persistence;
+package com.wilzwert.myjobs.infrastructure.persistence;
 
 
 import org.junit.jupiter.api.Tag;

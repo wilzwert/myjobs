@@ -34,7 +34,111 @@ public class User extends DomainEntity<UserId> {
 
     private final List<Job> jobs;
 
-    public User(UserId id, String email, EmailStatus emailStatus, String emailValidationCode, String password, String username, String firstName, String lastName, String role, String resetPasswordToken, Instant resetPasswordExpiresAt, Instant createdAt, Instant updatedAt, List<Job> jobs) {
+    public static class Builder {
+        private UserId id;
+        private String email;
+        private EmailStatus emailStatus;
+        private String emailValidationCode;
+        private String password;
+        private String username;
+        private String firstName;
+        private String lastName;
+        private String role;
+        private String resetPasswordToken;
+        private Instant resetPasswordExpiresAt;
+        private Instant createdAt;
+        private Instant updatedAt;
+
+        private List<Job> jobs;
+
+        public Builder() {
+            jobs = new ArrayList<>();
+        }
+
+        public Builder(User user) {
+            this.id = user.id;
+            this.email = user.email;
+            this.emailStatus = user.emailStatus;
+            this.emailValidationCode = user.emailValidationCode;
+            this.password = user.password;
+            this.username = user.username;
+            this.firstName = user.firstName;
+            this.lastName = user.lastName;
+            this.role = user.role;
+            this.resetPasswordToken = user.resetPasswordToken;
+            this.resetPasswordExpiresAt = user.resetPasswordExpiresAt;
+            this.createdAt = user.createdAt;
+            this.updatedAt = user.updatedAt;
+            this.jobs = user.jobs;
+        }
+
+        public Builder id(UserId userId) {
+            this.id = userId;
+            return this;
+        }
+
+        public Builder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public Builder emailStatus(EmailStatus emailStatus) {
+            this.emailStatus = emailStatus;
+            return this;
+        }
+
+        public Builder emailValidationCode(String emailValidationCode) {
+            this.emailValidationCode = emailValidationCode;
+            return this;
+        }
+
+        public Builder password(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public Builder username(String username) {
+            this.username = username;
+            return this;
+        }
+        public Builder firstName(String firstName) {
+            this.firstName = firstName;
+            return this;
+        }
+        public Builder lastName(String lastName) {
+            this.lastName = lastName;
+            return this;
+        }
+        public Builder role(String role) {
+            this.role = role;
+            return this;
+        }
+        public Builder resetPasswordToken(String resetPasswordToken) {
+            this.resetPasswordToken = resetPasswordToken;
+            return this;
+        }
+        public Builder resetPasswordExpiresAt(Instant resetPasswordExpiresAt) {
+            this.resetPasswordExpiresAt = resetPasswordExpiresAt;
+            return this;
+        }
+        public Builder createdAt(Instant createdAt) {
+            this.createdAt = createdAt;
+            return this;
+        }
+        public Builder updatedAt(Instant updatedAt) {
+            this.updatedAt = updatedAt;
+            return this;
+        }
+        public Builder jobs(List<Job> jobs) {
+            this.jobs = jobs;
+            return this;
+        }
+        public User build() {
+            return new User(id, email, emailStatus, emailValidationCode, password, username, firstName, lastName, role, resetPasswordToken, resetPasswordExpiresAt, createdAt, updatedAt, jobs);
+        }
+    }
+
+    private User(UserId id, String email, EmailStatus emailStatus, String emailValidationCode, String password, String username, String firstName, String lastName, String role, String resetPasswordToken, Instant resetPasswordExpiresAt, Instant createdAt, Instant updatedAt, List<Job> jobs) {
         this.id = id;
         this.email = email;
         this.emailValidationCode = emailValidationCode;
@@ -49,25 +153,6 @@ public class User extends DomainEntity<UserId> {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.jobs = jobs;
-    }
-
-    public static User create(String email, String password, String username, String firstName, String lastName) {
-        return new User(
-                UserId.generate(),
-                email,
-                EmailStatus.PENDING,
-                UUID.randomUUID().toString(),
-                password,
-                username,
-                firstName,
-                lastName,
-                "USER",
-                "",
-                null,
-                Instant.now(),
-                Instant.now(),
-                new ArrayList<>()
-        );
     }
 
     public User update(String email, String username, String firstName, String lastName) {

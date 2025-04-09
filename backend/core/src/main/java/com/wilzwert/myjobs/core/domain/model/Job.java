@@ -64,7 +64,6 @@ public class Job extends DomainEntity<JobId> {
         );
     }
 
-
     public Job(JobId id, String url, JobStatus status, String title, String company, String description, String profile, String salary, JobRating rating, Instant createdAt, Instant updatedAt, UserId userId, List<Activity> activities, List<Attachment> attachments) {
         if (url != null && !isValidUrl(url)) {
             throw new IllegalArgumentException("Invalid URL format: " + url);

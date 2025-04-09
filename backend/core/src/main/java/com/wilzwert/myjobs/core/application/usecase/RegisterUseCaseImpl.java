@@ -6,6 +6,7 @@ import com.wilzwert.myjobs.core.domain.command.ValidateEmailCommand;
 import com.wilzwert.myjobs.core.domain.exception.UserAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.exception.UserNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.User;
+import com.wilzwert.myjobs.core.domain.model.UserId;
 import com.wilzwert.myjobs.core.domain.ports.driven.AccountCreationMessageProvider;
 import com.wilzwert.myjobs.core.domain.ports.driven.PasswordHasher;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
@@ -35,17 +36,23 @@ public class RegisterUseCaseImpl implements RegisterUseCase, CheckUserAvailabili
 
     @Override
     public User registerUser(RegisterUserCommand registerUserCommand) {
+        // TODO : this should be transactional, i.e. checking availability and register should be atomic
+        // to avoid e.g. another register command to succeed
+        // while we are processing here a command with the same username/email
+        // this will require to provide some kind of transaction management interface
+        // and enforce its implementation in infra
         if(userService.findByEmailOrUsername(registerUserCommand.email(), registerUserCommand.username()).isPresent()) {
             throw new UserAlreadyExistsException();
         }
         User user = userService.save(
-                User.create(
-                        registerUserCommand.email(),
-                        passwordHasher.hashPassword(registerUserCommand.password()),
-                        registerUserCommand.username(),
-                        registerUserCommand.firstName(),
-                        registerUserCommand.lastName()
-                )
+            new User.Builder()
+                .id(UserId.generate())
+                .email(registerUserCommand.email())
+                .password(passwordHasher.hashPassword(registerUserCommand.password()))
+                .username(registerUserCommand.username())
+                .firstName(registerUserCommand.firstName())
+                .lastName(registerUserCommand.lastName())
+                .build()
         );
 
         // send account creation message

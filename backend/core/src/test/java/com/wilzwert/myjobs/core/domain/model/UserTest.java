@@ -19,7 +19,15 @@ public class UserTest {
     @Test
     public void shouldCreateUser() {
         UserId userId = new UserId(UUID.randomUUID());
-        User user = User.create("test@example.com", "password", "username", "firstName", "lastName");
+        User user = new User.Builder()
+                .id(userId)
+                .email("test@example.com")
+                .password("password")
+                .username("username")
+                .firstName("firstName")
+                .lastName("lastName")
+                .build();
+
         assertNotNull(user);
         assertEquals(userId, user.getId());
         assertEquals("test@example.com", user.getEmail());
