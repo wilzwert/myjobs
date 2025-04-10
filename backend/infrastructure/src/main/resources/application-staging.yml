@@ -1,0 +1,13 @@
+logging:
+  level:
+    org:
+      springframework:
+        security: WARNING
+        data:
+          mongodb: WARNING
+
+
+google:
+  recaptcha:
+    secret: secret
+    always-valid: true

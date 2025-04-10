@@ -265,7 +265,6 @@
                 <configuration>
                     <excludes>
                         <exclude>**/*MapperImpl*</exclude>
-                        <exclude>@Generated</exclude>
                         <exclude>**/config/*</exclude>
                         <exclude>**/configuration/*</exclude>
                     </excludes>
