@@ -18,6 +18,7 @@ import com.wilzwert.myjobs.core.domain.service.metadata.JobMetadataService;
 import com.wilzwert.myjobs.infrastructure.adapter.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * @author Wilhelm Zwertvaegher
