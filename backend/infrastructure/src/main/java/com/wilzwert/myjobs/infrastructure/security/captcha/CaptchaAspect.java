@@ -6,23 +6,24 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Aspect
 @Component
 public class CaptchaAspect {
+
+    private final HttpServletRequest request;
+
     private final CaptchaValidator captchaValidator;
 
-    public CaptchaAspect(CaptchaValidator captchaValidator) {
+    public static final String CAPTCHA_HEADER_NAME = "Captcha-Response";
+
+    public CaptchaAspect(HttpServletRequest request, CaptchaValidator captchaValidator) {
+        this.request = request;
         this.captchaValidator = captchaValidator;
     }
 
-    private static final String CAPTCHA_HEADER_NAME = "Captcha-Response";
-
     @Around("@annotation(RequiresCaptcha)")
     public Object validateCaptcha(ProceedingJoinPoint joinPoint) throws Throwable {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         String captchaResponse = request.getHeader(CAPTCHA_HEADER_NAME);
         boolean isValidCaptcha = captchaValidator.validateCaptcha(captchaResponse);
         if(!isValidCaptcha){
