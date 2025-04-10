@@ -28,7 +28,7 @@ public class MockFileStorage implements FileStorage {
             byte[] content = java.nio.file.Files.readAllBytes(file.toPath());
             String fakedTargetFilename = "faked_"+targetFilename;
             storage.put(fakedTargetFilename, content);
-            return new DownloadableFile(fakedTargetFilename, "faked_"+originalFilename, getContentType(file.toPath().toString(), originalFilename), "faked_"+originalFilename);
+            return new DownloadableFile(fakedTargetFilename, fakedTargetFilename, getContentType(file.toPath().toString(), originalFilename), "faked_"+originalFilename);
         } catch (Exception e) {
             throw new RuntimeException("Mock storage failed", e);
         }

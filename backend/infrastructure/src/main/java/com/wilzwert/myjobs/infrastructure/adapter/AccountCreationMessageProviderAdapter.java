@@ -3,7 +3,10 @@ package com.wilzwert.myjobs.infrastructure.adapter;
 import com.wilzwert.myjobs.core.domain.model.User;
 import com.wilzwert.myjobs.core.domain.ports.driven.AccountCreationMessageProvider;
 import com.wilzwert.myjobs.infrastructure.mail.MailProvider;
+import jakarta.mail.MessagingException;
 import org.springframework.stereotype.Component;
+
+import java.io.UnsupportedEncodingException;
 
 @Component
 public class AccountCreationMessageProviderAdapter implements AccountCreationMessageProvider {
@@ -20,6 +23,7 @@ public class AccountCreationMessageProviderAdapter implements AccountCreationMes
             var message = mailProvider.createMessage("mail/account_creation", user.getEmail(), user.getFirstName(), "Account creation");
             // generate URL
             String url = mailProvider.createUrl("/me");
+            System.out.println("Created URL "+url);
             message.setVariable("url", url);
             message.setVariable("firstName", user.getFirstName());
             message.setVariable("lastName", user.getLastName());
@@ -27,7 +31,7 @@ public class AccountCreationMessageProviderAdapter implements AccountCreationMes
             mailProvider.send(message);
         }
         // TODO : improve exception handling
-        catch (Exception e) {
+        catch (MessagingException |UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
 

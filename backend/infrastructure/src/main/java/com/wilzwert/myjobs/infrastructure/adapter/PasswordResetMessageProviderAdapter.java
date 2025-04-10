@@ -3,8 +3,10 @@ package com.wilzwert.myjobs.infrastructure.adapter;
 import com.wilzwert.myjobs.core.domain.model.User;
 import com.wilzwert.myjobs.core.domain.ports.driven.PasswordResetMessageProvider;
 import com.wilzwert.myjobs.infrastructure.mail.MailProvider;
+import jakarta.mail.MessagingException;
 import org.springframework.stereotype.Component;
-import org.thymeleaf.TemplateEngine;
+
+import java.io.UnsupportedEncodingException;
 
 @Component
 public class PasswordResetMessageProviderAdapter implements PasswordResetMessageProvider {
@@ -27,7 +29,7 @@ public class PasswordResetMessageProviderAdapter implements PasswordResetMessage
             mailProvider.send(message);
         }
         // TODO : improve exception handling
-        catch (Exception e) {
+        catch (MessagingException | UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
 

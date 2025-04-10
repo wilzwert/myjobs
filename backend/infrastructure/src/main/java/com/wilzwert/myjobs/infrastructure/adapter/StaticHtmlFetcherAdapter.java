@@ -37,7 +37,6 @@ public class StaticHtmlFetcherAdapter implements StaticHtmlFetcher {
 
     @Override
     public Optional<String> fetchHtml(String url) {
-        System.out.println("in StaticHtmlFetcherAdapter.fetchHtml");
         try {
             Connection connection = Jsoup
                     .connect(url)
@@ -52,7 +51,6 @@ public class StaticHtmlFetcherAdapter implements StaticHtmlFetcher {
             return Optional.of(document.html());
         }
         catch (IOException e) {
-            System.out.println(e.getMessage());
             return Optional.empty();
         }
     }

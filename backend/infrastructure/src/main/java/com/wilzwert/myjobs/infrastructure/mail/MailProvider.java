@@ -85,7 +85,6 @@ public class MailProvider {
         Context context = new Context();
         messageToSend.getVariables().forEach(context::setVariable);
         String htmlContent = templateEngine.process(messageToSend.getTemplate(), context);
-        System.out.println("Should send ?!");
         mailSender.send(createMimeMessage(messageToSend, htmlContent));
     }
 }
