@@ -1,58 +1,71 @@
 import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
+import { TestBed } from '@angular/core/testing';
+
 import { AuthService } from './auth.service';
+import { HttpTestingController, provideHttpClientTesting, TestRequest } from '@angular/common/http/testing';
 import { LoginRequest } from '../model/login-request.interface';
 import { RegistrationRequest } from '../model/registration-request.interface';
 import { SessionInformation } from '../model/session-information.interface';
-import { of, throwError } from 'rxjs';
+import { of } from 'rxjs';
 import { CaptchaService } from './captcha.service';
-import { DataService } from './data.service';
 
 describe("AuthService unit tests", () =>  {
-    let authService: AuthService;
-    let dataServiceMock: jest.Mocked<DataService>;
-    let captchaServiceMock: jest.Mocked<CaptchaService>;
+    let service: AuthService;
+    let mockHttpController: HttpTestingController;
 
     beforeEach(async () => {
-        captchaServiceMock = {
-          getCaptchaToken: jest.fn().mockReturnValue(of('token'))
-        } as unknown as jest.Mocked<CaptchaService>;
+        const mockRecaptcha = {
+            getCaptchaToken: jest.fn(() => {return of("captcha_token");}),
+          };
 
-        dataServiceMock = {
-            post: jest.fn()
-        } as unknown as jest.Mocked<DataService>;
-
-        jest.spyOn(captchaServiceMock, 'getCaptchaToken').mockReturnValue(of('token'));
-
-        authService = new AuthService(dataServiceMock, captchaServiceMock);
+        TestBed.configureTestingModule({
+            providers: [
+                AuthService,
+                provideHttpClient(),
+                provideHttpClientTesting(),
+                {provide: CaptchaService, useValue: mockRecaptcha}
+            ],
+            imports: [],
+        });
+    
+        service = TestBed.inject(AuthService);
+        mockHttpController = TestBed.inject(HttpTestingController);
       });
 
-      afterEach(() => {
-        jest.resetAllMocks();
-      });
+      afterEach(() =>  {
+        mockHttpController.verify()
+      })
 
       it('should post login request and return session information as an observable', (done) => {
         const mockSessionInfo: SessionInformation = {email: "john.doe@example.com", username: "johndoe", role: "USER"};
         const loginRequest: LoginRequest = {email: "john.doe@example.com", password: "testpassword"};
-        dataServiceMock.post.mockReturnValue(of(mockSessionInfo));
         
-        authService.login(loginRequest).subscribe(
+        service.login(loginRequest).subscribe(
             {
                 next: response =>  {
                 expect(response).toEqual(mockSessionInfo);
                 done();
             }}
         );
+
+        const testRequest: TestRequest = mockHttpController.expectOne("api/auth/login");
+        expect(testRequest.request.method).toEqual("POST");
+        expect(testRequest.request.body).toEqual(loginRequest);
+        testRequest.flush(mockSessionInfo);
       })
 
       
       it('should post register request and return void as an observable', (done) => {
         const registrationRequest: RegistrationRequest = {email: "john.doe@example.com", password: "testpassword", username: "username", firstName: "firstName", lastName: "lastName"};
-        dataServiceMock.post.mockReturnValue(of(null));
-
-        authService.register(registrationRequest).subscribe(response => {
+        service.register(registrationRequest).subscribe(response => {
             expect(response).toBeNull();
             done()
         });
+
+        const testRequest: TestRequest = mockHttpController.expectOne("api/auth/register");
+        expect(testRequest.request.method).toEqual("POST");
+        expect(testRequest.request.body).toEqual(registrationRequest);
+        testRequest.flush(null);
       })
 
       it('should get http error on login failed at network level', (done) => {
@@ -60,17 +73,21 @@ describe("AuthService unit tests", () =>  {
         // at network level. e.g. Connection timeout, DNS error, offline, etc.
         const mockError = new ProgressEvent('error');
         const loginRequest: LoginRequest = {email: "john.doe@example.com", password: "testpassword"};
-        dataServiceMock.post.mockReturnValue(throwError(() => new HttpErrorResponse({error: mockError})));
         
-        authService.login(loginRequest).subscribe(
+        service.login(loginRequest).subscribe(
             {
                 next: () =>  fail('should have failed with http error'),
                 error: (error: HttpErrorResponse) => {
-                    expect(error.error).toEqual(mockError);
+                    expect(error.error).toBe(mockError);
                     done()
                 }
             }
         );
+
+        const testRequest: TestRequest = mockHttpController.expectOne("api/auth/login");
+        expect(testRequest.request.method).toEqual("POST");
+        expect(testRequest.request.body).toEqual(loginRequest);
+        testRequest.error(mockError);
       })
 
       it('should get http error on register failed at network level', (done) => {
@@ -78,66 +95,80 @@ describe("AuthService unit tests", () =>  {
        // at network level. e.g. Connection timeout, DNS error, offline, etc.
        const mockError = new ProgressEvent('error');
        const registrationRequest: RegistrationRequest = {email: "john.doe@example.com", password: "testpassword", username: "username", firstName: "firstName", lastName: "lastName"};
-       dataServiceMock.post.mockReturnValue(throwError(() => new HttpErrorResponse({error: mockError})));
-
-       authService.register(registrationRequest).subscribe({
+       service.register(registrationRequest).subscribe({
             next: () => fail('should have failed with http error'),
             error: (error: HttpErrorResponse) => {
                 expect(error.error).toBe(mockError);
                 done()
             }
         });
+
+        const testRequest: TestRequest = mockHttpController.expectOne("api/auth/register");
+        expect(testRequest.request.method).toEqual("POST");
+        expect(testRequest.request.body).toEqual(registrationRequest);
+        testRequest.error(mockError);
      })
 
      it('should get http error on logout failed at network level', (done) => {
         // Create mock ProgressEvent with type `error`, raised when something goes wrong
        // at network level. e.g. Connection timeout, DNS error, offline, etc.
        const mockError = new ProgressEvent('error');
-       dataServiceMock.post.mockReturnValue(throwError(() => new HttpErrorResponse({error: mockError})));
 
-       authService.logout().subscribe({
+       service.logout().subscribe({
         next: () => fail('should have failed with http error'),
             error: (error: HttpErrorResponse) => {
                 expect(error.error).toBe(mockError);
                 done()
             }
        });
+
+       const testRequest: TestRequest = mockHttpController.expectOne("api/auth/logout");
+       expect(testRequest.request.method).toEqual("POST");
+       expect(testRequest.request.body).toBeNull();
+       testRequest.error(mockError);
      });
 
      it('should logout', (done) => {
-        dataServiceMock.post.mockReturnValue(of());
-        authService.logout().subscribe({
-            next: () => {
-                expect(true).toBe(true);
-              },
-              complete: () => {
-                expect(true).toBe(true);
-                done()
-              },
+        service.logout().subscribe(response => {
+            expect(response).toBeNull();
+            done()
         });
+
+       const testRequest: TestRequest = mockHttpController.expectOne("api/auth/logout");
+       expect(testRequest.request.method).toEqual("POST");
+       expect(testRequest.request.body).toBeNull();
+       testRequest.flush(null);
      });
 
      it('should get http error on refresh token failed', (done) => {
         // Create mock ProgressEvent with type `error`, raised when something goes wrong
        // at network level. e.g. Connection timeout, DNS error, offline, etc.
        const mockError = new ProgressEvent('error');
-       dataServiceMock.post.mockReturnValue(throwError(() => new HttpErrorResponse({error: mockError})));
 
-       authService.refreshToken().subscribe({
+       service.refreshToken().subscribe({
         next: () => fail('should have failed with http error'),
             error: (error: HttpErrorResponse) => {
                 expect(error.error).toBe(mockError);
                 done()
             }
        });
+
+       const testRequest: TestRequest = mockHttpController.expectOne("api/auth/refresh-token");
+       expect(testRequest.request.method).toEqual("POST");
+       expect(testRequest.request.body).toBeNull();
+       testRequest.error(mockError);
      });
 
      it('should refresh token', (done) => {
         const mockSessionInfo: SessionInformation = {email: "john.doe@example.com", username: "johndoe", role: "USER"};
-        dataServiceMock.post.mockReturnValue(of(mockSessionInfo));
-        authService.refreshToken().subscribe(response => {
+        service.refreshToken().subscribe(response => {
             expect(response).toEqual(mockSessionInfo);
             done()
         });
+
+       const testRequest: TestRequest = mockHttpController.expectOne("api/auth/refresh-token");
+       expect(testRequest.request.method).toEqual("POST");
+       expect(testRequest.request.body).toBeNull();
+       testRequest.flush(mockSessionInfo);
      });
 })
