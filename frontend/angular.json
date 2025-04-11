@@ -20,7 +20,6 @@
             "outputPath": "dist/myjobs",
             "index": "src/index.html",
             "main": "src/main.ts",
-            "browser": "src/main.ts",
             "polyfills": [
               "zone.js"
             ],
@@ -103,7 +102,7 @@
         "serve-coverage": {
           "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
-            "browserTarget": "myjobs:build:e2e"
+            "buildTarget": "myjobs:build:e2e"
           }
         },
         "extract-i18n": {
@@ -134,11 +133,11 @@
         "cypress-run": {
           "builder": "@cypress/schematic:cypress",
           "options": {
-            "devServerTarget": "myjobs:serve"
+            "buildTarget": "myjobs:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "myjobs:serve:production"
+              "buildTarget": "myjobs:serve:production"
             }
           }
         },
@@ -152,13 +151,13 @@
         "e2e": {
           "builder": "@cypress/schematic:cypress",
           "options": {
-            "devServerTarget": "yoga:serve-coverage",
+            "devServerTarget": "myjobs:serve-coverage",
             "watch": true,
             "headless": false
           },
           "configurations": {
             "production": {
-              "devServerTarget": "yoga:serve-coverage:production"
+              "buildTarget": "myjobs:serve-coverage:production"
             }
           }
         },
@@ -166,13 +165,13 @@
           "builder": "@cypress/schematic:cypress",
           "options": {
             "browser": "chrome",
-            "devServerTarget": "yoga:serve-coverage",
+            "buildTarget": "myjobs:serve-coverage",
             "headless": true,
             "watch": false
           },
           "configurations": {
             "production": {
-              "devServerTarget": "yoga:serve-coverage:production"
+              "buildTarget": "myjobs:serve-coverage:production"
             }
           }
         },
