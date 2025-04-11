@@ -2,7 +2,6 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 
 import com.wilzwert.myjobs.core.domain.command.RegisterUserCommand;
-import com.wilzwert.myjobs.core.domain.model.AuthenticatedUser;
 import com.wilzwert.myjobs.core.domain.model.User;
 import com.wilzwert.myjobs.core.domain.model.UserId;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
@@ -22,8 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.UUID;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -86,17 +83,14 @@ public class AuthController {
         log.info("User login with email {}", loginRequest.getEmail());
         try {
             log.info("User login - authenticating");
-            AuthenticatedUser user = loginUseCase.authenticateUser(loginRequest.getEmail(), loginRequest.getPassword());
-            if (user instanceof JwtAuthenticatedUser jwtAuthenticatedUser) {
-                var responseEntity = ResponseEntity.ok();
+            // FIXME : this cast seems a bit ugly but in infra we actually know we will get a JwtAuthenticatedUser
+            JwtAuthenticatedUser authenticatedUser = (JwtAuthenticatedUser) loginUseCase.authenticateUser(loginRequest.getEmail(), loginRequest.getPassword());
+            var responseEntity = ResponseEntity.ok();
+            return responseEntity
+                    .header(HttpHeaders.SET_COOKIE, cookieService.createAccessTokenCookie(authenticatedUser.getJwtToken()).toString())
+                    .header(HttpHeaders.SET_COOKIE, cookieService.createRefreshTokenCookie(authenticatedUser.getRefreshToken()).toString())
+                    .body(new AuthResponse(authenticatedUser.getEmail(), authenticatedUser.getUsername(), authenticatedUser.getRole()));
 
-                return responseEntity
-                        .header(HttpHeaders.SET_COOKIE, cookieService.createAccessTokenCookie(jwtAuthenticatedUser.getJwtToken()).toString())
-                        .header(HttpHeaders.SET_COOKIE, cookieService.createRefreshTokenCookie(jwtAuthenticatedUser.getRefreshToken()).toString())
-                        .body(new AuthResponse(user.getEmail(), user.getUsername(), user.getRole()));
-            }
-
-            return ResponseEntity.ok().body(new AuthResponse(user.getEmail(), user.getUsername(), user.getRole()));
         } catch (AuthenticationException e) {
             log.info("Login failed for User with email {}", loginRequest.getEmail());
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Login failed. " + e.getMessage());
@@ -126,7 +120,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        User user = userService.findById(new UserId(UUID.fromString(foundRefreshToken.getUserId().toString()))).orElse(null);
+        User user = userService.findById(new UserId(foundRefreshToken.getUserId())).orElse(null);
         if(user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
