@@ -4,10 +4,8 @@ import { Observable, switchMap } from 'rxjs';
 import { DataService } from './data.service';
 import { LoginRequest } from '../model/login-request.interface';
 import { SessionInformation } from '../model/session-information.interface';
-import { HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
 import { CaptchaService } from './captcha.service';
-import { ResetPasswordRequest } from '../model/reset-password-request.interface';
-import { NewPasswordRequest } from '../model/new-password-request.interface';
 
 @Injectable({
   providedIn: 'root'
