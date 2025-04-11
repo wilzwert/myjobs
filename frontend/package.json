@@ -2,11 +2,20 @@
   "name": "myjobs",
   "version": "0.0.0",
   "scripts": {
-    "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch",
+    "lint": "ng lint",
+    "e2e": "ng e2e",
+    "e2e:ci": "ng run yoga:e2e-ci",
+    "e2e:coverage": "npx nyc report --report-dir=coverage/e2e --reporter=lcov --reporter=text-summary",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "cypress:run-record": "cypress run --record --key 711387bb-9364-433c-83ba-ca040c440282"
+  },
+  "nyc": {
+    "report-dir": "coverage/e2e"
   },
   "private": true,
   "dependencies": {
@@ -29,16 +38,32 @@
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
+    "@angular-builders/custom-webpack": "^19.0.1",
+    "@angular-builders/jest": "^19.0.1",
     "@angular-devkit/build-angular": "^19.2.3",
-    "@angular/cli": "^19.2.3",
+    "@angular-eslint/builder": "^19.3.0",
+    "@angular-eslint/eslint-plugin": "^19.3.0",
+    "@angular-eslint/eslint-plugin-template": "^19.3.0",
+    "@angular-eslint/schematics": "^19.3.0",
+    "@angular-eslint/template-parser": "^19.3.0",
+    "@angular/cli": "^19.2.7",
     "@angular/compiler-cli": "^19.2.2",
-    "@types/jasmine": "~5.1.0",
-    "jasmine-core": "~5.2.0",
-    "karma": "~6.4.0",
-    "karma-chrome-launcher": "~3.2.0",
-    "karma-coverage": "~2.2.0",
-    "karma-jasmine": "~5.1.0",
-    "karma-jasmine-html-reporter": "~2.1.0",
+    "@briebug/jest-schematic": "^6.0.0",
+    "@cypress/code-coverage": "^3.14.0",
+    "@cypress/schematic": "^3.0.0",
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "@jsdevtools/coverage-istanbul-loader": "^3.0.5",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.14.0",
+    "@typescript-eslint/eslint-plugin": "^8.29.1",
+    "@typescript-eslint/parser": "^8.29.1",
+    "cypress": "^14.3.0",
+    "eslint": "^9.24.0",
+    "istanbul-lib-coverage": "^3.2.2",
+    "jest": "^29.7.0",
+    "jest-html-reporter": "^4.1.0",
+    "jest-marbles": "^3.1.0",
+    "nyc": "^17.1.0",
     "typescript": "~5.5.2"
   }
 }
