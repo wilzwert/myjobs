@@ -1,51 +1,112 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, tick } from '@angular/core/testing';
 import { AuthValidators } from './auth.validators';
 import { AuthService } from '../services/auth.service';
-import { firstValueFrom, of, throwError } from 'rxjs';
-import { FormControl } from '@angular/forms';
+import { of, throwError} from 'rxjs';
+import { AbstractControl, ValidationErrors } from '@angular/forms';
+import { DataService } from './data.service';
+import { CaptchaService } from './captcha.service';
 
+// TODO : test behaviour when captcha validation fails
 describe('AuthValidators', () => {
   let authValidators: AuthValidators;
-  let authServiceMock: jasmine.SpyObj<AuthService>;
-  let authService: AuthService;
+  let captchaServiceMock: jest.Mocked<CaptchaService> = {
+    getCaptchaToken: jest.fn().mockReturnValue(of('captcha-token'))
+  } as unknown as jest.Mocked<CaptchaService>;
+
+  let dataServiceMock: jest.Mocked<DataService> = {
+      post: jest.fn(),
+      get: jest.fn()
+  } as unknown as jest.Mocked<DataService>;
+
+
+  // check common calls to captcha and data services
+  function expectCommonCalls (
+    type: String = 'email'
+  ) {
+    const [[url, options]] = dataServiceMock.get.mock.calls;
+    const expectedUrl = 'auth/' + (type === 'email' ? 'email-check?email=new@example.com' : 'username-check?username=newusername');
+    expect(url).toBe(expectedUrl);
+    expect(options).toBeDefined();
+    expect(options!.headers).toBeDefined();
+    const headers = options!.headers;
+    expect(headers!.get('Captcha-Response')).toEqual('captcha-token');
+  }
+
 
   beforeEach(() => {
-    const authServiceSpy = jasmine.createSpyObj('AuthService', ['checkEmail', 'checkUsername']);
-    
-    TestBed.configureTestingModule({
-      providers: [
-        AuthValidators,
-        { provide: AuthService, useValue: authServiceSpy }
-      ]
-    });
-
-    authValidators = TestBed.inject(AuthValidators);
-    authServiceMock = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
-    authService = TestBed.inject(AuthService);
+    jest.clearAllMocks();
+    authValidators = new AuthValidators(dataServiceMock, captchaServiceMock);
   });
 
-  it('should return null if email is available', async (done) => {
-    authServiceMock.checkEmail.and.returnValue(of());
+  it('should return null if email is unchanged (originalValue === control.value)', (done) => {
+    const control: AbstractControl = { value: 'old@example.com' } as AbstractControl;
+    const validatorFn = authValidators.checkEmailExistsAsync('old@example.com');
 
-    const validator = authValidators.emailExists();
-    const control = new FormControl('test@example.com');
+    validatorFn(control).subscribe(r => {
+        expect(r).toBeNull();
+        expect(captchaServiceMock.getCaptchaToken).not.toHaveBeenCalled();
+        expect(dataServiceMock.get).not.toHaveBeenCalled();
+        done();
+    });
+  });
 
-     // Simuler la réponse de l'API avec un observable
-     spyOn(authService, 'checkUsername').and.returnValue(of()); 
-
-    const result = await firstValueFrom(validator(control)); // Attendre que l'observable soit résolu
-    
-    !.pipe().subscribe(result => {
-      expect(result).toBeNull();
+  it('should return null if email is available', (done) => {
+    dataServiceMock.get.mockReturnValue(of(true));
+    const control: AbstractControl = { value: 'new@example.com' } as AbstractControl;
+    const validatorFn = authValidators.checkEmailExistsAsync('old@example.com');
+    validatorFn(control).subscribe(r => {
+      expect(r).toBe(null);
+      expectCommonCalls();
       done();
     });
   });
 
-  it('should return { emailExists: true } if email is taken', (done) => {
-    authServiceMock.checkEmail.and.returnValue(throwError(() => new Error('Email already exists')));
 
-    authValidators.emailExists()(new FormControl('test@example.com')).subscribe(result => {
-      expect(result).toEqual({ emailExists: true });
+  it('should return { emailExists: true } if email is taken', (done) => {
+    dataServiceMock.get.mockReturnValue(throwError(() => new Error('Email already exists')));
+
+    const control: AbstractControl = { value: 'new@example.com' } as AbstractControl;
+    const validatorFn = authValidators.checkEmailExistsAsync('old@example.com');
+    validatorFn(control).subscribe(r => {
+      expect(r).toEqual({emailExists:  true});
+      expectCommonCalls();
+      done();
+    });
+  });
+
+
+  it('should return null if username is unchanged (originalValue === control.value)', (done) => {
+    const control: AbstractControl = { value: 'oldusername' } as AbstractControl;
+    const validatorFn = authValidators.checkUsernameExistsAsync('oldusername');
+
+    validatorFn(control).subscribe(r => {
+        expect(r).toBeNull();
+        expect(captchaServiceMock.getCaptchaToken).not.toHaveBeenCalled();
+        expect(dataServiceMock.get).not.toHaveBeenCalled();
+        done();
+    });
+  });
+
+  it('should return null if username is available', (done) => {
+    dataServiceMock.get.mockReturnValue(of(true));
+    const control: AbstractControl = { value: 'newusername' } as AbstractControl;
+    const validatorFn = authValidators.checkUsernameExistsAsync('oldusername');
+    validatorFn(control).subscribe(r => {
+      expect(r).toBe(null);
+      expectCommonCalls('username');
+      done();
+    });
+  });
+
+
+  it('should return { usernameExists: true } if email is taken', (done) => {
+    dataServiceMock.get.mockReturnValue(throwError(() => new Error('Username already exists')));
+
+    const control: AbstractControl = { value: 'newusername' } as AbstractControl;
+    const validatorFn = authValidators.checkUsernameExistsAsync('oldusername');
+    validatorFn(control).subscribe(r => {
+      expect(r).toEqual({usernameExists:  true});
+      expectCommonCalls('username');
       done();
     });
   });
