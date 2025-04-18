@@ -1,0 +1,119 @@
+name: Backend CI - Tests and analysis
+concurrency:
+  group: ${{ github.ref }}.backend
+  cancel-in-progress: true
+on:
+  # CI should be able to run manually
+  workflow_dispatch:
+  # CI should run on pull requests and push on main branch
+  pull_request:
+    branches: [ "main" ]
+    types: [opened, synchronize, reopened]
+jobs:
+
+  backend-tests-analysis:
+    name: Run backend tests and quality analysis
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Run tests and generate coverage report
+        id: run-backend-tests
+        run: mvn clean verify
+        # this step could fail because of coverage requirements
+        # but some other steps should run anyway
+        continue-on-error: true
+
+      # if jacoco coverage report doesn't exist, something bad happened, and we can't go further
+      - name: Verify coverage report existence and stop if missing
+        run: |
+          if [ ! -f "./infrastructure/target/site/jacoco-merged/jacoco.xml" ]; then          
+           echo "Error: File 'backend/infrastructure/target/site/jacoco-merged/jacoco.xml' not found. Job failed."
+           exit 1
+          fi
+        shell: bash
+
+      - name: Upload backend coverage report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: ./backend/infrastructure/target/site/jacoco-merged
+          retention-days: 7
+
+      # we only update pages if code has actually been pushed to main branch, or if workflow is run manually
+      - name: Publish backend coverage report to Github Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./backend/infrastructure/target/site/jacoco-merged
+          destination_dir: ./coverage-backend
+
+      # we only update codecov if code has actually been pushed to main branch, or if workflow is run manually
+      - name: Upload backend coverage report to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: backend
+
+      # Run SonarQube analysis on push to main branch, or if workflow is run manually
+      - name: SonarQube Scan for push to main
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        # it may be interesting to prevent SonarQube from running if previous requirements have not been met
+        # if: steps.run-tests.outcome == 'success'
+        run: |
+          mvn clean install sonar:sonar -X \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.organization=wilzwert \
+            -Dsonar.projectKey=MyJobs_backend \
+            -Dsonar.token=${{ secrets.SONAR_TOKEN_BACKEND }} \
+            -Dproject.settings=../sonar-project-backend.properties
+
+      # Run SonarQube analysis on pull request
+      - name: SonarQube Scan on pull request
+        if: ${{ github.event_name == 'pull_request' }}
+        # it may be interesting to prevent SonarQube from running if previous requirements have not been met
+        # if: steps.run-tests.outcome == 'success'
+        run: |
+          mvn clean install sonar:sonar -X \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.organization=wilzwert \
+            -Dsonar.projectKey=MyJobs_backend \
+            -Dsonar.token=${{ secrets.SONAR_TOKEN_BACKEND }} \
+            -Dproject.settings=../sonar-project-backend.properties \
+            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
+            -Dsonar.pullrequest.branch=${{ github.head_ref }} \
+            -Dsonar.pullrequest.base=${{ github.base_ref }}
+        
+      - name: SonarQube Quality Gate Check
+        id: quality-gate
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        with:
+          scanMetadataReportFile: back/target/sonar/report-task.txt
+        env:
+            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
+        continue-on-error: true
+
+      # fail job if coverage requirements not met
+      # this allows to explicitly specify what went wrong, as we used continue-on-error previously
+      - name: Check requirements
+        if: ${{ steps.run-backend-tests.outcome == 'failure' || steps.quality-gate.outcome == 'failure'}}
+        run: |
+          echo "Job failed :"
+          if [ "${{ steps.run-backend-tests.outcome }}" == "failure" ]; then
+            echo "Coverage checks have not been met. See step 'Run tests and generate coverage report' output, and coverage report"
+          fi
+          if [ "${{ steps.quality-gate.outcome }}" == "failure" ]; then
+            echo "Code quality gate check failed. See step 'SonarQube Quality Gate Check'"
+          fi
+          exit 1
