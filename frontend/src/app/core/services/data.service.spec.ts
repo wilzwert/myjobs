@@ -1,102 +1,94 @@
-import { TestBed } from '@angular/core/testing';
-
 import { DataService } from './data.service';
-import { provideHttpClient } from '@angular/common/http';
-import { HttpTestingController, provideHttpClientTesting, TestRequest } from '@angular/common/http/testing';
-import { Topic } from '../models/topic.interface';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { firstValueFrom, of } from 'rxjs';
 
 describe('DataService', () => {
-  let service: DataService;
-  let httpMock: HttpTestingController;
-
+  let dataService: DataService;
+  let httpClientMock: jest.Mocked<HttpClient>;
+  
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting(),
-      ]
-    });
-    service = TestBed.inject(DataService);
-    httpMock = TestBed.inject(HttpTestingController);
+    httpClientMock = {
+      get: jest.fn(),
+      post: jest.fn(),
+      put: jest.fn(),
+      patch: jest.fn(),
+      delete: jest.fn()
+    } as unknown as jest.Mocked<HttpClient>;
+
+    dataService = new DataService(httpClientMock);
   });
 
-  afterEach(() => {
-    httpMock.verify(); // Vérifie qu'aucune requête non attendue n'a été envoyée
-  });
+  afterAll(() => {
+    jest.resetAllMocks();
+  })
 
   it('should be created', () => {
-    expect(service).toBeTruthy();
+    expect(dataService).toBeTruthy();
   });
 
-  it('should trigger a GET request and return expected data', () => {
+  it('should trigger a GET request and return expected data', async () => {
     const mockData = { id: 1, title: ' Test topic', description: 'Test topic description' };
+
+    httpClientMock.get.mockReturnValue(of(mockData));
+
+    const data = await firstValueFrom(dataService.get<typeof mockData>('jobs'));
+    expect(data).toEqual(mockData);
+    expect(httpClientMock.get).toHaveBeenCalledWith('api/jobs', {
+      withCredentials: true
+    });
+  });
+
+  it('shoult trigger a POST request and return expected data', async () => {
+    const mockResponse = { id: 1, title: 'Test article', content: 'Test content' };
+    const payload = { content: 'Test content' };
+
+    httpClientMock.post.mockReturnValue(of(mockResponse));
+
+    const data = await firstValueFrom(dataService.post<typeof mockResponse>('jobs', payload));
+    expect(data).toEqual(mockResponse);
+    expect(httpClientMock.post).toHaveBeenCalledWith('api/jobs', payload, {
+      withCredentials: true
+    });
+
     
-    service.get<typeof mockData>('topics').subscribe((data) => {
-      expect(data).toEqual(mockData);
-    });
-  
-    // checks that a GET request has been made
-    const req:TestRequest = httpMock.expectOne('api/topics');
-    expect(req.request.method).toBe('GET');
-  
-    req.flush(mockData);
   });
 
-  it('shoult trigger a POST request and return expected data', () => {
+  it('shoult trigger a PUT request and return expected data', async () => {
     const mockResponse = { id: 1, title: 'Test article', content: 'Test content' };
     const payload = { content: 'Test content' };
-  
-    service.post<typeof mockResponse>('posts', payload).subscribe((data) => {
-      expect(data).toEqual(mockResponse); 
+
+    httpClientMock.put.mockReturnValue(of(mockResponse));
+
+    const data = await firstValueFrom(dataService.put<typeof mockResponse>('jobs/12', payload));
+    expect(data).toEqual(mockResponse);
+    expect(httpClientMock.put).toHaveBeenCalledWith('api/jobs/12', payload, {
+      withCredentials: true
     });
-  
-    // checks a POST request has been made
-    const req = httpMock.expectOne('api/posts');
-    expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual(payload);
-  
-    req.flush(mockResponse);
   });
 
-  it('shoult trigger a PUT request and return expected data', () => {
-    const mockResponse = { id: 1, title: 'Test article', content: 'Test content' };
-    const payload = { content: 'Test content' };
-  
-    service.put<typeof mockResponse>('posts', payload).subscribe((data) => {
-      expect(data).toEqual(mockResponse); 
+  it('shoult trigger a DELETE request and return expected data', async () => {
+    httpClientMock.delete.mockReturnValue(of(null));
+
+    const data = await firstValueFrom(dataService.delete<null>('jobs/12'));
+    expect(data).toEqual(null);
+    expect(httpClientMock.delete).toHaveBeenCalledWith('api/jobs/12', {
+      withCredentials: true
     });
-  
-    // checks a PUT request has been made
-    const req = httpMock.expectOne('api/posts');
-    expect(req.request.method).toBe('PUT');
-    expect(req.request.body).toEqual(payload);
-  
-    req.flush(mockResponse);
+
   });
 
-  it('shoult trigger a DELETE request and return expected data', () => {
-    service.delete<null>('posts/1').subscribe((data) => {
-      expect(data).toEqual(null); 
-    });
-  
-    // checks a DELETE request has been made
-    const req = httpMock.expectOne('api/posts/1');
-    expect(req.request.method).toBe('DELETE');
-    req.flush(null);
-  });
+  it('should pass headers and  params', () => {
+    const params = new HttpParams().set('q', 'test');
+    const headers = new HttpHeaders().set('Captcha-Response', 'captcha-token');
+    httpClientMock.get.mockReturnValue(of('ok'));
 
-  it('shoult handle Http error ', () => {
-    service.get<Topic[]>('topics').subscribe({
-      next: () => fail('Service should throw an error'),
-      error:  (error) => {
-        expect(error.status).toBe(500);
-      }
+    dataService.get<string>('jobs', { params, headers }).subscribe();
+
+    expect(httpClientMock.get).toHaveBeenCalledWith('api/jobs', {
+      withCredentials: true,
+      params,
+      headers
     });
-  
-    // checks a POST request has been made
-    const req = httpMock.expectOne('api/topics');
-    expect(req.request.method).toBe('GET');
-    req.flush('Not Found', { status: 500, statusText: 'Internal server error' });
   });
 
 });

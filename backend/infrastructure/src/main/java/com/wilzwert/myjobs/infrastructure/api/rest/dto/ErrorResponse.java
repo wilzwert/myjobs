@@ -84,7 +84,7 @@ public class ErrorResponse {
     }
 
     public static ErrorResponse fromException(HttpClientErrorException ex) {
-        return build(HttpStatus.BAD_REQUEST, ex.getMessage());
+        return build(ex.getStatusCode(), ex.getMessage());
     }
 
     public static ErrorResponse fromException(PasswordMatchException ex) {

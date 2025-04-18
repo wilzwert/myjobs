@@ -1,9 +1,8 @@
-package com.wilzwert.myjobs.adapter;
+package com.wilzwert.myjobs.infrastructure.storage;
 
 
 import com.wilzwert.myjobs.core.domain.model.DownloadableFile;
 import com.wilzwert.myjobs.core.domain.ports.driven.FileStorage;
-import com.wilzwert.myjobs.infrastructure.storage.MockFileStorage;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -29,12 +28,13 @@ public class MockFileStorageTest {
         assertNotNull(uploadedFile);
         assertEquals("faked_uploads/cv.doc", uploadedFile.fileId());
         assertEquals("faked_testfile.doc", uploadedFile.filename());
-        assertEquals("faked_testfile.doc", uploadedFile.path());
+        assertEquals("faked_uploads/cv.doc", uploadedFile.path());
+        assertEquals("application/msword", uploadedFile.contentType());
 
         // Test de la récupération
         String fileId = uploadedFile.path(); // Utilise le fileId retourné
         String url = underTest.generateProtectedUrl(fileId);
-        assertEquals("https://mockstorage.local/fake-url/faked_testfile.doc", url);
+        assertEquals("https://mockstorage.local/fake-url/faked_uploads/cv.doc", url);
         System.out.println("URL signée : " + url);
 
         // Test de la suppression

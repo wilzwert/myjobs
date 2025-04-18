@@ -10,8 +10,6 @@ import java.time.Instant;
 public class Attachment extends DomainEntity<AttachmentId> {
     private final AttachmentId id;
 
-    private final JobId jobId;
-
     private final String name;
 
     private final String fileId;
@@ -24,10 +22,81 @@ public class Attachment extends DomainEntity<AttachmentId> {
 
     private final Instant updatedAt;
 
+    public static Builder builder() {
+        return new Builder();
+    }
 
-    public Attachment(AttachmentId id, JobId jobId, String name, String fileId, String filename, String contentType, Instant createdAt, Instant updatedAt) {
+    public static Builder from(Attachment attachment) {
+        return new Builder(attachment);
+    }
+
+    public static class Builder {
+        private AttachmentId id;
+        private String name;
+        private String fileId;
+        private String filename;
+        private String contentType;
+        private Instant createdAt;
+        private Instant updatedAt;
+
+        public Builder() {
+            id = AttachmentId.generate();
+            createdAt = Instant.now();
+            updatedAt = Instant.now();
+        }
+
+        public Builder(Attachment attachment) {
+            id = attachment.getId();
+            createdAt = attachment.getCreatedAt();
+            updatedAt = attachment.getUpdatedAt();
+            name = attachment.getName();
+            fileId = attachment.getFileId();
+            filename = attachment.getFilename();
+            contentType = attachment.getContentType();
+        }
+
+        public Builder id(AttachmentId id) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder fileId(String fileId) {
+            this.fileId = fileId;
+            return this;
+        }
+
+        public Builder filename(String filename) {
+            this.filename = filename;
+            return this;
+        }
+
+        public Builder contentType(String contentType) {
+            this.contentType = contentType;
+            return this;
+        }
+
+        public Builder createdAt(Instant createdAt) {
+            this.createdAt = createdAt;
+            return this;
+        }
+
+        public Builder updatedAt(Instant updatedAt) {
+            this.updatedAt = updatedAt;
+            return this;
+        }
+
+        public Attachment build() {
+            return new Attachment(id, name, fileId, filename, contentType, createdAt, updatedAt);
+        }
+    }
+
+    public Attachment(AttachmentId id, String name, String fileId, String filename, String contentType, Instant createdAt, Instant updatedAt) {
         this.id = id;
-        this.jobId = jobId;
         this.name = name;
         this.fileId = fileId;
         this.filename = filename;
@@ -39,10 +108,6 @@ public class Attachment extends DomainEntity<AttachmentId> {
     @Override
     public AttachmentId getId() {
         return id;
-    }
-
-    public JobId getJobId() {
-        return jobId;
     }
 
     public String getName() {

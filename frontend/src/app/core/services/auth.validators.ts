@@ -1,5 +1,5 @@
-import { Injectable, ɵDeferBlockConfig } from '@angular/core';
-import { AbstractControl, AsyncValidatorFn, FormControl, ValidatorFn } from '@angular/forms';
+import { Injectable } from '@angular/core';
+import { AbstractControl, AsyncValidatorFn, ValidationErrors } from '@angular/forms';
 import { map, catchError, switchMap } from 'rxjs/operators';
 import { Observable, of, timer } from 'rxjs';
 import { DataService } from './data.service';
@@ -20,53 +20,42 @@ export class AuthValidators {
         })
     );
   }
-
-  checkEmailExistsAsync(value: string | null = null): AsyncValidatorFn {
+  
+//  checkEmailExistsAsync(originalValue: string | null = null): AsyncValidatorFn {
+  checkEmailExistsAsync(originalValue: string | null = null): (control: AbstractControl) => Observable<ValidationErrors | null> {
     return (control:  AbstractControl<any, any>): Observable<{ emailExists: boolean } | null>  => {
       return timer(500).pipe(
           switchMap(() => {
-            if(value !== null && control.value === value) {
+            // orignal value was set and has not changed : nothing to do
+            if(originalValue !== null && control.value === originalValue) {
               return of(true);
             }
+            // actual check
             return this.checkExists('email', control.value);
           }),
+          // by default, a successful request (i.e. 200) implies the email is available
           map(() => null),
+          // backend generates an http response with an error to inform email exists 
           catchError(() => of({emailExists: true}))
       );
     } 
   }
-  /*
-  checkEmailExistsAsyncOLD(control: FormControl): Observable<{ emailExists: boolean } | null> {
-    return timer(500).pipe(
-        switchMap(() => this.checkExists('email', control.value)),
-        map(() => null),
-        catchError(() => of({emailExists: true}))
-    );
-  }*/
-
-  checkUsernameExistsAsync(value: string | null = null): AsyncValidatorFn {
+  
+  checkUsernameExistsAsync(originalValue: string | null = null): (control: AbstractControl) => Observable<ValidationErrors | null> {
     return (control:  AbstractControl<any, any>): Observable<{ usernameExists: boolean } | null>  => {
       return timer(500).pipe(
           switchMap(() => {
-            if(value !== null && control.value === value) {
+            // orignal value was set and has not changed : nothing to do
+            if(originalValue !== null && control.value === originalValue) {
               return of(true);
             }
+            // actual check
             return this.checkExists('username', control.value);
           }),
           map(() => null),
+          // backend generates an http response with an error to inform username exists 
           catchError(() => of({usernameExists: true}))
       );
     } 
   }
-    
-
-  /*
-
-  checkUsernameExistsAsync(control: FormControl): Observable<{ usernameExists: boolean } | null> {
-    return timer(500).pipe(
-        switchMap(() => this.checkExists('username', control.value)),
-        map(() => null),
-        catchError(() => of({usernameExists: true}))
-    );
-  }*/
 }

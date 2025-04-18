@@ -5,6 +5,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.Multipart;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
@@ -22,18 +23,24 @@ public class MailProvider {
 
     private final TemplateEngine templateEngine;
 
-    @Value("${application.frontend.url}")
-    private String frontendUrl;
+    private final String frontendUrl;
 
-    @Value("${application.mail.from}")
-    private String from;
+    private final String from;
 
-    @Value("${application.mail.from-name}")
-    private String fromName;
+    private final String fromName;
 
-    public MailProvider(final JavaMailSender mailSender, final TemplateEngine templateEngine) {
+    public MailProvider(
+            final JavaMailSender mailSender,
+            final TemplateEngine templateEngine,
+            @Value("${application.frontend.url}") String frontendUrl,
+            @Value("${application.mail.from}") String from,
+            @Value("${application.mail.from-name}") String fromName
+    ) {
         this.mailSender = mailSender;
         this.templateEngine = templateEngine;
+        this.frontendUrl = frontendUrl;
+        this.from = from;
+        this.fromName = fromName;
     }
 
     // TODO : improve exception handling with custom exceptions
@@ -45,13 +52,9 @@ public class MailProvider {
         return frontendUrl + uri;
     }
 
-    // TODO : improve exception handling with custom exceptions
-    public void send(CustomMailMessage messageToSend) throws MessagingException, UnsupportedEncodingException {
-        Context context = new Context();
-        messageToSend.getVariables().forEach(context::setVariable);
-        String htmlContent = templateEngine.process(messageToSend.getTemplate(), context);
-
-        var message =  mailSender.createMimeMessage();
+    private MimeMessage createMimeMessage(CustomMailMessage messageToSend, String htmlContent) throws MessagingException, UnsupportedEncodingException {
+        MimeMessage message =  mailSender.createMimeMessage();
+        System.out.println("message has been created with class " + message.getClass());
         message.setFrom(new InternetAddress(from, fromName));
         message.setRecipients(Message.RecipientType.TO, new InternetAddress(messageToSend.getRecipientMail(), messageToSend.getRecipientName()).toUnicodeString());
         message.setSubject(messageToSend.getSubject());
@@ -74,7 +77,14 @@ public class MailProvider {
         }
 
         message.setContent(multipart);
+        return message;
+    }
 
-        mailSender.send(message);
+    // TODO : improve exception handling with custom exceptions
+    public void send(CustomMailMessage messageToSend) throws MessagingException, UnsupportedEncodingException {
+        Context context = new Context();
+        messageToSend.getVariables().forEach(context::setVariable);
+        String htmlContent = templateEngine.process(messageToSend.getTemplate(), context);
+        mailSender.send(createMimeMessage(messageToSend, htmlContent));
     }
 }

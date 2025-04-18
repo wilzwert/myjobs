@@ -1,7 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
 
-import com.wilzwert.myjobs.core.domain.model.EmailStatus;
 import lombok.*;
 
 /**
@@ -15,6 +14,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class UserResponse {
 
     private String firstName;

@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
-import javax.swing.text.html.Option;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Optional;
@@ -36,6 +35,37 @@ public class JwtService {
         this.jwtProperties = jwtProperties;
     }
 
+    public Optional<String> getToken(HttpServletRequest request) {
+        String token;
+        Cookie[] cookies = request.getCookies();
+
+        if(cookies != null) {
+            Cookie jwtCookie = Arrays.stream(cookies)
+                    .filter(cookie -> "access_token".equals(cookie.getName()))
+                    .findFirst()
+                    .orElse(null);
+            token = jwtCookie != null ? jwtCookie.getValue() : null;
+            System.out.println("token : "+token);
+            if(token != null && !token.isEmpty()) {
+                return Optional.of(token);
+            }
+        }
+
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            token = request.getParameter("token");
+            if(token == null || token.isEmpty()) {
+                // log.info("Authorization header not found or not compatible with Bearer token");
+                return Optional.empty();
+            }
+        }
+        else {
+            token = authHeader.substring(7);
+        }
+
+        return Optional.of(token);
+    }
+
     /**
      * Extracts a JWT token from the current Request
      * @param request the current request
@@ -47,34 +77,7 @@ public class JwtService {
      * @throws SignatureException when JWT token's signature is invalid
      */
     public Optional<JwtToken> extractTokenFromRequest(HttpServletRequest request) throws ExpiredJwtException, MalformedJwtException, IllegalArgumentException, UnsupportedJwtException, SignatureException {
-
-        String token = null;
-        Cookie[] cookies = request.getCookies();
-        Cookie jwtCookie;
-
-        if(cookies != null) {
-            jwtCookie = Arrays.stream(cookies)
-                    .filter(cookie -> "access_token".equals(cookie.getName()))
-                    .findFirst()
-                    .orElse(null);
-            token = jwtCookie != null ? jwtCookie.getValue() : null;
-        }
-        if(token == null) {
-            String authHeader = request.getHeader("Authorization");
-
-            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                token = request.getParameter("token");
-                if(token == null || token.isEmpty()) {
-                    // log.info("Authorization header not found or not compatible with Bearer token");
-                    return Optional.empty();
-                }
-            }
-            else {
-                token = authHeader.substring(7);
-            }
-        }
-
-        return parseToken(token);
+        return getToken(request).flatMap(this::parseToken);
     }
 
     public Optional<JwtToken> parseToken(String token) {

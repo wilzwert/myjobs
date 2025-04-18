@@ -13,11 +13,21 @@ public class CaptchaValidator {
 
     private static final String GOOGLE_RECAPTCHA_ENDPOINT = "https://www.google.com/recaptcha/api/siteverify";
 
-    @Value("${google.recaptcha.secret}")
-    private String recaptchaSecret;
+    private final String recaptchaSecret;
 
-    @Value("${google.recaptcha.always-valid}")
-    private boolean recaptchaAlwaysValid;
+    private final boolean recaptchaAlwaysValid;
+
+    private final RestTemplate restTemplate;
+
+    public CaptchaValidator(
+            @Value("${google.recaptcha.secret}") String recaptchaSecret,
+            @Value("${google.recaptcha.always-valid}") boolean recaptchaAlwaysValid,
+            RestTemplate restTemplate
+    ) {
+        this.recaptchaSecret = recaptchaSecret;
+        this.recaptchaAlwaysValid = recaptchaAlwaysValid;
+        this.restTemplate = restTemplate;
+    }
 
 
     public boolean validateCaptcha(String captchaResponse){
@@ -26,8 +36,6 @@ public class CaptchaValidator {
         }
 
         log.info("Validating captcha");
-        RestTemplate restTemplate = new RestTemplate();
-
         MultiValueMap<String, String> requestMap = new LinkedMultiValueMap<>();
         requestMap.add("secret", recaptchaSecret);
         requestMap.add("response", captchaResponse);

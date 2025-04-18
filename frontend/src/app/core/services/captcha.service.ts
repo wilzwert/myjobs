@@ -18,20 +18,5 @@ export class CaptchaService {
           return of(token);
       }
     ));
-
-    return this.tokenSubject.pipe(
-        switchMap((token: string | null | false) => {
-        if(token === null || token === false) {
-            return from(this.scScoreReCaptcha.execute('captcha')).pipe(
-                switchMap((token: string) =>  {
-                    this.tokenSubject.next(token);
-                    return of(token);
-                }
-            ));
-        }
-        else {
-            return of(token);
-        }
-    }));
   }
 }

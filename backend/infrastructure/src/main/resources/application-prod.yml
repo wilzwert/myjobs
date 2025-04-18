@@ -1,0 +1,12 @@
+# security
+security:
+  cookie:
+    secure: true
+
+logging:
+  level:
+    org:
+      springframework:
+        security: WARNING
+        data:
+          mongodb: WARNING
