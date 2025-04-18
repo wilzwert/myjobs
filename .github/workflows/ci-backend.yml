@@ -99,7 +99,7 @@ jobs:
         id: quality-gate
         uses: sonarsource/sonarqube-quality-gate-action@master
         with:
-          scanMetadataReportFile: back/target/sonar/report-task.txt
+          scanMetadataReportFile: backend/infrastructure/target/sonar/report-task.txt
         env:
             SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
         continue-on-error: true
