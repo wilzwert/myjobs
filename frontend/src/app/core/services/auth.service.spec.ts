@@ -15,7 +15,7 @@ describe("AuthService unit tests", () =>  {
     
     beforeEach(async () => {
         captchaServiceMock = {
-          getCaptchaToken: jest.fn().mockReturnValue(of('token'))
+          getCaptchaToken: jest.fn()
         } as unknown as jest.Mocked<CaptchaService>;
 
         dataServiceMock = {
@@ -56,7 +56,7 @@ describe("AuthService unit tests", () =>  {
     })
 
     it('should get http error on login failed at network level', (done) => {
-        // Create mock ProgressEvent with type `error`, raised when something goes wrong
+      // Create mock ProgressEvent with type `error`, raised when something goes wrong
       // at network level. e.g. Connection timeout, DNS error, offline, etc.
       const mockError = new ProgressEvent('error');
       const loginRequest: LoginRequest = {email: "john.doe@example.com", password: "testpassword"};
