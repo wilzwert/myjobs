@@ -97,15 +97,13 @@ jobs:
 
       - name: List files in the repository
         run: |
-          ls 
           ls target
-          ls infrastructure/backend
         
       - name: SonarQube Quality Gate Check
         id: quality-gate
         uses: sonarsource/sonarqube-quality-gate-action@master
         with:
-          scanMetadataReportFile: backend/infrastructure/target/sonar/report-task.txt
+          scanMetadataReportFile: target/sonar/report-task.txt
         env:
             SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
         continue-on-error: true
