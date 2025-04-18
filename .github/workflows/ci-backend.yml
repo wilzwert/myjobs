@@ -95,12 +95,6 @@ jobs:
             -Dsonar.pullrequest.branch=${{ github.head_ref }} \
             -Dsonar.pullrequest.base=${{ github.base_ref }}
 
-      - name: List files in the repository
-        run: |
-          pwd
-          ls target
-          ls target/sonar
-        
       - name: SonarQube Quality Gate Check
         id: quality-gate
         uses: sonarsource/sonarqube-quality-gate-action@master
