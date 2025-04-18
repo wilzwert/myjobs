@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JobServiceAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MyJobsInfra</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.infrastructure.persistence.mongo.service</a> &gt; <span class="el_source">JobServiceAdapter.java</span></div><h1>JobServiceAdapter.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
+
+
+import com.wilzwert.myjobs.core.domain.model.*;
+import com.wilzwert.myjobs.core.domain.ports.driven.JobService;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoJob;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoJobRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * @author Wilhelm Zwertvaegher
+ * Date:14/03/2025
+ * Time:16:28
+ */
+@Component
+public class JobServiceAdapter implements JobService {
+    private final MongoJobRepository mongoJobRepository;
+    private final JobMapper jobMapper;
+
+<span class="fc" id="L28">    public JobServiceAdapter(MongoJobRepository mongoJobRepository, JobMapper jobMapper) {</span>
+<span class="fc" id="L29">        this.mongoJobRepository = mongoJobRepository;</span>
+<span class="fc" id="L30">        this.jobMapper = jobMapper;</span>
+<span class="fc" id="L31">    }</span>
+
+    @Override
+    public Optional&lt;Job&gt; findById(JobId jobId) {
+<span class="fc" id="L35">        return mongoJobRepository.findById(jobId.value()).map(jobMapper::toDomain).or(Optional::empty);</span>
+    }
+
+    @Override
+    public Optional&lt;Job&gt; findByUrlAndUserId(String url, UserId userId) {
+<span class="fc" id="L40">        return mongoJobRepository.findByUrlAndUserId(url, userId.value()).map(jobMapper::toDomain).or(Optional::empty);</span>
+    }
+
+    @Override
+    public Optional&lt;Job&gt; findByIdAndUserId(JobId jobId, UserId userId) {
+<span class="fc" id="L45">        return mongoJobRepository.findByIdAndUserId(jobId.value(), userId.value()).map(jobMapper::toDomain).or(Optional::empty);</span>
+    }
+
+    @Override
+    public DomainPage&lt;Job&gt; findAllByUserId(UserId userId, int page, int size, JobStatus status, String sortString) {
+<span class="pc bpc" id="L50" title="1 of 4 branches missed.">        if(sortString == null || sortString.isEmpty()) {</span>
+<span class="fc" id="L51">            sortString = &quot;createdAt,desc&quot;;</span>
+        }
+
+<span class="fc" id="L54">        var sortOrder = sortString.split(&quot;,&quot;);</span>
+
+<span class="fc" id="L56">        Sort sort = Sort.by(sortOrder[0]);</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">        if(sortOrder[1].equals(&quot;desc&quot;)) {</span>
+<span class="fc" id="L58">            sort = sort.descending();</span>
+        }
+        else {
+<span class="fc" id="L61">            sort = sort.ascending();</span>
+        }
+
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        if(status != null) {</span>
+<span class="fc" id="L65">            return this.jobMapper.toDomain(mongoJobRepository.findByUserIdAndStatus(userId.value(), status, PageRequest.of(page, size, sort)));</span>
+        }
+<span class="fc" id="L67">        return this.jobMapper.toDomain(mongoJobRepository.findByUserId(userId.value(), PageRequest.of(page, size, sort)));</span>
+    }
+
+    @Override
+    public Job save(Job job) {
+<span class="fc" id="L72">        return this.jobMapper.toDomain(mongoJobRepository.save(this.jobMapper.toEntity(job)));</span>
+    }
+
+    @Override
+    public Job saveJobAndActivity(Job job, Activity activity) {
+<span class="fc" id="L77">        return jobMapper.toDomain(mongoJobRepository.save(jobMapper.toEntity(job)));</span>
+    }
+
+    @Override
+    public Job saveJobAndAttachment(Job job, Attachment attachment, Activity activity) {
+<span class="fc" id="L82">        return jobMapper.toDomain(mongoJobRepository.save(jobMapper.toEntity(job)));</span>
+    }
+
+    @Override
+    public void delete(Job job) {
+<span class="fc" id="L87">        mongoJobRepository.delete(jobMapper.toEntity(job));</span>
+<span class="fc" id="L88">    }</span>
+
+    @Override
+    public Job deleteAttachment(Job job, Attachment attachment, Activity activity) {
+<span class="fc" id="L92">        return jobMapper.toDomain(mongoJobRepository.save(jobMapper.toEntity(job)));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

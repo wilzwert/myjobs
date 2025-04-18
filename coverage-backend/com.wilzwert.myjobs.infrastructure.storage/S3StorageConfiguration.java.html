@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>S3StorageConfiguration.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MyJobsInfra</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.infrastructure.storage</a> &gt; <span class="el_source">S3StorageConfiguration.java</span></div><h1>S3StorageConfiguration.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.infrastructure.storage;
+
+
+import com.wilzwert.myjobs.core.domain.ports.driven.FileStorage;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+
+/**
+ * @author Wilhelm Zwertvaegher
+ * Date:08/04/2025
+ * Time:09:18
+ */
+
+@Configuration
+@Profile({&quot;staging&quot;,&quot;prod&quot;})
+<span class="nc" id="L23">public class S3StorageConfiguration {</span>
+
+    @Value(&quot;${aws.s3.bucket-name}&quot;)
+    private String bucketName;
+
+    @Value(&quot;${aws.s3.region}&quot;)
+    private String region;
+
+    @Value(&quot;${aws.s3.access-key-id}&quot;)
+    private String accessKeyId;
+
+    @Value(&quot;${aws.s3.secret-access-key}&quot;)
+    private String accessKeySecret;
+
+    @Bean
+    AwsBasicCredentials awsBasicCredentials() {
+<span class="nc" id="L39">        return AwsBasicCredentials.create(accessKeyId, accessKeySecret);</span>
+    }
+
+    @Bean
+    public S3Client s3Client(AwsBasicCredentials awsBasicCredentials) {
+<span class="nc" id="L44">        System.out.println(&quot;REGION ? &quot;+region);</span>
+<span class="nc" id="L45">        return S3Client.builder()</span>
+<span class="nc" id="L46">                .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials))</span>
+<span class="nc" id="L47">                .region(Region.of(region))</span>
+<span class="nc" id="L48">                .build();</span>
+    }
+
+    @Bean
+    public S3Presigner s3Presigner(AwsBasicCredentials awsBasicCredentials) {
+<span class="nc" id="L53">        return S3Presigner.builder()</span>
+<span class="nc" id="L54">                .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials))</span>
+<span class="nc" id="L55">                .region(Region.of(region))</span>
+<span class="nc" id="L56">                .build();</span>
+    }
+
+    @Bean
+    public FileStorage fileStorage(S3Client s3Client, S3Presigner s3Presigner) {
+<span class="nc" id="L61">        return new S3FileStorage(s3Client, s3Presigner, bucketName);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

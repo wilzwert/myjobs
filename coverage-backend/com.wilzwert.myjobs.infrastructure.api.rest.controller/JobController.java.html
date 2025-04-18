@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JobController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MyJobsInfra</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.infrastructure.api.rest.controller</a> &gt; <span class="el_source">JobController.java</span></div><h1>JobController.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.infrastructure.api.rest.controller;
+
+
+import com.wilzwert.myjobs.core.domain.command.*;
+import com.wilzwert.myjobs.core.domain.model.JobId;
+import com.wilzwert.myjobs.core.domain.model.JobStatus;
+import com.wilzwert.myjobs.core.domain.ports.driving.*;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
+import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
+
+/**
+ * @author Wilhelm Zwertvaegher
+ * Date:13/03/2025
+ * Time:11:43
+ */
+@RestController
+<span class="nc" id="L25">@Slf4j</span>
+@RequestMapping(&quot;/api/jobs&quot;)
+public class JobController {
+
+    private final CreateJobUseCase createJobUseCase;
+    private final UpdateJobUseCase updateJobUseCase;
+    private final DeleteJobUseCase deleteJobUseCase;
+    private final GetUserJobUseCase getUserJobUseCase;
+    private final GetUserJobsUseCase getUserJobsUseCase;
+    private final UpdateJobStatusUseCase updateJobStatusUseCase;
+    private final UpdateJobRatingUseCase updateJobRatingUseCase;
+    private final ExtractJobMetadataUseCase extractJobMetadataUseCase;
+    private final JobMapper jobMapper;
+
+<span class="nc" id="L39">    public JobController(CreateJobUseCase createJobUseCase, GetUserJobUseCase getUserJobUseCase,  UpdateJobUseCase updateJobUseCase, DeleteJobUseCase deleteJobUseCase, GetUserJobsUseCase getUserJobsUseCase, UpdateJobStatusUseCase updateJobStatusUseCase, UpdateJobRatingUseCase updateJobRatingUseCase, ExtractJobMetadataUseCase extractJobMetadataUseCase, JobMapper jobMapper) {</span>
+<span class="nc" id="L40">        this.createJobUseCase = createJobUseCase;</span>
+<span class="nc" id="L41">        this.getUserJobUseCase = getUserJobUseCase;</span>
+<span class="nc" id="L42">        this.updateJobUseCase = updateJobUseCase;</span>
+<span class="nc" id="L43">        this.deleteJobUseCase = deleteJobUseCase;</span>
+<span class="nc" id="L44">        this.getUserJobsUseCase = getUserJobsUseCase;</span>
+<span class="nc" id="L45">        this.updateJobStatusUseCase = updateJobStatusUseCase;</span>
+<span class="nc" id="L46">        this.updateJobRatingUseCase = updateJobRatingUseCase;</span>
+<span class="nc" id="L47">        this.extractJobMetadataUseCase = extractJobMetadataUseCase;</span>
+<span class="nc" id="L48">        this.jobMapper = jobMapper;</span>
+<span class="nc" id="L49">    }</span>
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public JobResponse create(@RequestBody final CreateJobRequest createJobRequest, Authentication authentication) {
+<span class="nc" id="L54">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="nc" id="L55">        CreateJobCommand createJobCommand = jobMapper.toCommand(createJobRequest, userDetails.getId());</span>
+<span class="nc" id="L56">        return jobMapper.toResponse(createJobUseCase.createJob(createJobCommand));</span>
+    }
+
+    @GetMapping(&quot;/metadata&quot;)
+    public ResponseEntity&lt;?&gt; extract(@RequestParam() String url) {
+        // System.out.println(extractJobMetadataUseCase.extract(url));
+<span class="nc" id="L62">        return ResponseEntity.ok(extractJobMetadataUseCase.extract(url));</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    public JobResponse get(@PathVariable(&quot;id&quot;) String id,Authentication authentication) {
+<span class="nc" id="L67">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="nc" id="L68">        return jobMapper.toResponse(getUserJobUseCase.getUserJob(userDetails.getId(), new JobId(UUID.fromString(id))));</span>
+    }
+
+    @PatchMapping(&quot;/{id}&quot;)
+    public JobResponse patch(@PathVariable(&quot;id&quot;) String id, @RequestBody final UpdateJobRequest updateJobRequest, Authentication authentication) {
+<span class="nc" id="L73">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="nc" id="L74">        UpdateJobCommand updateJobCommand = jobMapper.toCommand(updateJobRequest, userDetails.getId(), new JobId(UUID.fromString(id)));</span>
+<span class="nc" id="L75">        return jobMapper.toResponse(updateJobUseCase.updateJob(updateJobCommand));</span>
+    }
+
+    @PutMapping(&quot;/{id}/status&quot;)
+    public JobResponse updateStatus(@PathVariable(&quot;id&quot;) String id, @RequestBody final UpdateJobStatusRequest updateJobStatusRequest, Authentication authentication) {
+<span class="nc" id="L80">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="nc" id="L81">        UpdateJobStatusCommand updateJobStatusCommand = jobMapper.toCommand(updateJobStatusRequest, userDetails.getId(), new JobId(UUID.fromString(id)));</span>
+<span class="nc" id="L82">        return jobMapper.toResponse(updateJobStatusUseCase.updateJobStatus(updateJobStatusCommand));</span>
+    }
+
+    @PutMapping(&quot;/{id}/rating&quot;)
+    public JobResponse updateRating(@PathVariable(&quot;id&quot;) String id, @RequestBody final UpdateJobRatingRequest updateJobRatingRequest, Authentication authentication) {
+<span class="nc" id="L87">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="nc" id="L88">        UpdateJobRatingCommand updateJobRatingCommand = jobMapper.toCommand(updateJobRatingRequest, userDetails.getId(), new JobId(UUID.fromString(id)));</span>
+<span class="nc" id="L89">        return jobMapper.toResponse(updateJobRatingUseCase.updateJobRating(updateJobRatingCommand));</span>
+    }
+
+    @DeleteMapping(&quot;/{id}&quot;)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable(&quot;id&quot;) String id, Authentication authentication) {
+<span class="nc" id="L95">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="nc" id="L96">        DeleteJobCommand deleteJobCommand = new DeleteJobCommand(new JobId(UUID.fromString(id)), userDetails.getId());</span>
+<span class="nc" id="L97">        deleteJobUseCase.deleteJob(deleteJobCommand);</span>
+<span class="nc" id="L98">    }</span>
+
+    @GetMapping()
+    public RestPage&lt;JobResponse&gt; getUserJobs(Authentication authentication, @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer itemsPerPage, @RequestParam(required = false) String status, @RequestParam(required = false) String sort) {
+<span class="nc" id="L102">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">        if(page == null) {</span>
+<span class="nc" id="L104">            page = 0;</span>
+        }
+<span class="nc bnc" id="L106" title="All 2 branches missed.">        if(itemsPerPage == null) {</span>
+<span class="nc" id="L107">            itemsPerPage = 10;</span>
+        }
+
+<span class="nc" id="L110">        JobStatus jobStatus = null;</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">        if(status != null) {</span>
+<span class="nc" id="L112">            jobStatus = JobStatus.valueOf(status);</span>
+        }
+<span class="nc" id="L114">        return jobMapper.toResponse(getUserJobsUseCase.getUserJobs(userDetails.getId(), page, itemsPerPage, jobStatus, sort));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
