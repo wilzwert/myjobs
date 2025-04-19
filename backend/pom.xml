@@ -5,12 +5,38 @@
 
     <groupId>com.wilzwert.myjobs</groupId>
     <artifactId>myjobs</artifactId>
-    <version>0.1.0</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
+    <properties>
+        <revision>0.1.0</revision>
+    </properties>
+
 
     <modules>
         <module>core</module>
         <module>infrastructure</module>
+        <module>report</module>
     </modules>
+
+    <build>
+
+        <plugins>
+            <!-- JaCoCo for merging and global reporting -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.12</version>
+                <executions>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
+    </build>
 
 </project>

@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.wilzwert.myjobs.infrastructure</groupId>
-    <artifactId>myjobs-infra</artifactId>
+    <artifactId>myjobs-infrastructure</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>MyJobsInfra</name>
     <description>MyJobsInfra</description>
@@ -398,15 +398,13 @@
                             <version>1.6.2</version>
                         </path>
                     </annotationProcessorPaths>
+                    <compilerArgs>
+                        <compilerArg>
+                            -Amapstruct.unmappedTargetPolicy=IGNORE
+                        </compilerArg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
-
-            <plugin>
-				<groupId>org.sonarsource.scanner.maven</groupId>
-				<artifactId>sonar-maven-plugin</artifactId>
-				<version>4.0.0.4121</version>
-			</plugin>
-
 
         </plugins>
 
