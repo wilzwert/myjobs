@@ -92,6 +92,8 @@ jobs:
         # it may be interesting to prevent SonarQube from running if previous requirements have not been met
         # if: steps.run-tests.outcome == 'success'
         uses: SonarSource/sonarqube-scan-action@v5
+        env:
+            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
         with: 
           projectBaseDir: backend
           args: >
@@ -99,7 +101,6 @@ jobs:
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.organization=wilzwert \
             -Dsonar.projectKey=MyJobs_backend \
-            -Dsonar.token=${{ secrets.SONAR_TOKEN_BACKEND }} \
             -Dproject.settings=./sonar-project-backend.properties
 
       # Run SonarQube analysis on pull request
