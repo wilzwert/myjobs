@@ -86,16 +86,15 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: backend
 
-      - name: Install Sonar Scanner
-        uses: SonarSource/sonarcloud-github-action@v5
-
-      # Run SonarQube analysis on push to main branch, or if workflow is run manually
-      - name: SonarQube Scan for manual run or push to main
+      # Run SonarQube analysis on push or manual run
+      - name: SonarQube Scan on push or manual run
         if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
         # it may be interesting to prevent SonarQube from running if previous requirements have not been met
         # if: steps.run-tests.outcome == 'success'
-        run: |
-          sonar-scanner -X \
+        uses: SonarSource/sonarqube-scan-action@v5
+        with: 
+          args: >
+           -X \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.organization=wilzwert \
             -Dsonar.projectKey=MyJobs_backend \
@@ -107,16 +106,18 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         # it may be interesting to prevent SonarQube from running if previous requirements have not been met
         # if: steps.run-tests.outcome == 'success'
-        run: |
-          sonar-scanner -X \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.organization=wilzwert \
-            -Dsonar.projectKey=MyJobs_backend \
-            -Dsonar.token=${{ secrets.SONAR_TOKEN_BACKEND }} \
-            -Dproject.settings=../sonar-project-backend.properties \
-            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
-            -Dsonar.pullrequest.branch=${{ github.head_ref }} \
-            -Dsonar.pullrequest.base=${{ github.base_ref }}
+        uses: SonarSource/sonarqube-scan-action@v5
+        with: 
+          args: >
+             -X \
+              -Dsonar.host.url=https://sonarcloud.io \
+              -Dsonar.organization=wilzwert \
+              -Dsonar.projectKey=MyJobs_backend \
+              -Dsonar.token=${{ secrets.SONAR_TOKEN_BACKEND }} \
+              -Dproject.settings=../sonar-project-backend.properties \
+              -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
+              -Dsonar.pullrequest.branch=${{ github.head_ref }} \
+              -Dsonar.pullrequest.base=${{ github.base_ref }}
 
       - name: SonarQube Quality Gate Check
         id: quality-gate
