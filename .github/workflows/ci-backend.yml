@@ -124,8 +124,6 @@ jobs:
       - name: SonarQube Quality Gate Check
         id: quality-gate
         uses: sonarsource/sonarqube-quality-gate-action@master
-        with:
-          scanMetadataReportFile: backend/target/sonar/report-task.txt
         env:
             SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
         continue-on-error: true
