@@ -121,6 +121,15 @@ jobs:
               -Dsonar.pullrequest.branch=${{ github.head_ref }} \
               -Dsonar.pullrequest.base=${{ github.base_ref }}
 
+
+      - name: Check if JaCoCo XML exists
+        run: |
+          echo "Current dir"
+          pwd
+
+          echo "in backend"
+          ls -al backend
+          
       - name: SonarQube Quality Gate Check
         id: quality-gate
         uses: sonarsource/sonarqube-quality-gate-action@master
