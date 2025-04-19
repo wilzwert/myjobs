@@ -127,11 +127,8 @@ jobs:
           echo "Current dir"
           pwd
 
-          echo "in backend"
-          ls -al
-
-          echo "in parent"
-          ls -al ../
+          echo "in .scannerwork"
+          ls -al .scannerwork
 
       - name: SonarQube Quality Gate Check
         id: quality-gate
