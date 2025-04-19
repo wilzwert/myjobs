@@ -128,8 +128,11 @@ jobs:
           pwd
 
           echo "in backend"
-          ls -al backend
-          
+          ls -al
+
+          echo "in parent"
+          ls -al ../
+
       - name: SonarQube Quality Gate Check
         id: quality-gate
         uses: sonarsource/sonarqube-quality-gate-action@master
