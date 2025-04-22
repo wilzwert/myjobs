@@ -19,7 +19,7 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
  */
 
 @Configuration
-@Profile({"staging","prod"})
+@Profile({"integration", "staging","prod"})
 public class S3StorageConfiguration {
 
     @Value("${aws.s3.bucket-name}")
@@ -41,7 +41,6 @@ public class S3StorageConfiguration {
 
     @Bean
     public S3Client s3Client(AwsBasicCredentials awsBasicCredentials) {
-        System.out.println("REGION ? "+region);
         return S3Client.builder()
                 .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials))
                 .region(Region.of(region))

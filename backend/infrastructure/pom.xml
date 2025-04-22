@@ -241,7 +241,7 @@
                 <version>3.2.5</version>
                 <configuration>
                     <systemPropertyVariables>
-                        <spring.profiles.active>test</spring.profiles.active>
+                        <spring.profiles.active>integration</spring.profiles.active>
                     </systemPropertyVariables>
                     <includes>
                         <include>**/*IT.java</include>

@@ -8,7 +8,7 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
  * Date:10/04/2025
  * Time:15:01
  */
-@EnabledIfSystemProperty(named = "spring.profiles.active", matches = "staging")
+@EnabledIfSystemProperty(named = "spring.profiles.active", matches = "integration")
 public class StaticHtmlFetcherAdapterIT {
 
 }

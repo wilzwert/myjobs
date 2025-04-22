@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
  * Time:09:44
  */
 @SpringBootTest
-@EnabledIfSystemProperty(named = "spring.profiles.active", matches = "staging")
+@EnabledIfSystemProperty(named = "spring.profiles.active", matches = "integration")
 public class S3FileStorageIT {
 
     @Autowired
