@@ -2,7 +2,6 @@ package com.wilzwert.myjobs.infrastructure.persistence.mongo.entity;
 
 import com.wilzwert.myjobs.core.domain.model.JobRating;
 import com.wilzwert.myjobs.core.domain.model.JobStatus;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -22,11 +21,12 @@ import java.util.UUID;
  * Date:12/03/2025
  * Time:16:06
  */
+
 @Document(collection = "jobs")
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
-@AllArgsConstructor
+// @AllArgsConstructor
 @CompoundIndexes({
         @CompoundIndex(name = "unique_user_job", def = "{'user_id': 1, 'url': 1}", unique = true)
 })
@@ -34,28 +34,20 @@ public class MongoJob {
     @Id
     private UUID id;
 
-    @Field
     private String url;
 
-    @Field
     private JobStatus status;
 
-    @Field
     private String title;
 
-    @Field
     private String company;
 
-    @Field
     private String description;
 
-    @Field
     private String profile;
 
-    @Field
     private String salary;
 
-    @Field
     private JobRating rating;
 
     @Field(name = "created_at")
@@ -73,4 +65,3 @@ public class MongoJob {
     @Field(name = "attachments")
     private List<MongoAttachment> attachments = new ArrayList<>();
 }
-
