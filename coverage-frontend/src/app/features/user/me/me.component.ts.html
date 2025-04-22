@@ -318,7 +318,7 @@ export class MeComponent {
   }
 &nbsp;
   public <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >changePassword(</span></span>) :void {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.modalService.openPasswordModal(<span class="fstat-no" title="function not covered" >() =&gt; </span>{});</span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.modalService.openPasswordModal(<span class="fstat-no" title="function not covered" >() =</span>&gt; {});</span></span>
   }
 &nbsp;
   private <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >endDeleteAccount(</span></span>) :void {
@@ -331,16 +331,16 @@ export class MeComponent {
     // TODO delete user account
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.userService.deleteUser().pipe(</span></span>
       take(1),
-      catchError((<span class="fstat-no" title="function not covered" >error: ApiError)</span> =&gt; {
+      catchError(<span class="fstat-no" title="function not covered" >(e</span>rror: ApiError) =&gt; {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        this.notificationService.error(`An error occurred while deleting your account. ${error.message}`, error);</span></span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        return throwError(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >e</span>rror)</span>;</span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        return throwError(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >error)</span>;</span></span>
       })
-    ).subscribe(<span class="fstat-no" title="function not covered" >() =&gt; </span>{
+    ).subscribe(<span class="fstat-no" title="function not covered" >() =</span>&gt; {
       // first we logout ; it will help prevent the jwt interceptor to try and re-authenticate
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >      this.sessionService.logOut(false);</span></span>
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >      this.authService.logout().</span></span>
         pipe(
-        catchError(<span class="fstat-no" title="function not covered" >() =&gt; </span> {
+        catchError(<span class="fstat-no" title="function not covered" >() =</span>&gt;  {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >          this.endDeleteAccount();</span></span>
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >          return EMPTY;</span></span>
         })
@@ -356,12 +356,12 @@ export class MeComponent {
   public <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >confirmSendVerificationEmail(</span></span>) {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.userService.sendVerificationMail()</span></span>
       .pipe(
-        catchError((<span class="fstat-no" title="function not covered" >error: ApiError)</span> =&gt; {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >            return throwError(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >n</span>ew Error("An error occurred."))</span>;</span></span>
+        catchError(<span class="fstat-no" title="function not covered" >(e</span>rror: ApiError) =&gt; {
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >            return throwError(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >new Error("An error occurred."))</span>;</span></span>
         })
       )
       .subscribe(
-<span class="fstat-no" title="function not covered" >        () =&gt; </span>{
+<span class="fstat-no" title="function not covered" >        () =</span>&gt; {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >          this.notificationService.confirmation("The verification email has been sent ; please check your emails.");</span></span>
         }
       );
@@ -372,22 +372,22 @@ export class MeComponent {
   }
 &nbsp;
   public <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >editUser(</span></span>user: User) :void {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.modalService.openUserEditModal(user, (<span class="fstat-no" title="function not covered" >data: ComponentInputDomainData)</span> =&gt; {<span class="cstat-no" title="statement not covered" >this.user$ = this.userService.getUser();}</span>);</span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.modalService.openUserEditModal(user, <span class="fstat-no" title="function not covered" >(d</span>ata: ComponentInputDomainData) =&gt; {<span class="cstat-no" title="statement not covered" >this.user$ = this.userService.getUser();}</span>);</span></span>
   }
 &nbsp;
   public <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >logout(</span></span>): void {
 <span class="cstat-no" title="statement not covered" >    this.authService.logout()</span>
             .pipe(
               catchError(
-<span class="fstat-no" title="function not covered" >                () =&gt; </span>{
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >                  return throwError(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >n</span>ew Error(</span></span></span>
+<span class="fstat-no" title="function not covered" >                () =</span>&gt; {
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >                  return throwError(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >new Error(</span></span></span>
                     'Logout failed.'
                   ));
                 }
               )
             )
             .subscribe(
-<span class="fstat-no" title="function not covered" >              () =&gt; </span>{
+<span class="fstat-no" title="function not covered" >              () =</span>&gt; {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >                this.sessionService.logOut();</span></span>
 <span class="cstat-no" title="statement not covered" >                this.router.navigate([''])</span>
               }
@@ -400,7 +400,7 @@ export class MeComponent {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-04-22T08:14:41.509Z
+                at 2025-04-22T08:20:10.374Z
             </div>
         <script src="../../../../../prettify.js"></script>
         <script>
