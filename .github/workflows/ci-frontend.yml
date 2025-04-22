@@ -1,0 +1,130 @@
+name: Frontend CI - Tests and analysis
+concurrency:
+  group: ${{ github.ref }}.frontend
+  cancel-in-progress: true
+on:
+  # CI should be able to run manually
+  workflow_dispatch:
+  # CI should run on pull requests and push on main branch
+  pull_request:
+    branches: [ "main" ]
+  push:
+    branches: [ "main" ]
+jobs:
+
+  frontend-tests-analysis:
+    name: Run frontend tests and quality analysis
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chrome browser
+        id: install-chrome
+        uses: browser-actions/setup-chrome@v1
+       
+      - name: Run tests with coverage
+        id: run-frontend-tests
+        env:
+          CHROME_BIN: ${{ steps.install-chrome.outputs.chrome-path }}
+        run: npm run test-full
+        # this step could fail because of coverage requirements
+        # but some other steps should run anyway
+        continue-on-error: true
+
+      # if coverage report doesn't exist, something bad happened, and we can't go further
+      - name: Verify coverage report existence and stop if missing
+        run: |
+          if [ ! -f "./coverage/merged-coverage.json" ]; then          
+           echo "Error: File 'coverage/merged-coverage.json' not found. Job failed."
+           exit 1
+          fi
+        shell: bash
+
+      - name: Upload frontend coverage report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: ./frontend/coverage/merged
+          retention-days: 7
+
+      # we only update pages if code has actually been pushed to main branch, or if workflow is run manually
+      - name: Publish frontend coverage report to Github Pages
+        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./frontend/coverage/merged
+          destination_dir: ./coverage-frontend
+
+      # we only update codecov if code has actually been pushed to main branch, or if workflow is run manually
+      - name: Upload frontend coverage report to Codecov
+        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./frontend/coverage/merged-coverage.json
+          flags: frontend
+
+      # Run SonarQube analysis on push to main branch, or if workflow is run manually
+      - name: SonarQube Scan on push to main
+        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+        # it may be interesting to prevent SonarQube from running if requirements have not been met
+        # if: steps.run-frontend-tests.outcome == 'success'
+        uses: SonarSource/sonarqube-scan-action@v4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONTEND }}
+        with:
+          args: >
+           -Dsonar.organization=wilzwert
+           -Dsonar.projectKey=MyJobs_frontend
+           -Dproject.settings=./sonar-project-frontend.properties
+
+      # Run SonarQube analysis on pull request
+      - name: SonarQube Scan on pull request
+        if: ${{ github.event_name == 'pull_request' }}
+        # it may be interesting to prevent SonarQube from running if requirements have not been met
+        # if: steps.run-frontend-tests.outcome == 'success'
+        uses: SonarSource/sonarqube-scan-action@v4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONTEND }}
+        with:
+          args: >
+            -Dsonar.organization=wilzwert
+            -Dsonar.projectKey=MyJobs_frontend
+            -Dproject.settings=./sonar-project-frontend.properties
+            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
+            -Dsonar.pullrequest.branch=${{ github.head_ref }}
+            -Dsonar.pullrequest.base=${{ github.base_ref }}
+
+      - name: SonarQube Quality Gate Check
+        id: quality-gate
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
+        continue-on-error: true
+
+      # fail job if coverage requirements not met
+      # this allows to explicitly specify what went wrong, as we used continue-on-error previously
+      - name: Check requirements
+        if: ${{ steps.run-frontend-tests.outcome == 'failure' || steps.quality-gate.outcome == 'failure'}}
+        run: |
+          echo "Job failed :"
+          if [ "${{ steps.run-frontend-tests.outcome }}" == "failure" ]; then
+            echo "Coverage checks have not been met. See step 'Run tests and generate coverage report' output, and coverage report"
+          fi
+          if [ "${{ steps.quality-gate.outcome }}" == "failure" ]; then
+            echo "Code quality gate check failed. See step 'SonarQube Quality Gate Check'"
+          fi
+          exit 1

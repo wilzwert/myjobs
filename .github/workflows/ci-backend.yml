@@ -4,11 +4,16 @@ concurrency:
   cancel-in-progress: true
 on:
   # CI should be able to run manually
+  # which will be interpreted as a push on main 
   workflow_dispatch:
   # CI should run on pull requests and push on main branch
+  # some steps are executed only on pushes on main branch
   pull_request:
     branches: [ "main" ]
     types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - main
 jobs:
 
   backend-tests-analysis:
@@ -38,21 +43,34 @@ jobs:
       # if jacoco coverage report doesn't exist, something bad happened, and we can't go further
       - name: Verify coverage report existence and stop if missing
         run: |
+          if [ ! -f "./core/target/site/jacoco-merged/jacoco.xml" ]; then          
+           echo "Error: File 'backend/core/target/site/jacoco-merged/jacoco.xml' not found. Job failed."
+           exit 1
+          fi
           if [ ! -f "./infrastructure/target/site/jacoco-merged/jacoco.xml" ]; then          
            echo "Error: File 'backend/infrastructure/target/site/jacoco-merged/jacoco.xml' not found. Job failed."
            exit 1
           fi
         shell: bash
 
-      - name: Upload backend coverage report artifact
+      - name: Upload backend core coverage report artifact
         uses: actions/upload-artifact@v4
         with:
-          name: backend-coverage
+          name: backend-core-coverage
+          path: ./backend/core/target/site/jacoco-merged
+          retention-days: 7
+
+      - name: Upload backend infra coverage report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-infra-coverage
           path: ./backend/infrastructure/target/site/jacoco-merged
           retention-days: 7
 
       # we only update pages if code has actually been pushed to main branch, or if workflow is run manually
+      # because we want coverage reports in pages to reflect the actual main branch coverage state
       - name: Publish backend coverage report to Github Pages
+        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -60,46 +78,65 @@ jobs:
           destination_dir: ./coverage-backend
 
       # we only update codecov if code has actually been pushed to main branch, or if workflow is run manually
+      # because codecov is only used to show actual main branch coverage with a bagde in project READM
       - name: Upload backend coverage report to Codecov
+        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: backend
 
-      # Run SonarQube analysis on push to main branch, or if workflow is run manually
-      - name: SonarQube Scan for push to main
-        if: ${{ github.event_name == 'workflow_dispatch' }}
+      # Run SonarQube analysis on push or manual run
+      - name: SonarQube Scan on push or manual run
+        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
         # it may be interesting to prevent SonarQube from running if previous requirements have not been met
         # if: steps.run-tests.outcome == 'success'
-        run: |
-          mvn clean install sonar:sonar -X \
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
+        with: 
+          projectBaseDir: backend
+          args: >
+           -X \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.organization=wilzwert \
             -Dsonar.projectKey=MyJobs_backend \
-            -Dsonar.token=${{ secrets.SONAR_TOKEN_BACKEND }} \
-            -Dproject.settings=../sonar-project-backend.properties
+            -Dproject.settings=./sonar-project-backend.properties
 
       # Run SonarQube analysis on pull request
       - name: SonarQube Scan on pull request
         if: ${{ github.event_name == 'pull_request' }}
         # it may be interesting to prevent SonarQube from running if previous requirements have not been met
         # if: steps.run-tests.outcome == 'success'
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
+        with: 
+          projectBaseDir: backend
+          args: >
+             -X \
+              -Dsonar.host.url=https://sonarcloud.io \
+              -Dsonar.organization=wilzwert \
+              -Dsonar.projectKey=MyJobs_backend \
+              -Dproject.settings=.sonar-project-backend.properties \
+              -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
+              -Dsonar.pullrequest.branch=${{ github.head_ref }} \
+              -Dsonar.pullrequest.base=${{ github.base_ref }}
+
+
+      - name: Debug files and dirs
         run: |
-          mvn clean install sonar:sonar -X \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.organization=wilzwert \
-            -Dsonar.projectKey=MyJobs_backend \
-            -Dsonar.token=${{ secrets.SONAR_TOKEN_BACKEND }} \
-            -Dproject.settings=../sonar-project-backend.properties \
-            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
-            -Dsonar.pullrequest.branch=${{ github.head_ref }} \
-            -Dsonar.pullrequest.base=${{ github.base_ref }}
-        
+          echo "Current dir"
+          pwd
+
+          echo "in .scannerwork"
+          ls -al .scannerwork
+
       - name: SonarQube Quality Gate Check
         id: quality-gate
         uses: sonarsource/sonarqube-quality-gate-action@master
         with:
-          scanMetadataReportFile: back/target/sonar/report-task.txt
+          scanMetadataReportFile: backend/.scannerwork/report-task.txt
         env:
             SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
         continue-on-error: true
