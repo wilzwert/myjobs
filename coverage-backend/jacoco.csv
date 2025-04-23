@@ -2,9 +2,9 @@ GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.mapper,EntityMapper,0,32,0,0,0,11,0,2,0,2
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.mail,CustomMailMessage,0,30,0,0,0,10,0,2,0,2
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.mail,MailProvider,6,127,0,0,2,29,1,4,1,4
-MyJobsInfra,com.wilzwert.myjobs.infrastructure.persistence.mongo.entity,JobRatingReadConverter,4,3,0,0,1,1,1,1,1,1
+MyJobsInfra,com.wilzwert.myjobs.infrastructure.persistence.mongo.entity,JobRatingReadConverter,0,7,0,0,0,2,0,2,0,2
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.persistence.mongo.entity,MongoRefreshToken,0,7,0,0,0,3,0,2,0,2
-MyJobsInfra,com.wilzwert.myjobs.infrastructure.persistence.mongo.entity,JobRatingWriteConverter,4,3,0,0,1,1,1,1,1,1
+MyJobsInfra,com.wilzwert.myjobs.infrastructure.persistence.mongo.entity,JobRatingWriteConverter,0,7,0,0,0,2,0,2,0,2
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.security.jwt,JwtAuthenticationFilter,0,120,0,12,0,31,0,10,0,4
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.security.jwt,JwtAuthenticator,0,35,0,0,0,7,0,2,0,2
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.api.rest.dto,ErrorResponse,0,116,0,2,0,21,0,16,0,15
