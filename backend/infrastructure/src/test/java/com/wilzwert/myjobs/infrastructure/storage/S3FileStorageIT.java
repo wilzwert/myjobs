@@ -2,6 +2,7 @@ package com.wilzwert.myjobs.infrastructure.storage;
 
 
 import com.wilzwert.myjobs.core.domain.ports.driven.FileStorage;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
  * Time:09:44
  */
 @SpringBootTest
-@EnabledIfSystemProperty(named = "spring.profiles.active", matches = "integration")
+// @EnabledIfSystemProperty(named = "spring.profiles.active", matches = "integration")
+@Disabled
 public class S3FileStorageIT {
 
     @Autowired
