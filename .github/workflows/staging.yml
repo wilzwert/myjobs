@@ -53,13 +53,22 @@ jobs:
 
       - name: Start mongo
         id: start-mongo
-        run: docker run --rm -d -p 27017:27017 --name mongo  mongo:8 --replSet rs0
-        env:
-            MONGO_INITDB_DATABASE: myjobs
-            MONGO_INITDB_ROOT_USERNAME: admin
-            MONGO_INITDB_ROOT_PASSWORD: password
-            MONGO_REPLICA_SET_NAME: rs0
+        run: |
+         docker run --rm -d  \
+          -p 27017:27017 \
+          --name mongo  \
+          -e MONGO_INITDB_ROOT_USERNAME=myjobs \
+          -e MONGO_INITDB_ROOT_USERNAME=admin \
+          -e MONGO_INITDB_ROOT_PASSWORD=password \
+          -e MONGO_REPLICA_SET_NAME=rs0 \
+          mongo:8 --replSet rs0
 
+      - name: Wait for Mongo to be ready
+        run: |
+          until docker exec mongo mongosh --username admin --password password --authenticationDatabase admin --eval "db.adminCommand('ping')"; do
+            echo "Waiting for Mongo to be ready..."
+            sleep 2
+          done
       - name: Init Mongo Replica Set
         run: |
             docker exec mongo \
