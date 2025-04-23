@@ -1,0 +1,83 @@
+name: Run staging tests
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [ready-for-staging]
+
+
+jobs:
+  staging:
+    # Containers must run in Linux based operating systems
+    runs-on: ubuntu-latest
+    services:
+        mongo:
+            image: mongo:8
+            ports:
+              - 27017:27017
+            options: >-
+              --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'" 
+              --health-interval 10s 
+              --health-timeout 5s 
+              --health-retries 5
+            env:
+                MONGO_INITDB_DATABASE: myjobs
+                MONGO_INITDB_ROOT_USERNAME: admin
+                MONGO_INITDB_ROOT_PASSWORD: password
+                MONGO_REPLICA_SET_NAME: rs0
+    steps:
+      - name: Check latest status of workflows
+        uses: actions/github-script@v7
+        id: check
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const [backend, frontend] = await Promise.all([
+              github.rest.actions.listWorkflowRuns({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: 'test-backend.yml',
+                per_page: 1
+              }),
+              github.rest.actions.listWorkflowRuns({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: 'test-frontend.yml',
+                per_page: 1
+              }),
+            ]);
+            const backendSuccess = backend.data.workflow_runs[0]?.conclusion === 'success';
+            const frontendSuccess = frontend.data.workflow_runs[0]?.conclusion === 'success';
+            if (!backendSuccess || !frontendSuccess) {
+              core.setFailed("One or both required workflows have not succeeded.");
+            }
+      - name: Init Mongo Replica Set
+        run: |
+            docker exec $(docker ps -qf "ancestor=mongo:8") \
+            mongosh --eval '
+                rs.initiate({
+                _id: "rs0",
+                members: [{ _id: 0, host: "localhost:27017" }]
+                })'
+      - name: Build backend
+        run: ./mvnw clean package -DskipTests -Pstaging
+      - name: Start backend
+        run: |
+            java -jar backend/infrastructure/target/myjobs-staging.jar \
+            --spring.profiles.active=staging 
+            --server.port=8080 &
+            sleep 30
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+      - name: Run Cypress E2E tests
+        working-directory: frontend
+        run: npm run e2e:ci
+        env:
+            CYPRESS_BASE_URL: http://localhost:8080
+            MOCK_API: true
+      - name: Upload Cypress report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+            name: cypress-report
+            path: frontend/coverage/e2e/
