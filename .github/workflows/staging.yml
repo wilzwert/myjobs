@@ -63,16 +63,24 @@ jobs:
           -e MONGO_REPLICA_SET_NAME=rs0 \
           mongo:8 --replSet rs0
 
-      - name: Show mongo logs if crash
-        if: failure()
+      - name: Show mongo logs
+        # if: failure()
         run: docker logs mongo || true
 
       - name: Wait for Mongo to be ready
         run: |
-          until docker exec mongo mongosh --username admin --password password --authenticationDatabase admin --eval "db.adminCommand('ping')"; do
-            echo "Waiting for Mongo to be ready..."
+          for i in {1..10}; do
+            if docker exec mongo mongosh --username admin --password password --authenticationDatabase admin --eval "db.runCommand({ ping: 1 })"; then
+              echo "Mongo is ready!"
+              exit 0
+            fi
+            echo "Waiting for Mongo to start..."
             sleep 2
           done
+          echo "Mongo didn't start in time"
+          docker logs mongo
+          exit 1
+          
       - name: Init Mongo Replica Set
         run: |
             docker exec mongo \
