@@ -1,5 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.configuration;
 
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MongoDBContainer;
@@ -11,7 +12,8 @@ import com.mongodb.client.MongoClients;
 import org.bson.Document;
 
 @Testcontainers
-public abstract class MongoTestContainerConfiguration {
+@SpringBootTest
+public abstract class AbstractBaseIntegrationTest {
 
     // Container Mongo avec réplica set
     protected static final MongoDBContainer mongo = new MongoDBContainer("mongo:8.0")

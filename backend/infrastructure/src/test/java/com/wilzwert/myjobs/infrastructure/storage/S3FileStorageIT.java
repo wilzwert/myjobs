@@ -2,19 +2,18 @@ package com.wilzwert.myjobs.infrastructure.storage;
 
 
 import com.wilzwert.myjobs.core.domain.ports.driven.FileStorage;
+import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 /**
  * @author Wilhelm Zwertvaegher
  * Date:08/04/2025
  * Time:09:44
  */
-@SpringBootTest
 @EnabledIfSystemProperty(named = "spring.profiles.active", matches = "integration")
-public class S3FileStorageIT {
+public class S3FileStorageIT extends AbstractBaseIntegrationTest {
 
     @Autowired
     private FileStorage fileStorage;
