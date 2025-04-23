@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
  * TODO : add rate limiting on public endpoints
  */
 @RestController
-<span class="nc" id="L26">@Slf4j</span>
+<span class="fc" id="L26">@Slf4j</span>
 @RequestMapping(&quot;/api/user&quot;)
 public class UserController {
     private final ValidateEmailUseCase validateEmailUseCase;
@@ -42,15 +42,15 @@ public class UserController {
 
 
 
-<span class="nc" id="L45">    public UserController(ValidateEmailUseCase validateEmailUseCase, ChangePasswordUseCase changePasswordUseCase, SendVerificationEmailUseCase sendVerificationEmailUseCase, UpdateUserUseCase updateUserUseCase, DeleteAccountUseCase deleteAccountUseCase, UserMapper userMapper, UserService userService) {</span>
-<span class="nc" id="L46">        this.validateEmailUseCase = validateEmailUseCase;</span>
-<span class="nc" id="L47">        this.changePasswordUseCase = changePasswordUseCase;</span>
-<span class="nc" id="L48">        this.sendVerificationEmailUseCase = sendVerificationEmailUseCase;</span>
-<span class="nc" id="L49">        this.updateUserUseCase = updateUserUseCase;</span>
-<span class="nc" id="L50">        this.deleteAccountUseCase = deleteAccountUseCase;</span>
-<span class="nc" id="L51">        this.userMapper = userMapper;</span>
-<span class="nc" id="L52">        this.userService = userService;</span>
-<span class="nc" id="L53">    }</span>
+<span class="fc" id="L45">    public UserController(ValidateEmailUseCase validateEmailUseCase, ChangePasswordUseCase changePasswordUseCase, SendVerificationEmailUseCase sendVerificationEmailUseCase, UpdateUserUseCase updateUserUseCase, DeleteAccountUseCase deleteAccountUseCase, UserMapper userMapper, UserService userService) {</span>
+<span class="fc" id="L46">        this.validateEmailUseCase = validateEmailUseCase;</span>
+<span class="fc" id="L47">        this.changePasswordUseCase = changePasswordUseCase;</span>
+<span class="fc" id="L48">        this.sendVerificationEmailUseCase = sendVerificationEmailUseCase;</span>
+<span class="fc" id="L49">        this.updateUserUseCase = updateUserUseCase;</span>
+<span class="fc" id="L50">        this.deleteAccountUseCase = deleteAccountUseCase;</span>
+<span class="fc" id="L51">        this.userMapper = userMapper;</span>
+<span class="fc" id="L52">        this.userService = userService;</span>
+<span class="fc" id="L53">    }</span>
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)

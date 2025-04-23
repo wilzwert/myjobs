@@ -27,9 +27,9 @@ import java.util.UUID;
 public class CustomUserDetailsService implements UserDetailsService {
     private final UserService userService;
 
-<span class="nc" id="L30">    public CustomUserDetailsService(final UserService userService) {</span>
-<span class="nc" id="L31">        this.userService = userService;</span>
-<span class="nc" id="L32">    }</span>
+<span class="fc" id="L30">    public CustomUserDetailsService(final UserService userService) {</span>
+<span class="fc" id="L31">        this.userService = userService;</span>
+<span class="fc" id="L32">    }</span>
 
     @Override
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException, NumberFormatException {

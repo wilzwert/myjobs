@@ -19,20 +19,20 @@ public class DefaultHtmlSanitizer implements HtmlSanitizer {
     private final PolicyFactory policy;
 
     public DefaultHtmlSanitizer() {
-<span class="nc" id="L22">        super();</span>
-<span class="nc" id="L23">        HtmlPolicyBuilder policyBuilder = new HtmlPolicyBuilder();</span>
+<span class="fc" id="L22">        super();</span>
+<span class="fc" id="L23">        HtmlPolicyBuilder policyBuilder = new HtmlPolicyBuilder();</span>
 
-<span class="nc" id="L25">        getAllowedTags().forEach(policyBuilder::allowElements);</span>
+<span class="fc" id="L25">        getAllowedTags().forEach(policyBuilder::allowElements);</span>
 
-<span class="nc" id="L27">        policyBuilder.allowUrlProtocols(&quot;https&quot;, &quot;http&quot;);</span>
+<span class="fc" id="L27">        policyBuilder.allowUrlProtocols(&quot;https&quot;, &quot;http&quot;);</span>
 
-<span class="nc bnc" id="L29" title="All 2 branches missed.">        if(getAllowedTags().contains(&quot;a&quot;)) {</span>
-<span class="nc" id="L30">            policyBuilder.allowAttributes(&quot;href&quot;).onElements(&quot;a&quot;)</span>
-<span class="nc" id="L31">                    .requireRelNofollowOnLinks();</span>
+<span class="pc bpc" id="L29" title="1 of 2 branches missed.">        if(getAllowedTags().contains(&quot;a&quot;)) {</span>
+<span class="fc" id="L30">            policyBuilder.allowAttributes(&quot;href&quot;).onElements(&quot;a&quot;)</span>
+<span class="fc" id="L31">                    .requireRelNofollowOnLinks();</span>
         }
 
-<span class="nc" id="L34">        policy = policyBuilder.toFactory();</span>
-<span class="nc" id="L35">    }</span>
+<span class="fc" id="L34">        policy = policyBuilder.toFactory();</span>
+<span class="fc" id="L35">    }</span>
 
     @Override
     public String sanitize(String html) {

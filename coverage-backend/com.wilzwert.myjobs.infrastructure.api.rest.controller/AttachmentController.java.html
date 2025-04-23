@@ -39,7 +39,7 @@ import java.util.UUID;
  * Time:11:43
  */
 @RestController
-<span class="nc" id="L42">@Slf4j</span>
+<span class="fc" id="L42">@Slf4j</span>
 @RequestMapping(&quot;/api/jobs&quot;)
 public class AttachmentController {
 
@@ -52,12 +52,12 @@ public class AttachmentController {
     private final DeleteAttachmentUseCase deleteAttachmentUseCase;
 
 
-<span class="nc" id="L55">    public AttachmentController(AddAttachmentToJobUseCase addAttachmentToJobUseCase, DownloadAttachmentUseCase downloadAttachmentUseCase, DeleteAttachmentUseCase deleteAttachmentUseCase, AttachmentMapper attachmentMapper) {</span>
-<span class="nc" id="L56">        this.addAttachmentToJobUseCase = addAttachmentToJobUseCase;</span>
-<span class="nc" id="L57">        this.downloadAttachmentUseCase = downloadAttachmentUseCase;</span>
-<span class="nc" id="L58">        this.deleteAttachmentUseCase = deleteAttachmentUseCase;</span>
-<span class="nc" id="L59">        this.attachmentMapper = attachmentMapper;</span>
-<span class="nc" id="L60">    }</span>
+<span class="fc" id="L55">    public AttachmentController(AddAttachmentToJobUseCase addAttachmentToJobUseCase, DownloadAttachmentUseCase downloadAttachmentUseCase, DeleteAttachmentUseCase deleteAttachmentUseCase, AttachmentMapper attachmentMapper) {</span>
+<span class="fc" id="L56">        this.addAttachmentToJobUseCase = addAttachmentToJobUseCase;</span>
+<span class="fc" id="L57">        this.downloadAttachmentUseCase = downloadAttachmentUseCase;</span>
+<span class="fc" id="L58">        this.deleteAttachmentUseCase = deleteAttachmentUseCase;</span>
+<span class="fc" id="L59">        this.attachmentMapper = attachmentMapper;</span>
+<span class="fc" id="L60">    }</span>
 
     @PostMapping(&quot;{jobId}/attachments&quot;)
     public AttachmentResponse createAttachment(@PathVariable(&quot;jobId&quot;) String jobId, @RequestBody CreateAttachmentRequest createAttachmentRequest, Authentication authentication) {

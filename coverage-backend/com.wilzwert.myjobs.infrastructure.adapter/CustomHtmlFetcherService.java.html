@@ -14,8 +14,8 @@ import java.util.Optional;
 public class CustomHtmlFetcherService extends DefaultHtmlFetcherService {
 
     public CustomHtmlFetcherService() {
-<span class="nc" id="L17">        super();</span>
-<span class="nc" id="L18">    }</span>
+<span class="fc" id="L17">        super();</span>
+<span class="fc" id="L18">    }</span>
     @Override
     @Cacheable(value = &quot;urlMetadataExists&quot;, key = &quot;#url&quot;)
     public Optional&lt;String&gt; fetchHtml(String domain, String url) {

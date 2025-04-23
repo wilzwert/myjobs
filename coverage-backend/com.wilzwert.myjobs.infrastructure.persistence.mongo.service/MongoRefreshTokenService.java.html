@@ -23,7 +23,7 @@ import java.util.UUID;
  */
 
 @Service
-<span class="nc" id="L26">@Slf4j</span>
+<span class="fc" id="L26">@Slf4j</span>
 public class MongoRefreshTokenService implements RefreshTokenService {
     private final JwtService jwtService;
 
@@ -31,11 +31,11 @@ public class MongoRefreshTokenService implements RefreshTokenService {
 
     private final JwtProperties jwtProperties;
 
-<span class="nc" id="L34">    public MongoRefreshTokenService(final RefreshTokenRepository mongoRefreshTokenRepository, final JwtService jwtService, final JwtProperties jwtProperties) {</span>
-<span class="nc" id="L35">        this.refreshTokenRepository = mongoRefreshTokenRepository;</span>
-<span class="nc" id="L36">        this.jwtService = jwtService;</span>
-<span class="nc" id="L37">        this.jwtProperties = jwtProperties;</span>
-<span class="nc" id="L38">    }</span>
+<span class="fc" id="L34">    public MongoRefreshTokenService(final RefreshTokenRepository mongoRefreshTokenRepository, final JwtService jwtService, final JwtProperties jwtProperties) {</span>
+<span class="fc" id="L35">        this.refreshTokenRepository = mongoRefreshTokenRepository;</span>
+<span class="fc" id="L36">        this.jwtService = jwtService;</span>
+<span class="fc" id="L37">        this.jwtProperties = jwtProperties;</span>
+<span class="fc" id="L38">    }</span>
 
     @Override
     public Optional&lt;RefreshToken&gt; findByToken(final String token) {

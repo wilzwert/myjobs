@@ -17,10 +17,10 @@ public class CookieService {
 
     private final JwtProperties jwtProperties;
 
-<span class="nc" id="L20">    public CookieService(CookieProperties cookieProperties, JwtProperties jwtProperties) {</span>
-<span class="nc" id="L21">        this.cookieProperties = cookieProperties;</span>
-<span class="nc" id="L22">        this.jwtProperties = jwtProperties;</span>
-<span class="nc" id="L23">    }</span>
+<span class="fc" id="L20">    public CookieService(CookieProperties cookieProperties, JwtProperties jwtProperties) {</span>
+<span class="fc" id="L21">        this.cookieProperties = cookieProperties;</span>
+<span class="fc" id="L22">        this.jwtProperties = jwtProperties;</span>
+<span class="fc" id="L23">    }</span>
 
     public ResponseCookie createAccessTokenCookie(String accessToken) {
 <span class="nc" id="L26">        return createCookie(&quot;access_token&quot;, accessToken, jwtProperties.getExpirationTime());</span>

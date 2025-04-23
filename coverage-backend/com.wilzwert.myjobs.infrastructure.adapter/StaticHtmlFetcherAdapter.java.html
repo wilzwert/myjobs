@@ -17,9 +17,9 @@ import java.util.Optional;
  * Time:13:19
  */
 @Component
-<span class="nc" id="L20">public class StaticHtmlFetcherAdapter implements StaticHtmlFetcher {</span>
+<span class="fc" id="L20">public class StaticHtmlFetcherAdapter implements StaticHtmlFetcher {</span>
     // FIXME : this is not a very clean way of setting headers
-<span class="nc" id="L22">    private static final Map&lt;String, String&gt; HEADERS = Map.of(</span>
+<span class="fc" id="L22">    private static final Map&lt;String, String&gt; HEADERS = Map.of(</span>
         &quot;User-Agent&quot;, &quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:98.0) Gecko/20100101 Firefox/98.0&quot;,
         &quot;Accept&quot;, &quot;text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8&quot;,
         &quot;Accept-Language&quot;, &quot;en-US,en;q=0.5&quot;,
@@ -31,7 +31,7 @@ import java.util.Optional;
         &quot;Sec-Fetch-Site&quot;, &quot;none&quot;,
         &quot;Sec-Fetch-User&quot;, &quot;?1&quot;
     );
-<span class="nc" id="L34">    private final Map&lt;String, String&gt; OTHER_HEADERS = Map.of(</span>
+<span class="fc" id="L34">    private final Map&lt;String, String&gt; OTHER_HEADERS = Map.of(</span>
     &quot;Cache-Control&quot;, &quot;max-age=0&quot;
     );
 

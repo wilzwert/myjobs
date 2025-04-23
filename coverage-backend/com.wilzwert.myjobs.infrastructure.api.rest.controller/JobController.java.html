@@ -22,7 +22,7 @@ import java.util.UUID;
  * Time:11:43
  */
 @RestController
-<span class="nc" id="L25">@Slf4j</span>
+<span class="fc" id="L25">@Slf4j</span>
 @RequestMapping(&quot;/api/jobs&quot;)
 public class JobController {
 
@@ -36,17 +36,17 @@ public class JobController {
     private final ExtractJobMetadataUseCase extractJobMetadataUseCase;
     private final JobMapper jobMapper;
 
-<span class="nc" id="L39">    public JobController(CreateJobUseCase createJobUseCase, GetUserJobUseCase getUserJobUseCase,  UpdateJobUseCase updateJobUseCase, DeleteJobUseCase deleteJobUseCase, GetUserJobsUseCase getUserJobsUseCase, UpdateJobStatusUseCase updateJobStatusUseCase, UpdateJobRatingUseCase updateJobRatingUseCase, ExtractJobMetadataUseCase extractJobMetadataUseCase, JobMapper jobMapper) {</span>
-<span class="nc" id="L40">        this.createJobUseCase = createJobUseCase;</span>
-<span class="nc" id="L41">        this.getUserJobUseCase = getUserJobUseCase;</span>
-<span class="nc" id="L42">        this.updateJobUseCase = updateJobUseCase;</span>
-<span class="nc" id="L43">        this.deleteJobUseCase = deleteJobUseCase;</span>
-<span class="nc" id="L44">        this.getUserJobsUseCase = getUserJobsUseCase;</span>
-<span class="nc" id="L45">        this.updateJobStatusUseCase = updateJobStatusUseCase;</span>
-<span class="nc" id="L46">        this.updateJobRatingUseCase = updateJobRatingUseCase;</span>
-<span class="nc" id="L47">        this.extractJobMetadataUseCase = extractJobMetadataUseCase;</span>
-<span class="nc" id="L48">        this.jobMapper = jobMapper;</span>
-<span class="nc" id="L49">    }</span>
+<span class="fc" id="L39">    public JobController(CreateJobUseCase createJobUseCase, GetUserJobUseCase getUserJobUseCase,  UpdateJobUseCase updateJobUseCase, DeleteJobUseCase deleteJobUseCase, GetUserJobsUseCase getUserJobsUseCase, UpdateJobStatusUseCase updateJobStatusUseCase, UpdateJobRatingUseCase updateJobRatingUseCase, ExtractJobMetadataUseCase extractJobMetadataUseCase, JobMapper jobMapper) {</span>
+<span class="fc" id="L40">        this.createJobUseCase = createJobUseCase;</span>
+<span class="fc" id="L41">        this.getUserJobUseCase = getUserJobUseCase;</span>
+<span class="fc" id="L42">        this.updateJobUseCase = updateJobUseCase;</span>
+<span class="fc" id="L43">        this.deleteJobUseCase = deleteJobUseCase;</span>
+<span class="fc" id="L44">        this.getUserJobsUseCase = getUserJobsUseCase;</span>
+<span class="fc" id="L45">        this.updateJobStatusUseCase = updateJobStatusUseCase;</span>
+<span class="fc" id="L46">        this.updateJobRatingUseCase = updateJobRatingUseCase;</span>
+<span class="fc" id="L47">        this.extractJobMetadataUseCase = extractJobMetadataUseCase;</span>
+<span class="fc" id="L48">        this.jobMapper = jobMapper;</span>
+<span class="fc" id="L49">    }</span>
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

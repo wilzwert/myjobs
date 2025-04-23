@@ -31,13 +31,13 @@ public class UserServiceAdapter implements UserService {
     private final JobMapper jobMapper;
     private final MongoRefreshTokenRepository mongoRefreshTokenRepository;
 
-<span class="nc" id="L34">    public UserServiceAdapter(final MongoUserRepository mongoUserRepository, final MongoJobRepository mongoJobRepository, final UserMapper userMapper, JobMapper jobMapper, MongoRefreshTokenRepository mongoRefreshTokenRepository) {</span>
-<span class="nc" id="L35">        this.mongoUserRepository = mongoUserRepository;</span>
-<span class="nc" id="L36">        this.mongoJobRepository = mongoJobRepository;</span>
-<span class="nc" id="L37">        this.userMapper = userMapper;</span>
-<span class="nc" id="L38">        this.jobMapper = jobMapper;</span>
-<span class="nc" id="L39">        this.mongoRefreshTokenRepository = mongoRefreshTokenRepository;</span>
-<span class="nc" id="L40">    }</span>
+<span class="fc" id="L34">    public UserServiceAdapter(final MongoUserRepository mongoUserRepository, final MongoJobRepository mongoJobRepository, final UserMapper userMapper, JobMapper jobMapper, MongoRefreshTokenRepository mongoRefreshTokenRepository) {</span>
+<span class="fc" id="L35">        this.mongoUserRepository = mongoUserRepository;</span>
+<span class="fc" id="L36">        this.mongoJobRepository = mongoJobRepository;</span>
+<span class="fc" id="L37">        this.userMapper = userMapper;</span>
+<span class="fc" id="L38">        this.jobMapper = jobMapper;</span>
+<span class="fc" id="L39">        this.mongoRefreshTokenRepository = mongoRefreshTokenRepository;</span>
+<span class="fc" id="L40">    }</span>
 
     @Override
     public boolean isEmailAndUsernameAvailable(String email, String username) {
