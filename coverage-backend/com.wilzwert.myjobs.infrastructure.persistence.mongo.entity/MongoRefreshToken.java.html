@@ -28,7 +28,6 @@ public class MongoRefreshToken implements RefreshToken {
     @Field(name = &quot;user_id&quot;)
     private UUID userId;
 
-    @Field(name = &quot;token&quot;)
     @Indexed(unique = true)
     private String token;
 
@@ -37,12 +36,12 @@ public class MongoRefreshToken implements RefreshToken {
 
     @Override
     public String getToken() {
-<span class="fc" id="L40">        return token;</span>
+<span class="fc" id="L39">        return token;</span>
     }
 
     @Override
     public void setExpiresAt(Instant expiresAt) {
-<span class="fc" id="L45">        this.expiresAt = expiresAt;</span>
-<span class="fc" id="L46">    }</span>
+<span class="fc" id="L44">        this.expiresAt = expiresAt;</span>
+<span class="fc" id="L45">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -19,7 +19,7 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
  */
 
 @Configuration
-@Profile({&quot;staging&quot;,&quot;prod&quot;})
+@Profile({&quot;integration&quot;, &quot;staging&quot;,&quot;prod&quot;})
 <span class="nc" id="L23">public class S3StorageConfiguration {</span>
 
     @Value(&quot;${aws.s3.bucket-name}&quot;)
@@ -41,24 +41,23 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
     @Bean
     public S3Client s3Client(AwsBasicCredentials awsBasicCredentials) {
-<span class="nc" id="L44">        System.out.println(&quot;REGION ? &quot;+region);</span>
-<span class="nc" id="L45">        return S3Client.builder()</span>
-<span class="nc" id="L46">                .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials))</span>
-<span class="nc" id="L47">                .region(Region.of(region))</span>
-<span class="nc" id="L48">                .build();</span>
+<span class="nc" id="L44">        return S3Client.builder()</span>
+<span class="nc" id="L45">                .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials))</span>
+<span class="nc" id="L46">                .region(Region.of(region))</span>
+<span class="nc" id="L47">                .build();</span>
     }
 
     @Bean
     public S3Presigner s3Presigner(AwsBasicCredentials awsBasicCredentials) {
-<span class="nc" id="L53">        return S3Presigner.builder()</span>
-<span class="nc" id="L54">                .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials))</span>
-<span class="nc" id="L55">                .region(Region.of(region))</span>
-<span class="nc" id="L56">                .build();</span>
+<span class="nc" id="L52">        return S3Presigner.builder()</span>
+<span class="nc" id="L53">                .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials))</span>
+<span class="nc" id="L54">                .region(Region.of(region))</span>
+<span class="nc" id="L55">                .build();</span>
     }
 
     @Bean
     public FileStorage fileStorage(S3Client s3Client, S3Presigner s3Presigner) {
-<span class="nc" id="L61">        return new S3FileStorage(s3Client, s3Presigner, bucketName);</span>
+<span class="nc" id="L60">        return new S3FileStorage(s3Client, s3Presigner, bucketName);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
