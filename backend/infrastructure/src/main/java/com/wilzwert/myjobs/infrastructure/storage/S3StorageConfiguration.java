@@ -19,7 +19,7 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
  */
 
 @Configuration
-@Profile({"integration", "staging","prod"})
+@Profile({"integration", "staging", "prod"})
 public class S3StorageConfiguration {
 
     @Value("${aws.s3.bucket-name}")
