@@ -28,32 +28,24 @@ public class JsonLdJobMetadataExtractor implements JobMetadataExtractor {
 
     private JobMetadata buildExtractedMetadataFromJobPosting(JobPosting jobPosting) {
         JobMetadata.Builder builder = new JobMetadata.Builder();
-        try {
-            builder.title(jobPosting.title());
-            builder.description(jobPosting.description());
-            builder.company(jobPosting.hiringOrganization().name());
+        builder.title(jobPosting.title());
+        builder.description(jobPosting.description());
+        builder.company(jobPosting.hiringOrganization().name());
 
-            if(jobPosting.qualifications() != null) {
-                builder.profile(jobPosting.qualifications());
-            }
-            else if(jobPosting.experienceRequirements() != null) {
-                builder.profile(jobPosting.experienceRequirements());
-            }
-            builder.url(jobPosting.url());
-            builder.salary(jobPosting.computeSalary());
+        if(jobPosting.qualifications() != null) {
+            builder.profile(jobPosting.qualifications());
         }
-        catch (Exception e) {
-            // TODO : log
-            e.printStackTrace();
+        else if(jobPosting.experienceRequirements() != null) {
+            builder.profile(jobPosting.experienceRequirements());
         }
-
+        builder.url(jobPosting.url());
+        builder.salary(jobPosting.computeSalary());
         return builder.build();
     }
 
 
     @Override
     public Optional<JobMetadata> extractJobMetadata(String html) {
-        System.out.println("We are in the JsonLdJobMetadataExtractor");
         if(html == null || html.isEmpty()) {
             return Optional.empty();
         }
@@ -68,15 +60,14 @@ public class JsonLdJobMetadataExtractor implements JobMetadataExtractor {
             }
             return Optional.empty();
         } catch (Exception e) {
+            // TODO : don't print stack trace, log instead
             e.printStackTrace();
-            // TODO : log
             return Optional.empty();
         }
     }
 
     @Override
     public boolean isCompatible(String domain) {
-        System.out.println("We are in the JsonLdJobMetadataExtractor::isCompatible for "+domain);
         return !NOT_COMPATIBLE_DOMAINS.contains(domain);
     }
 }
