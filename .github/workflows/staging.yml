@@ -67,7 +67,7 @@ jobs:
           -e MONGO_INITDB_ROOT_USERNAME=admin \
           -e MONGO_INITDB_ROOT_PASSWORD=password \
           -e MONGO_REPLICA_SET_NAME=rs0 \
-          mongo:8 --replSet rs0
+          mongo:8 --replSet rs0 --keyFile /etc/mongo-keyfile
 
       - name: Wait for Mongo to be ready
         run: |
