@@ -9,22 +9,21 @@ jobs:
   staging:
     # Containers must run in Linux based operating systems
     runs-on: ubuntu-latest
-    services:
-        mongo:
-            image: mongo:8
-            ports:
-              - 27017:27017
-            options: >-
-              --replSet rs0
-              --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'" 
-              --health-interval 10s 
-              --health-timeout 5s 
-              --health-retries 5
-            env:
-                MONGO_INITDB_DATABASE: myjobs
-                MONGO_INITDB_ROOT_USERNAME: admin
-                MONGO_INITDB_ROOT_PASSWORD: password
-                MONGO_REPLICA_SET_NAME: rs0
+    # services:
+    #     mongo:
+    #         image: mongo:8
+    #         ports:
+    #           - 27017:27017
+    #         options: >-
+    #           --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 });'" 
+    #           --health-interval 10s 
+    #           --health-timeout 5s 
+    #           --health-retries 5
+    #         env:
+    #             MONGO_INITDB_DATABASE: myjobs
+    #             MONGO_INITDB_ROOT_USERNAME: admin
+    #             MONGO_INITDB_ROOT_PASSWORD: password
+    #             MONGO_REPLICA_SET_NAME: rs0
     steps:
       - name: Check latest status of workflows
         uses: actions/github-script@v7
@@ -51,9 +50,19 @@ jobs:
             if (!backendSuccess || !frontendSuccess) {
               core.setFailed("One or both required workflows have not succeeded.");
             }
+
+      - name: Start mongo
+        id: start-mongo
+        run: docker run --rm -d -p 27017:27017 --name mongo  mongo:8 --replSet rs0
+        env:
+            MONGO_INITDB_DATABASE: myjobs
+            MONGO_INITDB_ROOT_USERNAME: admin
+            MONGO_INITDB_ROOT_PASSWORD: password
+            MONGO_REPLICA_SET_NAME: rs0
+
       - name: Init Mongo Replica Set
         run: |
-            docker exec $(docker ps -qf "ancestor=mongo:8") \
+            docker exec mongo \
             mongosh --username admin --password password --authenticationDatabase admin --eval '
                 rs.initiate({
                 _id: "rs0",
