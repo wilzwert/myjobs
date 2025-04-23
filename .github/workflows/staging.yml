@@ -9,21 +9,6 @@ jobs:
   staging:
     # Containers must run in Linux based operating systems
     runs-on: ubuntu-latest
-    # services:
-    #     mongo:
-    #         image: mongo:8
-    #         ports:
-    #           - 27017:27017
-    #         options: >-
-    #           --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 });'" 
-    #           --health-interval 10s 
-    #           --health-timeout 5s 
-    #           --health-retries 5
-    #         env:
-    #             MONGO_INITDB_DATABASE: myjobs
-    #             MONGO_INITDB_ROOT_USERNAME: admin
-    #             MONGO_INITDB_ROOT_PASSWORD: password
-    #             MONGO_REPLICA_SET_NAME: rs0
     steps:
       - name: Check latest status of workflows
         uses: actions/github-script@v7
@@ -51,28 +36,36 @@ jobs:
               core.setFailed("One or both required workflows have not succeeded.");
             }
 
-      - name: Generate Mongo keyfile
-        run: |
-          echo "mySuperSecretKeyForReplicaSetInStaging" > mongo-keyfile
-          chmod 400 mongo-keyfile
+      - name: Check out repository code
+        uses: actions/checkout@v4
 
       - name: Start mongo
         id: start-mongo
         run: |
-         docker run -d  \
-          -p 27017:27017 \
-          --name mongo  \
-          -v ${{ github.workspace }}/mongo-keyfile:/etc/mongo-keyfile:ro \
-          -e MONGO_INITDB_DATABASE=myjobs \
-          -e MONGO_INITDB_ROOT_USERNAME=admin \
-          -e MONGO_INITDB_ROOT_PASSWORD=password \
-          -e MONGO_REPLICA_SET_NAME=rs0 \
-          mongo:8 --replSet rs0 --keyFile /etc/mongo-keyfile
+          openssl rand -base64 756 > mongodb-keyfile
+          
+          docker run -d  \
+            -p 27019:27019 \
+            --name mongo  \
+            -v ${{ github.workspace }}/mongodb-keyfile:/etc/mongo/mongodb-keyfile:rw \
+            -v ${{ github.workspace }}/docker/integration/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:rw \
+            -e MONGO_INITDB_DATABASE=myjobs \
+            -e MONGO_INITDB_ROOT_USERNAME=admin \
+            -e MONGO_INITDB_ROOT_PASSWORD=password \
+            -e MONGO_REPLICA_SET_NAME=rs-staging \
+            --entrypoint /bin/bash \
+            mongo:8 -c "
+              chmod 400 /etc/mongo/mongodb-keyfile && 
+              chown 999:999 /etc/mongo/mongodb-keyfile && 
+              chown -R 999:999 /data && 
+              chmod -R 700 /data && 
+              exec docker-entrypoint.sh mongod --port 27019 --replSet rs-staging --keyFile /etc/mongo/mongodb-keyfile
+            "
 
       - name: Wait for Mongo to be ready
         run: |
           for i in {1..10}; do
-            if docker exec mongo mongosh --username admin --password password --authenticationDatabase admin --eval "db.runCommand({ ping: 1 })"; then
+            if docker exec mongo mongosh --quiet --norc --host localhost --port 27019 --username admin --password password --authenticationDatabase admin --eval "db.runCommand({ ping: 1 })"; then
               echo "Mongo is ready!"
               exit 0
             fi
@@ -86,28 +79,83 @@ jobs:
       - name: Init Mongo Replica Set
         run: |
             docker exec mongo \
-            mongosh --username admin --password password --authenticationDatabase admin --eval '
+            mongosh --quiet --norc --port 27019 --username admin --password password --authenticationDatabase admin --eval '
                 rs.initiate({
-                _id: "rs0",
-                members: [{ _id: 0, host: "localhost:27017" }]
+                _id: "rs-staging",
+                members: [{ _id: 0, host: "localhost:27019" }]
                 })'
+
+
+      - name: Test MongoDB connection with created user
+        run: |
+            docker exec mongo mongosh --port 27019 --username admin --password password --authenticationDatabase admin --eval 'db.getSiblingDB("myjobs").getUsers()'
+            if docker exec mongo mongosh --quiet --norc --port 27019 --username mongouser --password mongopwd --authenticationDatabase myjobs --eval 'use myjobs; db.auth("mongouser", "mongopwd")'; then
+              echo "Created mongo user is ready"
+              exit 0
+            fi
+            echo "Couldn't connect with created mongo user"
+            docker logs mongo
+            exit 1
+       
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Install backend dependencies
+        run: mvn dependency:go-offline
+        working-directory: ./backend
+
       - name: Build backend
-        run: ./mvnw clean package -DskipTests -Pstaging
+        run: mvn clean package -DskipTests -Pstaging
+        working-directory: ./backend
+
       - name: Start backend
         run: |
-            java -jar backend/infrastructure/target/myjobs-staging.jar \
-            --spring.profiles.active=staging 
-            --server.port=8080 &
+            nohup java -jar backend/infrastructure/target/myjobs-staging.jar \
+            --spring.profiles.active=staging \
+            --server.port=8080 > backend.log 2>&1 &
             sleep 30
+        env:
+          MONGODB_PORT: 27019
+          MONGODB_RS_NAME: rs-staging
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_S3_REGION: ${{ vars.AWS_S3_REGION_INTEGRATION }}
+          AWS_S3_BUCKET_NAME: ${{ vars.AWS_S3_BUCKET_NAME_INTEGRATION }}
+          GOOGLE_RECAPTCHA_PRIVATE_KEY: ${{ secrets.GOOGLE_RECAPTCHA_PRIVATE_KEY_INTEGRATION }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY_INTEGRATION }}
+          MAIL_HOST: ${{ vars.MAIL_HOST_INTEGRATION }}
+          MAIL_PORT: ${{ vars.MAIL_PORT_INTEGRATION }}
+          MAIL_SMTP_AUTH: ${{ vars.MAIL_AUTH_INTEGRATION }}
+          MAIL_SMTP_STARTTLS: ${{ vars.MAIL_STARTTLS_INTEGRATION }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME_INTEGRATION }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD_INTEGRATION }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
       - name: Install frontend dependencies
         working-directory: frontend
         run: npm ci
+      
+      - name: Install Chrome browser
+        id: install-chrome
+        uses: browser-actions/setup-chrome@v1
+
       - name: Run Cypress E2E tests
         working-directory: frontend
         run: npm run e2e:ci
         env:
-            CYPRESS_BASE_URL: http://localhost:8080
-            MOCK_API: true
+            MOCK_API: false # use the real backend launche in previous step
+            API_TARGET: http://localhost:8080 
+            API_SECURE: false
+            GOOGLE_RECAPTCHA_SITE_KEY: ${{ secrets.GOOGLE_RECAPTCHA_SITE_KEY_INTEGRATION }}
+
       - name: Upload Cypress report
         if: always()
         uses: actions/upload-artifact@v4

@@ -1,5 +1,7 @@
 import * as path from 'path';
 
+const Dotenv = require('dotenv-webpack');
+
 export default {
   module: {
     rules: [
@@ -17,4 +19,9 @@ export default {
       },
     ],
   },
+  plugins: [
+    new Dotenv({
+        systemvars: true
+    })
+  ],
 };

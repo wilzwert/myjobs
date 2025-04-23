@@ -44,3 +44,4 @@ backend/infrastructure/uploads/
 ### sonar ###
 backend/.scannerwork/
 frontend/.scannerwork/
+.scannerwork/

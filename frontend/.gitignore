@@ -37,6 +37,9 @@ yarn-error.log
 testem.log
 /typings
 .nyc_output/*
+.env
+/cypress/videos
+/cypress/screenshots
 
 # System files
 .DS_Store
