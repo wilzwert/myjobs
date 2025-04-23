@@ -51,21 +51,23 @@ jobs:
               core.setFailed("One or both required workflows have not succeeded.");
             }
 
+      - name: Generate Mongo keyfile
+        run: |
+          echo "mySuperSecretKeyForReplicaSetInStaging" > mongo-keyfile
+          chmod 400 mongo-keyfile
+
       - name: Start mongo
         id: start-mongo
         run: |
          docker run -d  \
           -p 27017:27017 \
           --name mongo  \
+          -v ${{ github.workspace }}/mongo-keyfile:/etc/mongo-keyfile:ro \
           -e MONGO_INITDB_DATABASE=myjobs \
           -e MONGO_INITDB_ROOT_USERNAME=admin \
           -e MONGO_INITDB_ROOT_PASSWORD=password \
           -e MONGO_REPLICA_SET_NAME=rs0 \
           mongo:8 --replSet rs0
-
-      - name: Show mongo logs
-        # if: failure()
-        run: docker logs mongo || true
 
       - name: Wait for Mongo to be ready
         run: |
@@ -80,7 +82,7 @@ jobs:
           echo "Mongo didn't start in time"
           docker logs mongo
           exit 1
-          
+
       - name: Init Mongo Replica Set
         run: |
             docker exec mongo \
