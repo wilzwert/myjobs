@@ -63,6 +63,10 @@ jobs:
           -e MONGO_REPLICA_SET_NAME=rs0 \
           mongo:8 --replSet rs0
 
+      - name: Show mongo logs if crash
+        if: failure()
+        run: docker logs mongo || true
+
       - name: Wait for Mongo to be ready
         run: |
           until docker exec mongo mongosh --username admin --password password --authenticationDatabase admin --eval "db.adminCommand('ping')"; do
