@@ -5,13 +5,13 @@
 
     <parent>
         <groupId>com.wilzwert.myjobs</groupId>
-        <artifactId>myjobs</artifactId>
+        <artifactId>MyJobs</artifactId>
         <relativePath>../pom.xml</relativePath>
         <version>${revision}</version>
     </parent>
 
     <artifactId>report</artifactId>
-    <name>MyJobs Aggregate Report</name>
+    <name>MyJobsAggregateReport</name>
 
     <dependencies>
         <dependency>

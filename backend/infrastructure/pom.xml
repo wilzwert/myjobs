@@ -410,4 +410,28 @@
 
     </build>
 
+    <profiles>
+        <profile>
+            <id>integration</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <spring.profiles.active>integration</spring.profiles.active>
+            </properties>
+        </profile>
+        <profile>
+            <id>staging</id>
+            <build>
+                <finalName>myjobs-staging</finalName>
+            </build>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <build>
+                <finalName>myjobs-prod</finalName>
+            </build>
+        </profile>
+    </profiles>
+
 </project>

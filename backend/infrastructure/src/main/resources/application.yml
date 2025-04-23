@@ -23,14 +23,13 @@ spring:
       auto-index-creation: true
       uuid-representation: standard
       replica-set-name: rs0
-      # uri: "mongodb://mongouser:mongopwd@localhost:27017/myjobs?authSource=myjobs&replicatSet=rs0"
 
 # security
 security:
   jwt:
     secret-key: ${JWT_SECRET_KEY}
-    expiration-time: ${JWT_EXPIRATION_TIME:3600000}
-    refresh-expiration-time: ${JWT_REFRESH_EXPIRATION_TIME:86400000}
+    expiration-time: ${JWT_EXPIRATION_TIME:600}
+    refresh-expiration-time: ${JWT_REFRESH_EXPIRATION_TIME:2592000}
   cookie:
     secure: false
     same-site: Strict
