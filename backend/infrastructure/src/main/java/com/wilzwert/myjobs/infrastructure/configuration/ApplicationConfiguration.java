@@ -15,4 +15,8 @@ import org.springframework.core.env.Environment;
 @Configuration
 @EnableConfigurationProperties({ CookieProperties.class, JwtProperties.class})
 public class ApplicationConfiguration {
+    public ApplicationConfiguration(Environment environment) {
+        System.out.println("WE GOT THIS PROFILE : "+ String.join(",", environment.getActiveProfiles()));
+        System.out.println("WE GOT THIS BUCKET : "+environment.getProperty("AWS_S3_BUCKET_NAME"));
+    }
 }
