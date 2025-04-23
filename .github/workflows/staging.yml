@@ -35,13 +35,13 @@ jobs:
               github.rest.actions.listWorkflowRuns({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                workflow_id: 'test-backend.yml',
+                workflow_id: 'ci-backend.yml',
                 per_page: 1
               }),
               github.rest.actions.listWorkflowRuns({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                workflow_id: 'test-frontend.yml',
+                workflow_id: 'ci-frontend.yml',
                 per_page: 1
               }),
             ]);
