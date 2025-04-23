@@ -14,7 +14,7 @@ public class JobRating {
 
     private JobRating(int value) {
         if (value < 0 || value > 5) {
-            throw new IllegalArgumentException("Rating must be between 0 and 5, half-points are allowed.");
+            throw new IllegalArgumentException("Rating must be between 0 and 5, decimals are not allowed.");
         }
         this.value = value;
     }
@@ -41,7 +41,7 @@ public class JobRating {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         JobRating rating = (JobRating) o;
-        return Double.compare(rating.value, value) == 0;
+        return rating.value == value;
     }
 
     @Override

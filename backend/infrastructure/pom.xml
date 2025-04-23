@@ -136,12 +136,6 @@
         </dependency>
 
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.2</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>5.11.4</version>
@@ -241,7 +235,7 @@
                 <version>3.2.5</version>
                 <configuration>
                     <systemPropertyVariables>
-                        <spring.profiles.active>test</spring.profiles.active>
+                        <spring.profiles.active>integration</spring.profiles.active>
                     </systemPropertyVariables>
                     <includes>
                         <include>**/*IT.java</include>
@@ -409,5 +403,29 @@
         </plugins>
 
     </build>
+
+    <profiles>
+        <profile>
+            <id>integration</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <spring.profiles.active>integration</spring.profiles.active>
+            </properties>
+        </profile>
+        <profile>
+            <id>staging</id>
+            <build>
+                <finalName>myjobs-staging</finalName>
+            </build>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <build>
+                <finalName>myjobs-prod</finalName>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

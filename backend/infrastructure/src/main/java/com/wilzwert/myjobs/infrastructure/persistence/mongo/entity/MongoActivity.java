@@ -28,10 +28,8 @@ public class MongoActivity {
     @MongoId
     private UUID id;
 
-    @Field
     private ActivityType type;
 
-    @Field
     private String comment;
 
     @Field(name = "created_at")
@@ -42,4 +40,3 @@ public class MongoActivity {
     @LastModifiedDate
     private Instant updatedAt;
 }
-

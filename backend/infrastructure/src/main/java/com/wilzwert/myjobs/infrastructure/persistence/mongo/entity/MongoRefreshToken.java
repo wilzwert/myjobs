@@ -28,7 +28,6 @@ public class MongoRefreshToken implements RefreshToken {
     @Field(name = "user_id")
     private UUID userId;
 
-    @Field(name = "token")
     @Indexed(unique = true)
     private String token;
 

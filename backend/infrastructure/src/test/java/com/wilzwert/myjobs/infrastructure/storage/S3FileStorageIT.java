@@ -2,19 +2,18 @@ package com.wilzwert.myjobs.infrastructure.storage;
 
 
 import com.wilzwert.myjobs.core.domain.ports.driven.FileStorage;
+import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 /**
  * @author Wilhelm Zwertvaegher
  * Date:08/04/2025
  * Time:09:44
  */
-@SpringBootTest
-@EnabledIfSystemProperty(named = "spring.profiles.active", matches = "staging")
-public class S3FileStorageIT {
+@EnabledIfSystemProperty(named = "spring.profiles.active", matches = "integration")
+public class S3FileStorageIT extends AbstractBaseIntegrationTest {
 
     @Autowired
     private FileStorage fileStorage;
@@ -24,7 +23,7 @@ public class S3FileStorageIT {
     void testFileStorage() {
         // TODO
         /*
-        File file = new File("src/test/resources/cv_test.doc"); // Remplace avec ton fichier test
+        File file = new File("src/test/resources/cv_test.doc");
 
         // Test du store
         DownloadableFile uploadedFile = fileStorage.store(file, "uploads/cv.doc", "testfile.doc");

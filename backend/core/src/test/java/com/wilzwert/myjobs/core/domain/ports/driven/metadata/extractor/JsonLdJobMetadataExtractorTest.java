@@ -19,28 +19,38 @@ public class JsonLdJobMetadataExtractorTest {
     private final JsonLdJobMetadataExtractor extractor = new JsonLdJobMetadataExtractor();
 
     @Test
-    public void testEmptyJsonExtraction() {
+    void whenNotCompatibleDomain_thenShouldReturnFalse() {
+        assertFalse(extractor.isCompatible("fhf.fr"));
+    }
+
+    @Test
+    void whenCompatibleDomain_thenShouldReturnTrue() {
+        assertTrue(extractor.isCompatible("example.com"));
+    }
+
+    @Test
+    public void shouldBeEmpty() {
         assertTrue(extractor.extractJobMetadata("").isEmpty());
     }
 
     @Test
-    public void testIncorrectJsonExtraction() {
+    public void whenJsonIncorrect_thenShouldBeEmpty() {
         assertTrue(extractor.extractJobMetadata("this is not json").isEmpty());
     }
 
     @Test
-    public void testNotJsonLdExtraction() {
+    public void whenNotJson_thenShouldBeEmpty() {
         assertTrue(extractor.extractJobMetadata("{\"field\":\"value\"}").isEmpty());
     }
 
     @Test
-    public void testNotJobPostingExtraction() throws IOException {
+    public void whenNotJobPosting_thenShouldBeEmpty() throws IOException {
         String html  = TestFileLoader.loadFileAsString("product.jsonld.html");
         assertTrue(extractor.extractJobMetadata(html ).isEmpty());
     }
 
     @Test
-    public void testWithNoSalaryExtraction() throws IOException {
+    public void whenNoSalary_thenShouldHaveEmptySalary() throws IOException {
         String html  = TestFileLoader.loadFileAsString("jobposting.jsonld.nosalary.html");
 
         JobMetadata expectedMetadata = new JobMetadata.Builder()
@@ -59,7 +69,7 @@ public class JsonLdJobMetadataExtractorTest {
     }
 
     @Test
-    public void testWithSalaryMonetaryAmountExtraction() throws IOException {
+    public void whenMonetaryAmountSalary_thenShouldHaveSalary() throws IOException {
         String html  = TestFileLoader.loadFileAsString("jobposting.jsonld.salary.monetaryamount.html");
 
         JobMetadata expectedMetadata = new JobMetadata.Builder()
@@ -78,7 +88,7 @@ public class JsonLdJobMetadataExtractorTest {
     }
 
     @Test
-    public void testWithSalaryNumberExtraction() throws IOException {
+    public void whenNumberSalary_thenShouldHaveSalary() throws IOException {
         String html  = TestFileLoader.loadFileAsString("jobposting.jsonld.salary.number.html");
 
         JobMetadata expectedMetadata = new JobMetadata.Builder()
@@ -94,5 +104,30 @@ public class JsonLdJobMetadataExtractorTest {
                 extractedMetadata -> assertEquals(expectedMetadata, extractedMetadata),
                 () -> fail("Metadata should not be empty")
         );
+    }
+
+    @Test
+    void testExtractJobMetadata_shouldReturnEmptyWhenJsonIsInvalid() {
+        String invalidHtml = """
+        <html>
+        <head>
+        <script type="application/ld+json">
+        {
+            "@context": "http://schema.org",
+            "@type": "JobPosting",
+            "title": "Software Developer",,
+            "description": "Write code.",
+            "hiringOrganization": {
+                "name": "TechCorp"
+            }
+            // note: double virgule après "Software Developer" et commentaire JS non supporté
+        }
+        </script>
+        </head>
+        <body></body>
+        </html>
+    """;
+
+        assertTrue(extractor.extractJobMetadata(invalidHtml).isEmpty());
     }
 }

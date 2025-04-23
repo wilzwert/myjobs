@@ -1,6 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.adapter;
 
 
+import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 
 /**
@@ -8,7 +9,7 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
  * Date:10/04/2025
  * Time:15:01
  */
-@EnabledIfSystemProperty(named = "spring.profiles.active", matches = "staging")
-public class StaticHtmlFetcherAdapterIT {
+@EnabledIfSystemProperty(named = "spring.profiles.active", matches = "integration")
+public class StaticHtmlFetcherAdapterIT extends AbstractBaseIntegrationTest {
 
 }

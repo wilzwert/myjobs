@@ -38,7 +38,6 @@ public class MongoUser  {
     @Field(name = "email_validation_code")
     private String emailValidationCode;
 
-    @Field(name = "password")
     private String password;
 
     @Indexed(unique = true)
@@ -49,7 +48,6 @@ public class MongoUser  {
     @Field(name = "last_name")
     private String lastName;
 
-    @Field(name = "role")
     private String role;
 
     @Field(name = "reset_password_token")

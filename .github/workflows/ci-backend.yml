@@ -19,6 +19,19 @@ jobs:
   backend-tests-analysis:
     name: Run backend tests and quality analysis
     runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_S3_REGION: ${{ vars.AWS_S3_REGION_INTEGRATION }}
+      AWS_S3_BUCKET_NAME: ${{ vars.AWS_S3_BUCKET_NAME_INTEGRATION }}
+      GOOGLE_RECAPTCHA_PRIVATE_KEY: ${{ secrets.GOOGLE_RECAPTCHA_PRIVATE_KEY_INTEGRATION }}
+      JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY_INTEGRATION }}
+      MAIL_HOST: ${{ vars.MAIL_HOST_INTEGRATION }}
+      MAIL_PORT: ${{ vars.MAIL_PORT_INTEGRATION }}
+      MAIL_SMTP_AUTH: ${{ vars.MAIL_AUTH_INTEGRATION }}
+      MAIL_SMTP_STARTTLES: ${{ vars.MAIL_STARTTLS_INTEGRATION }}
+      MAIL_USERNAME: ${{ secrets.MAIL_USERNAME_INTEGRATION }}
+      MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD_INTEGRATION }}
     defaults:
       run:
         working-directory: ./backend
@@ -154,3 +167,11 @@ jobs:
             echo "Code quality gate check failed. See step 'SonarQube Quality Gate Check'"
           fi
           exit 1
+      - name: Notify completion
+        if: ${{ success() }}
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.everest-preview+json" \
+            https://api.github.com/repos/${{ github.repository }}/dispatches \
+            -d '{"event_type":"ready-for-staging"}'

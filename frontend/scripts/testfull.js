@@ -18,13 +18,16 @@ const runCommand = (command) => {
 
 const runTests = async () => {
   try {
-    // Exécuter les tests unitaires Jest avec couverture
+    // Run unit and integration tests with coverage
     await runCommand('npm run test:coverage');
 
-    // Exécuter les tests E2E
+    // Run e2e tests
+    await runCommand('npm run e2e:ci');
+
+    // Generate e2e coverage
     await runCommand('npm run e2e:coverage');
 
-    // Fusionner les rapports de couverture
+    // Merge coverage reports
     await runCommand('npm run merge-coverage');
 
     console.log('All coverage tasks completed successfully!');

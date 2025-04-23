@@ -165,7 +165,7 @@
           "builder": "@cypress/schematic:cypress",
           "options": {
             "browser": "chrome",
-            "buildTarget": "myjobs:serve-coverage",
+            "devServerTarget": "myjobs:serve-coverage",
             "headless": true,
             "watch": false
           },

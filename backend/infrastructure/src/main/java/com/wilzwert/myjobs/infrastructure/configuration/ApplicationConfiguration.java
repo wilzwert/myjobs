@@ -5,9 +5,6 @@ import com.wilzwert.myjobs.infrastructure.security.configuration.CookiePropertie
 import com.wilzwert.myjobs.infrastructure.security.configuration.JwtProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
-
-import java.util.Arrays;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -17,7 +14,4 @@ import java.util.Arrays;
 @Configuration
 @EnableConfigurationProperties({ CookieProperties.class, JwtProperties.class})
 public class ApplicationConfiguration {
-    public ApplicationConfiguration(Environment environment) {
-        Arrays.stream(environment.getActiveProfiles()).forEach(e -> System.out.println("Env "+e));
-    }
 }

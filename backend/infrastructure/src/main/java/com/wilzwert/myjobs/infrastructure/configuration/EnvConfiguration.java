@@ -11,7 +11,7 @@ import org.springframework.context.annotation.PropertySource;
  * Time:13:41
  */
 @Configuration
-@Profile({"dev","test"})
+@Profile({"dev","test","integration"})
 // @PropertySource(value = "classpath:.env", ignoreResourceNotFound = true)
 @PropertySource(value = "file:.env", ignoreResourceNotFound = true) // .env is used only in dev local environment
 public class EnvConfiguration {

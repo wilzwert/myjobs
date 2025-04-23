@@ -1,6 +1,5 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.entity;
 
-import com.wilzwert.myjobs.core.domain.model.ActivityType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,16 +27,13 @@ public class MongoAttachment {
     @MongoId
     private UUID id;
 
-    @Field
     private String name;
 
-    @Field
     private String fileId;
 
-    @Field
     private String filename;
 
-    @Field
+    @Field(name = "content_type")
     private String contentType;
 
     @Field(name = "created_at")
