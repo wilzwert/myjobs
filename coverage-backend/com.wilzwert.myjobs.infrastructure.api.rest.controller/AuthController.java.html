@@ -83,7 +83,7 @@ public class AuthController {
 <span class="fc" id="L83">        log.info(&quot;User login with email {}&quot;, loginRequest.getEmail());</span>
         try {
 <span class="fc" id="L85">            log.info(&quot;User login - authenticating&quot;);</span>
-            // FIXME : this cast seems a bit ugly but in infra we actually know we will get a JwtAuthenticatedUser
+            // casting seems a bit ugly but in infra we actually know we will get a JwtAuthenticatedUser
 <span class="fc" id="L87">            JwtAuthenticatedUser authenticatedUser = (JwtAuthenticatedUser) loginUseCase.authenticateUser(loginRequest.getEmail(), loginRequest.getPassword());</span>
 <span class="fc" id="L88">            var responseEntity = ResponseEntity.ok();</span>
 <span class="fc" id="L89">            return responseEntity</span>
