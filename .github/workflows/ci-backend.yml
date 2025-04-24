@@ -29,7 +29,7 @@ jobs:
       MAIL_HOST: ${{ vars.MAIL_HOST_INTEGRATION }}
       MAIL_PORT: ${{ vars.MAIL_PORT_INTEGRATION }}
       MAIL_SMTP_AUTH: ${{ vars.MAIL_AUTH_INTEGRATION }}
-      MAIL_SMTP_STARTTLES: ${{ vars.MAIL_STARTTLS_INTEGRATION }}
+      MAIL_SMTP_STARTTLS: ${{ vars.MAIL_STARTTLS_INTEGRATION }}
       MAIL_USERNAME: ${{ secrets.MAIL_USERNAME_INTEGRATION }}
       MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD_INTEGRATION }}
     defaults:
@@ -39,7 +39,7 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           java-version: '21'
@@ -48,7 +48,7 @@ jobs:
 
       - name: Run tests and generate coverage report
         id: run-backend-tests
-        run: mvn clean verify
+        run: mvn clean verify -Pintegration
         # this step could fail because of coverage requirements
         # but some other steps should run anyway
         continue-on-error: true
