@@ -241,7 +241,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -441,7 +441,7 @@ export class JobsComponent implements OnInit {
 <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  updateJobStatus(</span></span>job: Job, event: MatSelectChange):void {
     // don't reload list as the edited job is replaced after update by the service
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.jobService.updateJobStatus(job.id, {status: event.value} as UpdateJobStatusRequest).subscribe(</span></span>
-<span class="fstat-no" title="function not covered" >      (j</span>) =&gt; {
+      (<span class="fstat-no" title="function not covered" >j)</span> =&gt; {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        this.notificationService.confirmation("Status updated successfully.");</span></span>
       }
     );
@@ -450,7 +450,7 @@ export class JobsComponent implements OnInit {
 <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  updateJobRating(</span></span>job: Job, event: number): void {
     // don't reload list as the edited job is replaced after update by the service
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.jobService.updateJobRating(job.id, {rating: event} as UpdateJobRatingRequest).subscribe(</span></span>
-<span class="fstat-no" title="function not covered" >      (j</span>) =&gt; {
+      (<span class="fstat-no" title="function not covered" >j)</span> =&gt; {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        this.notificationService.confirmation("Rating updated successfully.");</span></span>
       }
     );
@@ -472,24 +472,24 @@ export class JobsComponent implements OnInit {
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  createJobWithMetadata(</span></span>) :void {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >      this.jobService.getJobMetadata(this.url?.value).subscribe(<span class="fstat-no" title="function not covered" >(m</span>etadata: JobMetadata) =&gt; {</span></span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        this.modalService.openJobStepperModal(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >this.reloadJobs(),</span> {jobMetadata: metadata});</span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >      this.jobService.getJobMetadata(this.url?.value).subscribe((<span class="fstat-no" title="function not covered" >metadata: JobMetadata)</span> =&gt; {</span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        this.modalService.openJobStepperModal(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >t</span>his.reloadJobs(),</span> {jobMetadata: metadata});</span></span>
       });
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  createJob(</span></span>): void {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.modalService.openJobStepperModal(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >this.reloadJobs())</span>;</span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.modalService.openJobStepperModal(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >t</span>his.reloadJobs())</span>;</span></span>
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  editJob(</span></span>event: Event, job: Job): void {
     // don't reload list as the edited job is replaced after update by the service
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.modalService.openJobModal('job', job, <span class="fstat-no" title="function not covered" >() =</span>&gt; {});</span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.modalService.openJobModal('job', job, <span class="fstat-no" title="function not covered" >() =&gt; </span>{});</span></span>
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  confirmDeleteJob(</span></span>job: Job) :void {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >      this.jobService.deleteJob(job.id).pipe(</span></span>
         take(1),
-        tap(<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+        tap(<span class="fstat-no" title="function not covered" >() =&gt; </span>{
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >          this.notificationService.confirmation("Job successfully deleted.");</span></span>
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >          this.reloadJobs();</span></span>
         })
@@ -497,14 +497,14 @@ export class JobsComponent implements OnInit {
     }
 &nbsp;
 <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  deleteJob(</span></span>job: Job) :void {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.confirmDialogService.openConfirmDialog(`Delete job "${job.title}" ?`, <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >this.confirmDeleteJob(job))</span>;</span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.confirmDialogService.openConfirmDialog(`Delete job "${job.title}" ?`, <span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >t</span>his.confirmDeleteJob(job))</span>;</span></span>
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  manageAttachments(</span></span>event: Event, job: Job): void {
     // prevent routing to job detail 
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    event.stopPropagation();</span></span>
     // don't reload list; as the edited job is replaced after update directly by the service
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.modalService.openJobModal('attachments', job, <span class="fstat-no" title="function not covered" >() =</span>&gt; {});</span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.modalService.openJobModal('attachments', job, <span class="fstat-no" title="function not covered" >() =&gt; </span>{});</span></span>
   }
 }
 &nbsp;</pre></td></tr></table></pre>
@@ -514,7 +514,7 @@ export class JobsComponent implements OnInit {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-04-23T14:50:01.845Z
+                at 2025-04-24T15:37:10.869Z
             </div>
         <script src="../../../../../prettify.js"></script>
         <script>

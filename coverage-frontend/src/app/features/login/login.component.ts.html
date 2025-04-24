@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">36.11% </span>
+                <span class="strong">63.88% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>13/36</span>
+                <span class='fraction'>23/36</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">42.85% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/7</span>
+                <span class='fraction'>3/7</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">12.5% </span>
+                <span class="strong">37.5% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/8</span>
+                <span class='fraction'>3/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">40% </span>
+                <span class="strong">80% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>10/25</span>
+                <span class='fraction'>20/25</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -171,16 +171,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -199,10 +199,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -254,14 +254,14 @@ import { SessionInformation } from '../../core/model/session-information.interfa
 })
 export class LoginComponent {
   public form:FormGroup;
-  public isSubmitting = <span class="cstat-no" title="statement not covered" >false;</span>
+  public isSubmitting = false;
 &nbsp;
-<span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  constructor(</span></span>
-    private <span class="cstat-no" title="statement not covered" >authService: AuthService,</span>
-    private <span class="cstat-no" title="statement not covered" >fb: FormBuilder,</span>
-    private <span class="cstat-no" title="statement not covered" >router: Router,</span>
-    private <span class="cstat-no" title="statement not covered" >sessionService: SessionService)</span> {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >      this.form = this.fb.group({</span></span>
+<span class="fstat-no" title="function not covered" >  constructor(</span>
+    private authService: AuthService,
+    private fb: FormBuilder,
+    private router: Router,
+    private sessionService: SessionService) {
+<span class="cstat-no" title="statement not covered" >      this.form = this.fb.group({</span>
         email: [
           '', 
           [
@@ -279,25 +279,25 @@ export class LoginComponent {
       });
   }
 &nbsp;
-  public <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >submit(</span></span>) :void {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if(!this.isSubmitting) {</span></span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >      this.isSubmitting = true;</span></span>
-      const loginRequest: LoginRequest = <span class="cstat-no" title="statement not covered" >this.form.value as LoginRequest;</span>
-<span class="cstat-no" title="statement not covered" >      this.authService.login(loginRequest)</span>
+  public <span class="fstat-no" title="function not covered" >submit(</span>) :void {
+<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span><span class="missing-if-branch" title="else path not taken" >E</span>if(!this.isSubmitting) {</span>
+<span class="cstat-no" title="statement not covered" >      this.isSubmitting = true;</span>
+      const loginRequest: LoginRequest = this.form.value as LoginRequest;
+      this.authService.login(loginRequest)
         .pipe(
           catchError(
-<span class="fstat-no" title="function not covered" >            (e</span>rror: ApiError) =&gt; {
+            (<span class="fstat-no" title="function not covered" >error: ApiError)</span> =&gt; {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >              this.isSubmitting = false;</span></span>
               // here we have to build a "regular" Error
               // otherwise the NotificationService would not display as it is specifically designed to skip  401 errors
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >              return throwError(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >new Error(</span></span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >              return throwError(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >n</span>ew Error(</span></span></span>
                 'Login failed.'+(error.httpStatus === 401 ? ' Pleas verify your email or password' : '')
               ));
             }
           )
         )
         .subscribe(
-<span class="fstat-no" title="function not covered" >          (r</span>esponse: SessionInformation) =&gt; {
+          (<span class="fstat-no" title="function not covered" >response: SessionInformation)</span> =&gt; {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >            this.isSubmitting = false;</span></span>
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >            this.sessionService.logIn(response);</span></span>
 <span class="cstat-no" title="statement not covered" >            this.router.navigate(['/jobs'])</span>
@@ -313,7 +313,7 @@ export class LoginComponent {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-04-23T14:50:01.845Z
+                at 2025-04-24T15:37:10.869Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>
