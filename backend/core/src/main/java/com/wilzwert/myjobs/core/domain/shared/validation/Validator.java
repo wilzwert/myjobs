@@ -1,6 +1,7 @@
 package com.wilzwert.myjobs.core.domain.shared.validation;
 
 
+import java.net.URI;
 import java.util.regex.Pattern;
 
 /**
@@ -23,6 +24,15 @@ public class Validator {
         }
     }
 
+    public static void requireValidUrl(String fieldName, String fieldValue, ValidationResult validationResult) {
+        try {
+            new URI(fieldValue).toURL();
+
+        } catch (Exception e) {
+            validationResult.addError(fieldName, ErrorCode.INVALID_URL);
+        }
+    }
+
     public static void requireMinLength(String fieldName, String fieldValue, int minLength, ValidationResult validationResult) {
         if (fieldValue == null || fieldValue.length() < minLength) {
             validationResult.addError(fieldName, ErrorCode.FIELD_TOO_SHORT);
@@ -34,5 +44,4 @@ public class Validator {
             validationResult.addError(fieldName, ErrorCode.FIELD_TOO_LONG);
         }
     }
-
 }

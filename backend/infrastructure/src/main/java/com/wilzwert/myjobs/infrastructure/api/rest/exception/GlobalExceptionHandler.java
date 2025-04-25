@@ -1,7 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.exception;
 
 import com.wilzwert.myjobs.core.domain.exception.*;
-import com.wilzwert.myjobs.core.domain.shared.validation.ValidationError;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.ErrorResponse;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
@@ -16,10 +15,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Global exception handler to intercept several types of Exceptions
@@ -47,14 +42,9 @@ public class GlobalExceptionHandler {
      * @return the response entity
      */
     @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<Map<String, List<String>>> generateError(ValidationException ex) {
-        Map<String, List<String>> errors = new HashMap<>();
-
-        // Parcours des erreurs et ajout dans la Map
-        for (ValidationError error : ex.getFlatErrors()) {
-            errors.computeIfAbsent(error.field(), k -> new ArrayList<>()).add(error.code().name());
-        }
-        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ErrorResponse> generateError(ValidationException ex) {
+        ErrorResponse errorResponse = ErrorResponse.fromException(ex);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(PasswordMatchException.class)

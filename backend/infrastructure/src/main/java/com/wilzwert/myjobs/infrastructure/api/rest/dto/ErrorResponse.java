@@ -2,6 +2,7 @@ package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wilzwert.myjobs.core.domain.exception.*;
+import com.wilzwert.myjobs.core.domain.shared.validation.ValidationError;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.coyote.BadRequestException;
@@ -17,8 +18,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Data
 @AllArgsConstructor
@@ -28,6 +28,7 @@ public class ErrorResponse {
 
     private String status;
     private String message;
+    private Map<String, List<String>> errors;
     private String time;
 
     public static <E extends EntityAlreadyExistsException>  ErrorResponse fromException(E ex) {
@@ -36,6 +37,14 @@ public class ErrorResponse {
 
     public static <E extends EntityNotFoundException>  ErrorResponse fromException(E ex) {
         return build(HttpStatus.NOT_FOUND, ex.getErrorCode().name());
+    }
+
+    public static ErrorResponse fromException(ValidationException ex) {
+        Map<String, List<String>> errors = new HashMap<>();
+        for (ValidationError error : ex.getFlatErrors()) {
+            errors.computeIfAbsent(error.field(), k -> new ArrayList<>()).add(error.code().name());
+        }
+        return build(HttpStatus.BAD_REQUEST, "Validation failed", errors);
     }
 
     public static ErrorResponse fromException(ResponseStatusException ex) {
@@ -93,7 +102,11 @@ public class ErrorResponse {
     }
 
     private static ErrorResponse build(HttpStatusCode status, String message) {
-        return new ErrorResponse(status, String.valueOf(status.value()), message, new Date().toString());
+        return new ErrorResponse(status, String.valueOf(status.value()), message, Collections.emptyMap(), new Date().toString());
+    }
+
+    private static ErrorResponse build(HttpStatusCode status, String message, Map<String, List<String>> errors) {
+        return new ErrorResponse(status, String.valueOf(status.value()), message, errors, new Date().toString());
     }
 
 

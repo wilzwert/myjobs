@@ -1,13 +1,14 @@
 package com.wilzwert.myjobs.core.domain.model.job;
 
+import com.wilzwert.myjobs.core.domain.exception.ValidationException;
 import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.DomainEntity;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
+import com.wilzwert.myjobs.core.domain.shared.validation.ValidationResult;
+import com.wilzwert.myjobs.core.domain.shared.validation.Validator;
 
-import java.net.URI;
-import java.net.URL;
 import java.time.Instant;
 import java.util.*;
 
@@ -185,7 +186,24 @@ public class Job extends DomainEntity<JobId> {
             return this;
         }
 
+        private ValidationResult validate() {
+            ValidationResult validationResult = new ValidationResult();
+
+            Validator.requireNotEmpty("title", title, validationResult);
+            Validator.requireNotEmpty("description", description, validationResult);
+            Validator.requireNotEmpty("url", url, validationResult);
+            Validator.requireValidUrl("url", url, validationResult);
+
+
+            return validationResult;
+        }
+
         public Job build() {
+            ValidationResult validationResult = validate();
+            if(!validationResult.isValid()) {
+                throw new ValidationException(validationResult.getErrors());
+            }
+
             return new Job(
                     id,
                     url,
@@ -205,11 +223,7 @@ public class Job extends DomainEntity<JobId> {
         }
     }
 
-    public Job(JobId id, String url, JobStatus status, String title, String company, String description, String profile, String salary, JobRating rating, Instant createdAt, Instant updatedAt, UserId userId, List<Activity> activities, List<Attachment> attachments) {
-        if (url != null && !isValidUrl(url)) {
-            throw new IllegalArgumentException("Invalid URL format: " + url);
-        }
-
+    private Job(JobId id, String url, JobStatus status, String title, String company, String description, String profile, String salary, JobRating rating, Instant createdAt, Instant updatedAt, UserId userId, List<Activity> activities, List<Attachment> attachments) {
         this.id = id;
         this.url = url;
         this.status = status;
@@ -329,15 +343,6 @@ public class Job extends DomainEntity<JobId> {
         );
         Activity newActivity = Activity.builder().type(ActivityType.RATING).comment(""+newJobRating.getValue()).build();
         return result.addActivity(newActivity);
-    }
-
-    private static boolean isValidUrl(String url) {
-        try {
-            URL u = new URI(url).toURL();
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
     }
 
     public JobId getId() {
