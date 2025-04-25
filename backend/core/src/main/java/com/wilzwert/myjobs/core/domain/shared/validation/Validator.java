@@ -22,17 +22,17 @@ public class Validator {
             validationResult.addError(fieldName, ErrorCode.INVALID_EMAIL);
         }
     }
-    /*
+
     public static void requireMinLength(String fieldName, String fieldValue, int minLength, ValidationResult validationResult) {
         if (fieldValue == null || fieldValue.length() < minLength) {
-            validationResult.addError(new ValidationError(ErrorCode.FIELD_TOO_SHORT, fieldName));
+            validationResult.addError(fieldName, ErrorCode.FIELD_TOO_SHORT);
         }
     }
 
-    public static void requireMinMaxLength(String fieldName, String fieldValue, int minLength, int maxLength, ValidationResult validationResult) {
-        if (fieldValue == null || fieldValue.length() < minLength) {
-            validationResult.addError(new ValidationError(ErrorCode.FIELD_TOO_SHORT, fieldName));
+    public static void requireMaxLength(String fieldName, String fieldValue, int maxLength, ValidationResult validationResult) {
+        if (fieldValue == null || fieldValue.length() > maxLength) {
+            validationResult.addError(fieldName, ErrorCode.FIELD_TOO_LONG);
         }
-    }*/
+    }
 
 }

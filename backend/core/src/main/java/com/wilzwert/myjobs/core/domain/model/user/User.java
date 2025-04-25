@@ -20,7 +20,7 @@ import java.util.UUID;
  * @author Wilhelm Zwertvaegher
  * Date:12/03/2025
  * Time:15:32
- * TODO : implement password validation through a value object
+ * TODO : use defensive copying on collections' getters to ensure immutability
  */
 public class User extends DomainEntity<UserId> {
     private final UserId id;
@@ -157,6 +157,8 @@ public class User extends DomainEntity<UserId> {
             ValidationResult validationResult = new ValidationResult();
             Validator.requireNotEmpty("email", email, validationResult);
             Validator.requireNotEmpty("username", username, validationResult);
+            Validator.requireMinLength("username", username, 2, validationResult);
+            Validator.requireMaxLength("username", username, 30, validationResult);
             Validator.requireNotEmpty("lastName", lastName, validationResult);
             Validator.requireNotEmpty("lastName", lastName, validationResult);
             Validator.requireNotEmpty("role", role, validationResult);

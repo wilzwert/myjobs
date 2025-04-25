@@ -14,6 +14,8 @@ public enum ErrorCode {
     FIELD_CANNOT_BE_EMPTY,
     INVALID_EMAIL,
     INVALID_URL,
+    FIELD_TOO_SHORT,
+    FIELD_TOO_LONG,
 
     // fetch / extract parse jobs specific errors
     NO_HTML_FETCHER_FOUND,
