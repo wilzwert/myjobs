@@ -1,10 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wilzwert.myjobs.core.domain.exception.EntityAlreadyExistsException;
-import com.wilzwert.myjobs.core.domain.exception.EntityNotFoundException;
-import com.wilzwert.myjobs.core.domain.exception.LoginException;
-import com.wilzwert.myjobs.core.domain.exception.PasswordMatchException;
+import com.wilzwert.myjobs.core.domain.exception.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.coyote.BadRequestException;
@@ -34,11 +31,11 @@ public class ErrorResponse {
     private String time;
 
     public static <E extends EntityAlreadyExistsException>  ErrorResponse fromException(E ex) {
-        return build(HttpStatus.CONFLICT, ex.getMessage());
+        return build(HttpStatus.CONFLICT, ex.getErrorCode().name());
     }
 
     public static <E extends EntityNotFoundException>  ErrorResponse fromException(E ex) {
-        return build(HttpStatus.NOT_FOUND, ex.getMessage());
+        return build(HttpStatus.NOT_FOUND, ex.getErrorCode().name());
     }
 
     public static ErrorResponse fromException(ResponseStatusException ex) {
@@ -88,7 +85,7 @@ public class ErrorResponse {
     }
 
     public static ErrorResponse fromException(PasswordMatchException ex) {
-        return build(HttpStatus.BAD_REQUEST, ex.getMessage());
+        return build(HttpStatus.BAD_REQUEST, ex.getErrorCode().name());
     }
 
     public static ErrorResponse fromException(Exception ex) {

@@ -44,14 +44,26 @@ public class RegisterUseCaseImpl implements RegisterUseCase, CheckUserAvailabili
         if(userService.findByEmailOrUsername(registerUserCommand.email(), registerUserCommand.username()).isPresent()) {
             throw new UserAlreadyExistsException();
         }
-        User user = userService.save(
-            User.builder()
+
+        // 2 steps :
+        // - build a temp User with plaintext password to trigger self validation
+        // - build the final User from the temp User with the hashed password
+        // this could (or maybe should ?) be moved in a factory or a static method in User
+        // but for now it will be ok
+        User tmpUser = User.builder()
                 .id(UserId.generate())
                 .email(registerUserCommand.email())
-                .password(passwordHasher.hashPassword(registerUserCommand.password()))
+                .password(registerUserCommand.password())
                 .username(registerUserCommand.username())
                 .firstName(registerUserCommand.firstName())
                 .lastName(registerUserCommand.lastName())
+                .build();
+
+        // if no exception was thrown
+        // then we build and save the final User based on the temp one, only setting the hashed password
+        User user = userService.save(
+            User.from(tmpUser)
+                .password(passwordHasher.hashPassword(registerUserCommand.password()))
                 .build()
         );
 

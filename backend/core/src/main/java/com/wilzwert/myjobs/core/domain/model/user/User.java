@@ -155,8 +155,6 @@ public class User extends DomainEntity<UserId> {
 
         private ValidationResult validate() {
             ValidationResult validationResult = new ValidationResult();
-
-            // let's check mandatory fields
             Validator.requireNotEmpty("email", email, validationResult);
             Validator.requireNotEmpty("username", username, validationResult);
             Validator.requireNotEmpty("lastName", lastName, validationResult);
@@ -173,7 +171,6 @@ public class User extends DomainEntity<UserId> {
             }
 
             return validationResult;
-
         }
 
         public User build() {

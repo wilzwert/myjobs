@@ -22,5 +22,17 @@ public class Validator {
             validationResult.addError(fieldName, ErrorCode.INVALID_EMAIL);
         }
     }
+    /*
+    public static void requireMinLength(String fieldName, String fieldValue, int minLength, ValidationResult validationResult) {
+        if (fieldValue == null || fieldValue.length() < minLength) {
+            validationResult.addError(new ValidationError(ErrorCode.FIELD_TOO_SHORT, fieldName));
+        }
+    }
+
+    public static void requireMinMaxLength(String fieldName, String fieldValue, int minLength, int maxLength, ValidationResult validationResult) {
+        if (fieldValue == null || fieldValue.length() < minLength) {
+            validationResult.addError(new ValidationError(ErrorCode.FIELD_TOO_SHORT, fieldName));
+        }
+    }*/
 
 }
