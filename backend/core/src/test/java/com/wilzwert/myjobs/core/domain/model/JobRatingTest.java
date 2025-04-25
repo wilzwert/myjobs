@@ -1,5 +1,6 @@
 package com.wilzwert.myjobs.core.domain.model;
 
+import com.wilzwert.myjobs.core.domain.model.job.JobRating;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

@@ -1,17 +1,14 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import java.util.List;
+
 /**
  * @author Wilhelm Zwertvaegher
  * Date:20/03/2025
  * Time:14:36
  */
-import com.wilzwert.myjobs.core.domain.model.DomainPage;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 // TODO @ApiModel(value = "Page", description = "Paginated content")
 @Data

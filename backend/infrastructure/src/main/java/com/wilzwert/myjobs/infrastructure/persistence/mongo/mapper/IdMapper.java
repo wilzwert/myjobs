@@ -1,6 +1,10 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper;
 
 import com.wilzwert.myjobs.core.domain.model.*;
+import com.wilzwert.myjobs.core.domain.model.activity.ActivityId;
+import com.wilzwert.myjobs.core.domain.model.attachment.AttachmentId;
+import com.wilzwert.myjobs.core.domain.model.job.JobId;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import org.mapstruct.Mapper;
 
 import java.util.UUID;

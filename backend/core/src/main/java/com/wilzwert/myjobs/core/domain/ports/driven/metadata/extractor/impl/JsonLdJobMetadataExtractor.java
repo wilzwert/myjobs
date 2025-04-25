@@ -7,8 +7,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.jr.ob.JSON;
-import com.wilzwert.myjobs.core.domain.model.JobMetadata;
-import com.wilzwert.myjobs.core.domain.model.metadata.jsonld.JobPosting;
+import com.wilzwert.myjobs.core.domain.model.job.JobMetadata;
+import com.wilzwert.myjobs.core.domain.model.job.jsonld.JobPosting;
 import com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.JobMetadataExtractor;
 
 

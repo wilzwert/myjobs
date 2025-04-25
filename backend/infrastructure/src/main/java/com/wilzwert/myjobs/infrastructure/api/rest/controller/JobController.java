@@ -2,12 +2,13 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 
 import com.wilzwert.myjobs.core.domain.command.*;
-import com.wilzwert.myjobs.core.domain.model.JobId;
-import com.wilzwert.myjobs.core.domain.model.JobStatus;
+import com.wilzwert.myjobs.core.domain.model.job.JobId;
+import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.ports.driving.*;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +51,7 @@ public class JobController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public JobResponse create(@RequestBody final CreateJobRequest createJobRequest, Authentication authentication) {
+    public JobResponse create(@RequestBody @Valid final CreateJobRequest createJobRequest, Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         CreateJobCommand createJobCommand = jobMapper.toCommand(createJobRequest, userDetails.getId());
         return jobMapper.toResponse(createJobUseCase.createJob(createJobCommand));
@@ -69,21 +70,21 @@ public class JobController {
     }
 
     @PatchMapping("/{id}")
-    public JobResponse patch(@PathVariable("id") String id, @RequestBody final UpdateJobRequest updateJobRequest, Authentication authentication) {
+    public JobResponse patch(@PathVariable("id") String id, @RequestBody @Valid final UpdateJobRequest updateJobRequest, Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         UpdateJobCommand updateJobCommand = jobMapper.toCommand(updateJobRequest, userDetails.getId(), new JobId(UUID.fromString(id)));
         return jobMapper.toResponse(updateJobUseCase.updateJob(updateJobCommand));
     }
 
     @PutMapping("/{id}/status")
-    public JobResponse updateStatus(@PathVariable("id") String id, @RequestBody final UpdateJobStatusRequest updateJobStatusRequest, Authentication authentication) {
+    public JobResponse updateStatus(@PathVariable("id") String id, @RequestBody @Valid final UpdateJobStatusRequest updateJobStatusRequest, Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         UpdateJobStatusCommand updateJobStatusCommand = jobMapper.toCommand(updateJobStatusRequest, userDetails.getId(), new JobId(UUID.fromString(id)));
         return jobMapper.toResponse(updateJobStatusUseCase.updateJobStatus(updateJobStatusCommand));
     }
 
     @PutMapping("/{id}/rating")
-    public JobResponse updateRating(@PathVariable("id") String id, @RequestBody final UpdateJobRatingRequest updateJobRatingRequest, Authentication authentication) {
+    public JobResponse updateRating(@PathVariable("id") String id, @RequestBody @Valid final UpdateJobRatingRequest updateJobRatingRequest, Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         UpdateJobRatingCommand updateJobRatingCommand = jobMapper.toCommand(updateJobRatingRequest, userDetails.getId(), new JobId(UUID.fromString(id)));
         return jobMapper.toResponse(updateJobRatingUseCase.updateJobRating(updateJobRatingCommand));

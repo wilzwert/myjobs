@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.core.domain.ports.driving;
 
 
-import com.wilzwert.myjobs.core.domain.model.AuthenticatedUser;
+import com.wilzwert.myjobs.core.domain.model.user.AuthenticatedUser;
 
 /**
  * @author Wilhelm Zwertvaegher

@@ -1,6 +1,8 @@
 package com.wilzwert.myjobs.core.domain.model;
 
 
+import com.wilzwert.myjobs.core.domain.model.job.Job;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;

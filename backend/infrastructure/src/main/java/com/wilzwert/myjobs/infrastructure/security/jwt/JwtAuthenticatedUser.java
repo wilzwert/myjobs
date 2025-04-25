@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.security.jwt;
 
 
-import com.wilzwert.myjobs.core.domain.model.AuthenticatedUser;
+import com.wilzwert.myjobs.core.domain.model.user.AuthenticatedUser;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

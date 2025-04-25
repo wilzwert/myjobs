@@ -1,10 +1,14 @@
-package com.wilzwert.myjobs.core.domain.model;
+package com.wilzwert.myjobs.core.domain.model.user;
 
 
-import com.wilzwert.myjobs.core.domain.exception.JobAlreadyExistsException;
-import com.wilzwert.myjobs.core.domain.exception.JobNotFoundException;
-import com.wilzwert.myjobs.core.domain.exception.ResetPasswordExpiredException;
-import com.wilzwert.myjobs.core.domain.exception.UserNotFoundException;
+import com.wilzwert.myjobs.core.domain.exception.*;
+import com.wilzwert.myjobs.core.domain.model.*;
+import com.wilzwert.myjobs.core.domain.model.activity.Activity;
+import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
+import com.wilzwert.myjobs.core.domain.model.job.Job;
+import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
+import com.wilzwert.myjobs.core.domain.shared.validation.ValidationResult;
+import com.wilzwert.myjobs.core.domain.shared.validation.Validator;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -148,7 +152,36 @@ public class User extends DomainEntity<UserId> {
             this.jobs = jobs;
             return this;
         }
+
+        private ValidationResult validate() {
+            ValidationResult validationResult = new ValidationResult();
+
+            // let's check mandatory fields
+            Validator.requireNotEmpty("email", email, validationResult);
+            Validator.requireNotEmpty("username", username, validationResult);
+            Validator.requireNotEmpty("lastName", lastName, validationResult);
+            Validator.requireNotEmpty("lastName", lastName, validationResult);
+            Validator.requireNotEmpty("role", role, validationResult);
+            Validator.requireValidEmail("email", email, validationResult);
+
+            // password strength validation is very specific and belongs to the user
+            if(!password.matches(".*[A-Z]+.*")
+                || !password.matches(".*[a-z]+.*")
+                || !password.matches(".*[0-9]+.*")
+                || !password.matches(".*\\W.*")) {
+                validationResult.addError("password", ErrorCode.USER_WEAK_PASSWORD);
+            }
+
+            return validationResult;
+
+        }
+
         public User build() {
+            ValidationResult validationResult = validate();
+            if(!validationResult.isValid()) {
+                throw new ValidationException(validationResult.getErrors());
+            }
+
             return new User(id, email, emailStatus, emailValidationCode, password, username, firstName, lastName, role, resetPasswordToken, resetPasswordExpiresAt, createdAt, updatedAt, jobs);
         }
     }

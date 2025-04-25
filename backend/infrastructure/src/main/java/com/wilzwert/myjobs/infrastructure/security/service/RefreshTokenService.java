@@ -1,9 +1,8 @@
 package com.wilzwert.myjobs.infrastructure.security.service;
 
-import com.wilzwert.myjobs.core.domain.model.User;
+import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.infrastructure.security.model.RefreshToken;
 
-import java.sql.Ref;
 import java.util.Optional;
 
 /**

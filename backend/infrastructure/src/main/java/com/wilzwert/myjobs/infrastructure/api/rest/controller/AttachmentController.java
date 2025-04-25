@@ -4,18 +4,16 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 import com.wilzwert.myjobs.core.domain.command.CreateAttachmentCommand;
 import com.wilzwert.myjobs.core.domain.command.DeleteAttachmentCommand;
 import com.wilzwert.myjobs.core.domain.command.DownloadAttachmentCommand;
-import com.wilzwert.myjobs.core.domain.exception.AttachmentNotFoundException;
-import com.wilzwert.myjobs.core.domain.exception.JobNotFoundException;
-import com.wilzwert.myjobs.core.domain.model.Attachment;
+import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.DownloadableFile;
-import com.wilzwert.myjobs.core.domain.model.JobId;
-import com.wilzwert.myjobs.core.domain.ports.driven.JobService;
+import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.ports.driving.AddAttachmentToJobUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.DeleteAttachmentUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.DownloadAttachmentUseCase;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.AttachmentMapper;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -27,9 +25,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.UUID;
 
@@ -60,7 +55,7 @@ public class AttachmentController {
     }
 
     @PostMapping("{jobId}/attachments")
-    public AttachmentResponse createAttachment(@PathVariable("jobId") String jobId, @RequestBody CreateAttachmentRequest createAttachmentRequest, Authentication authentication) {
+    public AttachmentResponse createAttachment(@PathVariable("jobId") String jobId, @RequestBody @Valid CreateAttachmentRequest createAttachmentRequest, Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
         // put file contents in temp file

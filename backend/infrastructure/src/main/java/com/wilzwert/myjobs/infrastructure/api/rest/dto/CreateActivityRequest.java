@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
 
-import com.wilzwert.myjobs.core.domain.model.ActivityType;
+import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 

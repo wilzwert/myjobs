@@ -1,5 +1,7 @@
 package com.wilzwert.myjobs.core.domain.exception;
 
-public abstract class EntityNotFoundException extends RuntimeException {
-    public EntityNotFoundException(String message) {super(message);}
+import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
+
+public abstract class EntityNotFoundException extends DomainException {
+    public EntityNotFoundException(ErrorCode code) {super(code);}
 }

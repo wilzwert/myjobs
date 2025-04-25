@@ -2,9 +2,9 @@ package com.wilzwert.myjobs.core.application.usecase;
 
 
 import com.wilzwert.myjobs.core.domain.command.UpdateUserCommand;
-import com.wilzwert.myjobs.core.domain.model.EmailStatus;
-import com.wilzwert.myjobs.core.domain.model.User;
-import com.wilzwert.myjobs.core.domain.model.UserId;
+import com.wilzwert.myjobs.core.domain.model.user.EmailStatus;
+import com.wilzwert.myjobs.core.domain.model.user.User;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.ports.driven.EmailVerificationMessageProvider;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
 import org.junit.jupiter.api.Test;

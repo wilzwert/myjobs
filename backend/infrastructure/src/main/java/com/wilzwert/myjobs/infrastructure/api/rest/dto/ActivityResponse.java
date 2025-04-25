@@ -1,6 +1,5 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
-import com.wilzwert.myjobs.core.domain.model.ActivityType;
 import lombok.*;
 
 import java.time.Instant;

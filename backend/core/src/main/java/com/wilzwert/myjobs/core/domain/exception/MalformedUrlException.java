@@ -1,14 +1,16 @@
 package com.wilzwert.myjobs.core.domain.exception;
 
 
+import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
+
 /**
  * @author Wilhelm Zwertvaegher
  * Date:13/03/2025
  * Time:09:16
  */
 
-public class MalformedUrlException extends RuntimeException {
+public class MalformedUrlException extends DomainException {
     public MalformedUrlException() {
-        super("URL is not valid");
+        super(ErrorCode.INVALID_URL);
     }
 }

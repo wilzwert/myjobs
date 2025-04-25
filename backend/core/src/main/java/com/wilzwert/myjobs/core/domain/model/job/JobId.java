@@ -1,4 +1,6 @@
-package com.wilzwert.myjobs.core.domain.model;
+package com.wilzwert.myjobs.core.domain.model.job;
+
+import com.wilzwert.myjobs.core.domain.model.EntityId;
 
 import java.util.UUID;
 

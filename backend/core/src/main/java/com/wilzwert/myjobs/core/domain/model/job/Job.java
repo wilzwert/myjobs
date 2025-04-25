@@ -1,4 +1,10 @@
-package com.wilzwert.myjobs.core.domain.model;
+package com.wilzwert.myjobs.core.domain.model.job;
+
+import com.wilzwert.myjobs.core.domain.model.activity.Activity;
+import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
+import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
+import com.wilzwert.myjobs.core.domain.model.DomainEntity;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
 
 import java.net.URI;
 import java.net.URL;

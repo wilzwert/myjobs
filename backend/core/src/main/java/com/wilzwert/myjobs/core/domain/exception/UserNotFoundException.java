@@ -1,6 +1,8 @@
 package com.wilzwert.myjobs.core.domain.exception;
 
 
+import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
+
 /**
  * @author Wilhelm Zwertvaegher
  * Date:13/03/2025
@@ -8,7 +10,5 @@ package com.wilzwert.myjobs.core.domain.exception;
  */
 
 public class UserNotFoundException extends EntityNotFoundException {
-    public UserNotFoundException() {
-        super("User not found");
-    }
+    public UserNotFoundException() {super(ErrorCode.USER_NOT_FOUND);}
 }

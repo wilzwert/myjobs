@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor;
 
 
-import com.wilzwert.myjobs.core.domain.model.JobMetadata;
+import com.wilzwert.myjobs.core.domain.model.job.JobMetadata;
 
 import java.util.Optional;
 

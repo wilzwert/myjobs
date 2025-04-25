@@ -1,6 +1,6 @@
 package com.wilzwert.myjobs.core.domain.command;
 
-import com.wilzwert.myjobs.core.domain.model.UserId;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
 
 /**
  * @author Wilhelm Zwertvaegher

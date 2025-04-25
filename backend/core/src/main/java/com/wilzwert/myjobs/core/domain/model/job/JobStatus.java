@@ -1,4 +1,4 @@
-package com.wilzwert.myjobs.core.domain.model;
+package com.wilzwert.myjobs.core.domain.model.job;
 
 
 /**

@@ -194,7 +194,7 @@ public class ErrorResponseTest {
 
     @Test
     public void shouldBuildErrorResponse_whenPasswordMatchException() {
-        ErrorResponse response = ErrorResponse.fromException(new PasswordMatchException("password don't match"));
+        ErrorResponse response = ErrorResponse.fromException(new PasswordMatchException());
         assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatusCode());
         assertEquals("400", response.getStatus());
         assertEquals("password don't match", response.getMessage());

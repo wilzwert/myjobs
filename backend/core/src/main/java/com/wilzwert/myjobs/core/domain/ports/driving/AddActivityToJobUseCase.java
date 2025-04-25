@@ -2,7 +2,7 @@ package com.wilzwert.myjobs.core.domain.ports.driving;
 
 
 import com.wilzwert.myjobs.core.domain.command.CreateActivityCommand;
-import com.wilzwert.myjobs.core.domain.model.Activity;
+import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 
 /**
  * @author Wilhelm Zwertvaegher

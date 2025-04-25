@@ -1,4 +1,6 @@
-package com.wilzwert.myjobs.core.domain.model;
+package com.wilzwert.myjobs.core.domain.model.activity;
+
+import com.wilzwert.myjobs.core.domain.model.DomainEntity;
 
 import java.time.Instant;
 

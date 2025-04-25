@@ -2,8 +2,8 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 
 import com.wilzwert.myjobs.core.domain.command.RegisterUserCommand;
-import com.wilzwert.myjobs.core.domain.model.User;
-import com.wilzwert.myjobs.core.domain.model.UserId;
+import com.wilzwert.myjobs.core.domain.model.user.User;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.ports.driving.*;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
@@ -14,6 +14,7 @@ import com.wilzwert.myjobs.infrastructure.security.model.RefreshToken;
 import com.wilzwert.myjobs.infrastructure.security.service.CookieService;
 import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
 import com.wilzwert.myjobs.infrastructure.security.service.RefreshTokenService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -62,7 +63,7 @@ public class AuthController {
 
     @PostMapping("/register")
     @RequiresCaptcha
-    public UserResponse register(@RequestBody final RegisterUserRequest registerUserRequest) {
+    public UserResponse register(@RequestBody @Valid final RegisterUserRequest registerUserRequest) {
         RegisterUserCommand registerUserCommand = userMapper.toCommand(registerUserRequest);
         return userMapper.toResponse(registerUseCase.registerUser(registerUserCommand));
     }
@@ -79,7 +80,7 @@ public class AuthController {
 
     @PostMapping("/login")
     @RequiresCaptcha
-    public ResponseEntity<AuthResponse> login(@RequestBody final LoginRequest loginRequest) {
+    public ResponseEntity<AuthResponse> login(@RequestBody @Valid final LoginRequest loginRequest) {
         log.info("User login with email {}", loginRequest.getEmail());
         try {
             log.info("User login - authenticating");

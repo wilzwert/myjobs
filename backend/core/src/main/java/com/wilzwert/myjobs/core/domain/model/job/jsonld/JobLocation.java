@@ -1,4 +1,4 @@
-package com.wilzwert.myjobs.core.domain.model.metadata.jsonld;
+package com.wilzwert.myjobs.core.domain.model.job.jsonld;
 
 
 /**

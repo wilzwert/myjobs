@@ -3,10 +3,10 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 import com.wilzwert.myjobs.core.domain.command.RegisterUserCommand;
 import com.wilzwert.myjobs.core.domain.exception.UserAlreadyExistsException;
-import com.wilzwert.myjobs.core.domain.model.AuthenticatedUser;
-import com.wilzwert.myjobs.core.domain.model.EmailStatus;
-import com.wilzwert.myjobs.core.domain.model.User;
-import com.wilzwert.myjobs.core.domain.model.UserId;
+import com.wilzwert.myjobs.core.domain.model.user.AuthenticatedUser;
+import com.wilzwert.myjobs.core.domain.model.user.EmailStatus;
+import com.wilzwert.myjobs.core.domain.model.user.User;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.ports.driving.CheckUserAvailabilityUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.LoginUseCase;
@@ -86,7 +86,7 @@ public class AuthControllerTest {
     class RegisterTest {
 
         @Test
-        public void shouldThrowConflictResponseStatusExceptionOnRegister_whenUserAlreadyExists() {
+        public void whenUserAlreadyExists_thenShouldThrowConflictResponseStatusExceptionOnRegister() {
             RegisterUserRequest registerUserRequest = new RegisterUserRequest();
             registerUserRequest.setUsername("test");
             registerUserRequest.setEmail("test@example.com");
@@ -103,7 +103,7 @@ public class AuthControllerTest {
         }
 
         @Test
-        public void shouldReturnUserResponseOnRegisterSuccess() {
+        public void whenRegistrationSucceeded_thenShouldReturnUserResponse() {
             RegisterUserRequest registerUserRequest = new RegisterUserRequest();
             registerUserRequest.setUsername("test");
             registerUserRequest.setEmail("test@example.com");
@@ -158,7 +158,7 @@ public class AuthControllerTest {
     class LoginTest {
 
         @Test
-        public void shouldThrowUnauthorizedResponseStatusException_whenLoginFailed() {
+        public void whenLoginFailed_thenShouldThrowUnauthorizedResponseStatusException() {
             LoginRequest loginRequest = new LoginRequest();
             loginRequest.setEmail("test@example.com");
             loginRequest.setPassword("Abcd!1234");
@@ -175,7 +175,7 @@ public class AuthControllerTest {
         }
 
         @Test
-        public void shouldSetCookiesAndReturnAuthResponse_whenLoginSuccess() {
+        public void whenLoginSucceeded_thenShouldSetCookiesAndReturnAuthResponse() {
             LoginRequest loginRequest = new LoginRequest();
             loginRequest.setEmail("test@example.com");
             loginRequest.setPassword("Abcd!1234");
@@ -208,7 +208,7 @@ public class AuthControllerTest {
     @Nested
     class EmailAndUsernameCheckTest {
         @Test
-        public void shouldReturnUnprocessableEntity_whenEmailTaken() {
+        public void whenEmailTaken_thenShouldReturnUnprocessableEntity() {
             when(checkUserAvailabilityUseCase.isEmailTaken("test@example.com")).thenReturn(true);
 
             ResponseEntity<?> responseEntity = authController.emailCheck("test@example.com");
@@ -218,7 +218,7 @@ public class AuthControllerTest {
         }
 
         @Test
-        public void shouldReturnUnprocessableEntity_whenUsernameTaken() {
+        public void whenUsernameTaken_thenShouldReturnUnprocessableEntity() {
             when(checkUserAvailabilityUseCase.isUsernameTaken("test")).thenReturn(true);
 
             ResponseEntity<?> responseEntity = authController.usernameCheck("test");
@@ -228,7 +228,7 @@ public class AuthControllerTest {
         }
 
         @Test
-        public void shouldReturnOk_whenEmailAvailable() {
+        public void whenEmailAvailable_thenShouldReturnOk() {
             when(checkUserAvailabilityUseCase.isEmailTaken("test@example.com")).thenReturn(true);
 
             ResponseEntity<?> responseEntity = authController.emailCheck("test@example.com");
@@ -238,7 +238,7 @@ public class AuthControllerTest {
         }
 
         @Test
-        public void shouldReturnOk_whenUsernameAvailable() {
+        public void whenUsernameAvailable_thenShouldReturnOk() {
             when(checkUserAvailabilityUseCase.isUsernameTaken("test")).thenReturn(false);
 
             ResponseEntity<?> responseEntity = authController.usernameCheck("test");
@@ -252,13 +252,13 @@ public class AuthControllerTest {
     class RefreshTokenTest {
 
         @Test
-        public void shouldReturnUnauthorizedResponse_whenRefreshTokenEmpty() {
+        public void whenRefreshTokenEmpty_thenShouldReturnUnauthorizedResponse() {
             ResponseEntity<?> responseEntity = authController.refreshAccessToken(null);
             assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         }
 
         @Test
-        public void shouldThrowUnauthorizedResponseStatusException_whenRefreshTokenNotFound() {
+        public void whenRefreshTokenNotFound_thenShouldThrowUnauthorizedResponseStatusException() {
             when(refreshTokenService.findByToken("refresh_token")).thenReturn(Optional.empty());
 
             ResponseEntity<?> responseEntity = authController.refreshAccessToken("refresh_token");
@@ -267,7 +267,7 @@ public class AuthControllerTest {
         }
 
         @Test
-        public void shouldThrowUnauthorizedResponseStatusException_whenRefreshTokenExpired() {
+        public void whenRefreshTokenExpired_thenShouldThrowUnauthorizedResponseStatusException() {
             RefreshToken refreshToken = new MongoRefreshToken().setToken("refresh_token");
             when(refreshTokenService.findByToken("refresh_token")).thenReturn(Optional.of(refreshToken));
             when(refreshTokenService.verifyExpiration(refreshToken)).thenReturn(false);
@@ -279,7 +279,7 @@ public class AuthControllerTest {
         }
 
         @Test
-        public void shouldThrowUnauthorizedResponseStatusException_whenUserNotFound() {
+        public void whenUserNotFound_thenShouldThrowUnauthorizedResponseStatusException() {
             UUID userUUID = UUID.randomUUID();
             ArgumentCaptor<UserId> userIdCaptor = ArgumentCaptor.forClass(UserId.class);
             RefreshToken refreshToken = new MongoRefreshToken().setToken("refresh_token").setUserId(userUUID);
@@ -297,7 +297,7 @@ public class AuthControllerTest {
         }
 
         @Test
-        public void shouldSetCookiesAndReturnAuthResponse_whenRefreshSuccess() {
+        public void whenRefreshSuccess_thenShouldSetCookiesAndReturnAuthResponse() {
             UUID userUUID = UUID.randomUUID();
             User user = User.builder().id(new UserId(userUUID)).email("test@example.com").username("test").role("USER").build();
             ArgumentCaptor<UserId> userIdCaptor = ArgumentCaptor.forClass(UserId.class);

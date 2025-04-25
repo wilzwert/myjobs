@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.core.domain.ports.driving;
 
 
-import com.wilzwert.myjobs.core.domain.model.JobMetadata;
+import com.wilzwert.myjobs.core.domain.model.job.JobMetadata;
 
 /**
  * @author Wilhelm Zwertvaegher

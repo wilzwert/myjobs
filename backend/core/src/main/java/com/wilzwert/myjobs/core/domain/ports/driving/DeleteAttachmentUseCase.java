@@ -1,9 +1,7 @@
 package com.wilzwert.myjobs.core.domain.ports.driving;
 
 
-import com.wilzwert.myjobs.core.domain.command.CreateAttachmentCommand;
 import com.wilzwert.myjobs.core.domain.command.DeleteAttachmentCommand;
-import com.wilzwert.myjobs.core.domain.model.Attachment;
 
 /**
  * @author Wilhelm Zwertvaegher
