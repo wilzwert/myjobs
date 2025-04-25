@@ -1,6 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 /**
@@ -10,17 +11,18 @@ import lombok.Data;
  */
 
 @Data
-// TODO @Schema(description = "Object expected for user registration request" )
+// TODO @Schema(description = "Object expected for job update request" )
 public class UpdateJobRequest {
-    // TODO @NotBlank(message = "The email is required")
-    // TODO @Email(message = "Email should be valid")
-    // TODO @Schema(description = "User email")
+    // TODO @Schema(description = "")
+    @NotBlank(message = "The title is required")
     private String title;
 
     private String company;
 
+    @NotBlank(message = "The URL is required")
     private String url;
 
+    @NotBlank(message = "The description is required")
     private String description;
 
     private String profile;

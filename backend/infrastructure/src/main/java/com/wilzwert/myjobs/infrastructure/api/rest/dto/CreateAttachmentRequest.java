@@ -1,7 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
-
-import com.wilzwert.myjobs.core.domain.model.ActivityType;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 /**
@@ -11,17 +10,19 @@ import lombok.Data;
  */
 
 @Data
-// TODO @Schema(description = "Object expected for user registration request" )
+// TODO @Schema(description = "Object expected for attachment creation request" )
 public class CreateAttachmentRequest {
-    // TODO @NotBlank(message = "The email is required")
-    // TODO @Email(message = "Email should be valid")
-    // TODO @Schema(description = "User email")
+    // TODO @Schema(description = "Attachment name")
+    @NotBlank(message = "The attachment name is required")
     private String name;
 
+    @NotBlank(message = "The file name is required")
     private String filename;
 
+    @NotBlank(message = "The file extension is required")
     private String extension;
 
+    @NotBlank(message = "The file content is required")
     private String content;
 
 }
