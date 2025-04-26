@@ -6,7 +6,7 @@ import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.DomainEntity;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
-import com.wilzwert.myjobs.core.domain.shared.validation.ValidationResult;
+import com.wilzwert.myjobs.core.domain.shared.validation.ValidationErrors;
 import com.wilzwert.myjobs.core.domain.shared.validation.Validator;
 
 import java.time.Instant;
@@ -90,13 +90,6 @@ public class Job extends DomainEntity<JobId> {
         private List<Attachment> attachments;
 
         public Builder() {
-            id = JobId.generate();
-            status = JobStatus.CREATED;
-            rating = JobRating.of(0);
-            createdAt = Instant.now();
-            updatedAt = Instant.now();
-            activities = new ArrayList<>();
-            attachments = new ArrayList<>();
         }
 
         public Builder(Job job) {
@@ -186,24 +179,7 @@ public class Job extends DomainEntity<JobId> {
             return this;
         }
 
-        private ValidationResult validate() {
-            ValidationResult validationResult = new ValidationResult();
-
-            Validator.requireNotEmpty("title", title, validationResult);
-            Validator.requireNotEmpty("description", description, validationResult);
-            Validator.requireNotEmpty("url", url, validationResult);
-            Validator.requireValidUrl("url", url, validationResult);
-
-
-            return validationResult;
-        }
-
         public Job build() {
-            ValidationResult validationResult = validate();
-            if(!validationResult.isValid()) {
-                throw new ValidationException(validationResult.getErrors());
-            }
-
             return new Job(
                     id,
                     url,
@@ -223,23 +199,39 @@ public class Job extends DomainEntity<JobId> {
         }
     }
 
+    private ValidationErrors validate() {
+        return  new Validator()
+                .requireNotEmpty("id", id)
+                .requireNotEmpty("userId", userId)
+                .requireNotEmpty("title", title)
+                .requireNotEmpty("description", description)
+                .requireValidUrl("url", url)
+                .getErrors();
+    }
+
     private Job(JobId id, String url, JobStatus status, String title, String company, String description, String profile, String salary, JobRating rating, Instant createdAt, Instant updatedAt, UserId userId, List<Activity> activities, List<Attachment> attachments) {
-        this.id = id;
+        this.id = id != null ? id : JobId.generate();
         this.url = url;
-        this.status = status;
+        this.status = status != null ? status : JobStatus.CREATED;
         this.title = title;
         this.company = company;
         this.description = description;
         this.profile = profile;
         this.salary = salary;
-        this.rating = rating;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.rating = rating != null ? rating : JobRating.of(0);
+        this.createdAt = createdAt != null ? createdAt : Instant.now();
+        this.updatedAt = updatedAt != null ? updatedAt : Instant.now();
         this.userId = userId;
+
         // ensure immutability
-        this.activities = List.copyOf(activities);
+        this.activities = activities != null ? List.copyOf(activities) : new ArrayList<>();
         // ensure immutability
-        this.attachments = List.copyOf(attachments);
+        this.attachments = activities != null ? List.copyOf(attachments) : new ArrayList<>();
+
+        ValidationErrors validationErrors = validate();
+        if(validationErrors.hasErrors()) {
+            throw new ValidationException(validationErrors);
+        }
     }
 
     private Job copy(List<Attachment> attachments, List<Activity> activities, JobStatus status, Instant updatedAt) {

@@ -16,6 +16,9 @@ public enum ErrorCode {
     INVALID_URL,
     FIELD_TOO_SHORT,
     FIELD_TOO_LONG,
+    PAGINATION_INVALID_PAGE,
+    PAGINATION_INVALID_PAGE_SIZE,
+    PAGINATION_OFFSET_TOO_BIG,
 
     // fetch / extract parse jobs specific errors
     NO_HTML_FETCHER_FOUND,

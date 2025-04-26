@@ -1,6 +1,9 @@
 package com.wilzwert.myjobs.core.domain.model.pagination;
 
 
+import com.wilzwert.myjobs.core.domain.exception.PaginationException;
+import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
+
 /**
  * @author Wilhelm Zwertvaegher
  * Date:20/03/2025
@@ -13,20 +16,20 @@ public class DomainPageable {
     private final int offset;
 
     public DomainPageable(int page, int pageSize) {
-        // Assert.field("page", page).min(0);
-        // Assert.field("pageSize", pageSize).min(1).max(100);
+        if(page < 0) {
+            throw new PaginationException(ErrorCode.PAGINATION_INVALID_PAGE);
+        }
+        if(pageSize < 1 || pageSize > 100) {
+            throw new PaginationException(ErrorCode.PAGINATION_INVALID_PAGE_SIZE);
+        }
 
         this.page = page;
         this.pageSize = pageSize;
         offset = page * pageSize;
-        // assertOffset();
-    }
-/*
-    private void assertOffset() {
-        if (offset > 10000) {
-            throw PaginationException.overTenThousand();
+        if(offset > 1000) {
+            throw new PaginationException(ErrorCode.PAGINATION_OFFSET_TOO_BIG);
         }
-    }*/
+    }
 
     public int getPage() {
         return page;

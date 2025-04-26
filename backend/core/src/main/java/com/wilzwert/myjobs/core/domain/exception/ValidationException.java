@@ -2,9 +2,9 @@ package com.wilzwert.myjobs.core.domain.exception;
 
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.core.domain.shared.validation.ValidationError;
+import com.wilzwert.myjobs.core.domain.shared.validation.ValidationErrors;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -13,19 +13,19 @@ import java.util.Map;
  */
 
 public class ValidationException extends DomainException {
-  private final Map<String, List<ValidationError>> errors;
+  private final ValidationErrors errors;
 
-  public ValidationException(Map<String, List<ValidationError>> errors) {
+  public ValidationException(ValidationErrors errors) {
     super(ErrorCode.VALIDATION_FAILED);
     this.errors = errors;
   }
 
-  public Map<String, List<ValidationError>> getErrors() {
+  public ValidationErrors getErrors() {
     return errors;
   }
 
   public List<ValidationError> getFlatErrors() {
-    return errors.values().stream()
+    return errors.getErrors().values().stream()
             .flatMap(List::stream)
             .toList();
   }

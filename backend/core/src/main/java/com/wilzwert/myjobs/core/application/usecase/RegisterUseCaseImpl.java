@@ -6,7 +6,6 @@ import com.wilzwert.myjobs.core.domain.command.ValidateEmailCommand;
 import com.wilzwert.myjobs.core.domain.exception.UserAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.exception.UserNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.user.User;
-import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.ports.driven.AccountCreationMessageProvider;
 import com.wilzwert.myjobs.core.domain.ports.driven.PasswordHasher;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
@@ -45,27 +44,14 @@ public class RegisterUseCaseImpl implements RegisterUseCase, CheckUserAvailabili
             throw new UserAlreadyExistsException();
         }
 
-        // 2 steps :
-        // - build a temp User with plaintext password to trigger self validation
-        // - build the final User from the temp User with the hashed password
-        // this could (or maybe should ?) be moved in a factory or a static method in User
-        // but for now it will be ok
-        User tmpUser = User.builder()
-                .id(UserId.generate())
-                .email(registerUserCommand.email())
-                .password(registerUserCommand.password())
-                .username(registerUserCommand.username())
-                .firstName(registerUserCommand.firstName())
-                .lastName(registerUserCommand.lastName())
-                .build();
-
-        // if no exception was thrown
-        // then we build and save the final User based on the temp one, only setting the hashed password
-        User user = userService.save(
-            User.from(tmpUser)
-                .password(passwordHasher.hashPassword(registerUserCommand.password()))
-                .build()
-        );
+        User user = userService.save(User.create(
+                registerUserCommand.email(),
+                passwordHasher.hashPassword(registerUserCommand.password()),
+                registerUserCommand.username(),
+                registerUserCommand.firstName(),
+                registerUserCommand.lastName(),
+                registerUserCommand.password()
+        ));
 
         // send account creation message
         accountCreationMessageProvider.send(user);

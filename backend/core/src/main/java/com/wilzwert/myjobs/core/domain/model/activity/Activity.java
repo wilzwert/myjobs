@@ -1,6 +1,10 @@
 package com.wilzwert.myjobs.core.domain.model.activity;
 
+import com.wilzwert.myjobs.core.domain.exception.ValidationException;
 import com.wilzwert.myjobs.core.domain.model.DomainEntity;
+import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
+import com.wilzwert.myjobs.core.domain.shared.validation.ValidationErrors;
+import com.wilzwert.myjobs.core.domain.shared.validation.Validator;
 
 import java.time.Instant;
 
@@ -40,10 +44,6 @@ public class Activity extends DomainEntity<ActivityId> {
         private Instant updatedAt;
 
         public Builder() {
-            id = ActivityId.generate();
-            comment = "";
-            createdAt = Instant.now();
-            updatedAt = Instant.now();
         }
 
         public Builder(Activity activity) {
@@ -84,12 +84,25 @@ public class Activity extends DomainEntity<ActivityId> {
         }
     }
 
+    private ValidationErrors validate() {
+        return  new Validator()
+                .requireNotEmpty("id", id)
+                .require("type", () -> type != null,  ErrorCode.FIELD_CANNOT_BE_EMPTY)
+                .getErrors();
+    }
+
     public Activity(ActivityId id, ActivityType type, String comment, Instant createdAt, Instant updatedAt) {
-        this.id = id;
+        this.id = id != null ? id : ActivityId.generate();
         this.type = type;
-        this.comment = comment;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.comment = comment != null ? comment : "";
+        this.createdAt = createdAt != null ? createdAt : Instant.now();
+        this.updatedAt = updatedAt != null ? updatedAt : Instant.now();
+
+        ValidationErrors errors = validate();
+        if(errors.hasErrors()) {
+            throw new ValidationException(errors);
+        }
+
     }
 
     public ActivityId getId() {

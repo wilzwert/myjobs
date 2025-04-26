@@ -299,7 +299,15 @@ public class AuthControllerTest {
         @Test
         public void whenRefreshSuccess_thenShouldSetCookiesAndReturnAuthResponse() {
             UUID userUUID = UUID.randomUUID();
-            User user = User.builder().id(new UserId(userUUID)).email("test@example.com").username("test").role("USER").build();
+            User user = User.builder()
+                    .id(new UserId(userUUID))
+                    .email("test@example.com")
+                    .username("test")
+                    .password("password")
+                    .role("USER")
+                    .firstName("firstName")
+                    .lastName("lastName")
+                    .build();
             ArgumentCaptor<UserId> userIdCaptor = ArgumentCaptor.forClass(UserId.class);
             RefreshToken refreshToken = new MongoRefreshToken().setToken("refresh_token").setUserId(userUUID);
             RefreshToken newRefreshToken = new MongoRefreshToken().setToken("new_refresh_token").setUserId(userUUID);

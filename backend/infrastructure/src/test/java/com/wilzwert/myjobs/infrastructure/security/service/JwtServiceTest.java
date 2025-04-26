@@ -1,7 +1,5 @@
 package com.wilzwert.myjobs.infrastructure.security.service;
 
-
-import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.infrastructure.security.configuration.JwtProperties;
 import com.wilzwert.myjobs.infrastructure.security.model.JwtToken;
@@ -15,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,6 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.security.Key;
 import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,6 +37,7 @@ import static org.mockito.Mockito.when;
  */
 
 @ExtendWith(MockitoExtension.class)
+@Tag("Security")
 public class JwtServiceTest {
 
     @Mock
@@ -58,14 +59,12 @@ public class JwtServiceTest {
     @Test
     public void shouldThrowWeakKeyException() {
         when(jwtProperties.getSecretKey()).thenReturn("weakKey");
-        User user = User.builder().id(UserId.generate()).email("test@example.com").build();
-        assertThrows(WeakKeyException.class, () -> jwtService.generateToken(user.getId().value().toString()));
+        assertThrows(WeakKeyException.class, () -> jwtService.generateToken(UUID.randomUUID().toString()));
     }
 
     @Test
     public void shouldGenerateToken() {
-        User user = User.builder().id(UserId.generate()).email("test@example.com").build();
-        String token = jwtService.generateToken(user.getId().value().toString());
+        String token = jwtService.generateToken(UUID.randomUUID().toString());
 
         assertThat(token).isNotBlank();
         long count = token.chars().filter(ch -> ch == '.').count();
@@ -97,8 +96,9 @@ public class JwtServiceTest {
     public void shouldExtractFromGeneratedToken() {
         when(jwtProperties.getExpirationTime()).thenReturn(600L);
         UserId userId = UserId.generate();
-        User user = User.builder().id(userId).email("test@example.com").build();
-        String token = jwtService.generateToken(user.getId().value().toString());
+        String idValue = userId.value().toString();
+
+        String token = jwtService.generateToken(idValue);
 
         when(request.getHeader("Authorization")).thenReturn("Bearer " + token);
 
@@ -106,8 +106,8 @@ public class JwtServiceTest {
 
         assertNotNull(token);
         assertThat(jwtToken).isPresent();
-        assertThat(jwtToken).map(JwtToken::getSubject).hasValue(userId.value().toString());
-        assertThat(jwtToken).map(JwtToken::getClaims).map(Claims::getSubject).hasValue(userId.value().toString());
+        assertThat(jwtToken).map(JwtToken::getSubject).hasValue(idValue);
+        assertThat(jwtToken).map(JwtToken::getClaims).map(Claims::getSubject).hasValue(idValue);
     }
 
     @Test
@@ -241,14 +241,14 @@ public class JwtServiceTest {
         public void shouldParseGeneratedToken() {
             when(jwtProperties.getExpirationTime()).thenReturn(600L);
             UserId userId = UserId.generate();
-            User user = User.builder().id(userId).email("test@example.com").build();
-            String token = jwtService.generateToken(user.getId().value().toString());
+            String idValue = userId.toString();
+            String token = jwtService.generateToken(idValue);
 
             Optional<JwtToken> jwtToken = jwtService.parseToken(token);
 
             assertNotNull(token);
-            assertThat(jwtToken).isPresent().map(JwtToken::getSubject).hasValue(userId.value().toString());
-            assertThat(jwtToken).isPresent().map(JwtToken::getClaims).map(Claims::getSubject).hasValue(userId.value().toString());
+            assertThat(jwtToken).isPresent().map(JwtToken::getSubject).hasValue(idValue);
+            assertThat(jwtToken).isPresent().map(JwtToken::getClaims).map(Claims::getSubject).hasValue(idValue);
         }
     }
 }

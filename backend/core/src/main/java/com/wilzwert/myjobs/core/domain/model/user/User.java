@@ -6,9 +6,7 @@ import com.wilzwert.myjobs.core.domain.model.*;
 import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
-import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
-import com.wilzwert.myjobs.core.domain.shared.validation.ValidationResult;
-import com.wilzwert.myjobs.core.domain.shared.validation.Validator;
+import com.wilzwert.myjobs.core.domain.shared.validation.*;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -47,6 +45,7 @@ public class User extends DomainEntity<UserId> {
         return new Builder(user);
     }
 
+    // Only for persistence mapping and tests. Do not use for new User creation!
     public static class Builder {
         private UserId id;
         private String email;
@@ -65,13 +64,13 @@ public class User extends DomainEntity<UserId> {
         private List<Job> jobs;
 
         public Builder() {
-            id = UserId.generate();
+            /*id = UserId.generate();
             emailStatus = EmailStatus.PENDING;
             emailValidationCode = UUID.randomUUID().toString();
             role = "USER";
             createdAt = Instant.now();
             updatedAt = Instant.now();
-            jobs = new ArrayList<>();
+            jobs = new ArrayList<>();*/
         }
 
         public Builder(User user) {
@@ -153,53 +152,89 @@ public class User extends DomainEntity<UserId> {
             return this;
         }
 
-        private ValidationResult validate() {
-            ValidationResult validationResult = new ValidationResult();
-            Validator.requireNotEmpty("email", email, validationResult);
-            Validator.requireNotEmpty("username", username, validationResult);
-            Validator.requireMinLength("username", username, 2, validationResult);
-            Validator.requireMaxLength("username", username, 30, validationResult);
-            Validator.requireNotEmpty("lastName", lastName, validationResult);
-            Validator.requireNotEmpty("lastName", lastName, validationResult);
-            Validator.requireNotEmpty("role", role, validationResult);
-            Validator.requireValidEmail("email", email, validationResult);
-
-            // password strength validation is very specific and belongs to the user
-            if(!password.matches(".*[A-Z]+.*")
-                || !password.matches(".*[a-z]+.*")
-                || !password.matches(".*[0-9]+.*")
-                || !password.matches(".*\\W.*")) {
-                validationResult.addError("password", ErrorCode.USER_WEAK_PASSWORD);
-            }
-
-            return validationResult;
-        }
-
         public User build() {
-            ValidationResult validationResult = validate();
-            if(!validationResult.isValid()) {
-                throw new ValidationException(validationResult.getErrors());
-            }
-
+            // build User
             return new User(id, email, emailStatus, emailValidationCode, password, username, firstName, lastName, role, resetPasswordToken, resetPasswordExpiresAt, createdAt, updatedAt, jobs);
         }
     }
 
+    private ValidationErrors validate() {
+        return new Validator()
+                .requireValidEmail("email", email)
+                .requireMinLength("username", username, 2)
+                .requireMaxLength("username", username, 30)
+                .requireNotEmpty("firstName", firstName)
+                .requireNotEmpty("lastName", lastName)
+                .requireNotEmpty("role", role)
+                .requireValidEmail("email", email)
+                .requireNotEmpty("password", password)
+                .getErrors();
+    }
+
     private User(UserId id, String email, EmailStatus emailStatus, String emailValidationCode, String password, String username, String firstName, String lastName, String role, String resetPasswordToken, Instant resetPasswordExpiresAt, Instant createdAt, Instant updatedAt, List<Job> jobs) {
-        this.id = id;
+        this.id = id != null ? id : UserId.generate();
         this.email = email;
-        this.emailValidationCode = emailValidationCode;
-        this.emailStatus = emailStatus;
+        this.emailValidationCode = emailValidationCode != null ? emailValidationCode : UUID.randomUUID().toString();
+        this.emailStatus = emailStatus != null ? emailStatus : EmailStatus.PENDING;
         this.password = password;
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.role = role;
+        this.role = role != null ? role : "USER";
         this.resetPasswordToken = resetPasswordToken;
         this.resetPasswordExpiresAt = resetPasswordExpiresAt;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.jobs = jobs;
+        this.createdAt = createdAt != null ? createdAt : Instant.now();
+        this.updatedAt = updatedAt != null ? updatedAt : Instant.now();
+        this.jobs = jobs != null ? jobs : new ArrayList<>();
+
+        // validate the User state
+        ValidationErrors validationErrors = validate();
+        if(validationErrors.hasErrors()) {
+            System.out.println(validationErrors);
+            throw new ValidationException(validationErrors);
+        }
+    }
+
+    public static User create(String email, String password, String username, String firstName, String lastName, String plainPassword) {
+        ValidationErrors errors = new ValidationErrors();
+        User createdUser = null;
+        try {
+            createdUser = new User(
+                    null,
+                    email,
+                    null,
+                    null,
+                    password,
+                    username,
+                    firstName,
+                    lastName,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+            );
+        }
+        catch(ValidationException e) {
+            errors.merge(e.getErrors());
+        }
+
+        // password strength validation is very specific and belongs to the user
+
+        if(plainPassword == null ||
+                !plainPassword.matches(".*[A-Z]+.*")
+                || !plainPassword.matches(".*[a-z]+.*")
+                || !plainPassword.matches(".*[0-9]+.*")
+                || !plainPassword.matches(".*\\W.*")) {
+            errors.add(new ValidationError("password", ErrorCode.USER_WEAK_PASSWORD));
+        }
+
+        if(errors.hasErrors()) {
+            throw new ValidationException(errors);
+        }
+
+        return createdUser;
     }
 
     public User update(String email, String username, String firstName, String lastName) {

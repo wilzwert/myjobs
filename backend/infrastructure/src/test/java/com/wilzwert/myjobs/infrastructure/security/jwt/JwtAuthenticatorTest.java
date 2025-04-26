@@ -6,6 +6,7 @@ import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoRefreshT
 import com.wilzwert.myjobs.infrastructure.security.model.RefreshToken;
 import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
 import com.wilzwert.myjobs.infrastructure.security.service.RefreshTokenService;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,6 +23,7 @@ import static org.mockito.Mockito.*;
  * Time:17:10
  */
 @ExtendWith(MockitoExtension.class)
+@Tag("Security")
 public class JwtAuthenticatorTest {
 
     @Mock
@@ -36,7 +38,7 @@ public class JwtAuthenticatorTest {
     @Test
     public void shoudAuthenticate() {
         UserId userId = UserId.generate();
-        User user = User.builder().id(userId).email("test@example.com").username("test").role("USER").build();
+        User user = User.builder().id(userId).email("test@example.com").username("test").password("password").firstName("firstName").lastName("lastName").role("USER").build();
         when(jwtService.generateToken(userId.value().toString())).thenReturn("token");
         RefreshToken refreshToken = new MongoRefreshToken().setToken("refresh_token");
         when(refreshTokenService.createRefreshToken(user)).thenReturn(refreshToken);

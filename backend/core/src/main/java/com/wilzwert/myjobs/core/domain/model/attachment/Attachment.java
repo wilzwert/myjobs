@@ -1,6 +1,9 @@
 package com.wilzwert.myjobs.core.domain.model.attachment;
 
+import com.wilzwert.myjobs.core.domain.exception.ValidationException;
 import com.wilzwert.myjobs.core.domain.model.DomainEntity;
+import com.wilzwert.myjobs.core.domain.shared.validation.ValidationErrors;
+import com.wilzwert.myjobs.core.domain.shared.validation.Validator;
 
 import java.time.Instant;
 
@@ -42,9 +45,6 @@ public class Attachment extends DomainEntity<AttachmentId> {
         private Instant updatedAt;
 
         public Builder() {
-            id = AttachmentId.generate();
-            createdAt = Instant.now();
-            updatedAt = Instant.now();
         }
 
         public Builder(Attachment attachment) {
@@ -97,14 +97,29 @@ public class Attachment extends DomainEntity<AttachmentId> {
         }
     }
 
+    private ValidationErrors validate() {
+        return  new Validator()
+                .requireNotEmpty("name", name)
+                .requireNotEmpty("fileId", fileId)
+                .requireNotEmpty("filename", filename)
+                .requireNotEmpty("contentType", contentType)
+                .getErrors();
+    }
+
     public Attachment(AttachmentId id, String name, String fileId, String filename, String contentType, Instant createdAt, Instant updatedAt) {
-        this.id = id;
+        this.id = id != null ? id : AttachmentId.generate();
         this.name = name;
         this.fileId = fileId;
         this.filename = filename;
         this.contentType = contentType;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.createdAt = createdAt != null ? createdAt : Instant.now();
+        this.updatedAt = updatedAt != null ? updatedAt : Instant.now();
+
+        ValidationErrors validationErrors = validate();
+        if(validationErrors.hasErrors()) {
+            throw new ValidationException(validationErrors);
+        }
+
     }
 
     @Override
