@@ -54,11 +54,12 @@ public class ErrorResponse {
     public static ErrorResponse fromException(MethodArgumentNotValidException ex) {
         BindingResult bindingResult = ex.getBindingResult();
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-        StringBuilder errors = new StringBuilder();
+        Map<String, List<String>> errors = new HashMap<>();
+
         for(FieldError fieldError : fieldErrors){
-            errors.append(fieldError.getField()).append(": ").append(fieldError.getDefaultMessage()).append(". ");
+            errors.computeIfAbsent(fieldError.getField(), k -> new ArrayList<>()).add(fieldError.getDefaultMessage());
         }
-        return build(ex.getStatusCode(), errors.toString());
+        return build(ex.getStatusCode(), "Validation error", errors);
     }
 
     public static ErrorResponse fromException(LoginException ex) {

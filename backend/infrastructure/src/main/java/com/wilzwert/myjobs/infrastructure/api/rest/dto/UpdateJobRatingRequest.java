@@ -11,7 +11,7 @@ import lombok.Data;
 public class UpdateJobRatingRequest {
 
     // TODO @Schema(description = "")
-    @NotBlank(message = "The rating is required")
+    @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
     @JsonDeserialize(converter = JobRatingConverter.class)
     private JobRating rating;
 }

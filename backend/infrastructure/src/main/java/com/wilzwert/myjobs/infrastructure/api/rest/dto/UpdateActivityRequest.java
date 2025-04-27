@@ -16,6 +16,6 @@ public class UpdateActivityRequest {
 
     // TODO @Email(message = "Email should be valid")
     // TODO @Schema(description = "User email")
-    @NotBlank(message = "The comment is required")
+    @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
     private String comment;
 }

@@ -13,10 +13,10 @@ import lombok.Data;
 @Data
 // TODO @Schema(description = "Object expected for job login request" )
 public class LoginRequest {
-    @NotBlank(message = "The email is required")
-    @Email(message = "Email should be valid")
+    @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
+    @Email(message = "INVALID_EMAIL")
     private String email;
 
-    @NotBlank(message = "The password is required")
+    @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
     private String password;
 }

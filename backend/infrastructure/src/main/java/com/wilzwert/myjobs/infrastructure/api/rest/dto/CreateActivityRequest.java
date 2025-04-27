@@ -16,7 +16,7 @@ import lombok.Data;
 public class CreateActivityRequest {
 
     // TODO @Schema(description = "")
-    @NotBlank(message = "The activity type is required")
+    @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
     private ActivityType type;
 
     private String comment;

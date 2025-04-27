@@ -14,6 +14,6 @@ import lombok.Data;
 // TODO @Schema(description = "Object expected for email validation request" )
 public class ValidateEmailRequest {
     // TODO @Schema(description = "")
-    @NotBlank(message = "The code is required")
+    @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
     private String code;
 }

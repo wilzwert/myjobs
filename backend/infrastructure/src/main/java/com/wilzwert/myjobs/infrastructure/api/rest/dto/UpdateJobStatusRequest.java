@@ -15,6 +15,6 @@ import lombok.Data;
 // TODO @Schema(description = "Object expected for job status update request" )
 public class UpdateJobStatusRequest {
     // TODO @Schema(description = "")
-    @NotBlank(message = "The status is required")
+    @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
     private JobStatus status;
 }

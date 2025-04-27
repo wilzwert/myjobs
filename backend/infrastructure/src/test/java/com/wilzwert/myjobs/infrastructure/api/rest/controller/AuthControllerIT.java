@@ -2,19 +2,24 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wilzwert.myjobs.core.domain.model.user.EmailStatus;
+import com.wilzwert.myjobs.core.domain.model.user.User;
+import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.RegisterUserRequest;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import java.time.Instant;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -26,13 +31,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 
 @AutoConfigureMockMvc
-@Tag("Integration")
 public class AuthControllerIT extends AbstractBaseIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private UserService userService;
 
     @Nested
     class AuthControllerRegisterIT {
@@ -46,9 +53,9 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
             registerUserRequest = new RegisterUserRequest();
             registerUserRequest.setEmail("test@example.com");
             registerUserRequest.setUsername("username");
-            registerUserRequest.setFirstName("Test");
-            registerUserRequest.setLastName("User");
-            registerUserRequest.setPassword("abcd1234");
+            registerUserRequest.setFirstName("firstName");
+            registerUserRequest.setLastName("lastName");
+            registerUserRequest.setPassword("Abcd1234!");
         }
 
         @Test
@@ -67,7 +74,8 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
         public void whenEmailInvalid_thenShouldReturnBadRequest() throws Exception {
             registerUserRequest.setEmail("test");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
-                    .andExpect(status().isBadRequest());
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("errors.email").value(ErrorCode.INVALID_EMAIL.name()));
         }
         /*
         @Test
@@ -81,8 +89,41 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
         public void whenFirstNameEmpty_thenShouldReturnBadRequest() throws Exception {
             registerUserRequest.setFirstName("");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
-                    .andExpect(status().isBadRequest());
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("errors.firstName").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
         }
+
+        @Test
+        public void whenLastNameEmpty_thenShouldReturnBadRequest() throws Exception {
+            registerUserRequest.setLastName("");
+            mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("errors.lastName").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
+        }
+
+                /*
+
+                .requireNotEmpty("firstName", firstName)
+                .requireNotEmpty("lastName", lastName)
+                .requireNotEmpty("password", password)*/
+
+        @Test
+        public void whenUsernameTooShort_thenShouldReturnBadRequest() throws Exception {
+            registerUserRequest.setUsername("T");
+            mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("errors.username").value(ErrorCode.FIELD_TOO_SHORT.name()));
+        }
+
+        @Test
+        public void whenUsernameTooLong_thenShouldReturnBadRequest() throws Exception {
+            registerUserRequest.setUsername("thisisafartoolongusernamethatshouldtriggeravalidationerror");
+            mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("errors.username").value(ErrorCode.FIELD_TOO_LONG.name()));
+        }
+
+
         /*
         @Test
         public void shouldReturnBadRequestWhenFirstNameTooShort() throws Exception {
@@ -118,44 +159,82 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(signupRequest)))
                     .andExpect(status().isBadRequest());
         }
-
+        */
         @Test
-        public void shouldReturnBadRequestWhenPasswordEmpty() throws Exception {
-            signupRequest.setPassword("");
-            mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(signupRequest)))
-                    .andExpect(status().isBadRequest());
+        public void whenPasswordEmpty_thenShouldReturnBadRequest() throws Exception {
+            registerUserRequest.setPassword("");
+            mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("errors.password").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
         }
 
         @Test
-        public void shouldReturnBadRequestWhenPasswordTooShort() throws Exception {
-            signupRequest.setPassword("pass");
-            mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(signupRequest)))
-                    .andExpect(status().isBadRequest());
+        public void whenPasswordInvalid_thenShouldReturnBadRequest() throws Exception {
+            registerUserRequest.setPassword("pass");
+            mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("errors.password").value(ErrorCode.USER_WEAK_PASSWORD.name()));
         }
-
+        /*
         @Test
         public void shouldReturnBadRequestWhenPasswordTooLong() throws Exception {
             signupRequest.setLastName("Testingtoolongpasswordinaresgisterrequest");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(signupRequest)))
                     .andExpect(status().isBadRequest());
         }
+        */
+        @Test
+        public void whenEmailAlreadyExists_thenShouldReturnBadRequest() throws Exception {
+            // we know we already have a User with the email 'existing@example.com' (see resources/test-data/user.json
+            registerUserRequest.setEmail("existing@example.com");
+
+            mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
+                    .andExpect(status().isConflict())
+                    .andExpect(jsonPath("message").value(ErrorCode.USER_ALREADY_EXISTS.name()));
+        }
 
         @Test
-        public void shouldReturnBadRequestWhenUserAlreadyExists() throws Exception {
-            when(userRepository.existsByEmail("test@example.com")).thenReturn(true);
+        public void whenUsernameAlreadyExists_thenShouldReturnBadRequest() throws Exception {
+            // we know we already have a User with the email 'existing@example.com' (see resources/test-data/user.json
+            registerUserRequest.setUsername("existinguser");
 
-            mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(signupRequest)))
-                    .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("message").value("Error: Email is already taken!"));
+            mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
+                    .andExpect(status().isConflict())
+                    .andExpect(jsonPath("message").value(ErrorCode.USER_ALREADY_EXISTS.name()));
         }
 
         @Test
         public void shouldRegisterUser() throws Exception {
-            when(userRepository.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
 
-            mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(signupRequest)))
+            Instant beforeCall = Instant.now();
+            MvcResult result = mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("message").value("User registered successfully!"));
-        }*/
+                    .andExpect(jsonPath("username").value("username"))
+                    .andExpect(jsonPath("firstName").value("firstName"))
+                    .andExpect(jsonPath("lastName").value("lastName"))
+                    .andExpect(jsonPath("email").value("test@example.com"))
+                    .andExpect(jsonPath("emailStatus").value(EmailStatus.PENDING.name()))
+                    .andExpect(jsonPath("createdAt").isNotEmpty())
+                    .andReturn();
+
+            Instant afterCall = Instant.now();
+            String createdAt = objectMapper.readTree(result.getResponse().getContentAsString()).get("createdAt").asText();
+            // FIXME this is quite ugly but we have to make sure createdAt is consistent
+            Instant instant = Instant.parse(createdAt);
+            assertThat(instant)
+                    .isAfterOrEqualTo(beforeCall)
+                    .isBeforeOrEqualTo(afterCall);
+
+
+            // delete the created user to allow predictable further tests
+            // userService.deleteUser(userService.findByEmail("test@example.com").orElse());
+            Optional<User> newUser = userService.findByEmail("test@example.com");
+            if(newUser.isEmpty()) {
+                fail("Created user should be retrievable.");
+            }
+            else {
+                userService.deleteUser(newUser.get());
+            }
+        }
     }
 }

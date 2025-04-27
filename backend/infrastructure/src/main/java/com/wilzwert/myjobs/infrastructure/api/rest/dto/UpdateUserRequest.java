@@ -15,17 +15,17 @@ import lombok.Data;
 // TODO @Schema(description = "Object expected for user update request" )
 public class UpdateUserRequest {
     // TODO @Schema(description = "User email")
-    @NotBlank(message = "The email is required")
-    @Email(message = "Email should be valid")
+    @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
+    @Email(message = "INVALID_EMAIL")
     private String email;
 
     // TODO @Schema(description = "User name")
-    @NotBlank(message = "The username is required")
+    @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
     private String username;
 
-    @NotBlank(message = "The first name is required")
+    @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
     private String firstName;
 
-    @NotBlank(message = "The last name is required")
+    @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
     private String lastName;
 }

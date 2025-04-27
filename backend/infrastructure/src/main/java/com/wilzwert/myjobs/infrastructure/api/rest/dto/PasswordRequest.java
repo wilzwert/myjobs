@@ -6,12 +6,12 @@ import lombok.Data;
 @Data
 // TODO @Schema(description = "Object expected for password change request" )
 public class PasswordRequest {
-    @NotBlank(message = "The token is required")
+    @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
     private String token;
 
-    @NotBlank(message = "The old password is required")
+    @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
     private String oldPassword;
 
-    @NotBlank(message = "The password is required")
+    @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
     private String password;
 }

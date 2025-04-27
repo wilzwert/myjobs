@@ -38,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ErrorResponseTest {
     // class used to simulate invalid parameter passed to Test::thing
     private static class Param {
-        @NotNull
+        @NotNull(message = "FIELD_CANNOT_BE_EMPTY")
         private final String id;
 
         public Param() {
@@ -92,6 +92,7 @@ public class ErrorResponseTest {
 
     @Test
     public void whenMethodArgumentNotValidException_thenShouldBuildErrorResponse() {
+        // trigger "fake" validation to check ErrorResponse
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
         Param p = new Param();
@@ -102,7 +103,6 @@ public class ErrorResponseTest {
 
         MethodArgumentNotValidException e;
         try {
-            String expectedMessage = result.getFieldErrors().getFirst().getField()+": "+result.getFieldErrors().getFirst().getDefaultMessage()+". ";
 
              e = new MethodArgumentNotValidException(
                 new MethodParameter(
@@ -112,7 +112,9 @@ public class ErrorResponseTest {
             ErrorResponse response = ErrorResponse.fromException(e);
             assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatusCode());
             assertEquals("400", response.getStatus());
-            assertEquals(expectedMessage, response.getMessage());
+            assertEquals("Validation error", response.getMessage());
+            assertEquals(1, response.getErrors().size());
+            assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY.name(), response.getErrors().get("id").getFirst());
             assertEquals(new Date().toString(), response.getTime());
         }
         catch (NoSuchMethodException ex) {

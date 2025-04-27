@@ -15,15 +15,15 @@ import lombok.Data;
 public class CreateJobRequest {
 
     // TODO @Schema(description = "")
-    @NotBlank(message = "The job title is required")
+    @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
     private String title;
 
     private String company;
 
-    @NotBlank(message = "The job URL is required")
+    @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
     private String url;
 
-    @NotBlank(message = "The job description is required")
+    @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
     private String description;
 
     private String profile;

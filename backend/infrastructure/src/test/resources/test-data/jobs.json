@@ -1,0 +1,22 @@
+[{
+  "id": "abcd1234-1234-1234-1234-123456789012",
+  "url": "http://www.example.com/preexisting-job",
+  "status": "CREATED",
+  "title": "My job",
+  "description": "This is the job description for mb41vj",
+  "profile": "This is the job profile fpr mb41vj",
+  "rating": 0,
+  "createdAt": "2025-04-26T15:25:31.160Z",
+  "updatedAt": "2025-04-26T15:25:31.162Z",
+  "userId": "abcd1234-1234-1234-1234-123456789012",
+  "activities": [
+    {
+      "id": "abcd1234-1234-1234-1234-123456789012",
+      "type": "CREATION",
+      "comment": "",
+      "createdAt": "2025-04-26T15:25:31.160Z",
+      "updatedAt": "2025-04-26T15:25:31.160Z"
+    }
+  ],
+  "attachments": []
+}]

@@ -66,6 +66,7 @@ public class UserServiceAdapter implements UserService {
 
     @Override
     public Optional<User> findByEmailOrUsername(String email, String username) {
+        System.out.println(mongoUserRepository.findByEmailOrUsername(email, username));
         return mongoUserRepository.findByEmailOrUsername(email, username).map(userMapper::toDomain).or(Optional::empty);
     }
 
