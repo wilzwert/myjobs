@@ -55,8 +55,9 @@ public class UserServiceAdapter implements UserService {
     }
 
     @Override
-    public Optional<User> findByResetPasswordToken(String code) {
-        return mongoUserRepository.findByResetPasswordToken(code).map(userMapper::toDomain).or(Optional::empty);
+    public Optional<User> findByResetPasswordToken(String token) {
+        System.out.println("TOKEN "+token);
+        return mongoUserRepository.findByResetPasswordToken(token).map(userMapper::toDomain).or(Optional::empty);
     }
 
     @Override

@@ -32,7 +32,7 @@ public class PasswordUseCaseImpl implements ResetPasswordUseCase, CreateNewPassw
         // if not found, do nothing (business rule is to not send a "not found error")
         userService.findByResetPasswordToken(createPasswordCommand.resetPasswordToken()).ifPresent((user) -> {
             // store new password
-            userService.save(user.createNewPassword(passwordHasher.hashPassword(createPasswordCommand.password())));
+            userService.save(user.createNewPassword(createPasswordCommand.password(), passwordHasher.hashPassword(createPasswordCommand.password())));
         });
     }
 
@@ -57,7 +57,7 @@ public class PasswordUseCaseImpl implements ResetPasswordUseCase, CreateNewPassw
             throw new PasswordMatchException();
         }
 
-        user = user.updatePassword(passwordHasher.hashPassword(changePasswordCommand.password()));
+        user = user.updatePassword(changePasswordCommand.password(), passwordHasher.hashPassword(changePasswordCommand.password()));
         userService.save(user);
     }
 }

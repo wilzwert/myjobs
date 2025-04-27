@@ -209,7 +209,7 @@ public class ErrorResponseTest {
         errors.add(new ValidationError("param", ErrorCode.FIELD_CANNOT_BE_EMPTY));
         ErrorResponse response = ErrorResponse.fromException(new ValidationException(errors));
         assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatusCode());
-        assertEquals("Validation failed", response.getMessage());
+        assertEquals("Validation error", response.getMessage());
         assertEquals(1, response.getErrors().size());
         assertEquals(1, response.getErrors().get("param").size());
         assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY.name(), response.getErrors().get("param").getFirst());

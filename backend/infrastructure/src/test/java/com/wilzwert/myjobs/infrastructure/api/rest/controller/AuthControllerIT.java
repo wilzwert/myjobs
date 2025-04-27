@@ -101,12 +101,6 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
                     .andExpect(jsonPath("errors.lastName").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
         }
 
-                /*
-
-                .requireNotEmpty("firstName", firstName)
-                .requireNotEmpty("lastName", lastName)
-                .requireNotEmpty("password", password)*/
-
         @Test
         public void whenUsernameTooShort_thenShouldReturnBadRequest() throws Exception {
             registerUserRequest.setUsername("T");
@@ -123,43 +117,6 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
                     .andExpect(jsonPath("errors.username").value(ErrorCode.FIELD_TOO_LONG.name()));
         }
 
-
-        /*
-        @Test
-        public void shouldReturnBadRequestWhenFirstNameTooShort() throws Exception {
-            signupRequest.setFirstName("Te");
-            mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(signupRequest)))
-                    .andExpect(status().isBadRequest());
-        }
-
-        @Test
-        public void shouldReturnBadRequestWhenFirstNameTooLong() throws Exception {
-            signupRequest.setFirstName("Teststoolongfirstname");
-            mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(signupRequest)))
-                    .andExpect(status().isBadRequest());
-        }
-
-        @Test
-        public void shouldReturnBadRequestWhenLastNameEmpty() throws Exception {
-            signupRequest.setLastName("");
-            mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(signupRequest)))
-                    .andExpect(status().isBadRequest());
-        }
-
-        @Test
-        public void shouldReturnBadRequestWhenLastNameTooShort() throws Exception {
-            signupRequest.setLastName("Us");
-            mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(signupRequest)))
-                    .andExpect(status().isBadRequest());
-        }
-
-        @Test
-        public void shouldReturnBadRequestWhenLastNameTooLong() throws Exception {
-            signupRequest.setLastName("Testingtoolonglastname");
-            mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(signupRequest)))
-                    .andExpect(status().isBadRequest());
-        }
-        */
         @Test
         public void whenPasswordEmpty_thenShouldReturnBadRequest() throws Exception {
             registerUserRequest.setPassword("");
@@ -175,14 +132,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("errors.password").value(ErrorCode.USER_WEAK_PASSWORD.name()));
         }
-        /*
-        @Test
-        public void shouldReturnBadRequestWhenPasswordTooLong() throws Exception {
-            signupRequest.setLastName("Testingtoolongpasswordinaresgisterrequest");
-            mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(signupRequest)))
-                    .andExpect(status().isBadRequest());
-        }
-        */
+
         @Test
         public void whenEmailAlreadyExists_thenShouldReturnBadRequest() throws Exception {
             // we know we already have a User with the email 'existing@example.com' (see resources/test-data/user.json
@@ -195,7 +145,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
 
         @Test
         public void whenUsernameAlreadyExists_thenShouldReturnBadRequest() throws Exception {
-            // we know we already have a User with the email 'existing@example.com' (see resources/test-data/user.json
+            // we know we already have a User with the username 'existinguser' (see resources/test-data/user.json
             registerUserRequest.setUsername("existinguser");
 
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
@@ -227,7 +177,6 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
 
 
             // delete the created user to allow predictable further tests
-            // userService.deleteUser(userService.findByEmail("test@example.com").orElse());
             Optional<User> newUser = userService.findByEmail("test@example.com");
             if(newUser.isEmpty()) {
                 fail("Created user should be retrievable.");

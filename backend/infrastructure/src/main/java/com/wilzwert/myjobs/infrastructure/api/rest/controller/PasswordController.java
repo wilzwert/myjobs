@@ -36,8 +36,8 @@ public class PasswordController {
     }
 
     @PostMapping("/password")
-    public ResponseEntity<?> newPassword(@RequestBody @Valid PasswordRequest passwordRequest) {
-        createNewPasswordUseCase.createNewPassword(new CreatePasswordCommand(passwordRequest.getPassword(), passwordRequest.getToken()));
+    public ResponseEntity<?> newPassword(@RequestBody @Valid NewPasswordRequest newPasswordRequest) {
+        createNewPasswordUseCase.createNewPassword(new CreatePasswordCommand(newPasswordRequest.getPassword(), newPasswordRequest.getToken()));
         return ResponseEntity.ok().build();
     }
 }

@@ -47,14 +47,15 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(PasswordMatchException.class)
-    public ResponseEntity<ErrorResponse> generateError(PasswordMatchException ex) {
+
+    @ExceptionHandler(LoginException.class)
+    public ResponseEntity<ErrorResponse> generateError(LoginException ex) {
         ErrorResponse errorResponse = ErrorResponse.fromException(ex);
         return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatusCode());
     }
 
-    @ExceptionHandler(LoginException.class)
-    public ResponseEntity<ErrorResponse> generateError(LoginException ex) {
+    @ExceptionHandler(DomainException.class)
+    public ResponseEntity<ErrorResponse> generateError(DomainException ex) {
         ErrorResponse errorResponse = ErrorResponse.fromException(ex);
         return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatusCode());
     }

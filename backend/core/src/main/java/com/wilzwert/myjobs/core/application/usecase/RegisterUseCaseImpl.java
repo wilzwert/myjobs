@@ -40,7 +40,6 @@ public class RegisterUseCaseImpl implements RegisterUseCase, CheckUserAvailabili
         // while we are processing here a command with the same username/email
         // this will require to provide some kind of transaction management interface
         // and enforce its implementation in infra
-        System.out.println("Got this command : "+registerUserCommand);
         if(userService.findByEmailOrUsername(registerUserCommand.email(), registerUserCommand.username()).isPresent()) {
             throw new UserAlreadyExistsException();
         }

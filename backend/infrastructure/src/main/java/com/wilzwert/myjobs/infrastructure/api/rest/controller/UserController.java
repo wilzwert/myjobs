@@ -72,11 +72,11 @@ public class UserController {
         return userMapper.toResponse(updateUserUseCase.updateUser(userMapper.toUpdateCommand(updateUserRequest, userDetails.getId())));
     }
 
-    @PutMapping("/password")
+    @PutMapping("/me/password")
     @ResponseStatus(HttpStatus.OK)
-    public void changePassword(@RequestBody @Valid PasswordRequest passwordRequest, Authentication authentication) {
+    public void changePassword(@RequestBody @Valid ChangePasswordRequest changePasswordRequest, Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        changePasswordUseCase.changePassword(new ChangePasswordCommand(passwordRequest.getPassword(), passwordRequest.getOldPassword(), userDetails.getId()));
+        changePasswordUseCase.changePassword(new ChangePasswordCommand(changePasswordRequest.getPassword(), changePasswordRequest.getOldPassword(), userDetails.getId()));
     }
 
     @PostMapping("/email/validation")

@@ -44,7 +44,11 @@ public class ErrorResponse {
         for (ValidationError error : ex.getFlatErrors()) {
             errors.computeIfAbsent(error.field(), k -> new ArrayList<>()).add(error.code().name());
         }
-        return build(HttpStatus.BAD_REQUEST, "Validation failed", errors);
+        return build(HttpStatus.BAD_REQUEST, "Validation error", errors);
+    }
+
+    public static ErrorResponse fromException(DomainException ex) {
+        return build(HttpStatus.BAD_REQUEST, ex.getErrorCode().name());
     }
 
     public static ErrorResponse fromException(ResponseStatusException ex) {
@@ -92,10 +96,6 @@ public class ErrorResponse {
 
     public static ErrorResponse fromException(HttpClientErrorException ex) {
         return build(ex.getStatusCode(), ex.getMessage());
-    }
-
-    public static ErrorResponse fromException(PasswordMatchException ex) {
-        return build(HttpStatus.BAD_REQUEST, ex.getErrorCode().name());
     }
 
     public static ErrorResponse fromException(Exception ex) {

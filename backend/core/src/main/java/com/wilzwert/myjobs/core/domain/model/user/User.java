@@ -158,6 +158,17 @@ public class User extends DomainEntity<UserId> {
         }
     }
 
+    private static ValidationError validatePassword(String plainPassword) {
+        if(plainPassword == null ||
+                !plainPassword.matches(".*[A-Z]+.*")
+                || !plainPassword.matches(".*[a-z]+.*")
+                || !plainPassword.matches(".*[0-9]+.*")
+                || !plainPassword.matches(".*\\W.*")) {
+            return new ValidationError("password", ErrorCode.USER_WEAK_PASSWORD);
+        }
+        return null;
+    }
+
     private ValidationErrors validate() {
         return new Validator()
                 .requireValidEmail("email", email)
@@ -221,13 +232,9 @@ public class User extends DomainEntity<UserId> {
         }
 
         // password strength validation is very specific and belongs to the user
-
-        if(plainPassword == null ||
-                !plainPassword.matches(".*[A-Z]+.*")
-                || !plainPassword.matches(".*[a-z]+.*")
-                || !plainPassword.matches(".*[0-9]+.*")
-                || !plainPassword.matches(".*\\W.*")) {
-            errors.add(new ValidationError("password", ErrorCode.USER_WEAK_PASSWORD));
+        ValidationError error = validatePassword(plainPassword);
+        if(error != null) {
+            errors.add(error);
         }
 
         if(errors.hasErrors()) {
@@ -299,24 +306,42 @@ public class User extends DomainEntity<UserId> {
         );
     }
 
-    public User updatePassword(String newPassword) {
-        // a reset password request just overrides all previous ones
-        return new User(
-                getId(),
-                getEmail(),
-                getEmailStatus(),
-                getEmailValidationCode(),
-                newPassword,
-                getUsername(),
-                getFirstName(),
-                getLastName(),
-                getRole(),
-                null,
-                null,
-                getCreatedAt(),
-                Instant.now(),
-                getJobs()
-        );
+    public User updatePassword(String plainPassword, String newPassword) {
+        ValidationErrors errors = new ValidationErrors();
+        User updatedUser = null;
+        try {
+            updatedUser = new User(
+                    getId(),
+                    getEmail(),
+                    getEmailStatus(),
+                    getEmailValidationCode(),
+                    newPassword,
+                    getUsername(),
+                    getFirstName(),
+                    getLastName(),
+                    getRole(),
+                    null,
+                    null,
+                    getCreatedAt(),
+                    Instant.now(),
+                    getJobs()
+            );
+        }
+        catch(ValidationException e) {
+            errors.merge(e.getErrors());
+        }
+
+        // password strength validation is very specific and belongs to the user
+        ValidationError error = validatePassword(plainPassword);
+        if(error != null) {
+            errors.add(error);
+        }
+
+        if(errors.hasErrors()) {
+            throw new ValidationException(errors);
+        }
+
+        return updatedUser;
     }
 
     public User resetPassword() {
@@ -342,26 +367,12 @@ public class User extends DomainEntity<UserId> {
         );
     }
 
-    public User createNewPassword(String newPassword) {
+    public User createNewPassword(String plainPassword, String newPassword) {
         if(resetPasswordExpiresAt.isBefore(Instant.now())) {
             throw new ResetPasswordExpiredException();
         }
-        return new User(
-                getId(),
-                getEmail(),
-                getEmailStatus(),
-                getEmailValidationCode(),
-                newPassword,
-                getUsername(),
-                getFirstName(),
-                getLastName(),
-                getRole(),
-                null,
-                null,
-                getCreatedAt(),
-                Instant.now(),
-                getJobs()
-        );
+
+        return updatePassword(plainPassword, newPassword);
     }
 
     public User validateEmail(String emailValidationCode) {
