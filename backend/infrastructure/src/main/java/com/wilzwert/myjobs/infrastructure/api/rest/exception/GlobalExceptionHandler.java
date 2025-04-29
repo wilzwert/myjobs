@@ -121,6 +121,12 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatusCode());
     }
 
+    @ExceptionHandler({IllegalArgumentException.class})
+    public ResponseEntity<ErrorResponse> generateIllegalArgumentException(IllegalArgumentException ex) {
+        ErrorResponse errorResponse = ErrorResponse.fromException(ex);
+        return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatusCode());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> generateInternalErrorException(Exception ex) {
         ErrorResponse errorResponse = ErrorResponse.fromException(ex);

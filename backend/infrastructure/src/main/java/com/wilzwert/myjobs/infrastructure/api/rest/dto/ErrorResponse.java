@@ -95,6 +95,10 @@ public class ErrorResponse {
         return build(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
+    public static ErrorResponse fromException(IllegalArgumentException ex) {
+        return build(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
     public static ErrorResponse fromException(HttpMediaTypeException ex) {
         return build(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ex.getMessage());
     }
