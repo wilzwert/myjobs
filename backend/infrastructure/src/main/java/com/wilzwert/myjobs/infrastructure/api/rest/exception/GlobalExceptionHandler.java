@@ -10,6 +10,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpMediaTypeException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
@@ -110,6 +111,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({HttpClientErrorException.class})
     public ResponseEntity<ErrorResponse> generateHttpClientErrorException(HttpClientErrorException ex) {
+        ErrorResponse errorResponse = ErrorResponse.fromException(ex);
+        return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatusCode());
+    }
+
+    @ExceptionHandler({MissingServletRequestParameterException.class})
+    public ResponseEntity<ErrorResponse> generateHttpClientErrorException(MissingServletRequestParameterException ex) {
         ErrorResponse errorResponse = ErrorResponse.fromException(ex);
         return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatusCode());
     }

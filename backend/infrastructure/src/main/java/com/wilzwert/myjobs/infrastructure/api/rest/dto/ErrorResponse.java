@@ -15,6 +15,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.HttpMediaTypeException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -87,6 +88,10 @@ public class ErrorResponse {
     }
 
     public static ErrorResponse fromException(HttpMessageNotReadableException ex) {
+        return build(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    public static ErrorResponse fromException(MissingServletRequestParameterException ex) {
         return build(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
