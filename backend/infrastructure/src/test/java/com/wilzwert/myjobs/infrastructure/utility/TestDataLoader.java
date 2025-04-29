@@ -47,13 +47,18 @@ public class TestDataLoader {
         }
     }
 
+    public void resetAndReload() {
+        userRepository.deleteAll();
+        jobRepository.deleteAll();
+        refreshTokenRepository.deleteAll();
+
+        loadData("users.json", MongoUser.class, userRepository);
+        loadData("jobs.json", MongoJob.class, jobRepository);
+        loadData("refresh_token.json", MongoRefreshToken.class, refreshTokenRepository);
+    }
+
     @Bean
     public CommandLineRunner loadTestData() {
-        System.out.println("loading test data");
-        return args -> {
-            loadData("users.json", MongoUser.class, userRepository);
-            loadData("jobs.json", MongoJob.class, jobRepository);
-            loadData("refresh_token.json", MongoRefreshToken.class, refreshTokenRepository);
-        };
+        return args -> resetAndReload();
     }
 }

@@ -3,6 +3,7 @@ package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import org.hibernate.validator.constraints.URL;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -20,6 +21,7 @@ public class UpdateJobRequest {
     private String company;
 
     @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
+    @URL(message = "INVALID_URL")
     private String url;
 
     @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
