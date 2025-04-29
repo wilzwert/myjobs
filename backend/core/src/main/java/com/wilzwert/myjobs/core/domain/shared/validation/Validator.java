@@ -41,7 +41,7 @@ public class Validator {
 
     public Validator requireValidEmail(String fieldName, String fieldValue) {
         if(fieldValue == null || fieldValue.isEmpty()) {
-            validationErrors.add(new ValidationError(fieldName, ErrorCode.INVALID_EMAIL));
+            validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_CANNOT_BE_EMPTY));
         }
         else if(!Pattern.compile("^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$").matcher(fieldValue).matches()) {
             validationErrors.add(new ValidationError(fieldName, ErrorCode.INVALID_EMAIL));
@@ -60,15 +60,34 @@ public class Validator {
     }
 
     public Validator requireMinLength(String fieldName, String fieldValue, int minLength) {
-        if (fieldValue == null || fieldValue.length() < minLength) {
+        assert(minLength > 0);
+        if (fieldValue == null) {
+            validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_CANNOT_BE_EMPTY));
+        }
+        else if(fieldValue.length() < minLength) {
             validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_TOO_SHORT));
         }
         return this;
     }
 
     public Validator requireMaxLength(String fieldName, String fieldValue, int maxLength) {
-        if (fieldValue == null || fieldValue.length() > maxLength) {
+        assert(maxLength > 0);
+        if (fieldValue == null) {
+            validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_CANNOT_BE_EMPTY));
+        }
+        else if(fieldValue.length() > maxLength) {
             validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_TOO_LONG));
+        }
+        return this;
+    }
+
+    public Validator requireMinMaxLength(String fieldName, String fieldValue, int minLength, int maxLength) {
+        assert(minLength > 0 && maxLength > 0 && maxLength > minLength);
+        if (fieldValue == null) {
+            validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_CANNOT_BE_EMPTY));
+        }
+        else if(fieldValue.length() < minLength || fieldValue.length() > maxLength) {
+            validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_MIN_MAX_LENGTH));
         }
         return this;
     }

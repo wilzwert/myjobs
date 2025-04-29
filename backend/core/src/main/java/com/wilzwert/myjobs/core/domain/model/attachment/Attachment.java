@@ -31,10 +31,6 @@ public class Attachment extends DomainEntity<AttachmentId> {
         return new Builder();
     }
 
-    public static Builder from(Attachment attachment) {
-        return new Builder(attachment);
-    }
-
     public static class Builder {
         private AttachmentId id;
         private String name;

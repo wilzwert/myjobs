@@ -57,10 +57,6 @@ public class Job extends DomainEntity<JobId> {
         return new Builder();
     }
 
-    public static Builder from(Job job) {
-        return new Builder(job);
-    }
-
     public static class Builder {
         private JobId id;
 
@@ -91,23 +87,6 @@ public class Job extends DomainEntity<JobId> {
         private List<Attachment> attachments;
 
         public Builder() {
-        }
-
-        public Builder(Job job) {
-            id = job.getId();
-            url = job.getUrl();
-            status = job.getStatus();
-            title = job.getTitle();
-            company = job.getCompany();
-            description = job.getDescription();
-            profile = job.getProfile();
-            salary = job.getSalary();
-            rating = job.getRating();
-            createdAt = job.getCreatedAt();
-            updatedAt = job.getUpdatedAt();
-            userId = job.getUserId();
-            activities = job.getActivities();
-            attachments = job.getAttachments();
         }
 
         public Builder id(JobId id) {

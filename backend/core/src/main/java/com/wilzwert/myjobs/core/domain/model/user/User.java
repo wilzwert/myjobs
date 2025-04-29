@@ -41,10 +41,6 @@ public class User extends DomainEntity<UserId> {
         return new Builder();
     }
 
-    public static Builder from(User user) {
-        return new Builder(user);
-    }
-
     // Only for persistence mapping and tests. Do not use for new User creation!
     public static class Builder {
         private UserId id;
@@ -71,23 +67,6 @@ public class User extends DomainEntity<UserId> {
             createdAt = Instant.now();
             updatedAt = Instant.now();
             jobs = new ArrayList<>();*/
-        }
-
-        public Builder(User user) {
-            this.id = user.id;
-            this.email = user.email;
-            this.emailStatus = user.emailStatus;
-            this.emailValidationCode = user.emailValidationCode;
-            this.password = user.password;
-            this.username = user.username;
-            this.firstName = user.firstName;
-            this.lastName = user.lastName;
-            this.role = user.role;
-            this.resetPasswordToken = user.resetPasswordToken;
-            this.resetPasswordExpiresAt = user.resetPasswordExpiresAt;
-            this.createdAt = user.createdAt;
-            this.updatedAt = user.updatedAt;
-            this.jobs = user.jobs;
         }
 
         public Builder id(UserId userId) {
@@ -172,12 +151,10 @@ public class User extends DomainEntity<UserId> {
     private ValidationErrors validate() {
         return new Validator()
                 .requireValidEmail("email", email)
-                .requireMinLength("username", username, 2)
-                .requireMaxLength("username", username, 30)
+                .requireMinMaxLength("username", username, 2, 30)
                 .requireNotEmpty("firstName", firstName)
                 .requireNotEmpty("lastName", lastName)
                 .requireNotEmpty("role", role)
-                .requireValidEmail("email", email)
                 .requireNotEmpty("password", password)
                 .getErrors();
     }
