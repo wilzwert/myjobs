@@ -138,11 +138,8 @@ public class User extends DomainEntity<UserId> {
     }
 
     private static ValidationError validatePassword(String plainPassword) {
-        if(plainPassword == null ||
-                !plainPassword.matches(".*[A-Z]+.*")
-                || !plainPassword.matches(".*[a-z]+.*")
-                || !plainPassword.matches(".*[0-9]+.*")
-                || !plainPassword.matches(".*\\W.*")) {
+        String regex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^\\w\\s]).+$";
+        if(plainPassword == null || plainPassword.isEmpty() || !plainPassword.matches(regex)) {
             return new ValidationError("password", ErrorCode.USER_WEAK_PASSWORD);
         }
         return null;
