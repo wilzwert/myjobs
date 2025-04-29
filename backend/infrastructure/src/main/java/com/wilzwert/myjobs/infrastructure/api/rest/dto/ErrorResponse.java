@@ -1,7 +1,9 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.wilzwert.myjobs.core.domain.exception.*;
+import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.core.domain.shared.validation.ValidationError;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -88,6 +90,21 @@ public class ErrorResponse {
     }
 
     public static ErrorResponse fromException(HttpMessageNotReadableException ex) {
+        Throwable cause = ex.getCause();
+        if (cause instanceof JsonMappingException formatEx) {
+            System.out.println(formatEx.getMessage());
+            String fieldName = "";
+            if (!formatEx.getPath().isEmpty()) {
+                fieldName = formatEx.getPath().getFirst().getFieldName();
+            }
+            if(!fieldName.isEmpty()) {
+                Map<String, List<String>> errors = new HashMap<>();
+                errors.put(fieldName, List.of(ErrorCode.INVALID_VALUE.name()));
+                return build(HttpStatus.BAD_REQUEST, "Validation error", errors);
+            }
+            return build(HttpStatus.BAD_REQUEST, "Validation error");
+        }
+
         return build(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 

@@ -12,6 +12,7 @@ public enum ErrorCode {
     // common errors
     VALIDATION_FAILED,
     FIELD_CANNOT_BE_EMPTY,
+    INVALID_VALUE,
     INVALID_EMAIL,
     INVALID_URL,
     FIELD_TOO_SHORT,
