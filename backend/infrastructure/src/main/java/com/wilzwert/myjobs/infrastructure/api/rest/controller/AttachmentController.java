@@ -6,6 +6,7 @@ import com.wilzwert.myjobs.core.domain.command.DeleteAttachmentCommand;
 import com.wilzwert.myjobs.core.domain.command.DownloadAttachmentCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.DownloadableFile;
+import com.wilzwert.myjobs.core.domain.model.attachment.AttachmentId;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.ports.driving.AddAttachmentToJobUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.DeleteAttachmentUseCase;
@@ -55,6 +56,7 @@ public class AttachmentController {
     }
 
     @PostMapping("{jobId}/attachments")
+    @ResponseStatus(HttpStatus.CREATED)
     public AttachmentResponse createAttachment(@PathVariable("jobId") String jobId, @RequestBody @Valid CreateAttachmentRequest createAttachmentRequest, Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
@@ -84,11 +86,11 @@ public class AttachmentController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAttachment(@PathVariable("jobId") String jobId, @PathVariable("id") String id, Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        deleteAttachmentUseCase.deleteAttachment(new DeleteAttachmentCommand(id, userDetails.getId(), new JobId(UUID.fromString(jobId))));
+        deleteAttachmentUseCase.deleteAttachment(new DeleteAttachmentCommand(new AttachmentId(UUID.fromString(id)), userDetails.getId(), new JobId(UUID.fromString(jobId))));
     }
 
     @GetMapping("{jobId}/attachments/{id}/file")
-    public ResponseEntity<Resource> downloadFile(@PathVariable("jobId") String jobId, @PathVariable("id") String id, Authentication authentication) throws IOException{
+    public ResponseEntity<Resource> downloadFile(@PathVariable("jobId") String jobId, @PathVariable("id") String id, Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         DownloadableFile downloadableFile = downloadAttachmentUseCase.downloadAttachment(new DownloadAttachmentCommand(id, userDetails.getId(), new JobId(UUID.fromString(jobId))));
 
