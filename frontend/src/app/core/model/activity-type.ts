@@ -7,7 +7,7 @@ export enum ActivityType {
     EMAIL = "Mail sent",
     TEL_INTERVIEW = "Phone interview",
     VIDEO_INTERVIEW = "Video interview",
-    PHY_INTERVIEW = "In-person interview",  
+    IN_PERSON_INTERVIEW = "In-person interview",  
     APPLICANT_REFUSAL = "Refused by applicant",
     COMPANY_REFUSAL = "Refused by company"
 }
@@ -18,7 +18,7 @@ export enum UserActitivityType {
     EMAIL = "E",
     TEL_INTERVIEW = "TI",
     VIDEO_INTERVIEW = "VI",
-    PHY_INTERVIEW = "PI",  
+    IN_PERSON_INTERVIEW = "PI",  
     APPLICANT_REFUSAL = "AR",
     COMPANY_REFUSAL = "CR"
 }
