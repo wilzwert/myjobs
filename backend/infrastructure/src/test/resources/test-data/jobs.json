@@ -16,9 +16,24 @@
       "comment": "",
       "createdAt": "2025-04-26T15:25:31.160Z",
       "updatedAt": "2025-04-26T15:25:31.160Z"
+    },
+    {
+      "id": "a7777777-7777-7777-7771-123456789012",
+      "type": "ATTACHMENT_CREATION",
+      "comment": "Attachment",
+      "createdAt": "2025-04-27T08:25:31.160Z",
+      "updatedAt": "2025-04-27T08:25:31.160Z"
     }
   ],
-  "attachments": []
+  "attachments": [
+    {
+      "id": "b7777777-7777-7777-7770-123456789012",
+      "name": "Attachment",
+      "fileId": "my-attachment-file",
+      "filename": "attachment.pdf",
+      "contentType": "application/pdf",
+      "createdAt": "2025-04-27T08:25:31.160Z"
+    }]
 },
   {
     "id": "88888888-8888-8888-8888-123456789012",

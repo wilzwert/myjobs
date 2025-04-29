@@ -11,7 +11,6 @@ import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
 import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
-import com.wilzwert.myjobs.infrastructure.utility.TestDataLoader;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -29,8 +28,10 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.assertj.core.api.Assertions.fail;
+
+// TODO : find a way to do some useful and meaningful IT on the /api/jobs/metadata API endpoint
 
 @AutoConfigureMockMvc
 public class JobControllerIT extends AbstractBaseIntegrationTest  {
@@ -39,7 +40,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
     private static final String JOB_FOR_TEST_ID =  "77777777-7777-7777-7777-123456789012";
     private static final String JOB_FOR_TEST_URL = JOBS_URL+"/"+JOB_FOR_TEST_ID;
 
-    // id for the User to use for get /api/user tests
+    // id for the User to use for get /api/jobs tests
     private final static String USER_FOR_JOBS_TEST_ID = "abcd1234-1234-1234-1234-123456789012";
 
     @Autowired
@@ -53,9 +54,6 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
 
     @Autowired
     private JobService jobService;
-
-    @Autowired
-    private TestDataLoader testDataLoader;
 
     Cookie accessTokenCookie;
 
@@ -233,10 +231,31 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
+        public void whenRequestBodyInvalidJson_thenShouldReturnBadRequest() throws Exception {
+            String invalidJson = """
+                {
+                    "nonexistent": "this field does not exist",
+                    "name": "this field does exist
+                }
+            """;
+            mockMvc.perform(post(JOBS_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(invalidJson)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("message").value("Validation error"))
+            ;
+        }
+
+        @Test
         public void whenRequestBodyInvalid_thenShouldReturnBadRequest() throws Exception {
-            CreateJobRequest createJobRequest = new CreateJobRequest();
-            mockMvc.perform(post(JOBS_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(createJobRequest)))
-                    .andExpect(status().isBadRequest());
+            String invalidJson = """
+                {
+                    "nonexistent": "this field does not exist",
+                    "name": "this field does exist"
+                }
+            """;
+            mockMvc.perform(post(JOBS_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(invalidJson)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("message").value("Validation error"))
+                    ;
         }
 
         @Test
@@ -312,21 +331,12 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
 
             // let's check the update job is retrievable and consistent
             Job createdJob = jobService.findById(new JobId(jobResponse.getId())).orElse(null);
-            if(createdJob == null) {
-                fail("Updated job should be retrievable");
-            }
-            else {
-                assertThat(createdJob.getTitle()).isEqualTo("My new job");
-                assertThat(createdJob.getCompany()).isEqualTo("My new company");
-                assertThat(createdJob.getDescription()).isEqualTo("My new job description");
-                assertThat(createdJob.getProfile()).isEqualTo("My new job profile");
-                assertThat(createdJob.getSalary()).isEqualTo("My new job salary");
-
-                // reload all test data to ensure further tests consistency
-                // we could e.g. manually delete the created Job but this would be unreliable
-                // because for all we know, domain could trigger other data creation / update
-                testDataLoader.resetAndReload();
-            }
+            assertThat(createdJob).isNotNull();
+            assertThat(createdJob.getTitle()).isEqualTo("My new job");
+            assertThat(createdJob.getCompany()).isEqualTo("My new company");
+            assertThat(createdJob.getDescription()).isEqualTo("My new job description");
+            assertThat(createdJob.getProfile()).isEqualTo("My new job profile");
+            assertThat(createdJob.getSalary()).isEqualTo("My new job salary");
         }
     }
 
@@ -422,21 +432,12 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
 
             // let's check the update job is retrievable and consistent
             Job updatedJob = jobService.findById(new JobId(UUID.fromString(JOB_FOR_TEST_ID))).orElse(null);
-            if(updatedJob == null) {
-                fail("Updated job should be retrievable");
-            }
-            else {
-                assertThat(updatedJob.getTitle()).isEqualTo("My job [updated]");
-                assertThat(updatedJob.getCompany()).isEqualTo("My company");
-                assertThat(updatedJob.getDescription()).isEqualTo("My job description [updated]");
-                assertThat(updatedJob.getProfile()).isEqualTo("My job profile [updated]");
-                assertThat(updatedJob.getSalary()).isEqualTo("My job salary [updated]");
-
-                // reload all test data to ensure further tests consistency
-                // we could e.g. manually reset the Job in its initial tests, but this would be unreliable
-                // because for all we know, domain could trigger other data creation / update
-                testDataLoader.resetAndReload();
-            }
+            assertThat(updatedJob).isNotNull();
+            assertThat(updatedJob.getTitle()).isEqualTo("My job [updated]");
+            assertThat(updatedJob.getCompany()).isEqualTo("My company");
+            assertThat(updatedJob.getDescription()).isEqualTo("My job description [updated]");
+            assertThat(updatedJob.getProfile()).isEqualTo("My job profile [updated]");
+            assertThat(updatedJob.getSalary()).isEqualTo("My job salary [updated]");
         }
     }
 
@@ -521,16 +522,8 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
 
             // let's check the update job is retrievable and consistent
             Job updatedJob = jobService.findById(new JobId(UUID.fromString(JOB_FOR_TEST_ID))).orElse(null);
-            if(updatedJob == null) {
-                fail("Updated job should be retrievable");
-            }
-            else {
-                assertThat(updatedJob.getStatus()).isEqualTo(JobStatus.RELAUNCHED);
-                // reload all test data to ensure further tests consistency
-                // we could e.g. manually reset the Job in its initial tests, but this would be unreliable
-                // because for all we know, domain could trigger other data creation / update
-                testDataLoader.resetAndReload();
-            }
+            assertThat(updatedJob).isNotNull();
+            assertThat(updatedJob.getStatus()).isEqualTo(JobStatus.RELAUNCHED);
         }
     }
 
@@ -616,16 +609,9 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
 
             // let's check the update job is retrievable and consistent
             Job updatedJob = jobService.findById(new JobId(UUID.fromString(JOB_FOR_TEST_ID))).orElse(null);
-            if(updatedJob == null) {
-                fail("Updated job should be retrievable");
-            }
-            else {
-                assertThat(updatedJob.getRating()).isEqualTo(JobRating.of(5));
-                // reload all test data to ensure further tests consistency
-                // we could e.g. manually reset the Job in its initial tests, but this would be unreliable
-                // because for all we know, domain could trigger other data creation / update
-                testDataLoader.resetAndReload();
-            }
+
+            assertThat(updatedJob).isNotNull();
+            assertThat(updatedJob.getRating()).isEqualTo(JobRating.of(5));
         }
     }
 
@@ -640,28 +626,24 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
 
         @Test
         public void whenJobIdInvalid_thenShouldReturnBadRequest() throws Exception {
-            UpdateJobRequest updateJobRequest = new UpdateJobRequest();
-            mockMvc.perform(delete(JOBS_URL+"/invalid").cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateJobRequest)))
+            mockMvc.perform(delete(JOBS_URL+"/invalid").cookie(accessTokenCookie))
                     .andExpect(status().isBadRequest());
         }
 
         @Test
         public void whenJobNotFound_thenShouldReturnNotFound() throws Exception {
-            UpdateJobRequest updateJobRequest = new UpdateJobRequest();
-            mockMvc.perform(delete(JOBS_URL+"/11111111-1111-1111-1111-111111111111").cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateJobRequest)))
+            mockMvc.perform(delete(JOBS_URL+"/11111111-1111-1111-1111-111111111111").cookie(accessTokenCookie))
                     .andExpect(status().isNotFound());
         }
 
         @Test
         public void shouldDeleteJob() throws Exception {
-            Instant beforeCall = Instant.now();
             mockMvc.perform(delete(JOB_FOR_TEST_URL).cookie(accessTokenCookie))
                     .andExpect(status().isNoContent());
 
-            // reload all test data to ensure further tests consistency
-            // we could e.g. manually delete the created Job but this would be unreliable
-            // because for all we know, domain could trigger other data creation / update
-            testDataLoader.resetAndReload();
+            // Job was deleted and should not be retrievable
+            Job foundJob = jobService.findById(new JobId(UUID.fromString(JOB_FOR_TEST_ID))).orElse(null);
+            assertThat(foundJob).isNull();
         }
     }
 

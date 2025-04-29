@@ -55,7 +55,7 @@ public class S3FileStorageTest {
 
     @Test
     void testS3FileStorage() {
-        File file = new File("src/test/resources/cv_test.doc"); // Remplace avec ton fichier test
+        File file = new File("src/test/resources/cv_test.doc");
 
         when(s3Client.putObject(any(PutObjectRequest.class), any(RequestBody.class))).thenReturn(PutObjectResponse.builder().build());
         when(s3Client.deleteObject(any(DeleteObjectRequest.class))).thenReturn(DeleteObjectResponse.builder().build());

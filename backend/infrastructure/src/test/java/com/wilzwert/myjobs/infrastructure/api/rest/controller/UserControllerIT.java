@@ -11,7 +11,6 @@ import com.wilzwert.myjobs.infrastructure.api.rest.dto.UpdateUserRequest;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.UserResponse;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
 import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
-import com.wilzwert.myjobs.infrastructure.utility.TestDataLoader;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -22,11 +21,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -55,12 +52,6 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
 
     @Autowired
     private UserService userService;
-
-    /**
-     * testDataLoader may be  used to reset test data, specifically when an update could break other tests
-     */
-    @Autowired
-    TestDataLoader testDataLoader;
 
     Cookie accessTokenCookie;
 
@@ -222,14 +213,8 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
             assertEquals("2025-03-29T09:46:09.475Z", userResponse.getCreatedAt());
             assertEquals("PENDING", userResponse.getEmailStatus());
 
-            Optional<User> foundUser = userService.findByEmail("otherexisting-updated@example.com");
-            if(foundUser.isEmpty()) {
-                fail("Updated user should be retrievable by its updated email.");
-            }
-            else {
-                // to allow predictable further tests
-                testDataLoader.resetAndReload();
-            }
+            User foundUser = userService.findByEmail("otherexisting-updated@example.com").orElse(null);
+            assertThat(foundUser).isNotNull();
         }
     }
 
@@ -304,25 +289,14 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void ShouldUpdatePassword() throws Exception {
+        public void shouldUpdatePassword() throws Exception {
             mockMvc.perform(put(CHANGE_PASSWORD_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
                     .andExpect(status().isOk());
 
-
             // check that the password actually changed
-            Optional<User> foundUser = userService.findByEmail("changepassword@example.com");
-            if(foundUser.isEmpty()) {
-                fail("User should be retrievable.");
-            }
-            else {
-                User user = foundUser.get();
-                assertTrue(passwordHasher.verifyPassword("Dcba4321!", user.getPassword()));
-
-                // reload all test data to ensure further tests consistency
-                // we could e.g. manually reset the password in its initial tests, but this would be unreliable
-                // because for all we know, domain could trigger other data creation / update
-                testDataLoader.resetAndReload();
-            }
+            User foundUser = userService.findByEmail("changepassword@example.com").orElse(null);
+            assertThat(foundUser).isNotNull();
+            assertTrue(passwordHasher.verifyPassword("Dcba4321!", foundUser.getPassword()));
         }
     }
 }
