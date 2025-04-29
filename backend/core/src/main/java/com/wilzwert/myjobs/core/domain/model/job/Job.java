@@ -206,7 +206,7 @@ public class Job extends DomainEntity<JobId> {
         // ensure immutability
         this.activities = activities != null ? List.copyOf(activities) : new ArrayList<>();
         // ensure immutability
-        this.attachments = activities != null ? List.copyOf(attachments) : new ArrayList<>();
+        this.attachments = attachments != null ? List.copyOf(attachments) : new ArrayList<>();
 
         ValidationErrors validationErrors = validate();
         if(validationErrors.hasErrors()) {
@@ -281,8 +281,8 @@ public class Job extends DomainEntity<JobId> {
 
         Job result;
         ActivityType activityType = activityToStatus.entrySet().stream().filter(entry -> newStatus.equals(entry.getValue())).map(Map.Entry::getKey).findFirst().orElse(null);
-        Activity activity = activities.getLast();
-        if(activityType != null && !activity.getType().equals(activityType)) {
+        Activity activity = !activities.isEmpty() ? activities.getLast() : null;
+        if(activityType != null && (activity == null || !activity.getType().equals(activityType))) {
             // create activity
             Activity newActivity = Activity.builder().type(activityType).build();
             result = addActivity(newActivity);

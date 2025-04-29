@@ -314,4 +314,162 @@ public class JobTest {
         assertNotNull(addedAttachment);
         assertEquals(attachmentId, addedAttachment.getId());
     }
+
+    @Test
+    public void shouldRemoveAttachment() {
+        UserId userId = new UserId(UUID.randomUUID());
+        JobId jobId = new JobId(UUID.randomUUID());
+        Instant now = Instant.now();
+
+        Attachment attachment1 = Attachment.builder()
+                .id(AttachmentId.generate())
+                .createdAt(now)
+                .updatedAt(now)
+                .fileId("attachementFile1")
+                .name("Attachment 1")
+                .filename("attachment1.doc")
+                .contentType("application/msword")
+                .build();
+
+        Attachment attachment2 = Attachment.builder()
+                .id(AttachmentId.generate())
+                .createdAt(now)
+                .updatedAt(now)
+                .fileId("attachementFile2")
+                .name("Attachment 2")
+                .filename("attachment2.doc")
+                .contentType("application/msword")
+                .build();
+
+        List<Attachment> attachments = List.of(attachment1, attachment2);
+
+        Job job = Job.builder()
+                .id(jobId)
+                .url("http://www.example.com")
+                .title("Job title")
+                .status(JobStatus.PENDING)
+                .rating(JobRating.of(3))
+                .company("Job company")
+                .description("Job description")
+                .profile("Job profile")
+                .salary("TBD")
+                .userId(userId)
+                .createdAt(now)
+                .updatedAt(now)
+                .attachments(attachments)
+                .build();
+
+        assertNotNull(job);
+
+        Job updatedJob = job.removeAttachment(attachment1);
+        assertNotNull(updatedJob);
+        assertEquals(jobId, updatedJob.getId());
+        assertEquals(1, updatedJob.getAttachments().size());
+        assertFalse(updatedJob.getAttachments().contains(attachment1));
+
+    }
+
+    @Test
+    public void whenUpdateStatusToSameStatus_thenShouldDoNothing() {
+        UserId userId = new UserId(UUID.randomUUID());
+        JobId jobId = new JobId(UUID.randomUUID());
+        Instant now = Instant.now();
+        Job job = Job.builder()
+                .id(jobId)
+                .url("http://www.example.com")
+                .title("Job title")
+                .status(JobStatus.CREATED)
+                .rating(JobRating.of(3))
+                .company("Job company")
+                .description("Job description")
+                .profile("Job profile")
+                .salary("TBD")
+                .userId(userId)
+                .createdAt(now)
+                .updatedAt(now)
+                .build();
+
+        Job updatedJob = job.updateStatus(JobStatus.CREATED);
+        assertSame(updatedJob, job);
+        assertEquals(updatedJob.getStatus(), job.getStatus());
+    }
+
+    @Test
+    public void shouldUpdateStatus() {
+        UserId userId = new UserId(UUID.randomUUID());
+        JobId jobId = new JobId(UUID.randomUUID());
+        Instant now = Instant.now();
+        Job job = Job.builder()
+                .id(jobId)
+                .url("http://www.example.com")
+                .title("Job title")
+                .status(JobStatus.CREATED)
+                .rating(JobRating.of(3))
+                .company("Job company")
+                .description("Job description")
+                .profile("Job profile")
+                .salary("TBD")
+                .userId(userId)
+                .createdAt(now)
+                .updatedAt(now)
+                .build();
+
+        Job updatedJob = job.updateStatus(JobStatus.PENDING);
+        assertEquals(JobStatus.PENDING, updatedJob.getStatus());
+        assertEquals(1, updatedJob.getActivities().size());
+        assertEquals(ActivityType.APPLICATION, updatedJob.getActivities().getFirst().getType());
+    }
+
+    @Test
+    public void whenUpdateRatingToSameRating_thenShouldDoNothing() {
+        UserId userId = new UserId(UUID.randomUUID());
+        JobId jobId = new JobId(UUID.randomUUID());
+        Instant now = Instant.now();
+        Job job = Job.builder()
+                .id(jobId)
+                .url("http://www.example.com")
+                .title("Job title")
+                .status(JobStatus.CREATED)
+                .rating(JobRating.of(3))
+                .company("Job company")
+                .description("Job description")
+                .profile("Job profile")
+                .salary("TBD")
+                .userId(userId)
+                .createdAt(now)
+                .updatedAt(now)
+                .build();
+
+        Job updatedJob = job.updateRating(JobRating.of(3));
+        assertSame(updatedJob, job);
+        assertEquals(updatedJob.getStatus(), job.getStatus());
+    }
+
+    @Test
+    public void shouldUpdateRating() {
+        UserId userId = new UserId(UUID.randomUUID());
+        JobId jobId = new JobId(UUID.randomUUID());
+        Instant now = Instant.now();
+        Job job = Job.builder()
+                .id(jobId)
+                .url("http://www.example.com")
+                .title("Job title")
+                .status(JobStatus.CREATED)
+                .rating(JobRating.of(3))
+                .company("Job company")
+                .description("Job description")
+                .profile("Job profile")
+                .salary("TBD")
+                .userId(userId)
+                .createdAt(now)
+                .updatedAt(now)
+                .build();
+
+        Job updatedJob = job.updateRating(JobRating.of(5));
+        assertEquals(JobRating.of(5), updatedJob.getRating());
+    }
+
+
+
+
 }
