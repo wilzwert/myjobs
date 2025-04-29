@@ -1,5 +1,6 @@
 package com.wilzwert.myjobs.core.domain.command;
 
+import com.wilzwert.myjobs.core.domain.model.attachment.AttachmentId;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 
@@ -9,6 +10,6 @@ import com.wilzwert.myjobs.core.domain.model.user.UserId;
  * Time:11:10
  */
 
-public record DeleteAttachmentCommand(String id, UserId userId, JobId jobId) {
+public record DeleteAttachmentCommand(AttachmentId id, UserId userId, JobId jobId) {
 }
 

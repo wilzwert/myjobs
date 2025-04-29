@@ -247,7 +247,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
             throw new JobNotFoundException();
         }
 
-        Attachment attachment = foundJob.get().getAttachments().stream().filter(a -> a.getId().value().toString().equals(command.id())).findAny().orElse(null);
+        Attachment attachment = foundJob.get().getAttachments().stream().filter(a -> a.getId().equals(command.id())).findAny().orElse(null);
         if(attachment == null) {
             throw new AttachmentNotFoundException();
         }
