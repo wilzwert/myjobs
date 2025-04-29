@@ -50,10 +50,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if(token.isPresent()) {
                 // extract JWT Token with embedded email and try to authenticate the user
                 JwtToken jwtToken = token.get();
-                String email = jwtToken.getClaims().getSubject();
+                String uid = jwtToken.getClaims().getSubject();
                 Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-                if (email != null && authentication == null) {
-                    UserDetails userDetails = this.userDetailsService.loadUserByUsername(email);
+                if (uid != null && authentication == null) {
+                    // actually our user details services is based on the user id, not the username
+                    // because username is subject to changes
+                    UserDetails userDetails = this.userDetailsService.loadUserByUsername(uid);
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                             userDetails,
                             null,

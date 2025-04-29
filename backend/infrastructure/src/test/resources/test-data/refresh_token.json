@@ -1,0 +1,24 @@
+[{
+  "id": "bcde1234-1234-1234-1234-123456789012",
+  "userId": "abcd1234-1234-1234-1234-123456789012",
+  "token": "validRefreshToken",
+  "expiresAt": "2045-03-29T09:46:09.475Z"
+},
+  {
+    "id" : "edcb4321-4321-4321-4321-123456789012",
+    "userId" : "abcd1234-1234-1234-1234-123456789012",
+    "token" : "validRefreshTokenUsedForLogoutTest",
+    "expiresAt" : "2045-03-29T09:46:09.475Z"
+},
+  {
+  "id" : "edcb1234-1234-1234-1234-123456789012",
+  "userId" : "abcd1234-1234-1234-1234-123456789012",
+  "token" : "expiredRefreshToken",
+  "expiresAt" : "2025-03-29T09:46:09.475Z"
+},
+  {
+    "id" : "edcb6666-6666-6666-6666-666666666666",
+    "userId" : "66666666-6666-6666-6666-666666666666",
+    "token" : "unknownUserRefreshToken",
+    "expiresAt" : "2045-03-29T09:46:09.475Z"
+  }]

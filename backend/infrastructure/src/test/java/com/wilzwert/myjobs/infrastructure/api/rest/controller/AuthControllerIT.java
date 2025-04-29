@@ -6,20 +6,30 @@ import com.wilzwert.myjobs.core.domain.model.user.EmailStatus;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.AuthResponse;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.LoginRequest;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.RegisterUserRequest;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
+import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
+import com.wilzwert.myjobs.infrastructure.security.service.RefreshTokenService;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.Instant;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -77,13 +87,6 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("errors.email").value(ErrorCode.INVALID_EMAIL.name()));
         }
-        /*
-        @Test
-        public void shouldReturnBadRequestWhenEmailTooLong() throws Exception {
-            signupRequest.setEmail("testingaverylongemailaddress@averylongtestdomain.com");
-            mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(signupRequest)))
-                    .andExpect(status().isBadRequest());
-        }*/
 
         @Test
         public void whenFirstNameEmpty_thenShouldReturnBadRequest() throws Exception {
@@ -184,6 +187,188 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
             else {
                 userService.deleteUser(newUser.get());
             }
+        }
+    }
+
+    @Nested
+    class AuthControllerLoginIT {
+        private final static String LOGIN_URL = "/api/auth/login";
+
+        @Test
+        public void whenLoginFailed_thenShouldReturnUnauthorized() throws Exception {
+            LoginRequest loginRequest = new LoginRequest();
+            loginRequest.setEmail("existing@example.com");
+            loginRequest.setPassword("abcd1234");
+
+            mockMvc.perform(post(LOGIN_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(loginRequest)))
+                    .andExpect(status().isUnauthorized());
+        }
+
+        @Test
+        public void whenLoginSucceeded_thenShouldSetCookiesAndReturnAuthResponse() throws Exception {
+            LoginRequest loginRequest = new LoginRequest();
+            loginRequest.setEmail("existing@example.com");
+            loginRequest.setPassword("Abcd1234!");
+
+            MvcResult mvcResult = mockMvc.perform(post(LOGIN_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(loginRequest)))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            AuthResponse authResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), AuthResponse.class);
+            assertThat(authResponse).isNotNull();
+
+            assertEquals("existing@example.com", authResponse.getEmail());
+            assertEquals("existinguser", authResponse.getUsername());
+            assertEquals("USER", authResponse.getRole());
+            assertEquals(2, mvcResult.getResponse().getCookies().length);
+
+            Map<String, Cookie> cookies = Stream.of(mvcResult.getResponse().getCookies())
+                    .collect(Collectors.toMap(Cookie::getName, c -> c));
+            assertThat(cookies.containsKey("access_token"));
+            assertThat(cookies.containsKey("refresh_token"));
+        }
+    }
+
+    @Nested
+    class AuthControllerEmailAndUsernameCheckIT {
+
+        @Test
+        public void whenNoEmail_thenShouldReturnBadRequest() throws Exception {
+            mockMvc.perform(get("/api/auth/email-check"))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        public void whenEmailTaken_thenShouldReturnUnprocessableEntity() throws Exception {
+            mockMvc.perform(get("/api/auth/email-check").param("email", "existing@example.com"))
+                            .andExpect(status().isUnprocessableEntity());
+        }
+
+        @Test
+        public void whenEmailAvailable_thenShouldReturnOk() throws Exception {
+            mockMvc.perform(get("/api/auth/email-check").param("email", "notexisting@example.com"))
+                    .andExpect(status().isOk());
+        }
+
+        @Test
+        public void whenNoUsername_thenShouldReturnBadRequest() throws Exception {
+            mockMvc.perform(get("/api/auth/username-check"))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        public void whenUsernameTaken_thenShouldReturnUnprocessableEntity() throws Exception {
+            mockMvc.perform(get("/api/auth/username-check").param("username", "existinguser"))
+                    .andExpect(status().isUnprocessableEntity());
+        }
+
+        @Test
+        public void whenUsernameAvailable_thenShouldReturnOk() throws Exception {
+            mockMvc.perform(get("/api/auth/username-check").param("username", "notexisting"))
+                    .andExpect(status().isOk());
+        }
+    }
+
+    @Nested
+    class AuthControllerRefreshTokenIT {
+        private final static String REFRESH_TOKEN_URL = "/api/auth/refresh-token";
+
+        @Autowired
+        private RefreshTokenService refreshTokenService;
+
+
+        @Test
+        public void whenRefreshTokenEmpty_thenShouldReturnUnauthorized() throws Exception {
+            mockMvc.perform(post(REFRESH_TOKEN_URL))
+                    .andExpect(status().isUnauthorized());
+        }
+        @Test
+        public void whenRefreshTokenNotFound_thenShouldReturnUnauthorized() throws Exception {
+            Cookie cookie = new Cookie("refresh_token", "notExisting");
+            mockMvc.perform(
+                        post(REFRESH_TOKEN_URL).cookie(cookie)
+                    )
+                    .andExpect(status().isUnauthorized());
+        }
+
+        @Test
+        public void whenRefreshTokenExpired_thenShouldReturnUnauthorized() throws Exception {
+            Cookie cookie = new Cookie("refresh_token", "expiredRefreshToken");
+            mockMvc.perform(
+                    post(REFRESH_TOKEN_URL).cookie(cookie)
+                )
+                .andExpect(status().isUnauthorized());
+        }
+
+        @Test
+        public void whenUserNotFound_thenShouldReturnUnauthorized() throws Exception {
+            Cookie cookie = new Cookie("refresh_token", "unknownUserRefreshToken");
+            mockMvc.perform(
+                            post(REFRESH_TOKEN_URL).cookie(cookie)
+                    )
+                    .andExpect(status().isUnauthorized());
+        }
+
+        @Test
+        public void whenRefreshSuccess_thenShouldSetCookiesAndReturnAuthResponse() throws Exception {
+            Cookie cookie = new Cookie("refresh_token", "validRefreshToken");
+            MvcResult mvcResult = mockMvc.perform(post(REFRESH_TOKEN_URL).cookie(cookie))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            AuthResponse authResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), AuthResponse.class);
+            assertThat(authResponse).isNotNull();
+
+            assertEquals("existing@example.com", authResponse.getEmail());
+            assertEquals("existinguser", authResponse.getUsername());
+            assertEquals("USER", authResponse.getRole());
+
+            assertEquals(2, mvcResult.getResponse().getCookies().length);
+            Map<String, Cookie> cookies = Stream.of(mvcResult.getResponse().getCookies())
+                    .collect(Collectors.toMap(Cookie::getName, c -> c));
+            assertThat(cookies.containsKey("access_token"));
+            assertNotEquals("validRefreshToken", cookies.get("access_token").getValue());
+            assertThat(cookies.containsKey("refresh_token"));
+
+            // let's check the initial valid refresh token was deleted
+            assertThat(refreshTokenService.findByToken("validRefreshToken").isEmpty());
+
+        }
+    }
+
+    @Nested
+    class AuthControllerLogoutIT {
+
+        @Autowired
+        private JwtService jwtService;
+
+        @Test
+        public void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
+            Cookie accessTokenCookie = new Cookie("access_token", "accessToken");
+            Cookie refreshTokenCookie = new Cookie("refresh_token", "refreshToken");
+            mockMvc.perform(post("/api/auth/logout").cookie(accessTokenCookie, refreshTokenCookie))
+                    .andExpect(status().isUnauthorized());
+        }
+
+        @Test
+        public void shouldLogout() throws Exception {
+            // generates a token for our "existinguser"
+            String token = jwtService.generateToken("abcd1234-1234-1234-1234-123456789012");
+            Cookie accessTokenCookie = new Cookie("access_token", token);
+            Cookie refreshTokenCookie = new Cookie("refresh_token", "validRefreshTokenUsedForLogoutTest");
+
+            MvcResult mvcResult = mockMvc.perform(
+                    post("/api/auth/logout")
+                    .cookie(accessTokenCookie, refreshTokenCookie)
+                )
+                .andExpect(status().isNoContent())
+                .andReturn();
+
+            assertEquals(2,mvcResult.getResponse().getCookies().length);
+            Map<String, Cookie> cookies = Stream.of(mvcResult.getResponse().getCookies())
+                    .collect(Collectors.toMap(Cookie::getName, c -> c));
+            assertEquals(0, cookies.get("access_token").getMaxAge());
+            assertEquals(0, cookies.get("refresh_token").getMaxAge());
         }
     }
 }

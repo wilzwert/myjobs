@@ -115,16 +115,20 @@ public class AuthController {
         if (refreshToken == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
+        log.debug("Refresh token {}", refreshToken);
         RefreshToken foundRefreshToken = refreshTokenService.findByToken(refreshToken).orElse(null);
         if (foundRefreshToken == null || !refreshTokenService.verifyExpiration(foundRefreshToken)) {
+            log.debug("Found refresh token empty or expired {}", foundRefreshToken);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         User user = userService.findById(new UserId(foundRefreshToken.getUserId())).orElse(null);
         if(user == null) {
+            log.debug("Associated user not found for {}", refreshToken);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+
+        log.debug("Delete previous refresh token and return a new one");
         refreshTokenService.deleteRefreshToken(foundRefreshToken);
         var newRefreshToken = refreshTokenService.createRefreshToken(user);
         var newAccessToken = jwtService.generateToken(user.getId().value().toString());

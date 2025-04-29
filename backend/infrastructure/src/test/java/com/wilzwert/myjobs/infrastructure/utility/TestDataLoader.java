@@ -2,8 +2,10 @@ package com.wilzwert.myjobs.infrastructure.utility;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoJob;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoRefreshToken;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoUser;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoJobRepository;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoRefreshTokenRepository;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoUserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -21,11 +23,13 @@ public class TestDataLoader {
 
     private final MongoUserRepository userRepository;
     private final MongoJobRepository jobRepository;
+    private final MongoRefreshTokenRepository refreshTokenRepository;
     private final ObjectMapper objectMapper;
 
-    public TestDataLoader(MongoUserRepository userRepository, MongoJobRepository jobRepository, ObjectMapper objectMapper) {
+    public TestDataLoader(MongoUserRepository userRepository, MongoJobRepository jobRepository, MongoRefreshTokenRepository refreshTokenRepository, ObjectMapper objectMapper) {
         this.userRepository = userRepository;
         this.jobRepository = jobRepository;
+        this.refreshTokenRepository = refreshTokenRepository;
         this.objectMapper = objectMapper;
     }
 
@@ -49,6 +53,7 @@ public class TestDataLoader {
         return args -> {
             loadData("users.json", MongoUser.class, userRepository);
             loadData("jobs.json", MongoJob.class, jobRepository);
+            loadData("refresh_token.json", MongoRefreshToken.class, refreshTokenRepository);
         };
     }
 }
