@@ -9,11 +9,11 @@ on:
   # CI should run on pull requests and push on main branch
   # some steps are executed only on pushes on main branch
   pull_request:
-    branches: [ "main" ]
+    branches: [ "master" ]
     types: [opened, synchronize, reopened]
   push:
     branches:
-      - main
+      - master
 jobs:
 
   backend-tests-analysis:
