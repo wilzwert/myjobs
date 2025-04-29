@@ -1,6 +1,9 @@
 package com.wilzwert.myjobs.infrastructure.configuration;
 
+import com.wilzwert.myjobs.infrastructure.utility.TestDataLoader;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -18,6 +21,22 @@ import org.bson.Document;
 @ActiveProfiles("integration")
 @Tag("Integration")
 public abstract class AbstractBaseIntegrationTest {
+
+
+    /**
+     * testDataLoader is used to reset test data after each test
+     * to ensure globally predictable tests
+     */
+    @Autowired
+    private TestDataLoader testDataLoader;
+
+    @AfterEach
+    public void tearDown() {
+        // reload all test data to ensure further tests consistency
+        // we could e.g. manually delete the created Job but this would be unreliable
+        // because for all we know, domain could trigger other data creation / update
+        testDataLoader.resetAndReload();
+    }
 
     // Container Mongo avec réplica set
     protected static final MongoDBContainer mongo = new MongoDBContainer("mongo:8.0")
