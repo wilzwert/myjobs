@@ -47,6 +47,7 @@ public class Job extends DomainEntity<JobId> {
     private final List<Attachment> attachments;
 
     private final static Map<ActivityType, JobStatus> activityToStatus = Map.of(
+        ActivityType.APPLICATION, JobStatus.PENDING,
         ActivityType.APPLICANT_REFUSAL, JobStatus.APPLICANT_REFUSED,
         ActivityType.COMPANY_REFUSAL, JobStatus.COMPANY_REFUSED,
         ActivityType.RELAUNCH, JobStatus.RELAUNCHED
@@ -236,20 +237,20 @@ public class Job extends DomainEntity<JobId> {
 
     private Job copy(List<Attachment> attachments, List<Activity> activities, JobStatus status, Instant updatedAt) {
         return new Job(
-                getId(),
-                getUrl(),
-                (status != null ? status : getStatus()),
-                getTitle(),
-                getCompany(),
-                getDescription(),
-                getProfile(),
-                getSalary(),
-                getRating(),
-                getCreatedAt(),
-                (updatedAt != null ? updatedAt : getUpdatedAt()),
-                getUserId(),
-                (activities != null ? activities : getActivities()),
-                (attachments != null ? attachments : getAttachments())
+            getId(),
+            getUrl(),
+            (status != null ? status : getStatus()),
+            getTitle(),
+            getCompany(),
+            getDescription(),
+            getProfile(),
+            getSalary(),
+            getRating(),
+            getCreatedAt(),
+            (updatedAt != null ? updatedAt : getUpdatedAt()),
+            getUserId(),
+            (activities != null ? activities : getActivities()),
+            (attachments != null ? attachments : getAttachments())
         );
     }
     public Job addActivity(Activity activity) {
