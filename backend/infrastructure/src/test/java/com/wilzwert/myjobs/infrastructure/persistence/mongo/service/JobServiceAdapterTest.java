@@ -188,7 +188,13 @@ public class JobServiceAdapterTest {
         Page<MongoJob> page = new PageImpl<>(mongoJobs);
 
         Job job1 = getValidTestJob(userId, JobId.generate());
-        Job job2 = Job.from(job1).title("title 2").description("description 2").build();
+        Job job2 = Job.builder()
+                .id(JobId.generate())
+                .userId(userId)
+                .title("title 2")
+                .description("description 2")
+                .url("https://www.example.com/2")
+                .build();
 
         List<Job> jobs = List.of(job1, job2);
 

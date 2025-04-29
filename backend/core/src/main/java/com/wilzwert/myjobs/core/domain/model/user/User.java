@@ -151,7 +151,8 @@ public class User extends DomainEntity<UserId> {
     private ValidationErrors validate() {
         return new Validator()
                 .requireValidEmail("email", email)
-                .requireMinMaxLength("username", username, 2, 30)
+                .requireMinLength("username", username, 2)
+                .requireMaxLength("username", username, 30)
                 .requireNotEmpty("firstName", firstName)
                 .requireNotEmpty("lastName", lastName)
                 .requireNotEmpty("role", role)

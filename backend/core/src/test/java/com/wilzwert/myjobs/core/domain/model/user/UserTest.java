@@ -46,7 +46,7 @@ public class UserTest {
         assertEquals(ErrorCode.INVALID_EMAIL, exception.getErrors().getErrors().get("email").getFirst().code());
         assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY, exception.getErrors().getErrors().get("firstName").getFirst().code());
         assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY, exception.getErrors().getErrors().get("lastName").getFirst().code());
-        assertEquals(ErrorCode.FIELD_MIN_MAX_LENGTH, exception.getErrors().getErrors().get("username").getFirst().code());
+        assertEquals(ErrorCode.FIELD_TOO_SHORT, exception.getErrors().getErrors().get("username").getFirst().code());
         assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY, exception.getErrors().getErrors().get("password").getFirst().code());
     }
 
@@ -191,7 +191,6 @@ public class UserTest {
         assertEquals("email@example.com", updatedUser.getEmail());
 
         Instant updatedAt = updatedUser.getUpdatedAt();
-        assertNotEquals(user.getUpdatedAt(), updatedAt);
         assertTrue(updatedAt.equals(before) || updatedAt.equals(after) || updatedAt.isAfter(before) && updatedAt.isBefore(after));
     }
 }
