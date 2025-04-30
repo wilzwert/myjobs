@@ -4,13 +4,13 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 import com.wilzwert.myjobs.core.domain.command.ChangePasswordCommand;
 import com.wilzwert.myjobs.core.domain.command.ValidateEmailCommand;
 import com.wilzwert.myjobs.core.domain.exception.UserNotFoundException;
-import com.wilzwert.myjobs.core.domain.model.User;
-import com.wilzwert.myjobs.core.domain.model.UserId;
+import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.ports.driving.*;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.UserMapper;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -67,21 +67,21 @@ public class UserController {
     }
 
     @PatchMapping()
-    public UserResponse update(@RequestBody UpdateUserRequest updateUserRequest, Authentication authentication) {
+    public UserResponse update(@RequestBody @Valid UpdateUserRequest updateUserRequest, Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         return userMapper.toResponse(updateUserUseCase.updateUser(userMapper.toUpdateCommand(updateUserRequest, userDetails.getId())));
     }
 
-    @PutMapping("/password")
+    @PutMapping("/me/password")
     @ResponseStatus(HttpStatus.OK)
-    public void changePassword(@RequestBody PasswordRequest passwordRequest, Authentication authentication) {
+    public void changePassword(@RequestBody @Valid ChangePasswordRequest changePasswordRequest, Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        changePasswordUseCase.changePassword(new ChangePasswordCommand(passwordRequest.getPassword(), passwordRequest.getOldPassword(), userDetails.getId()));
+        changePasswordUseCase.changePassword(new ChangePasswordCommand(changePasswordRequest.getPassword(), changePasswordRequest.getOldPassword(), userDetails.getId()));
     }
 
     @PostMapping("/email/validation")
     @ResponseStatus(HttpStatus.OK)
-    public void validateEmail(@RequestBody ValidateEmailRequest validateEmailRequest) {
+    public void validateEmail(@RequestBody @Valid ValidateEmailRequest validateEmailRequest) {
         validateEmailUseCase.validateEmail(new ValidateEmailCommand(validateEmailRequest.getCode()));
     }
 

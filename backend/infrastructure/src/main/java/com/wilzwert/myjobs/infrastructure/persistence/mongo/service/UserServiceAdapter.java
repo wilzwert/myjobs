@@ -1,9 +1,9 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 
 
-import com.wilzwert.myjobs.core.domain.model.Job;
-import com.wilzwert.myjobs.core.domain.model.User;
-import com.wilzwert.myjobs.core.domain.model.UserId;
+import com.wilzwert.myjobs.core.domain.model.job.Job;
+import com.wilzwert.myjobs.core.domain.model.user.User;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.UserMapper;
@@ -55,8 +55,9 @@ public class UserServiceAdapter implements UserService {
     }
 
     @Override
-    public Optional<User> findByResetPasswordToken(String code) {
-        return mongoUserRepository.findByResetPasswordToken(code).map(userMapper::toDomain).or(Optional::empty);
+    public Optional<User> findByResetPasswordToken(String token) {
+        System.out.println("TOKEN "+token);
+        return mongoUserRepository.findByResetPasswordToken(token).map(userMapper::toDomain).or(Optional::empty);
     }
 
     @Override
@@ -66,6 +67,7 @@ public class UserServiceAdapter implements UserService {
 
     @Override
     public Optional<User> findByEmailOrUsername(String email, String username) {
+        System.out.println(mongoUserRepository.findByEmailOrUsername(email, username));
         return mongoUserRepository.findByEmailOrUsername(email, username).map(userMapper::toDomain).or(Optional::empty);
     }
 

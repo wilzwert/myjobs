@@ -1,10 +1,10 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wilzwert.myjobs.core.domain.exception.EntityAlreadyExistsException;
-import com.wilzwert.myjobs.core.domain.exception.EntityNotFoundException;
-import com.wilzwert.myjobs.core.domain.exception.LoginException;
-import com.wilzwert.myjobs.core.domain.exception.PasswordMatchException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.wilzwert.myjobs.core.domain.exception.*;
+import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
+import com.wilzwert.myjobs.core.domain.shared.validation.ValidationError;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.coyote.BadRequestException;
@@ -17,11 +17,11 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.HttpMediaTypeException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Data
 @AllArgsConstructor
@@ -31,14 +31,27 @@ public class ErrorResponse {
 
     private String status;
     private String message;
+    private Map<String, List<String>> errors;
     private String time;
 
     public static <E extends EntityAlreadyExistsException>  ErrorResponse fromException(E ex) {
-        return build(HttpStatus.CONFLICT, ex.getMessage());
+        return build(HttpStatus.CONFLICT, ex.getErrorCode().name());
     }
 
     public static <E extends EntityNotFoundException>  ErrorResponse fromException(E ex) {
-        return build(HttpStatus.NOT_FOUND, ex.getMessage());
+        return build(HttpStatus.NOT_FOUND, ex.getErrorCode().name());
+    }
+
+    public static ErrorResponse fromException(ValidationException ex) {
+        Map<String, List<String>> errors = new HashMap<>();
+        for (ValidationError error : ex.getFlatErrors()) {
+            errors.computeIfAbsent(error.field(), k -> new ArrayList<>()).add(error.code().name());
+        }
+        return build(HttpStatus.BAD_REQUEST, "Validation error", errors);
+    }
+
+    public static ErrorResponse fromException(DomainException ex) {
+        return build(HttpStatus.BAD_REQUEST, ex.getErrorCode().name());
     }
 
     public static ErrorResponse fromException(ResponseStatusException ex) {
@@ -48,11 +61,12 @@ public class ErrorResponse {
     public static ErrorResponse fromException(MethodArgumentNotValidException ex) {
         BindingResult bindingResult = ex.getBindingResult();
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-        StringBuilder errors = new StringBuilder();
+        Map<String, List<String>> errors = new HashMap<>();
+
         for(FieldError fieldError : fieldErrors){
-            errors.append(fieldError.getField()).append(": ").append(fieldError.getDefaultMessage()).append(". ");
+            errors.computeIfAbsent(fieldError.getField(), k -> new ArrayList<>()).add(fieldError.getDefaultMessage());
         }
-        return build(ex.getStatusCode(), errors.toString());
+        return build(ex.getStatusCode(), "Validation error", errors);
     }
 
     public static ErrorResponse fromException(LoginException ex) {
@@ -76,6 +90,29 @@ public class ErrorResponse {
     }
 
     public static ErrorResponse fromException(HttpMessageNotReadableException ex) {
+        Throwable cause = ex.getCause();
+        if (cause instanceof JsonMappingException formatEx) {
+            System.out.println(formatEx.getMessage());
+            String fieldName = "";
+            if (!formatEx.getPath().isEmpty()) {
+                fieldName = formatEx.getPath().getFirst().getFieldName();
+            }
+            if(!fieldName.isEmpty()) {
+                Map<String, List<String>> errors = new HashMap<>();
+                errors.put(fieldName, List.of(ErrorCode.INVALID_VALUE.name()));
+                return build(HttpStatus.BAD_REQUEST, "Validation error", errors);
+            }
+            return build(HttpStatus.BAD_REQUEST, "Validation error");
+        }
+
+        return build(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    public static ErrorResponse fromException(MissingServletRequestParameterException ex) {
+        return build(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    public static ErrorResponse fromException(IllegalArgumentException ex) {
         return build(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
@@ -87,16 +124,16 @@ public class ErrorResponse {
         return build(ex.getStatusCode(), ex.getMessage());
     }
 
-    public static ErrorResponse fromException(PasswordMatchException ex) {
-        return build(HttpStatus.BAD_REQUEST, ex.getMessage());
-    }
-
     public static ErrorResponse fromException(Exception ex) {
         return build(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred.");
     }
 
     private static ErrorResponse build(HttpStatusCode status, String message) {
-        return new ErrorResponse(status, String.valueOf(status.value()), message, new Date().toString());
+        return new ErrorResponse(status, String.valueOf(status.value()), message, Collections.emptyMap(), new Date().toString());
+    }
+
+    private static ErrorResponse build(HttpStatusCode status, String message, Map<String, List<String>> errors) {
+        return new ErrorResponse(status, String.valueOf(status.value()), message, errors, new Date().toString());
     }
 
 

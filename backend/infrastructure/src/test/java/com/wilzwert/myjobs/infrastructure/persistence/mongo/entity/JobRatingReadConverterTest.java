@@ -1,6 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.entity;
 
-import com.wilzwert.myjobs.core.domain.model.JobRating;
+import com.wilzwert.myjobs.core.domain.model.job.JobRating;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

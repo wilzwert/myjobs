@@ -2,9 +2,10 @@ package com.wilzwert.myjobs.core.application.usecase;
 
 
 import com.wilzwert.myjobs.core.domain.command.UpdateUserCommand;
+import com.wilzwert.myjobs.core.domain.exception.UserAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.exception.UserNotFoundException;
-import com.wilzwert.myjobs.core.domain.model.User;
-import com.wilzwert.myjobs.core.domain.model.UserId;
+import com.wilzwert.myjobs.core.domain.model.user.User;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.ports.driven.EmailVerificationMessageProvider;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.ports.driving.SendVerificationEmailUseCase;
@@ -35,6 +36,21 @@ public class UserUseCaseImpl implements SendVerificationEmailUseCase, UpdateUser
     @Override
     public User updateUser(UpdateUserCommand command) {
         User user = userService.findById(command.userId()).orElseThrow(UserNotFoundException::new);
+
+        // if email changes, check availability
+        if(!command.email().equals(user.getEmail())) {
+            User existingUser = userService.findByEmail(command.email()).orElse(null);
+            if(existingUser != null && !existingUser.equals(user)) {
+                throw new UserAlreadyExistsException();
+            }
+        }
+        // if username changes, check availability
+        if(!command.username().equals(user.getUsername())) {
+            User existingUser = userService.findByUsername(command.username()).orElse(null);
+            if(existingUser != null && !existingUser.equals(user)) {
+                throw new UserAlreadyExistsException();
+            }
+        }
 
         boolean shouldResendVerificationEmail = !user.getEmail().equals(command.email());
 

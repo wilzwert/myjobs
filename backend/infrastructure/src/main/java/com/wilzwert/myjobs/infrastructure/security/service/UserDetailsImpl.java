@@ -1,6 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.security.service;
 
-import com.wilzwert.myjobs.core.domain.model.UserId;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

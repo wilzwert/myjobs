@@ -1,6 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.entity;
 
-import com.wilzwert.myjobs.core.domain.model.Job;
+import com.wilzwert.myjobs.core.domain.model.job.Job;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

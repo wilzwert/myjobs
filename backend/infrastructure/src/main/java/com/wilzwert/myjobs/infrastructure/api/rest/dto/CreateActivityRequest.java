@@ -1,7 +1,8 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
 
-import com.wilzwert.myjobs.core.domain.model.ActivityType;
+import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
@@ -11,11 +12,11 @@ import lombok.Data;
  */
 
 @Data
-// TODO @Schema(description = "Object expected for user registration request" )
+// TODO @Schema(description = "Object expected for activity creation request" )
 public class CreateActivityRequest {
-    // TODO @NotBlank(message = "The email is required")
-    // TODO @Email(message = "Email should be valid")
-    // TODO @Schema(description = "User email")
+
+    // TODO @Schema(description = "")
+    @NotNull(message = "FIELD_CANNOT_BE_EMPTY")
     private ActivityType type;
 
     private String comment;

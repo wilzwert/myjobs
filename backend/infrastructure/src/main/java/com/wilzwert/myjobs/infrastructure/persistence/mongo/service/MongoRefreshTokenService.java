@@ -1,6 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 
-import com.wilzwert.myjobs.core.domain.model.User;
+import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.infrastructure.security.configuration.JwtProperties;
 import com.wilzwert.myjobs.infrastructure.security.model.RefreshToken;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoRefreshToken;
@@ -8,7 +8,6 @@ import com.wilzwert.myjobs.infrastructure.security.repository.RefreshTokenReposi
 import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
 import com.wilzwert.myjobs.infrastructure.security.service.RefreshTokenService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;

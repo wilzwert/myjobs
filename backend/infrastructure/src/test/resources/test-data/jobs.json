@@ -1,0 +1,88 @@
+[{
+  "id": "77777777-7777-7777-7777-123456789012",
+  "url": "http://www.example.com/my-job",
+  "status": "CREATED",
+  "title": "My job",
+  "description": "This is the job description for my job",
+  "profile": "This is the job profile for my job",
+  "rating": 2,
+  "createdAt": "2025-04-26T15:25:31.160Z",
+  "updatedAt": "2025-04-26T15:25:31.162Z",
+  "userId": "abcd1234-1234-1234-1234-123456789012",
+  "activities": [
+    {
+      "id": "a7777777-7777-7777-7770-123456789012",
+      "type": "CREATION",
+      "comment": "",
+      "createdAt": "2025-04-26T15:25:31.160Z",
+      "updatedAt": "2025-04-26T15:25:31.160Z"
+    },
+    {
+      "id": "a7777777-7777-7777-7771-123456789012",
+      "type": "ATTACHMENT_CREATION",
+      "comment": "Attachment",
+      "createdAt": "2025-04-27T08:25:31.160Z",
+      "updatedAt": "2025-04-27T08:25:31.160Z"
+    }
+  ],
+  "attachments": [
+    {
+      "id": "b7777777-7777-7777-7770-123456789012",
+      "name": "Attachment",
+      "fileId": "my-attachment-file",
+      "filename": "attachment.pdf",
+      "contentType": "application/pdf",
+      "createdAt": "2025-04-27T08:25:31.160Z"
+    }]
+},
+  {
+    "id": "88888888-8888-8888-8888-123456789012",
+    "url": "http://www.example.com/my-second-job",
+    "status": "PENDING",
+    "title": "My second job",
+    "description": "This is the job description for my second job",
+    "profile": "This is the job profile for my second job",
+    "rating": 1,
+    "createdAt": "2025-04-26T17:25:31.160Z",
+    "updatedAt": "2025-04-26T17:25:31.162Z",
+    "userId": "abcd1234-1234-1234-1234-123456789012",
+    "activities": [
+      {
+        "id": "a8888888-8888-8888-8880-123456789012",
+        "type": "CREATION",
+        "comment": "",
+        "createdAt": "2025-04-26T17:25:31.160Z",
+        "updatedAt": "2025-04-26T17:25:31.160Z"
+      },
+      {
+        "id": "a8888888-8888-8888-8881-123456789012",
+        "type": "APPLICATION",
+        "comment": "",
+        "createdAt": "2025-04-26T19:25:31.160Z",
+        "updatedAt": "2025-04-26T19:25:31.160Z"
+      }
+    ],
+    "attachments": []
+  },
+  {
+    "id": "99999999-9999-9999-9999-123456789012",
+    "url": "http://www.example.com/my-third-job",
+    "status": "CREATED",
+    "title": "My third job",
+    "description": "This is the job description for my third job",
+    "profile": "This is the job profile for my third job",
+    "rating": 3,
+    "createdAt": "2025-04-26T18:25:31.160Z",
+    "updatedAt": "2025-04-26T18:25:31.162Z",
+    "userId": "abcd1234-1234-1234-1234-123456789012",
+    "activities": [
+      {
+        "id": "a9999999-9999-9999-9990-123456789012",
+        "type": "CREATION",
+        "comment": "",
+        "createdAt": "2025-04-26T18:25:31.160Z",
+        "updatedAt": "2025-04-26T18:25:31.160Z"
+      }
+    ],
+    "attachments": []
+  }]

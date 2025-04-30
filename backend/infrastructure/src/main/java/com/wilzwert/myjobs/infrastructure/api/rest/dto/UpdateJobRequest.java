@@ -1,7 +1,9 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import org.hibernate.validator.constraints.URL;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -10,17 +12,19 @@ import lombok.Data;
  */
 
 @Data
-// TODO @Schema(description = "Object expected for user registration request" )
+// TODO @Schema(description = "Object expected for job update request" )
 public class UpdateJobRequest {
-    // TODO @NotBlank(message = "The email is required")
-    // TODO @Email(message = "Email should be valid")
-    // TODO @Schema(description = "User email")
+    // TODO @Schema(description = "")
+    @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
     private String title;
 
     private String company;
 
+    @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
+    @URL(message = "INVALID_URL")
     private String url;
 
+    @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
     private String description;
 
     private String profile;

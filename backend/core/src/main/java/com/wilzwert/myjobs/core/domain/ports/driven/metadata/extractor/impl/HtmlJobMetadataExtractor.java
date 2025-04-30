@@ -1,6 +1,6 @@
 package com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.impl;
 
-import com.wilzwert.myjobs.core.domain.model.JobMetadata;
+import com.wilzwert.myjobs.core.domain.model.job.JobMetadata;
 import com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.JobMetadataExtractor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

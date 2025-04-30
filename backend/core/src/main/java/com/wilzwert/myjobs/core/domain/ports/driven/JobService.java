@@ -1,9 +1,14 @@
 package com.wilzwert.myjobs.core.domain.ports.driven;
 
 
-import com.wilzwert.myjobs.core.domain.model.*;
+import com.wilzwert.myjobs.core.domain.model.activity.Activity;
+import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
+import com.wilzwert.myjobs.core.domain.model.job.Job;
+import com.wilzwert.myjobs.core.domain.model.job.JobId;
+import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
+import com.wilzwert.myjobs.core.domain.model.pagination.DomainPage;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
 
-import java.util.List;
 import java.util.Optional;
 
 /**

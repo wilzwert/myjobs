@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.core.application.usecase;
 
 
-import com.wilzwert.myjobs.core.domain.model.JobMetadata;
+import com.wilzwert.myjobs.core.domain.model.job.JobMetadata;
 import com.wilzwert.myjobs.core.domain.ports.driving.ExtractJobMetadataUseCase;
 import com.wilzwert.myjobs.core.domain.service.metadata.JobMetadataService;
 

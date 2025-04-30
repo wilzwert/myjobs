@@ -1,8 +1,8 @@
 package com.wilzwert.myjobs.infrastructure.adapter;
 
-import com.wilzwert.myjobs.core.domain.model.EmailStatus;
-import com.wilzwert.myjobs.core.domain.model.User;
-import com.wilzwert.myjobs.core.domain.model.UserId;
+import com.wilzwert.myjobs.core.domain.model.user.EmailStatus;
+import com.wilzwert.myjobs.core.domain.model.user.User;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.infrastructure.mail.CustomMailMessage;
 import com.wilzwert.myjobs.infrastructure.mail.MailProvider;
 import jakarta.mail.MessagingException;

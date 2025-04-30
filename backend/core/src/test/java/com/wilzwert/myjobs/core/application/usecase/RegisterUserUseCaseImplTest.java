@@ -3,8 +3,8 @@ package com.wilzwert.myjobs.core.application.usecase;
 
 import com.wilzwert.myjobs.core.domain.command.RegisterUserCommand;
 import com.wilzwert.myjobs.core.domain.exception.UserAlreadyExistsException;
-import com.wilzwert.myjobs.core.domain.model.EmailStatus;
-import com.wilzwert.myjobs.core.domain.model.User;
+import com.wilzwert.myjobs.core.domain.model.user.EmailStatus;
+import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.ports.driven.AccountCreationMessageProvider;
 import com.wilzwert.myjobs.core.domain.ports.driven.PasswordHasher;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
@@ -40,8 +40,8 @@ public class RegisterUserUseCaseImplTest {
     private RegisterUseCaseImpl underTest;
 
     @Test
-    public void shouldThrowUserAlreadyExistsException_whenUsernameOrEmailAlreadyExists() {
-        User user = User.builder().username("username").build();
+    public void whenUsernameOrEmailAlreadyExists_thenShouldThrowUserAlreadyExistsException() {
+        User user = User.builder().email("test@example.com").username("username").firstName("firstName").lastName("lastName").password("Password1!").build();
         RegisterUserCommand registerUserCommand = new RegisterUserCommand("test@example.com", "password", "username",  "firstName", "lastName");
         when(userService.findByEmailOrUsername("test@example.com", "username")).thenReturn(Optional.of(user));
 
@@ -49,12 +49,11 @@ public class RegisterUserUseCaseImplTest {
     }
 
     @Test
-    public void shouldRegisterUserAndSendAccountCreationEmail_whenRegistrationSuccessful() {
-        RegisterUserCommand registerUserCommand = new RegisterUserCommand("test@example.com", "password", "username",  "firstName", "lastName");
+    public void whenRegistrationSuccessful_thenShouldRegisterUserAndSendAccountCreationEmail() {
+        RegisterUserCommand registerUserCommand = new RegisterUserCommand("test@example.com", "Password1!", "username",  "firstName", "lastName");
         when(userService.findByEmailOrUsername(anyString(), anyString())).thenReturn(Optional.empty());
-        when(passwordHasher.hashPassword("password")).thenReturn("hashedPassword");
+        when(passwordHasher.hashPassword("Password1!")).thenReturn("hashedPassword");
         when(userService.save(any(User.class))).thenAnswer(i -> i.getArguments()[0]);
-
 
         User registeredUser = underTest.registerUser(registerUserCommand);
         assertNotNull(registeredUser);
@@ -71,14 +70,14 @@ public class RegisterUserUseCaseImplTest {
     }
 
     @Test
-    public void shouldReturnTrue_whenEmailIsTaken() {
+    public void whenEmailIsTaken_thenShouldReturnTrue() {
         when(userService.emailExists(anyString())).thenReturn(true);
 
         assertTrue(underTest.isEmailTaken("test@example.com"));
     }
 
     @Test
-    public void shouldReturnFalse_whenEmailIsAvailable() {
+    public void whenEmailIsAvailable_thenShouldReturnFalse() {
         when(userService.emailExists(anyString())).thenReturn(false);
 
         assertFalse(underTest.isEmailTaken("test@example.com"));
@@ -86,7 +85,7 @@ public class RegisterUserUseCaseImplTest {
 
 
     @Test
-    public void shouldReturnTrue_whenUsernameIsTaken() {
+    public void whenUsernameIsTaken_thenShouldReturnTrue() {
         when(userService.usernameExists(anyString())).thenReturn(true);
 
         assertTrue(underTest.isUsernameTaken("test"));
@@ -94,7 +93,7 @@ public class RegisterUserUseCaseImplTest {
     }
 
     @Test
-    public void shouldReturnFalse_whenUsernameIsAvailable() {
+    public void whenUsernameIsAvailable_thenShouldReturnFalse() {
         when(userService.usernameExists(anyString())).thenReturn(false);
 
         assertFalse(underTest.isUsernameTaken("test"));

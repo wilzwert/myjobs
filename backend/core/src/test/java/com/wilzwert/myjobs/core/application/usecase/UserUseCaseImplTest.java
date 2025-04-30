@@ -2,9 +2,9 @@ package com.wilzwert.myjobs.core.application.usecase;
 
 
 import com.wilzwert.myjobs.core.domain.command.UpdateUserCommand;
-import com.wilzwert.myjobs.core.domain.model.EmailStatus;
-import com.wilzwert.myjobs.core.domain.model.User;
-import com.wilzwert.myjobs.core.domain.model.UserId;
+import com.wilzwert.myjobs.core.domain.model.user.EmailStatus;
+import com.wilzwert.myjobs.core.domain.model.user.User;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.ports.driven.EmailVerificationMessageProvider;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
 import org.junit.jupiter.api.Test;
@@ -35,11 +35,21 @@ public class UserUseCaseImplTest {
     @InjectMocks
     private UserUseCaseImpl underTest;
 
-    @Test
-    public void shouldSendVerificationEmail_whenUserExists() {
-        UserId userId = UserId.generate();
-        User user = User.builder().id(userId).build();
+    private User getValidTestUser(UserId userId) {
+        return User.builder()
+                .id(userId)
+                .email("text@example.com")
+                .username("username")
+                .password("password")
+                .firstName("firstName")
+                .lastName("lastName")
+                .build();
+    }
 
+    @Test
+    public void whenUserExists_thenShouldSendVerificationEmail() {
+        UserId userId = UserId.generate();
+        User user = getValidTestUser(userId);
         when(userService.findById(userId)).thenReturn(Optional.of(user));
         doNothing().when(emailVerificationMessageProvider).send(user);
 
@@ -50,27 +60,27 @@ public class UserUseCaseImplTest {
     }
 
     @Test
-    public void shouldUpdateUserAndNotSendVerificationEmail_whenEmailDoesntChange() {
+    public void whenEmailDoesntChange_thenShouldUpdateUserAndNotSendVerificationEmail() {
         UserId userId = UserId.generate();
-        User user = User.builder().id(userId).email("test@example.com").build();
+        User user = getValidTestUser(userId);
 
         when(userService.findById(userId)).thenReturn(Optional.of(user));
         when(userService.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
 
-        User updatedUser = underTest.updateUser(new UpdateUserCommand("test@example.com", "username", "firstName", "lastName", userId));
-        assertEquals(userId, updatedUser.getId());
-        assertEquals("test@example.com", updatedUser.getEmail());
-        assertEquals("username", updatedUser.getUsername());
-        assertEquals("firstName", updatedUser.getFirstName());
-        assertEquals("lastName", updatedUser.getLastName());
+        User updatedUser = underTest.updateUser(new UpdateUserCommand(user.getEmail(), "updatedusername", "updatedfirstName", "updatedlastName", userId));
+        assertEquals(user.getId(), updatedUser.getId());
+        assertEquals(user.getEmail(), updatedUser.getEmail());
+        assertEquals("updatedusername", updatedUser.getUsername());
+        assertEquals("updatedfirstName", updatedUser.getFirstName());
+        assertEquals("updatedlastName", updatedUser.getLastName());
         verify(userService, times(1)).save(user);
         verify(emailVerificationMessageProvider, times(0)).send(user);
     }
 
     @Test
-    public void shouldUpdateUserAndSendVerificationEmail_whenEmailChanges() {
+    public void whenEmailChanges_thenShouldUpdateUserAndSendVerificationEmail() {
         UserId userId = UserId.generate();
-        User user = User.builder().id(userId).email("test@example.com").build();
+        User user = getValidTestUser(userId);
 
         when(userService.findById(userId)).thenReturn(Optional.of(user));
         when(userService.save(any(User.class))).thenAnswer(i -> i.getArgument(0));

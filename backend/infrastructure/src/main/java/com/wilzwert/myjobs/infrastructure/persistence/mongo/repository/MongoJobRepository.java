@@ -1,6 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.repository;
 
-import com.wilzwert.myjobs.core.domain.model.JobStatus;
+import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoJob;
 import jakarta.annotation.Nullable;
 import org.springframework.data.domain.Page;

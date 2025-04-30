@@ -1,8 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
-import com.wilzwert.myjobs.core.domain.model.JobRating;
-import com.wilzwert.myjobs.core.domain.model.JobStatus;
-import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobRatingMapper;
+import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import lombok.*;
 
 import java.time.Instant;

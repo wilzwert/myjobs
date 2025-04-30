@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper;
 
 
-import com.wilzwert.myjobs.core.domain.model.UserId;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import org.junit.jupiter.api.Test;
 import java.util.UUID;
 

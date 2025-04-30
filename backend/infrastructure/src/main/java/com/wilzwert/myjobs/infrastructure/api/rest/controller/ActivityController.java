@@ -2,12 +2,14 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 
 import com.wilzwert.myjobs.core.domain.command.CreateActivityCommand;
-import com.wilzwert.myjobs.core.domain.model.JobId;
+import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.ports.driving.*;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.ActivityMapper;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +35,8 @@ public class ActivityController {
     }
 
     @PostMapping("/{id}/activities")
-    public ActivityResponse addActivity(@PathVariable("id") String id, @RequestBody CreateActivityRequest createActivityRequest, Authentication authentication) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public ActivityResponse addActivity(@PathVariable("id") String id, @RequestBody @Valid CreateActivityRequest createActivityRequest, Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         CreateActivityCommand createActivityCommand = activityMapper.toCommand(createActivityRequest, userDetails.getId(), new JobId(UUID.fromString(id)));
         return activityMapper.toResponse(createActivityUseCase.addActivityToJob(createActivityCommand));

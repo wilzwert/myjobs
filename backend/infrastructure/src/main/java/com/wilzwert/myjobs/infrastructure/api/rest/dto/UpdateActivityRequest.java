@@ -1,6 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 /**
@@ -10,10 +11,11 @@ import lombok.Data;
  */
 
 @Data
-// TODO @Schema(description = "Object expected for user registration request" )
+// TODO @Schema(description = "Object expected for activity update request" )
 public class UpdateActivityRequest {
-    // TODO @NotBlank(message = "The email is required")
+
     // TODO @Email(message = "Email should be valid")
     // TODO @Schema(description = "User email")
+    @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
     private String comment;
 }

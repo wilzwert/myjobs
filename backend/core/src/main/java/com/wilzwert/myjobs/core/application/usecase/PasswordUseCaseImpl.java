@@ -4,7 +4,7 @@ import com.wilzwert.myjobs.core.domain.command.CreatePasswordCommand;
 import com.wilzwert.myjobs.core.domain.command.ChangePasswordCommand;
 import com.wilzwert.myjobs.core.domain.exception.PasswordMatchException;
 import com.wilzwert.myjobs.core.domain.exception.UserNotFoundException;
-import com.wilzwert.myjobs.core.domain.model.User;
+import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.ports.driven.PasswordHasher;
 import com.wilzwert.myjobs.core.domain.ports.driven.PasswordResetMessageProvider;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
@@ -32,7 +32,7 @@ public class PasswordUseCaseImpl implements ResetPasswordUseCase, CreateNewPassw
         // if not found, do nothing (business rule is to not send a "not found error")
         userService.findByResetPasswordToken(createPasswordCommand.resetPasswordToken()).ifPresent((user) -> {
             // store new password
-            userService.save(user.createNewPassword(passwordHasher.hashPassword(createPasswordCommand.password())));
+            userService.save(user.createNewPassword(createPasswordCommand.password(), passwordHasher.hashPassword(createPasswordCommand.password())));
         });
     }
 
@@ -54,10 +54,10 @@ public class PasswordUseCaseImpl implements ResetPasswordUseCase, CreateNewPassw
         User user = userService.findById(changePasswordCommand.userId()).orElseThrow(UserNotFoundException::new);
 
         if(!passwordHasher.verifyPassword(changePasswordCommand.oldPassword(), user.getPassword())) {
-            throw new PasswordMatchException("Old password does not match");
+            throw new PasswordMatchException();
         }
 
-        user = user.updatePassword(passwordHasher.hashPassword(changePasswordCommand.password()));
+        user = user.updatePassword(changePasswordCommand.password(), passwordHasher.hashPassword(changePasswordCommand.password()));
         userService.save(user);
     }
 }

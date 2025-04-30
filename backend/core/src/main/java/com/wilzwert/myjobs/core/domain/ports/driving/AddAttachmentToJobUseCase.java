@@ -2,7 +2,7 @@ package com.wilzwert.myjobs.core.domain.ports.driving;
 
 
 import com.wilzwert.myjobs.core.domain.command.CreateAttachmentCommand;
-import com.wilzwert.myjobs.core.domain.model.Attachment;
+import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 
 /**
  * @author Wilhelm Zwertvaegher

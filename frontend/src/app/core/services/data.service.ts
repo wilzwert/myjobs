@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DataService {
   // API's base URL
-  // not really necessary as we use a proxy for now
-  private baseUrl = 'api/'; 
+  private baseUrl = `${environment.apiUrl}/api/`;
 
   constructor(private http: HttpClient) {}
 

@@ -1,6 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.mapper;
 
-import com.wilzwert.myjobs.core.domain.model.DomainPage;
+import com.wilzwert.myjobs.core.domain.model.pagination.DomainPage;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.RestPage;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;

@@ -1,8 +1,8 @@
 package com.wilzwert.myjobs.infrastructure.security.jwt;
 
 
-import com.wilzwert.myjobs.core.domain.model.AuthenticatedUser;
-import com.wilzwert.myjobs.core.domain.model.User;
+import com.wilzwert.myjobs.core.domain.model.user.AuthenticatedUser;
+import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.ports.driven.Authenticator;
 import com.wilzwert.myjobs.infrastructure.security.model.RefreshToken;
 import com.wilzwert.myjobs.infrastructure.security.service.JwtService;

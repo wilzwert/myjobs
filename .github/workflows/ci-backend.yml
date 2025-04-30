@@ -9,11 +9,11 @@ on:
   # CI should run on pull requests and push on main branch
   # some steps are executed only on pushes on main branch
   pull_request:
-    branches: [ "main" ]
+    branches: [ "master" ]
     types: [opened, synchronize, reopened]
   push:
     branches:
-      - main
+      - master
 jobs:
 
   backend-tests-analysis:
@@ -131,7 +131,7 @@ jobs:
               -Dsonar.host.url=https://sonarcloud.io \
               -Dsonar.organization=wilzwert \
               -Dsonar.projectKey=MyJobs_backend \
-              -Dproject.settings=.sonar-project-backend.properties \
+              -Dproject.settings=./sonar-project-backend.properties \
               -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
               -Dsonar.pullrequest.branch=${{ github.head_ref }} \
               -Dsonar.pullrequest.base=${{ github.base_ref }}

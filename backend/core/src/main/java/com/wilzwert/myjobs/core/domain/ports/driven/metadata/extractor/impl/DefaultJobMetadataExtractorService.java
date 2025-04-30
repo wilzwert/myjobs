@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.impl;
 
 import com.wilzwert.myjobs.core.domain.exception.NoJobMetadataExtractorException;
-import com.wilzwert.myjobs.core.domain.model.JobMetadata;
+import com.wilzwert.myjobs.core.domain.model.job.JobMetadata;
 import com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.JobMetadataExtractor;
 import com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.JobMetadataExtractorService;
 

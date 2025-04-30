@@ -1,21 +1,21 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.exception;
 
-import com.wilzwert.myjobs.core.domain.exception.EntityAlreadyExistsException;
-import com.wilzwert.myjobs.core.domain.exception.EntityNotFoundException;
-import com.wilzwert.myjobs.core.domain.exception.LoginException;
-import com.wilzwert.myjobs.core.domain.exception.PasswordMatchException;
+import com.wilzwert.myjobs.core.domain.exception.*;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.ErrorResponse;
 import org.apache.coyote.BadRequestException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.HttpMediaTypeException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
+
 
 /**
  * Global exception handler to intercept several types of Exceptions
@@ -37,14 +37,26 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatusCode());
     }
 
-    @ExceptionHandler(PasswordMatchException.class)
-    public ResponseEntity<ErrorResponse> generateError(PasswordMatchException ex) {
+    /**
+     * In this case, the build of the ResponseEntity will be a list of errors instead of an ErrorResponse
+     * @param ex a ValidationException
+     * @return the response entity
+     */
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ErrorResponse> generateError(ValidationException ex) {
+        ErrorResponse errorResponse = ErrorResponse.fromException(ex);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
+
+    @ExceptionHandler(LoginException.class)
+    public ResponseEntity<ErrorResponse> generateError(LoginException ex) {
         ErrorResponse errorResponse = ErrorResponse.fromException(ex);
         return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatusCode());
     }
 
-    @ExceptionHandler(LoginException.class)
-    public ResponseEntity<ErrorResponse> generateError(LoginException ex) {
+    @ExceptionHandler(DomainException.class)
+    public ResponseEntity<ErrorResponse> generateError(DomainException ex) {
         ErrorResponse errorResponse = ErrorResponse.fromException(ex);
         return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatusCode());
     }
@@ -99,6 +111,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({HttpClientErrorException.class})
     public ResponseEntity<ErrorResponse> generateHttpClientErrorException(HttpClientErrorException ex) {
+        ErrorResponse errorResponse = ErrorResponse.fromException(ex);
+        return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatusCode());
+    }
+
+    @ExceptionHandler({MissingServletRequestParameterException.class})
+    public ResponseEntity<ErrorResponse> generateHttpClientErrorException(MissingServletRequestParameterException ex) {
+        ErrorResponse errorResponse = ErrorResponse.fromException(ex);
+        return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatusCode());
+    }
+
+    @ExceptionHandler({IllegalArgumentException.class})
+    public ResponseEntity<ErrorResponse> generateIllegalArgumentException(IllegalArgumentException ex) {
         ErrorResponse errorResponse = ErrorResponse.fromException(ex);
         return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatusCode());
     }

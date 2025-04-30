@@ -1,5 +1,7 @@
 package com.wilzwert.myjobs.core.domain.exception;
 
-public abstract class EntityAlreadyExistsException extends RuntimeException {
-    public EntityAlreadyExistsException(String message) {super(message);}
+import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
+
+public abstract class EntityAlreadyExistsException extends DomainException {
+    public EntityAlreadyExistsException(ErrorCode errorCode) {super(errorCode);}
 }

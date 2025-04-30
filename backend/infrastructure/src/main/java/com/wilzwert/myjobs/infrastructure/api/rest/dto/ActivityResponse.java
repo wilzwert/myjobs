@@ -1,6 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
-import com.wilzwert.myjobs.core.domain.model.ActivityType;
+import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
 import lombok.*;
 
 import java.time.Instant;
@@ -20,6 +20,6 @@ import java.util.UUID;
 public class ActivityResponse {
     private UUID id;
     private String comment;
-    private String type;
+    private ActivityType type;
     private Instant createdAt;
 }

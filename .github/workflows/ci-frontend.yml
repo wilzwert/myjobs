@@ -9,9 +9,9 @@ on:
   # CI should run on pull requests and push on main branch
   # some steps are executed only on pushes on main branch
   pull_request:
-    branches: [ "main" ]
+    branches: [ "master" ]
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
 jobs:
 
   frontend-tests-analysis:

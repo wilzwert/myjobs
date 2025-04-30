@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.core.domain.command;
 
-import com.wilzwert.myjobs.core.domain.model.ActivityType;
-import com.wilzwert.myjobs.core.domain.model.JobId;
+import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
+import com.wilzwert.myjobs.core.domain.model.job.JobId;
 
 /**
  * @author Wilhelm Zwertvaegher

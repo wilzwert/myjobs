@@ -4,6 +4,7 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 import com.wilzwert.myjobs.core.domain.command.CreatePasswordCommand;
 import com.wilzwert.myjobs.core.domain.ports.driving.*;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,14 +30,14 @@ public class PasswordController {
     }
 
     @PostMapping("/password/reset")
-    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest) {
+    public ResponseEntity<?> resetPassword(@RequestBody @Valid ResetPasswordRequest resetPasswordRequest) {
         resetPasswordUseCase.resetPassword(resetPasswordRequest.getEmail());
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/password")
-    public ResponseEntity<?> newPassword(@RequestBody PasswordRequest passwordRequest) {
-        createNewPasswordUseCase.createNewPassword(new CreatePasswordCommand(passwordRequest.getPassword(), passwordRequest.getToken()));
+    public ResponseEntity<?> newPassword(@RequestBody @Valid NewPasswordRequest newPasswordRequest) {
+        createNewPasswordUseCase.createNewPassword(new CreatePasswordCommand(newPasswordRequest.getPassword(), newPasswordRequest.getToken()));
         return ResponseEntity.ok().build();
     }
 }

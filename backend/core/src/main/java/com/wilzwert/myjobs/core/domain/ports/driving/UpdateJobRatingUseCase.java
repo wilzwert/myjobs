@@ -2,8 +2,7 @@ package com.wilzwert.myjobs.core.domain.ports.driving;
 
 
 import com.wilzwert.myjobs.core.domain.command.UpdateJobRatingCommand;
-import com.wilzwert.myjobs.core.domain.command.UpdateJobStatusCommand;
-import com.wilzwert.myjobs.core.domain.model.Job;
+import com.wilzwert.myjobs.core.domain.model.job.Job;
 
 /**
  * @author Wilhelm Zwertvaegher

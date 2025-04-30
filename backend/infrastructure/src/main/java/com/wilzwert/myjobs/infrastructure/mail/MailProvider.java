@@ -10,6 +10,7 @@ import jakarta.mail.internet.MimeMultipart;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -81,6 +82,7 @@ public class MailProvider {
     }
 
     // TODO : improve exception handling with custom exceptions
+    @Async
     public void send(CustomMailMessage messageToSend) throws MessagingException, UnsupportedEncodingException {
         Context context = new Context();
         messageToSend.getVariables().forEach(context::setVariable);

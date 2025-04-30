@@ -5,8 +5,7 @@ import com.wilzwert.myjobs.core.domain.command.RegisterUserCommand;
 import com.wilzwert.myjobs.core.domain.command.ValidateEmailCommand;
 import com.wilzwert.myjobs.core.domain.exception.UserAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.exception.UserNotFoundException;
-import com.wilzwert.myjobs.core.domain.model.User;
-import com.wilzwert.myjobs.core.domain.model.UserId;
+import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.ports.driven.AccountCreationMessageProvider;
 import com.wilzwert.myjobs.core.domain.ports.driven.PasswordHasher;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
@@ -44,16 +43,15 @@ public class RegisterUseCaseImpl implements RegisterUseCase, CheckUserAvailabili
         if(userService.findByEmailOrUsername(registerUserCommand.email(), registerUserCommand.username()).isPresent()) {
             throw new UserAlreadyExistsException();
         }
-        User user = userService.save(
-            User.builder()
-                .id(UserId.generate())
-                .email(registerUserCommand.email())
-                .password(passwordHasher.hashPassword(registerUserCommand.password()))
-                .username(registerUserCommand.username())
-                .firstName(registerUserCommand.firstName())
-                .lastName(registerUserCommand.lastName())
-                .build()
-        );
+
+        User user = userService.save(User.create(
+                registerUserCommand.email(),
+                passwordHasher.hashPassword(registerUserCommand.password()),
+                registerUserCommand.username(),
+                registerUserCommand.firstName(),
+                registerUserCommand.lastName(),
+                registerUserCommand.password()
+        ));
 
         // send account creation message
         accountCreationMessageProvider.send(user);
