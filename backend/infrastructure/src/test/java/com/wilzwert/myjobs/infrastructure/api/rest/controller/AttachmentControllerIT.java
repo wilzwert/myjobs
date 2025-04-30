@@ -114,7 +114,7 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(errorResponse).isNotNull();
             assertThat(errorResponse.getStatus()).isEqualTo("400");
             assertThat(errorResponse.getMessage()).isEqualTo("Validation error");
-            assertThat(errorResponse.getErrors()).hasSize(4);
+            assertThat(errorResponse.getErrors()).hasSize(3);
 
             String expectedError = ErrorCode.FIELD_CANNOT_BE_EMPTY.name();
             assertThat(errorResponse.getErrors().get("name")).containsExactly(expectedError);
@@ -156,7 +156,7 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
             Job job = jobService.findById(new JobId(UUID.fromString(JOB_FOR_TEST_ID))).orElse(null);
 
             assertThat(job).isNotNull();
-            Attachment attachment = job.getAttachments().get(0);
+            Attachment attachment = job.getAttachments().getFirst();
             assertThat(attachment).isNotNull();
             assertThat(attachment.getId().value()).isEqualTo(attachmentResponse.getId());
             assertThat(attachment.getName()).isEqualTo("CV");
