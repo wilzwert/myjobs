@@ -2,6 +2,7 @@ package com.wilzwert.myjobs.core.domain.command;
 
 
 import com.wilzwert.myjobs.core.domain.model.user.Lang;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -9,5 +10,5 @@ import com.wilzwert.myjobs.core.domain.model.user.Lang;
  * Time:11:10
  */
 
-public record RegisterUserCommand(String email, String password, String username, String firstName, String lastName, Lang lang) {
+public record UpdateUserLangCommand(Lang lang, UserId userId) {
 }

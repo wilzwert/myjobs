@@ -1,6 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.entity;
 
 import com.wilzwert.myjobs.core.domain.model.job.Job;
+import com.wilzwert.myjobs.core.domain.model.user.Lang;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -47,6 +48,8 @@ public class MongoUser  {
     private String firstName;
     @Field(name = "last_name")
     private String lastName;
+
+    private Lang lang;
 
     private String role;
 

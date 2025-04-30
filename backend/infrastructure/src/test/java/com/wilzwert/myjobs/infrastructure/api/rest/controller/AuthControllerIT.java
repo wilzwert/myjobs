@@ -66,6 +66,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
             registerUserRequest.setFirstName("firstName");
             registerUserRequest.setLastName("lastName");
             registerUserRequest.setPassword("Abcd1234!");
+            registerUserRequest.setLang("fr");
         }
 
         @Test
@@ -166,6 +167,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
                     .andExpect(jsonPath("firstName").value("firstName"))
                     .andExpect(jsonPath("lastName").value("lastName"))
                     .andExpect(jsonPath("email").value("test@example.com"))
+                    .andExpect(jsonPath("lang").value("fr"))
                     .andExpect(jsonPath("emailStatus").value(EmailStatus.PENDING.name()))
                     .andExpect(jsonPath("createdAt").isNotEmpty())
                     .andReturn();

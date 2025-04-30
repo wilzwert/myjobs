@@ -85,7 +85,7 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
             """;
             mockMvc.perform(post(JOB_ATTACHMENTS_TEST_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(invalidJson))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("message").value("Validation error"));
+                    .andExpect(jsonPath("message").value(ErrorCode.VALIDATION_FAILED.name()));
 
         }
 
@@ -99,7 +99,7 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
             """;
             mockMvc.perform(post(JOB_ATTACHMENTS_TEST_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(invalidJson))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("message").value("Validation error"));
+                    .andExpect(jsonPath("message").value(ErrorCode.VALIDATION_FAILED.name()));
 
         }
 
@@ -113,7 +113,7 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
             ErrorResponse errorResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ErrorResponse.class);
             assertThat(errorResponse).isNotNull();
             assertThat(errorResponse.getStatus()).isEqualTo("400");
-            assertThat(errorResponse.getMessage()).isEqualTo("Validation error");
+            assertThat(errorResponse.getMessage()).isEqualTo(ErrorCode.VALIDATION_FAILED.name());
             assertThat(errorResponse.getErrors()).hasSize(3);
 
             String expectedError = ErrorCode.FIELD_CANNOT_BE_EMPTY.name();

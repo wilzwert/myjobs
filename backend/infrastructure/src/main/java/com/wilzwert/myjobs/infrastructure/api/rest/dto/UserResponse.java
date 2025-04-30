@@ -1,6 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
 
+import com.wilzwert.myjobs.core.domain.model.user.Lang;
 import lombok.*;
 
 /**
@@ -28,4 +29,6 @@ public class UserResponse {
     private String createdAt;
 
     private String emailStatus;
+
+    private Lang lang;
 }

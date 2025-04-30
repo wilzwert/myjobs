@@ -3,10 +3,7 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 import com.wilzwert.myjobs.core.domain.command.RegisterUserCommand;
 import com.wilzwert.myjobs.core.domain.exception.UserAlreadyExistsException;
-import com.wilzwert.myjobs.core.domain.model.user.AuthenticatedUser;
-import com.wilzwert.myjobs.core.domain.model.user.EmailStatus;
-import com.wilzwert.myjobs.core.domain.model.user.User;
-import com.wilzwert.myjobs.core.domain.model.user.UserId;
+import com.wilzwert.myjobs.core.domain.model.user.*;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.ports.driving.CheckUserAvailabilityUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.LoginUseCase;
@@ -91,7 +88,7 @@ public class AuthControllerTest {
             registerUserRequest.setUsername("test");
             registerUserRequest.setEmail("test@example.com");
 
-            RegisterUserCommand registerUserCommand = new RegisterUserCommand("test@example.com", "password", "username", "firstName", "lastName");
+            RegisterUserCommand registerUserCommand = new RegisterUserCommand("test@example.com", "password", "username", "firstName", "lastName", null);
 
             when(userMapper.toCommand(registerUserRequest)).thenReturn(registerUserCommand);
             when(registerUseCase.registerUser(registerUserCommand)).thenThrow(new UserAlreadyExistsException());
@@ -107,7 +104,7 @@ public class AuthControllerTest {
             RegisterUserRequest registerUserRequest = new RegisterUserRequest();
             registerUserRequest.setUsername("test");
             registerUserRequest.setEmail("test@example.com");
-            RegisterUserCommand registerUserCommand = new RegisterUserCommand("test@example.com", "password", "test", "firstName", "lastName");
+            RegisterUserCommand registerUserCommand = new RegisterUserCommand("test@example.com", "password", "test", "firstName", "lastName", null);
             User registeredUser = User.builder()
                     .email("test@example.come")
                     .username("test")
@@ -122,6 +119,7 @@ public class AuthControllerTest {
                     .lastName("lastName")
                     .email("test@example.com")
                     .username("test")
+                    .lang(Lang.EN)
                     .createdAt(Instant.now().toString())
                     .emailStatus(EmailStatus.PENDING.toString())
                     .build();

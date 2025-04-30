@@ -112,7 +112,7 @@ public class ErrorResponseTest {
             ErrorResponse response = ErrorResponse.fromException(e);
             assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatusCode());
             assertEquals("400", response.getStatus());
-            assertEquals("Validation error", response.getMessage());
+            assertEquals(ErrorCode.VALIDATION_FAILED.name(), response.getMessage());
             assertEquals(1, response.getErrors().size());
             assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY.name(), response.getErrors().get("id").getFirst());
             assertEquals(new Date().toString(), response.getTime());
@@ -209,7 +209,7 @@ public class ErrorResponseTest {
         errors.add(new ValidationError("param", ErrorCode.FIELD_CANNOT_BE_EMPTY));
         ErrorResponse response = ErrorResponse.fromException(new ValidationException(errors));
         assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatusCode());
-        assertEquals("Validation error", response.getMessage());
+        assertEquals(ErrorCode.VALIDATION_FAILED.name(), response.getMessage());
         assertEquals(1, response.getErrors().size());
         assertEquals(1, response.getErrors().get("param").size());
         assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY.name(), response.getErrors().get("param").getFirst());

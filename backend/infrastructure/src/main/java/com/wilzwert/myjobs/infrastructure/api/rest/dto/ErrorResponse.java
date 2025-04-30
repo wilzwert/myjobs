@@ -47,7 +47,7 @@ public class ErrorResponse {
         for (ValidationError error : ex.getFlatErrors()) {
             errors.computeIfAbsent(error.field(), k -> new ArrayList<>()).add(error.code().name());
         }
-        return build(HttpStatus.BAD_REQUEST, "Validation error", errors);
+        return build(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_FAILED.name(), errors);
     }
 
     public static ErrorResponse fromException(DomainException ex) {
@@ -66,7 +66,7 @@ public class ErrorResponse {
         for(FieldError fieldError : fieldErrors){
             errors.computeIfAbsent(fieldError.getField(), k -> new ArrayList<>()).add(fieldError.getDefaultMessage());
         }
-        return build(ex.getStatusCode(), "Validation error", errors);
+        return build(ex.getStatusCode(), ErrorCode.VALIDATION_FAILED.name(), errors);
     }
 
     public static ErrorResponse fromException(LoginException ex) {
@@ -100,9 +100,9 @@ public class ErrorResponse {
             if(!fieldName.isEmpty()) {
                 Map<String, List<String>> errors = new HashMap<>();
                 errors.put(fieldName, List.of(ErrorCode.INVALID_VALUE.name()));
-                return build(HttpStatus.BAD_REQUEST, "Validation error", errors);
+                return build(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_FAILED.name(), errors);
             }
-            return build(HttpStatus.BAD_REQUEST, "Validation error");
+            return build(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_FAILED.name());
         }
 
         return build(HttpStatus.BAD_REQUEST, ex.getMessage());
