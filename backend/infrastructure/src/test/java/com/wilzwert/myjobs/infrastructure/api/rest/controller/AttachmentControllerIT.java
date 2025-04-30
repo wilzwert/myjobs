@@ -119,7 +119,6 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
             String expectedError = ErrorCode.FIELD_CANNOT_BE_EMPTY.name();
             assertThat(errorResponse.getErrors().get("name")).containsExactly(expectedError);
             assertThat(errorResponse.getErrors().get("filename")).containsExactly(expectedError);
-            assertThat(errorResponse.getErrors().get("extension")).containsExactly(expectedError);
             assertThat(errorResponse.getErrors().get("content")).containsExactly(expectedError);
         }
 
@@ -129,7 +128,6 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
             File fileToSend = new File("src/test/resources/cv_test.doc");
             byte[] fileContent = Files.readAllBytes(fileToSend.toPath());
             createAttachmentRequest.setContent("base64,"+Base64.getEncoder().encodeToString(fileContent));
-            createAttachmentRequest.setExtension("doc");
             createAttachmentRequest.setFilename("test.doc");
             createAttachmentRequest.setName("CV");
 

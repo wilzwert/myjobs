@@ -20,9 +20,6 @@ public class CreateAttachmentRequest {
     private String filename;
 
     @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
-    private String extension;
-
-    @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
     private String content;
 
 }
