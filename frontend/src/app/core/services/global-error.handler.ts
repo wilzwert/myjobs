@@ -17,8 +17,7 @@ export class GlobalErrorHandler extends ErrorHandler {
             console.log(error);
         }
         
+        // TODO : implement translation
         this.noticationService.error(error.message??'', error);
-        // TODO : should the error be thrown again ?
-        // throw error;
     }
 }

@@ -9,13 +9,15 @@ import { User } from '../model/user.interface';
 import { ChangePasswordRequest } from '../model/change-password-request.interface';
 import { EmailStatus } from '../model/email-status';
 import { EditUserRequest } from '../model/edit-user-request.interface';
+import { EditUserLangRequest } from '../model/edit-user-lang-request.interface';
+import { Lang } from '../model/lang';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
 
-  private apiPath = 'user';
+  private apiPath = 'user/me';
 
   constructor(private dataService: DataService, private captchaService: CaptchaService) { }
 
@@ -66,5 +68,9 @@ export class UserService {
 
   public editUser(editUserRequest: EditUserRequest) :Observable<User> {
     return this.dataService.patch<User>(`${this.apiPath}`, editUserRequest);
+  }
+
+  public saveUserLang(newLang: string) :Observable<void> {
+    return this.dataService.put<void>(`${this.apiPath}/lang`, {lang: newLang.toUpperCase()} as EditUserLangRequest);
   }
 }

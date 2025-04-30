@@ -20,11 +20,11 @@
             {{ user.username }}
             </p>
             <p>
-                Registered {{ user.createdAt | date }}
+                Registered {{ user.createdAt | localizedDate }}
             </p>
         </mat-card-content>
         <mat-card-actions>
-            <button mat-raised-button (click)="editUser(user)">Edit</button>"
+            <button mat-raised-button (click)="editUser(user)">Edit</button>
         </mat-card-actions>
     </mat-card>
 

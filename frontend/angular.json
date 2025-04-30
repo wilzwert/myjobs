@@ -13,6 +13,12 @@
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
+      "i18n": {
+        "sourceLocale": "en",
+        "locales": {
+          "fr": "src/i18n/messages.fr.xlf"
+        }
+      },
       "architect": {
         "build": {
           "builder": "@angular-builders/custom-webpack:browser",

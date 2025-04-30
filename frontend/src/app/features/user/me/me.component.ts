@@ -16,10 +16,11 @@ import { NotificationService } from '../../../core/services/notification.service
 import { EmailStatus } from '../../../core/model/email-status';
 import { MatIcon } from '@angular/material/icon';
 import { ComponentInputDomainData } from '../../../core/model/component-input-data.interface';
+import { LocalizedDatePipe } from '../../../core/pipe/localized-date.pipe';
 
 @Component({
   selector: 'app-me',
-  imports: [AsyncPipe, DatePipe, MatCard, MatCardContent, MatButton, MatIcon, MatCardActions],
+  imports: [AsyncPipe, LocalizedDatePipe, MatCard, MatCardContent, MatButton, MatIcon, MatCardActions],
   templateUrl: './me.component.html',
   styleUrl: './me.component.scss'
 })

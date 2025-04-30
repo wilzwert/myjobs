@@ -1,20 +1,28 @@
-import { ApplicationConfig, ErrorHandler, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, ErrorHandler, importProvidersFrom, LOCALE_ID, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { environment } from '../environments/environment';
 
 import { routes } from './app.routes';
-import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { provideScReCaptchaSettings } from '@semantic-components/re-captcha';
 import { GlobalErrorHandler } from './core/services/global-error.handler';
 import { ErrorInterceptor } from './core/interceptors/error.interceptor';
 import { JwtInterceptor } from './core/interceptors/jwt.interceptor';
+import { DatePipe } from '@angular/common';
+import { LocaleService } from './core/services/locale.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    DatePipe,
     provideZoneChangeDetection({ eventCoalescing: true }), 
     provideRouter(routes), 
-    provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(withInterceptorsFromDi()),    
+    {
+      provide: LOCALE_ID,
+      useFactory: (localeService: LocaleService) => localeService.currentLocale,
+      deps: [LocaleService]
+    },
     /*provideAnimations(),*/
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },

@@ -1,16 +1,17 @@
-import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AsyncPipe, CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { SessionService } from '../../core/services/session.service';
 import { filter, Observable, Subject, takeUntil } from 'rxjs';
 import { NavigationEnd, NavigationSkipped, Route, Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { LocaleService } from '../../core/services/locale.service';
 
 @Component({
   selector: 'app-menu',
   standalone: true,
-  imports: [MatToolbarModule, MatIconModule, AsyncPipe, RouterLink],
+  imports: [MatToolbarModule, MatIconModule, AsyncPipe, RouterLink, CommonModule],
   templateUrl: './menu.component.html',
   styleUrl: './menu.component.scss'
 })
@@ -24,7 +25,8 @@ export class MenuComponent implements OnInit, OnDestroy {
   constructor(
     private sessionService: SessionService,
     private breakpointObserver: BreakpointObserver,
-    private router: Router) {}
+    private router: Router,
+    private localeService: LocaleService) {}
 
   public $isLogged(): Observable<boolean> {
     return this.sessionService.$isLogged();
@@ -66,5 +68,9 @@ export class MenuComponent implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     // emit to Subject to unsubscribe from observables
     this.destroy$.next(true);
+  }
+
+  public changeLang(lang: 'fr' | 'en'): void {
+    this.localeService.changeLocale(lang);
   }
 }
