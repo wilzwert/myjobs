@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserServiceAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MyJobsInfra</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.infrastructure.persistence.mongo.service</a> &gt; <span class="el_source">UserServiceAdapter.java</span></div><h1>UserServiceAdapter.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 
 
-import com.wilzwert.myjobs.core.domain.model.Job;
-import com.wilzwert.myjobs.core.domain.model.User;
-import com.wilzwert.myjobs.core.domain.model.UserId;
+import com.wilzwert.myjobs.core.domain.model.job.Job;
+import com.wilzwert.myjobs.core.domain.model.user.User;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.UserMapper;
@@ -46,7 +46,7 @@ public class UserServiceAdapter implements UserService {
 
     @Override
     public Optional&lt;User&gt; findByEmail(String email) {
-<span class="nc" id="L49">        return mongoUserRepository.findByEmail(email).map(userMapper::toDomain).or(Optional::empty);</span>
+<span class="fc" id="L49">        return mongoUserRepository.findByEmail(email).map(userMapper::toDomain).or(Optional::empty);</span>
     }
 
     @Override
@@ -55,28 +55,30 @@ public class UserServiceAdapter implements UserService {
     }
 
     @Override
-    public Optional&lt;User&gt; findByResetPasswordToken(String code) {
-<span class="nc" id="L59">        return mongoUserRepository.findByResetPasswordToken(code).map(userMapper::toDomain).or(Optional::empty);</span>
+    public Optional&lt;User&gt; findByResetPasswordToken(String token) {
+<span class="fc" id="L59">        System.out.println(&quot;TOKEN &quot;+token);</span>
+<span class="fc" id="L60">        return mongoUserRepository.findByResetPasswordToken(token).map(userMapper::toDomain).or(Optional::empty);</span>
     }
 
     @Override
     public Optional&lt;User&gt; findByUsername(String username) {
-<span class="nc" id="L64">        return mongoUserRepository.findByUsername(username).map(userMapper::toDomain).or(Optional::empty);</span>
+<span class="fc" id="L65">        return mongoUserRepository.findByUsername(username).map(userMapper::toDomain).or(Optional::empty);</span>
     }
 
     @Override
     public Optional&lt;User&gt; findByEmailOrUsername(String email, String username) {
-<span class="nc" id="L69">        return mongoUserRepository.findByEmailOrUsername(email, username).map(userMapper::toDomain).or(Optional::empty);</span>
+<span class="fc" id="L70">        System.out.println(mongoUserRepository.findByEmailOrUsername(email, username));</span>
+<span class="fc" id="L71">        return mongoUserRepository.findByEmailOrUsername(email, username).map(userMapper::toDomain).or(Optional::empty);</span>
     }
 
     @Override
     public Optional&lt;User&gt; findById(UserId id) {
-<span class="nc" id="L74">        return mongoUserRepository.findById(id.value()).map(userMapper::toDomain).or(Optional::empty);</span>
+<span class="fc" id="L76">        return mongoUserRepository.findById(id.value()).map(userMapper::toDomain).or(Optional::empty);</span>
     }
 
     @Override
     public Optional&lt;User&gt; findByIdWithJobs(UserId id) {
-<span class="nc" id="L79">        return findById(id).map(u -&gt; u.withJobs(jobMapper.toDomain(mongoJobRepository.findByUserId(u.getId().value(), null).getContent())));</span>
+<span class="fc" id="L81">        return findById(id).map(u -&gt; u.withJobs(jobMapper.toDomain(mongoJobRepository.findByUserId(u.getId().value(), null).getContent())));</span>
     }
 
     @Override
@@ -87,36 +89,36 @@ public class UserServiceAdapter implements UserService {
         }
     )
     public User save(User user) {
-<span class="nc" id="L90">        return this.userMapper.toDomain(mongoUserRepository.save(this.userMapper.toEntity(user)));</span>
+<span class="fc" id="L92">        return this.userMapper.toDomain(mongoUserRepository.save(this.userMapper.toEntity(user)));</span>
     }
 
 
     @Override
     @Transactional
     public User saveUserAndJob(User user, Job job) {
-<span class="nc" id="L97">        this.mongoJobRepository.save(this.jobMapper.toEntity(job));</span>
-<span class="nc" id="L98">        return this.save(user);</span>
+<span class="fc" id="L99">        this.mongoJobRepository.save(this.jobMapper.toEntity(job));</span>
+<span class="fc" id="L100">        return this.save(user);</span>
     }
 
     @Override
     @Transactional
     public User deleteJobAndSaveUser(User user, Job job) {
-<span class="nc" id="L104">        this.mongoJobRepository.delete(this.jobMapper.toEntity(job));</span>
-<span class="nc" id="L105">        return this.userMapper.toDomain(this.mongoUserRepository.save(this.userMapper.toEntity(user)));</span>
+<span class="fc" id="L106">        this.mongoJobRepository.delete(this.jobMapper.toEntity(job));</span>
+<span class="fc" id="L107">        return this.userMapper.toDomain(this.mongoUserRepository.save(this.userMapper.toEntity(user)));</span>
     }
 
     @Override
     @Cacheable(value = &quot;emailExists&quot;, key = &quot;#email&quot;)
     public boolean emailExists(String email) {
-<span class="nc" id="L111">        System.out.println(&quot;in emailExists &quot;+email);</span>
-<span class="nc" id="L112">        return findByEmail(email).isPresent();</span>
+<span class="fc" id="L113">        System.out.println(&quot;in emailExists &quot;+email);</span>
+<span class="fc" id="L114">        return findByEmail(email).isPresent();</span>
     }
 
     @Override
     @Cacheable(value = &quot;usernameExists&quot;, key = &quot;#username&quot;)
     public boolean usernameExists(String username) {
-<span class="nc" id="L118">        System.out.println(&quot;in usernameExists &quot;+username);</span>
-<span class="nc" id="L119">        return findByUsername(username).isPresent();</span>
+<span class="fc" id="L120">        System.out.println(&quot;in usernameExists &quot;+username);</span>
+<span class="fc" id="L121">        return findByUsername(username).isPresent();</span>
     }
 
     @Override
@@ -129,9 +131,9 @@ public class UserServiceAdapter implements UserService {
     )
     @Transactional
     public void deleteUser(User user) {
-<span class="nc" id="L132">        mongoJobRepository.deleteByUserId(user.getId().value());</span>
-<span class="nc" id="L133">        mongoRefreshTokenRepository.deleteByUserId(user.getId().value());</span>
-<span class="nc" id="L134">        mongoUserRepository.delete(userMapper.toEntity(user));</span>
-<span class="nc" id="L135">    }</span>
+<span class="fc" id="L134">        mongoJobRepository.deleteByUserId(user.getId().value());</span>
+<span class="fc" id="L135">        mongoRefreshTokenRepository.deleteByUserId(user.getId().value());</span>
+<span class="fc" id="L136">        mongoUserRepository.delete(userMapper.toEntity(user));</span>
+<span class="fc" id="L137">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

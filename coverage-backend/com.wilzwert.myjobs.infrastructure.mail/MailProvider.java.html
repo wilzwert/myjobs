@@ -10,6 +10,7 @@ import jakarta.mail.internet.MimeMultipart;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -35,57 +36,58 @@ public class MailProvider {
             @Value(&quot;${application.frontend.url}&quot;) String frontendUrl,
             @Value(&quot;${application.mail.from}&quot;) String from,
             @Value(&quot;${application.mail.from-name}&quot;) String fromName
-<span class="fc" id="L38">    ) {</span>
-<span class="fc" id="L39">        this.mailSender = mailSender;</span>
-<span class="fc" id="L40">        this.templateEngine = templateEngine;</span>
-<span class="fc" id="L41">        this.frontendUrl = frontendUrl;</span>
-<span class="fc" id="L42">        this.from = from;</span>
-<span class="fc" id="L43">        this.fromName = fromName;</span>
-<span class="fc" id="L44">    }</span>
+<span class="fc" id="L39">    ) {</span>
+<span class="fc" id="L40">        this.mailSender = mailSender;</span>
+<span class="fc" id="L41">        this.templateEngine = templateEngine;</span>
+<span class="fc" id="L42">        this.frontendUrl = frontendUrl;</span>
+<span class="fc" id="L43">        this.from = from;</span>
+<span class="fc" id="L44">        this.fromName = fromName;</span>
+<span class="fc" id="L45">    }</span>
 
     // TODO : improve exception handling with custom exceptions
     public CustomMailMessage createMessage(String template, String recipientMail, String recipientName, String subject)  {
-<span class="fc" id="L48">        return new CustomMailMessage(template, recipientMail, recipientName, subject);</span>
+<span class="fc" id="L49">        return new CustomMailMessage(template, recipientMail, recipientName, subject);</span>
     }
 
     public String createUrl(String uri) {
-<span class="nc" id="L52">        return frontendUrl + uri;</span>
+<span class="fc" id="L53">        return frontendUrl + uri;</span>
     }
 
     private MimeMessage createMimeMessage(CustomMailMessage messageToSend, String htmlContent) throws MessagingException, UnsupportedEncodingException {
-<span class="fc" id="L56">        MimeMessage message =  mailSender.createMimeMessage();</span>
-<span class="fc" id="L57">        System.out.println(&quot;message has been created with class &quot; + message.getClass());</span>
-<span class="fc" id="L58">        message.setFrom(new InternetAddress(from, fromName));</span>
-<span class="fc" id="L59">        message.setRecipients(Message.RecipientType.TO, new InternetAddress(messageToSend.getRecipientMail(), messageToSend.getRecipientName()).toUnicodeString());</span>
-<span class="fc" id="L60">        message.setSubject(messageToSend.getSubject());</span>
+<span class="fc" id="L57">        MimeMessage message =  mailSender.createMimeMessage();</span>
+<span class="fc" id="L58">        System.out.println(&quot;message has been created with class &quot; + message.getClass());</span>
+<span class="fc" id="L59">        message.setFrom(new InternetAddress(from, fromName));</span>
+<span class="fc" id="L60">        message.setRecipients(Message.RecipientType.TO, new InternetAddress(messageToSend.getRecipientMail(), messageToSend.getRecipientName()).toUnicodeString());</span>
+<span class="fc" id="L61">        message.setSubject(messageToSend.getSubject());</span>
 
         // send a multipart message to allow logo embedding
-<span class="fc" id="L63">        Multipart multipart = new MimeMultipart(&quot;related&quot;);</span>
+<span class="fc" id="L64">        Multipart multipart = new MimeMultipart(&quot;related&quot;);</span>
 
-<span class="fc" id="L65">        MimeBodyPart htmlPart = new MimeBodyPart();</span>
-<span class="fc" id="L66">        htmlPart.setText(htmlContent, &quot;utf-8&quot;, &quot;html&quot;);</span>
-<span class="fc" id="L67">        multipart.addBodyPart(htmlPart);</span>
+<span class="fc" id="L66">        MimeBodyPart htmlPart = new MimeBodyPart();</span>
+<span class="fc" id="L67">        htmlPart.setText(htmlContent, &quot;utf-8&quot;, &quot;html&quot;);</span>
+<span class="fc" id="L68">        multipart.addBodyPart(htmlPart);</span>
 
         try {
-<span class="fc" id="L70">            MimeBodyPart imgPart = new MimeBodyPart();</span>
-<span class="fc" id="L71">            imgPart.attachFile(new ClassPathResource(&quot;static/images/logo_email.png&quot;).getFile());</span>
-<span class="fc" id="L72">            imgPart.setContentID(&quot;&lt;logoImage&gt;&quot;);</span>
-<span class="fc" id="L73">            multipart.addBodyPart(imgPart);</span>
+<span class="fc" id="L71">            MimeBodyPart imgPart = new MimeBodyPart();</span>
+<span class="fc" id="L72">            imgPart.attachFile(new ClassPathResource(&quot;static/images/logo_email.png&quot;).getFile());</span>
+<span class="fc" id="L73">            imgPart.setContentID(&quot;&lt;logoImage&gt;&quot;);</span>
+<span class="fc" id="L74">            multipart.addBodyPart(imgPart);</span>
         }
-<span class="nc" id="L75">        catch (IOException e) {</span>
+<span class="nc" id="L76">        catch (IOException e) {</span>
             // TODO ?
-<span class="fc" id="L77">        }</span>
+<span class="fc" id="L78">        }</span>
 
-<span class="fc" id="L79">        message.setContent(multipart);</span>
-<span class="fc" id="L80">        return message;</span>
+<span class="fc" id="L80">        message.setContent(multipart);</span>
+<span class="fc" id="L81">        return message;</span>
     }
 
     // TODO : improve exception handling with custom exceptions
+    @Async
     public void send(CustomMailMessage messageToSend) throws MessagingException, UnsupportedEncodingException {
-<span class="fc" id="L85">        Context context = new Context();</span>
-<span class="fc" id="L86">        messageToSend.getVariables().forEach(context::setVariable);</span>
-<span class="fc" id="L87">        String htmlContent = templateEngine.process(messageToSend.getTemplate(), context);</span>
-<span class="fc" id="L88">        mailSender.send(createMimeMessage(messageToSend, htmlContent));</span>
-<span class="fc" id="L89">    }</span>
+<span class="fc" id="L87">        Context context = new Context();</span>
+<span class="fc" id="L88">        messageToSend.getVariables().forEach(context::setVariable);</span>
+<span class="fc" id="L89">        String htmlContent = templateEngine.process(messageToSend.getTemplate(), context);</span>
+<span class="fc" id="L90">        mailSender.send(createMimeMessage(messageToSend, htmlContent));</span>
+<span class="fc" id="L91">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

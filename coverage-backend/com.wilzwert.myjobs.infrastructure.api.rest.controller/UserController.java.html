@@ -4,13 +4,13 @@
 import com.wilzwert.myjobs.core.domain.command.ChangePasswordCommand;
 import com.wilzwert.myjobs.core.domain.command.ValidateEmailCommand;
 import com.wilzwert.myjobs.core.domain.exception.UserNotFoundException;
-import com.wilzwert.myjobs.core.domain.model.User;
-import com.wilzwert.myjobs.core.domain.model.UserId;
+import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.ports.driving.*;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.UserMapper;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -55,33 +55,33 @@ public class UserController {
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAccount(Authentication authentication) {
-<span class="nc" id="L58">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
-<span class="nc" id="L59">        deleteAccountUseCase.deleteAccount(userDetails.getId());</span>
-<span class="nc" id="L60">    }</span>
+<span class="fc" id="L58">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L59">        deleteAccountUseCase.deleteAccount(userDetails.getId());</span>
+<span class="fc" id="L60">    }</span>
 
     @GetMapping()
     public UserResponse me(Authentication authentication) {
-<span class="nc" id="L64">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
-<span class="nc" id="L65">        User user = userService.findById(userDetails.getId()).orElseThrow(UserNotFoundException::new);</span>
-<span class="nc" id="L66">        return userMapper.toResponse(user);</span>
+<span class="fc" id="L64">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L65">        User user = userService.findById(userDetails.getId()).orElseThrow(UserNotFoundException::new);</span>
+<span class="fc" id="L66">        return userMapper.toResponse(user);</span>
     }
 
     @PatchMapping()
-    public UserResponse update(@RequestBody UpdateUserRequest updateUserRequest, Authentication authentication) {
-<span class="nc" id="L71">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
-<span class="nc" id="L72">        return userMapper.toResponse(updateUserUseCase.updateUser(userMapper.toUpdateCommand(updateUserRequest, userDetails.getId())));</span>
+    public UserResponse update(@RequestBody @Valid UpdateUserRequest updateUserRequest, Authentication authentication) {
+<span class="fc" id="L71">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L72">        return userMapper.toResponse(updateUserUseCase.updateUser(userMapper.toUpdateCommand(updateUserRequest, userDetails.getId())));</span>
     }
 
-    @PutMapping(&quot;/password&quot;)
+    @PutMapping(&quot;/me/password&quot;)
     @ResponseStatus(HttpStatus.OK)
-    public void changePassword(@RequestBody PasswordRequest passwordRequest, Authentication authentication) {
-<span class="nc" id="L78">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
-<span class="nc" id="L79">        changePasswordUseCase.changePassword(new ChangePasswordCommand(passwordRequest.getPassword(), passwordRequest.getOldPassword(), userDetails.getId()));</span>
-<span class="nc" id="L80">    }</span>
+    public void changePassword(@RequestBody @Valid ChangePasswordRequest changePasswordRequest, Authentication authentication) {
+<span class="fc" id="L78">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L79">        changePasswordUseCase.changePassword(new ChangePasswordCommand(changePasswordRequest.getPassword(), changePasswordRequest.getOldPassword(), userDetails.getId()));</span>
+<span class="fc" id="L80">    }</span>
 
     @PostMapping(&quot;/email/validation&quot;)
     @ResponseStatus(HttpStatus.OK)
-    public void validateEmail(@RequestBody ValidateEmailRequest validateEmailRequest) {
+    public void validateEmail(@RequestBody @Valid ValidateEmailRequest validateEmailRequest) {
 <span class="nc" id="L85">        validateEmailUseCase.validateEmail(new ValidateEmailCommand(validateEmailRequest.getCode()));</span>
 <span class="nc" id="L86">    }</span>
 

@@ -2,12 +2,14 @@
 
 
 import com.wilzwert.myjobs.core.domain.command.CreateActivityCommand;
-import com.wilzwert.myjobs.core.domain.model.JobId;
+import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.ports.driving.*;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.ActivityMapper;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +21,7 @@ import java.util.UUID;
  * Time:11:43
  */
 @RestController
-<span class="fc" id="L22">@Slf4j</span>
+<span class="fc" id="L24">@Slf4j</span>
 @RequestMapping(&quot;/api/jobs&quot;)
 public class ActivityController {
 
@@ -27,16 +29,17 @@ public class ActivityController {
 
     private final ActivityMapper activityMapper;
 
-<span class="fc" id="L30">    public ActivityController(AddActivityToJobUseCase createActivityUseCase, ActivityMapper activityMapper) {</span>
-<span class="fc" id="L31">        this.createActivityUseCase = createActivityUseCase;</span>
-<span class="fc" id="L32">        this.activityMapper = activityMapper;</span>
-<span class="fc" id="L33">    }</span>
+<span class="fc" id="L32">    public ActivityController(AddActivityToJobUseCase createActivityUseCase, ActivityMapper activityMapper) {</span>
+<span class="fc" id="L33">        this.createActivityUseCase = createActivityUseCase;</span>
+<span class="fc" id="L34">        this.activityMapper = activityMapper;</span>
+<span class="fc" id="L35">    }</span>
 
     @PostMapping(&quot;/{id}/activities&quot;)
-    public ActivityResponse addActivity(@PathVariable(&quot;id&quot;) String id, @RequestBody CreateActivityRequest createActivityRequest, Authentication authentication) {
-<span class="nc" id="L37">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
-<span class="nc" id="L38">        CreateActivityCommand createActivityCommand = activityMapper.toCommand(createActivityRequest, userDetails.getId(), new JobId(UUID.fromString(id)));</span>
-<span class="nc" id="L39">        return activityMapper.toResponse(createActivityUseCase.addActivityToJob(createActivityCommand));</span>
+    @ResponseStatus(HttpStatus.CREATED)
+    public ActivityResponse addActivity(@PathVariable(&quot;id&quot;) String id, @RequestBody @Valid CreateActivityRequest createActivityRequest, Authentication authentication) {
+<span class="fc" id="L40">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L41">        CreateActivityCommand createActivityCommand = activityMapper.toCommand(createActivityRequest, userDetails.getId(), new JobId(UUID.fromString(id)));</span>
+<span class="fc" id="L42">        return activityMapper.toResponse(createActivityUseCase.addActivityToJob(createActivityCommand));</span>
     }
 
 }

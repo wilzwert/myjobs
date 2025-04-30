@@ -23,30 +23,30 @@ public class CookieService {
 <span class="fc" id="L23">    }</span>
 
     public ResponseCookie createAccessTokenCookie(String accessToken) {
-<span class="nc" id="L26">        return createCookie(&quot;access_token&quot;, accessToken, jwtProperties.getExpirationTime());</span>
+<span class="fc" id="L26">        return createCookie(&quot;access_token&quot;, accessToken, jwtProperties.getExpirationTime());</span>
     }
 
     public ResponseCookie createRefreshTokenCookie(String refreshToken) {
-<span class="nc" id="L30">        return createCookie(&quot;refresh_token&quot;, refreshToken, jwtProperties.getRefreshExpirationTime());</span>
+<span class="fc" id="L30">        return createCookie(&quot;refresh_token&quot;, refreshToken, jwtProperties.getRefreshExpirationTime());</span>
     }
 
     public ResponseCookie revokeAccessTokenCookie() {
-<span class="nc" id="L34">        return createCookie(&quot;access_token&quot;, &quot;&quot;, 0);</span>
+<span class="fc" id="L34">        return createCookie(&quot;access_token&quot;, &quot;&quot;, 0);</span>
     }
 
     public ResponseCookie revokeRefreshTokenCookie() {
-<span class="nc" id="L38">        return createCookie(&quot;refresh_token&quot;, &quot;&quot;, 0);</span>
+<span class="fc" id="L38">        return createCookie(&quot;refresh_token&quot;, &quot;&quot;, 0);</span>
     }
 
     private ResponseCookie createCookie(String name, String value, long maxAge) {
-<span class="nc" id="L42">        return ResponseCookie.from(name, value)</span>
-<span class="nc" id="L43">                .httpOnly(true)</span>
-<span class="nc" id="L44">                .secure(cookieProperties.isSecure())</span>
-<span class="nc" id="L45">                .sameSite(cookieProperties.getSameSite())</span>
-<span class="nc" id="L46">                .domain(cookieProperties.getDomain())</span>
-<span class="nc" id="L47">                .path(cookieProperties.getPath())</span>
-<span class="nc" id="L48">                .maxAge(maxAge)</span>
-<span class="nc" id="L49">                .build();</span>
+<span class="fc" id="L42">        return ResponseCookie.from(name, value)</span>
+<span class="fc" id="L43">                .httpOnly(true)</span>
+<span class="fc" id="L44">                .secure(cookieProperties.isSecure())</span>
+<span class="fc" id="L45">                .sameSite(cookieProperties.getSameSite())</span>
+<span class="fc" id="L46">                .domain(cookieProperties.getDomain())</span>
+<span class="fc" id="L47">                .path(cookieProperties.getPath())</span>
+<span class="fc" id="L48">                .maxAge(maxAge)</span>
+<span class="fc" id="L49">                .build();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
