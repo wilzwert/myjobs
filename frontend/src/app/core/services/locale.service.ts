@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import { registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 import localeEn from '@angular/common/locales/en';
-import { BehaviorSubject, catchError, distinctUntilChanged, EMPTY, filter, firstValueFrom, map, Observable, of, switchMap } from 'rxjs';
+import { BehaviorSubject, catchError, distinctUntilChanged, EMPTY, filter, firstValueFrom, map, Observable, of, switchMap, tap } from 'rxjs';
 import { UserService } from './user.service';
 import { SessionService } from './session.service';
+import { Router, UrlTree } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -15,15 +16,11 @@ export class LocaleService {
   private defaultLang = 'en';
   private _locale$ = new BehaviorSubject<string>('none');
 
-  constructor(private sessionService: SessionService, private userService: UserService) {
+  constructor(private sessionService: SessionService, private userService: UserService, private router: Router) {
     // sets default conf
-    registerLocaleData(localeFr);
-    registerLocaleData(localeEn);
+    registerLocaleData(localeFr, 'fr');
+    registerLocaleData(localeEn, 'en');
     this.init();
-  }
-
-  private use(lang: string) {
-    console.log(`use ${lang}`);
   }
 
   private save(lang: string): Observable<void> {
@@ -46,8 +43,9 @@ export class LocaleService {
         filter((l) => l !== 'none'),
         distinctUntilChanged(), // avoid duplicates
         switchMap((lang) => {
-          this.use(lang);
-          return this.save(lang);
+          return this.save(lang).pipe(
+            tap(() => this.router.navigate([this.buildRedirectUrl(lang)]))
+          );
         })
       )
       .subscribe();
@@ -82,5 +80,31 @@ export class LocaleService {
 
   changeLocale(lang: string) {
     this._locale$.next(lang);
+  }
+
+  private buildRedirectUrl(lang: string): string {
+    alert(lang);
+    alert(location.pathname);
+    const path = location.pathname.replace(/^\/(fr|en)/, '');
+    alert(`goto /${lang}${path}`);
+    return `/${lang}${path}`;
+  }
+
+  handleLanguageRedirection(): Observable<boolean | UrlTree> {
+    const preferredLang = this.currentLocale;
+    const currentLang = this.getCurrentLangFromUrl();
+
+    if (preferredLang === currentLang) {
+      return of(true); // pas de redirection nécessaire
+    }
+
+    const redirectUrl = this.buildRedirectUrl(preferredLang);
+
+    return of(this.router.parseUrl(redirectUrl));
+  }
+  
+  getCurrentLangFromUrl(): string {
+    const match = window.location.pathname.match(/^\/(fr|en)/);
+    return match?.[1] ?? '';
   }
 }

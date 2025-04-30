@@ -23,6 +23,7 @@
         "build": {
           "builder": "@angular-builders/custom-webpack:browser",
           "options": {
+            "localize": true,
             "outputPath": "dist/myjobs",
             "index": "src/index.html",
             "main": "src/main.ts",
