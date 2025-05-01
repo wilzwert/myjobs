@@ -73,7 +73,6 @@ export class LocaleService {
     }
 
     const browserLang = navigator.language.split('-')[0]; // e.g.: 'fr-FR' → 'fr'
-    alert(`browserLangf ${browserLang}`);
     return (this.supportedLangs.includes(browserLang) ? browserLang : this.defaultLang).toLowerCase();
   }
 

@@ -94,6 +94,8 @@
               "customWebpackConfig": {
                 "path": "./cypress/custom-webpack.config.ts"
               },
+              "localize": ["en"],
+              "baseHref": "/en/",
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -110,6 +112,10 @@
               "baseHref": "/fr/",
               "fileReplacements": [
                 {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.development.ts"
+                },
+                {
                   "replace": "src/lang/lang.ts",
                   "with": "src/lang/lang.dev.ts"
                 }
@@ -119,6 +125,10 @@
               "localize": ["en"],
               "baseHref": "/en/",
               "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.development.ts"
+                },
                 {
                   "replace": "src/lang/lang.ts",
                   "with": "src/lang/lang.dev.ts"

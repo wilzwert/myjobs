@@ -14,8 +14,8 @@ import { LanguageRedirectGuard } from './core/guards/language-redirect.guard';
 
 export const routes: Routes = [
     {
-        path: ':lang',
-        // canActivate: [LanguageRedirectGuard],
+        path: '',
+        canActivate: [LanguageRedirectGuard],
         children: [
             { 
                 path: '', 
@@ -73,4 +73,3 @@ export const routes: Routes = [
         ]
     }
 ];
- 
