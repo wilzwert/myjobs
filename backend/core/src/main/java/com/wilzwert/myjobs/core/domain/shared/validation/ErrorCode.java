@@ -30,7 +30,6 @@ public enum ErrorCode {
     // user specific errors
     USER_WEAK_PASSWORD,
     USER_ALREADY_EXISTS,
-    USER_USERNAME_ALREADY_TAKEN,
     USER_NOT_FOUND,
     USER_LOGIN_FAILED,
     USER_PASSWORD_MATCH_FAILED,

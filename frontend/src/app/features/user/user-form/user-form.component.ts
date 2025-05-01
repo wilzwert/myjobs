@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { User } from '../../../core/model/user.interface';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -11,8 +11,9 @@ import { EditUserRequest } from '../../../core/model/edit-user-request.interface
 import { catchError, take, throwError } from 'rxjs';
 import { ApiError } from '../../../core/errors/api-error';
 import { NotificationService } from '../../../core/services/notification.service';
-import { ComponentInputData, ComponentInputDomainData } from '../../../core/model/component-input-data.interface';
 import { BaseChildComponent } from '../../../core/component/base-child.component';
+import { ErrorTranslatorService } from '../../../core/services/error-translator.service';
+import { FormErrorService } from '../../../core/services/form-error.service';
 
 @Component({
   selector: 'app-user-form',
@@ -20,7 +21,7 @@ import { BaseChildComponent } from '../../../core/component/base-child.component
   templateUrl: './user-form.component.html',
   styleUrl: './user-form.component.scss'
 })
-export class UserFormComponent extends BaseChildComponent implements OnInit {
+export class UserFormComponent extends BaseChildComponent implements OnInit, OnDestroy {
   protected user!: User;
 
   protected form!: FormGroup;
@@ -30,9 +31,13 @@ export class UserFormComponent extends BaseChildComponent implements OnInit {
     private authValidators: AuthValidators,
     private fb: FormBuilder,
     private userService: UserService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private formErrorService: FormErrorService
   ) {
     super();
+  }
+  ngOnDestroy(): void {
+    this.formErrorService.cleanup(); // free subscriptions 
   }
 
   ngOnInit(): void {
@@ -95,14 +100,16 @@ export class UserFormComponent extends BaseChildComponent implements OnInit {
         this.isSubmitting = true;
         this.userService.editUser(this.form.value as EditUserRequest)
             .pipe(
-              take(1),
+              // take(1),
               catchError(
                 (error: ApiError) => {
                   this.isSubmitting = false;
-                  this.fail();
-                  return throwError(() => new Error(
-                    `Edit failed : ${error.message}`
-                  ));
+                  // this.fail();
+                  
+                  this.formErrorService.setBackendErrors(this.form, error.errors);
+
+
+                  return throwError(() => error);
                 }
             ))
             .subscribe(() => {

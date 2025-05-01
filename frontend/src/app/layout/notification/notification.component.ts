@@ -3,6 +3,7 @@ import { NotificationService } from '../../core/services/notification.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AppNotification } from '../../core/model/app-notification.interface';
 import { ApiError } from '../../core/errors/api-error';
+import { ErrorTranslatorService } from '../../core/services/error-translator.service';
 
 @Component({
   selector: 'app-notification',
@@ -12,7 +13,7 @@ import { ApiError } from '../../core/errors/api-error';
   styleUrl: './notification.component.scss'
 })
 export class NotificationComponent implements OnInit {
-  constructor(private notificationService: NotificationService, private matSnackBar: MatSnackBar) {}
+  constructor(private notificationService: NotificationService, private matSnackBar: MatSnackBar, private errorTranslatorService: ErrorTranslatorService) {}
 
   ngOnInit(): void {
     this.notificationService.notification$.subscribe((notification: AppNotification | null) => {
@@ -20,7 +21,7 @@ export class NotificationComponent implements OnInit {
           // display snack bar only if error is not 401 returned from the API
           // when a 401 is returned from the API the notification MUST be handled by a session service or a auth-related component
           if(notification.error == null || !(notification.error instanceof ApiError) || notification.error.httpStatus !== 401) {
-            this.matSnackBar.open(notification.message, 'Close', {duration: 3000});
+            this.matSnackBar.open(this.errorTranslatorService.translate(notification.message), 'Close', {duration: 3000});
           }
         }
     });

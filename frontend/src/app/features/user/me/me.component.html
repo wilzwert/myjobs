@@ -20,7 +20,7 @@
             {{ user.username }}
             </p>
             <p>
-                Registered {{ user.createdAt | localizedDate }}
+                <span i18n="registered|sexy label preceding registration date in user account@@registered">Registered</span> {{ user.createdAt | date }}
             </p>
         </mat-card-content>
         <mat-card-actions>

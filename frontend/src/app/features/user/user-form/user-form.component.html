@@ -22,6 +22,12 @@
     @if(form.get('username')?.hasError('usernameExists')) {
         <mat-hint align="start">Username already taken <a routerLink="/login">Log in</a></mat-hint>
     }
+    @if(form.get('username')?.errors?.['backend'] ; as backendErrors) {
+        @for(error of backendErrors ; track $index) {
+            {{ error }}
+        }
+    }
+
     <mat-hint class="username-hint" align="end">
     @if(username?.invalid) {
         <mat-icon class="input-invalid" svgIcon="invalid">Invalid</mat-icon>

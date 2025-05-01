@@ -6,7 +6,7 @@ import { ApiError } from '../errors/api-error';
 @Injectable()
 export class GlobalErrorHandler extends ErrorHandler {
 
-    constructor(private noticationService: NotificationService) {
+    constructor(private notificationService: NotificationService) {
         super();
     }
 
@@ -18,6 +18,6 @@ export class GlobalErrorHandler extends ErrorHandler {
         }
         
         // TODO : implement translation
-        this.noticationService.error(error.message??'', error);
+        this.notificationService.error(error.message??'', error);
     }
 }

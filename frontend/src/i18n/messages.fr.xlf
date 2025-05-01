@@ -2,6 +2,228 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en" datatype="plaintext" original="ng2.template">
     <body>
+      <trans-unit id="error.validation_failed" datatype="html">
+        <source>Validation error</source>
+        <target>Erreur de validation</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/services/error-translator.service.ts</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.field_cannot_be_empty" datatype="html">
+        <source>Field cannot be empty</source>
+        <target>Le champ ne doit pas être vide</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/services/error-translator.service.ts</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.invalid_value" datatype="html">
+        <source>Invalid value</source>
+        <target>Valeur invalide</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/services/error-translator.service.ts</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.invalid_email" datatype="html">
+        <source>Invalid email</source>
+        <target>Email invalide</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/services/error-translator.service.ts</context>
+          <context context-type="linenumber">17</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.invalid_url" datatype="html">
+        <source>Invalid url</source>
+        <target>URL invalide</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/services/error-translator.service.ts</context>
+          <context context-type="linenumber">19</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.field_too_short" datatype="html">
+        <source>Field too short</source>
+        <target>Valeur trop courte</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/services/error-translator.service.ts</context>
+          <context context-type="linenumber">21</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.field_too_long" datatype="html">
+        <source>Field too long</source>
+        <target>Valeur trop longue</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/services/error-translator.service.ts</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.field_min_max_length" datatype="html">
+        <source>Invalid field size</source>
+        <target>Longueur incorrecte</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/services/error-translator.service.ts</context>
+          <context context-type="linenumber">25</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.pagination_invalid_page" datatype="html">
+        <source>Invalid page</source>
+        <target>Page invalide</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/services/error-translator.service.ts</context>
+          <context context-type="linenumber">27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.pagination_invalid_page_size" datatype="html">
+        <source>Invalid page size</source>
+        <target>Taille de page invalide</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/services/error-translator.service.ts</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.pagination_offset_too_big" datatype="html">
+        <source>Pagination offset too big</source>
+        <target>Position invalide</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/services/error-translator.service.ts</context>
+          <context context-type="linenumber">31</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.no_html_fetcher_found" datatype="html">
+        <source>Html could not be fetched</source>
+        <target>Impossible de récupérer le HTML</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/services/error-translator.service.ts</context>
+          <context context-type="linenumber">35</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.no_metadata_extractor_found" datatype="html">
+        <source>Job metadata could not be extracted</source>
+        <target>Impossible d'extraire les données du Job</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/services/error-translator.service.ts</context>
+          <context context-type="linenumber">37</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.user_weak_password" datatype="html">
+        <source>Password does not meet requirements</source>
+        <target>Le mot de passe est trop faible</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/services/error-translator.service.ts</context>
+          <context context-type="linenumber">42</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.user_already_exists" datatype="html">
+        <source>User already exists</source>
+        <target>L'utilisateur existe déjà</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/services/error-translator.service.ts</context>
+          <context context-type="linenumber">44</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.user_not_found" datatype="html">
+        <source>User not found</source>
+        <target>Utilisateur non trouvé</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/services/error-translator.service.ts</context>
+          <context context-type="linenumber">46</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.user_login_failed" datatype="html">
+        <source>Login failed</source>
+        <target>Connexion échouée</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/services/error-translator.service.ts</context>
+          <context context-type="linenumber">48</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.user_password_match_failed" datatype="html">
+        <source>Invalid old password</source>
+        <target>L'ancien mot de passe est incorrect</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/services/error-translator.service.ts</context>
+          <context context-type="linenumber">50</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.user_password_reset_expired" datatype="html">
+        <source>Reset password token expired</source>
+        <target>Le jeton de réinitialisation du mot de passe a expiré</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/services/error-translator.service.ts</context>
+          <context context-type="linenumber">52</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.attachment_not_found" datatype="html">
+        <source>Attachment not found</source>
+        <target>Pièce jointe non trouvée</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/services/error-translator.service.ts</context>
+          <context context-type="linenumber">56</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.attachment_file_not_readable" datatype="html">
+        <source>Attachment file not readable</source>
+        <target>Fichier non lisible</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/services/error-translator.service.ts</context>
+          <context context-type="linenumber">58</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.job_already_exists" datatype="html">
+        <source>Job already exists</source>
+        <target>Le job existe déjà</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/services/error-translator.service.ts</context>
+          <context context-type="linenumber">62</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.job_not_found" datatype="html">
+        <source>Job not found</source>
+        <target>Job non trouvé</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/services/error-translator.service.ts</context>
+          <context context-type="linenumber">64</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="error.unknown" datatype="html">
+        <source>An unexpected error occurred <x id="PH" equiv-text="code"/></source>
+        <target>Une erreur inconnue est survenue <x id="PH" equiv-text="code"/></target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/services/error-translator.service.ts</context>
+          <context context-type="linenumber">68</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="registered" datatype="html">
+        <source>Registered</source>
+        <target>Inscrit</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/features/user/me/me.component.html</context>
+          <context context-type="linenumber">23</context>
+        </context-group>
+        <note priority="1" from="description">sexy label preceding registration date in user account</note>
+        <note priority="1" from="meaning">registered</note>
+      </trans-unit>
+      <trans-unit id="login" datatype="html">
+        <source>Log in</source>
+        <target>Connexion</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/home/home.component.html</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+        <note priority="1" from="description">login button or link label</note>
+        <note priority="1" from="meaning">login</note>
+      </trans-unit>
+      <trans-unit id="register" datatype="html">
+        <source>Register</source>
+        <target>Inscription</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/layout/home/home.component.html</context>
+          <context context-type="linenumber">8</context>
+        </context-group>
+        <note priority="1" from="description">register button or link label</note>
+        <note priority="1" from="meaning">register</note>
+      </trans-unit>
     </body>
   </file>
 </xliff>
