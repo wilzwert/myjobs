@@ -28,3 +28,4 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## Docker
 To build the app and run it in a Docker container with a basic nginx config, run `ng build --localize`, `cd docker` and then `docker-compose up --build`.  
+This will start a container that exposes your app on http://localhost:8081
