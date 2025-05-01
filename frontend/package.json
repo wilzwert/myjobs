@@ -36,6 +36,7 @@
     "@semantic-components/re-captcha": "^0.26.0",
     "@tinymce/tinymce-angular": "^8.0.1",
     "ngx-captcha": "^13.0.0",
+    "ngx-cookie-service": "^19.1.2",
     "rxjs": "~7.8.0",
     "tinymce": "^7.7.2",
     "zone.js": "~0.15.0"

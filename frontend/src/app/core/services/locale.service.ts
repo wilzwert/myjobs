@@ -6,6 +6,7 @@ import { BehaviorSubject, catchError, distinctUntilChanged, EMPTY, filter, first
 import { UserService } from './user.service';
 import { SessionService } from './session.service';
 import { Router, UrlTree } from '@angular/router';
+import { AVAILABLE_LANGS } from '../../../lang/lang';
 
 @Injectable({
   providedIn: 'root'
@@ -37,6 +38,7 @@ export class LocaleService {
   
 
   init() {
+    console.log("langs", AVAILABLE_LANGS); 
     // observe locale changes to update user if needed
     this._locale$
       .pipe(
@@ -44,7 +46,11 @@ export class LocaleService {
         distinctUntilChanged(), // avoid duplicates
         switchMap((lang) => {
           return this.save(lang).pipe(
-            tap(() => this.router.navigate([this.buildRedirectUrl(lang)]))
+            tap(() => {
+              if(AVAILABLE_LANGS.includes(lang) && this.getCurrentLangFromUrl() !== lang) {
+                window.location.href = this.buildRedirectUrl(lang);
+              }
+            })
           );
         })
       )
@@ -67,6 +73,7 @@ export class LocaleService {
     }
 
     const browserLang = navigator.language.split('-')[0]; // e.g.: 'fr-FR' → 'fr'
+    alert(`browserLangf ${browserLang}`);
     return (this.supportedLangs.includes(browserLang) ? browserLang : this.defaultLang).toLowerCase();
   }
 
@@ -83,24 +90,23 @@ export class LocaleService {
   }
 
   private buildRedirectUrl(lang: string): string {
-    alert(lang);
-    alert(location.pathname);
     const path = location.pathname.replace(/^\/(fr|en)/, '');
-    alert(`goto /${lang}${path}`);
     return `/${lang}${path}`;
   }
 
-  handleLanguageRedirection(): Observable<boolean | UrlTree> {
+  handleLanguageRedirection(): boolean | UrlTree {
     const preferredLang = this.currentLocale;
-    const currentLang = this.getCurrentLangFromUrl();
 
-    if (preferredLang === currentLang) {
-      return of(true); // pas de redirection nécessaire
+    if(this.getCurrentLangFromUrl() === preferredLang) {
+      return true;
+    }
+
+    if(AVAILABLE_LANGS.length < 1 || AVAILABLE_LANGS.includes(preferredLang)) {
+      return true; 
     }
 
     const redirectUrl = this.buildRedirectUrl(preferredLang);
-
-    return of(this.router.parseUrl(redirectUrl));
+    return this.router.parseUrl(redirectUrl);
   }
   
   getCurrentLangFromUrl(): string {

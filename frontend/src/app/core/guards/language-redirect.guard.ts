@@ -1,16 +1,21 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, GuardResult, MaybeAsync, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { LocaleService } from '../services/locale.service';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LanguageRedirectGuard implements CanActivate {
-  constructor(private localeService: LocaleService) {}
+  constructor(private localeService: LocaleService) {
+    console.log('construct language redirect guard');
+  }
 
-  canActivate(): Observable<boolean | UrlTree> {
-    return this.localeService.handleLanguageRedirection();
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean |UrlTree> {
+    alert('canActivate');
+    let result : boolean | UrlTree = this.localeService.handleLanguageRedirection();
+    console.log("canActivate ? ",result);
+    return of(result);
   }
   
 }

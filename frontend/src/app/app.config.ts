@@ -1,5 +1,5 @@
 import { ApplicationConfig, ErrorHandler, importProvidersFrom, LOCALE_ID, provideZoneChangeDetection } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withDebugTracing, withEnabledBlockingInitialNavigation } from '@angular/router';
 import { environment } from '../environments/environment';
 
 import { routes } from './app.routes';
@@ -14,15 +14,9 @@ import { LocaleService } from './core/services/locale.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    DatePipe,
     provideZoneChangeDetection({ eventCoalescing: true }), 
-    provideRouter(routes), 
-    provideHttpClient(withInterceptorsFromDi()),    
-    {
-      provide: LOCALE_ID,
-      useFactory: (localeService: LocaleService) => localeService.currentLocale,
-      deps: [LocaleService]
-    },
+    provideRouter(routes, withEnabledBlockingInitialNavigation(), withDebugTracing()), 
+    provideHttpClient(withInterceptorsFromDi()),
     /*provideAnimations(),*/
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
@@ -31,6 +25,6 @@ export const appConfig: ApplicationConfig = {
     provideScReCaptchaSettings({
       v3SiteKey: environment.recaptcha_key,
       languageCode: 'fr',
-    }),
+    })
   ]
 };

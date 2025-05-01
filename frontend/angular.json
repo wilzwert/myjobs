@@ -79,6 +79,10 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.development.ts"
+                },
+                {
+                  "replace": "src/lang/lang.ts",
+                  "with": "src/lang/lang.dev.ts"
                 }
               ]
             },
@@ -94,6 +98,30 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.integration.ts"
+                },
+                {
+                  "replace": "src/lang/lang.ts",
+                  "with": "src/lang/lang.integration.ts"
+                }
+              ]
+            },
+            "fr": {
+              "localize": ["fr"],
+              "baseHref": "/fr/",
+              "fileReplacements": [
+                {
+                  "replace": "src/lang/lang.ts",
+                  "with": "src/lang/lang.dev.ts"
+                }
+              ]
+            },
+            "en": {
+              "localize": ["en"],
+              "baseHref": "/en/",
+              "fileReplacements": [
+                {
+                  "replace": "src/lang/lang.ts",
+                  "with": "src/lang/lang.dev.ts"
                 }
               ]
             }
@@ -108,6 +136,12 @@
             },
             "development": {
               "buildTarget": "myjobs:build:development"
+            },
+            "fr": {
+              "buildTarget": "myjobs:build:fr"
+            },
+            "en": {
+              "buildTarget": "myjobs:build:en"
             }
           },
           "defaultConfiguration": "development",
