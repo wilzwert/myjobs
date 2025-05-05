@@ -332,9 +332,7 @@
         <note priority="1" from="meaning">job attachments count</note>
       </trans-unit>
       <trans-unit id="job.created" datatype="html">
-        <source>Created</source>
-        <note priority="1" from="description">label preceeding a job&apos;s creationg date</note>
-        <note priority="1" from="meaning">job status</note>
+        <source>created</source>
       </trans-unit>
       <trans-unit id="job.details" datatype="html">
         <source>Job details</source>
@@ -379,6 +377,131 @@
         <source>Add activity</source>
         <note priority="1" from="description">Add an activity to a job</note>
         <note priority="1" from="meaning">add activity</note>
+      </trans-unit>
+      <trans-unit id="job.activity.applicant_refusal" datatype="html">
+        <source>Refusal (by me)</source>
+      </trans-unit>
+      <trans-unit id="job.activity.application" datatype="html">
+        <source>Application</source>
+      </trans-unit>
+      <trans-unit id="job.activity.attachment_creation" datatype="html">
+        <source>Attachement creation</source>
+      </trans-unit>
+      <trans-unit id="job.activity.attachment_deletion" datatype="html">
+        <source>Attachement deletion</source>
+      </trans-unit>
+      <trans-unit id="job.activity.company_refusal" datatype="html">
+        <source>Refusal (by company)</source>
+      </trans-unit>
+      <trans-unit id="job.activity.creation" datatype="html">
+        <source>Creation</source>
+      </trans-unit>
+      <trans-unit id="job.activity.email" datatype="html">
+        <source>Email</source>
+      </trans-unit>
+      <trans-unit id="job.activity.in_person_interview" datatype="html">
+        <source>In person interview</source>
+      </trans-unit>
+      <trans-unit id="job.activity.phone_interview" datatype="html">
+        <source>Phone interview</source>
+      </trans-unit>
+      <trans-unit id="job.activity.rating" datatype="html">
+        <source>Rating</source>
+      </trans-unit>
+      <trans-unit id="job.activity.relaunch" datatype="html">
+        <source>Relaunch</source>
+      </trans-unit>
+      <trans-unit id="job.activity.video_interview" datatype="html">
+        <source>Video interview</source>
+      </trans-unit>
+      <trans-unit id="error.label" datatype="html">
+        <source>An error occurred</source>
+        <note priority="1" from="description">a label to inform user that an error occurred</note>
+        <note priority="1" from="meaning">an error occurred</note>
+      </trans-unit>
+      <trans-unit id="input.job.company.label" datatype="html">
+        <source>Company</source>
+        <note priority="1" from="description">job company input label</note>
+        <note priority="1" from="meaning">job company</note>
+      </trans-unit>
+      <trans-unit id="input.job.company.placeholder" datatype="html">
+        <source>Company</source>
+        <note priority="1" from="description">job company input placeholder</note>
+        <note priority="1" from="meaning">job company placeholder</note>
+      </trans-unit>
+      <trans-unit id="input.job.description.label" datatype="html">
+        <source>Description</source>
+        <note priority="1" from="description">job description input label</note>
+        <note priority="1" from="meaning">job description</note>
+      </trans-unit>
+      <trans-unit id="input.job.description.placeholder" datatype="html">
+        <source>Job description</source>
+        <note priority="1" from="description">job description input placeholder</note>
+        <note priority="1" from="meaning">job description placeholder</note>
+      </trans-unit>
+      <trans-unit id="input.job.profile.label" datatype="html">
+        <source>Profile</source>
+        <note priority="1" from="description">job profile input label</note>
+        <note priority="1" from="meaning">job profile</note>
+      </trans-unit>
+      <trans-unit id="input.job.profile.placeholder" datatype="html">
+        <source>Job profile</source>
+        <note priority="1" from="description">job profile input placeholder</note>
+        <note priority="1" from="meaning">job profile placeholder</note>
+      </trans-unit>
+      <trans-unit id="input.job.salary.label" datatype="html">
+        <source>Salary</source>
+        <note priority="1" from="description">job salary input label</note>
+        <note priority="1" from="meaning">job salary</note>
+      </trans-unit>
+      <trans-unit id="input.job.salary.placeholder" datatype="html">
+        <source>Salary</source>
+        <note priority="1" from="description">job salary input placeholder</note>
+        <note priority="1" from="meaning">job salary placeholder</note>
+      </trans-unit>
+      <trans-unit id="input.job.title.label" datatype="html">
+        <source>Title</source>
+        <note priority="1" from="description">job title input label</note>
+        <note priority="1" from="meaning">job title</note>
+      </trans-unit>
+      <trans-unit id="input.job.title.placeholder" datatype="html">
+        <source>Job title</source>
+        <note priority="1" from="description">job title input placeholder</note>
+        <note priority="1" from="meaning">job title placeholder</note>
+      </trans-unit>
+      <trans-unit id="input.url.label" datatype="html">
+        <source>Url</source>
+        <note priority="1" from="description">url input label</note>
+        <note priority="1" from="meaning">url</note>
+      </trans-unit>
+      <trans-unit id="input.url.placeholder" datatype="html">
+        <source>Job url</source>
+        <note priority="1" from="description">url input placeholder</note>
+        <note priority="1" from="meaning">url placeholder</note>
+      </trans-unit>
+      <trans-unit id="job.create" datatype="html">
+        <source>Create job</source>
+        <note priority="1" from="description">create job ui title</note>
+        <note priority="1" from="meaning">create job</note>
+      </trans-unit>
+      <trans-unit id="job.edit" datatype="html">
+        <source>Edit job</source>
+        <note priority="1" from="description">edit job ui title</note>
+        <note priority="1" from="meaning">edit job</note>
+      </trans-unit>
+      <trans-unit id="action.create" datatype="html">
+        <source>Create</source>
+        <note priority="1" from="description">Create action label</note>
+        <note priority="1" from="meaning">create</note>
+      </trans-unit>
+      <trans-unit id="job_created_or_saved" datatype="html">
+        <source>Job <x id="PH" equiv-text="term"/> successfully</source>
+      </trans-unit>
+      <trans-unit id="error.job.create_or_save" datatype="html">
+        <source>Job could not be <x id="PH" equiv-text="term"/>.<x id="PH_1" equiv-text="error.message"/></source>
+      </trans-unit>
+      <trans-unit id="job.updated" datatype="html">
+        <source>updated</source>
       </trans-unit>
     </body>
   </file>

@@ -8,10 +8,11 @@ import { FileService } from '../../../core/services/file.service';
 import { MatButton } from '@angular/material/button';
 import { JobAttachmentsFormComponent } from '../job-attachments-form/job-attachments-form.component';
 import { ModalService } from '../../../core/services/modal.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-job-attachments',
-  imports: [MatButton, JobAttachmentsFormComponent],
+  imports: [MatButton, JobAttachmentsFormComponent, DatePipe],
   templateUrl: './job-attachments.component.html',
   styleUrl: './job-attachments.component.scss'
 })

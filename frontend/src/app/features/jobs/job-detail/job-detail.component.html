@@ -7,6 +7,8 @@
     <mat-card appearance="outlined" [attr.aria-label]="'Job '+job.title">
         <mat-card-header>
             <mat-card-title>{{ job.title }}</mat-card-title>
+            <mat-card-subtitle>{{ job.createdAt | date }}</mat-card-subtitle>
+            <mat-card-subtitle>{{ job.status | statusLabel }}</mat-card-subtitle>
             <mat-card-subtitle>{{ job.url }}</mat-card-subtitle>
             <mat-card-subtitle>{{ job.company }}</mat-card-subtitle>
             <app-rating [rating]="job.rating ? job.rating.value : 0" (ratingChange)="updateJobRating(job, $event)"></app-rating>
@@ -23,26 +25,15 @@
     @if(job.attachments !== null) {
         <mat-card appearance="outlined" i18-aria-label="job attachments label@@job.attachments.label" aria-label="Job attachments">
             <mat-card-content>
-            <app-job-attachments [job]="job" [formMode]="'modal'"></app-job-attachments>
+            <app-job-attachments [job]="job" [formMode]="'modal'" (attachmentsSaved)="reloadJob(job)"></app-job-attachments>
             </mat-card-content>
         </mat-card>
     }   
     @if(job.activities !== null) {
         <mat-card appearance="outlined" i18-aria-label="job activities label@@job.activities.label" aria-label="Job activities">
-        @if(job.activities.length > 0) {
             <mat-card-content>
-            @for (activity of job.activities ; track $index) {
-                <div style="display: flex">
-                    <p>{{ activity.createdAt | date }}</p>
-                    <p>{{ activity.type | activityLabel }} @if(activity.comment !== "") { : {{ activity.comment }} } <p>
-                </div>
-            }
+            <app-job-activities [job]="job" [formMode]="'modal'" (activitiesSaved)="reloadJob(job)"></app-job-activities>
             </mat-card-content>
-        }
-
-        <mat-card-actions>
-            <button mat-flat-button (click)="addActivity(job)" i18n="add activity|Add an activity to a job@@action.job.add_activity">Add activity</button>
-        </mat-card-actions>
         </mat-card>
     }
 }

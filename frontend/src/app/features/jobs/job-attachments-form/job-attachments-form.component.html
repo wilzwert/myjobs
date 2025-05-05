@@ -13,9 +13,8 @@
                 <input type="hidden" name="MAX_FILE_SIZE" [value]="maxFileSize" />
             </mat-form-field>
              @if($index >= defaultAttachements) {
-                
                 <button mat-icon-button (click)="removeAttachment($index)">
-                <mat-icon aria-hidden="false" aria-label="Remove this attachment" fontIcon="remove">Remove this attachment</mat-icon>
+                    <mat-icon aria-hidden="false" aria-label="Remove this attachment" fontIcon="remove">Remove this attachment</mat-icon>
                 </button>
             }
         </div>

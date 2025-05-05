@@ -1,7 +1,7 @@
 @if(job.attachments.length > 0) {
     @for (attachment of job.attachments ; track $index) {
         <p>{{ attachment.name }} - {{ attachment.filename }} <a (click)="downloadAttachement(job, attachment)">Download</a></p>
-        <p>{{ attachment.createdAt }}</p>
+        <p>{{ attachment.createdAt | date }}</p>
         <button mat-raised-button color="warn" (click)="deleteAttachment(job, attachment)">Delete</button>
     }
 }

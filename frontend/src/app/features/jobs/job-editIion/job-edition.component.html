@@ -1,7 +1,12 @@
 <h2 mat-dialog-title>
     @switch (data.metadata!.type) {
         @case ('job') {
-            {{ (data.job?.id ? 'Edit' : 'Create') + ' job'}}
+            @if(data.job?.id !== null) {
+                <span i18n="edit job|edit job ui title@@job.edit">Edit job</span>
+            }
+            @else {
+                <span i18n="create job|create job ui title@@job.create">Create job</span>
+            }
         }
         @case ('attachments') {
             Manage attachements
@@ -9,7 +14,10 @@
         @case ('attachments-form') {
             Add attachments
         }
-        @case ('activity') {
+        @case ('activities') {
+            Activities
+        }
+        @case ('activities-form') {
             Add activities
         }
     }
@@ -25,8 +33,11 @@
         @case ('attachments-form') {
             <app-job-attachments-form [defaultAttachements]="data.metadata!.defaultAttachments" [job]="data.job!" (attachmentsSaved)="success()"></app-job-attachments-form>
         }
-        @case( 'activity') {
+        @case( 'activities') {
             <app-job-activities-form [job]="data.job!" (activitiesSaved)="success()"></app-job-activities-form>
+        }
+        @case ('activities-form') {
+            <app-job-activities-form [defaultActivities]="data.metadata!.defaultActivities" [job]="data.job!" (activitiesSaved)="success()"></app-job-activities-form>
         }
     }
 }
