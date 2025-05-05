@@ -5,7 +5,7 @@ import localeEn from '@angular/common/locales/en';
 import { BehaviorSubject, catchError, distinctUntilChanged, EMPTY, filter, firstValueFrom, map, Observable, of, switchMap, tap } from 'rxjs';
 import { UserService } from './user.service';
 import { SessionService } from './session.service';
-import { Router, UrlTree } from '@angular/router';
+import { Router } from '@angular/router';
 import { AVAILABLE_LANGS } from '../../../lang/lang';
 
 @Injectable({
@@ -13,18 +13,26 @@ import { AVAILABLE_LANGS } from '../../../lang/lang';
 })
 export class LocaleService {
 
+  private static UNKNOWN_LANG = 'none';
   private supportedLangs = ['fr', 'en'];
   private defaultLang = 'en';
-  private _locale$ = new BehaviorSubject<string>('none');
+  private _locale$ = new BehaviorSubject<string>(LocaleService.UNKNOWN_LANG);
+  private initialRedirectHandled = false;
 
   constructor(private sessionService: SessionService, private userService: UserService, private router: Router) {
-    // sets default conf
-    registerLocaleData(localeFr, 'fr');
-    registerLocaleData(localeEn, 'en');
     this.init();
   }
 
   private save(lang: string): Observable<void> {
+    // we are currently handling initial redirection
+    // saving lang makes no sense at this point, as we are not switching langs
+    // FIXME: this is not very clean but it works for now
+    if(!this.initialRedirectHandled) {
+      return of(void 0);
+    }
+
+    // TODO : store in a cookie instead of local storage
+    // cookie will allow access to the preferred lang from the front web server (nginx, cloudfront...)
     localStorage.setItem("lang", lang);
   
     if (this.sessionService.isLogged()) {
@@ -37,29 +45,33 @@ export class LocaleService {
   }
   
 
-  init() {
-    console.log("langs", AVAILABLE_LANGS); 
+  async init() {
+    registerLocaleData(localeFr, 'fr');
+    registerLocaleData(localeEn, 'en');
+    
     // observe locale changes to update user if needed
     this._locale$
       .pipe(
-        filter((l) => l !== 'none'),
+        filter((l) => l !== LocaleService.UNKNOWN_LANG),
         distinctUntilChanged(), // avoid duplicates
         switchMap((lang) => {
+          // if lang is not available or already is the current lang, no need to do anything
+          if(!AVAILABLE_LANGS.includes(lang) || this.getCurrentLangFromUrl() === lang) {
+            return of(lang);
+          }
+          // saves the lang and redirects
           return this.save(lang).pipe(
             tap(() => {
-              if(AVAILABLE_LANGS.includes(lang) && this.getCurrentLangFromUrl() !== lang) {
                 window.location.href = this.buildRedirectUrl(lang);
-              }
             })
           );
         })
       )
       .subscribe();
-      
-    this.resolveDefaultLocale().then((lang) => {this.changeLocale(lang);});
   }
 
   private async resolveDefaultLocale() : Promise<string> {
+    // get lang from the current user if logged in
     if(this.sessionService.isLogged()) {
       let user = await firstValueFrom(this.userService.getUser());
       if(user !== null && user.lang !== null) {
@@ -67,11 +79,12 @@ export class LocaleService {
       }
     }
 
+    // TODO retriev from cookie instead of localstorage
     const lang = localStorage.getItem("lang");
     if(lang !== null) {
       return lang;
     }
-
+    
     const browserLang = navigator.language.split('-')[0]; // e.g.: 'fr-FR' → 'fr'
     return (this.supportedLangs.includes(browserLang) ? browserLang : this.defaultLang).toLowerCase();
   }
@@ -93,19 +106,16 @@ export class LocaleService {
     return `/${lang}${path}`;
   }
 
-  handleLanguageRedirection(): boolean | UrlTree {
-    const preferredLang = this.currentLocale;
-
-    if(this.getCurrentLangFromUrl() === preferredLang) {
-      return true;
-    }
-
-    if(AVAILABLE_LANGS.length < 1 || AVAILABLE_LANGS.includes(preferredLang)) {
-      return true; 
-    }
-
-    const redirectUrl = this.buildRedirectUrl(preferredLang);
-    return this.router.parseUrl(redirectUrl);
+  handleLanguageRedirection(): Observable<boolean> {
+    this.resolveDefaultLocale().then((lang) => {this.changeLocale(lang)});
+    return this.locale$.pipe(
+      filter((l) => l !== LocaleService.UNKNOWN_LANG),
+      switchMap(() => {
+        // initial redirect handled, lets change state to allow further lang switches and saving
+        this.initialRedirectHandled = true;
+        return of(true);
+      })
+    );
   }
   
   getCurrentLangFromUrl(): string {

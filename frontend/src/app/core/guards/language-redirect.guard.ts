@@ -10,9 +10,8 @@ export class LanguageRedirectGuard implements CanActivate {
   constructor(private localeService: LocaleService) {
   }
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean |UrlTree> {
-    let result : boolean | UrlTree = this.localeService.handleLanguageRedirection();
-    return of(result);
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
+    return this.localeService.handleLanguageRedirection();
+    // return true;
   }
-  
 }

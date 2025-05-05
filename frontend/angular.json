@@ -86,6 +86,18 @@
                 }
               ]
             },
+            "integration": {
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true,
+              "vendorChunk": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.integration.ts"
+                }
+              ]
+            },
             "e2e": {
               "extractLicenses": false,
               "sourceMap": true,
@@ -146,6 +158,9 @@
             },
             "development": {
               "buildTarget": "myjobs:build:development"
+            },
+            "integration": {
+              "buildTarget": "myjobs:build:integration"
             },
             "fr": {
               "buildTarget": "myjobs:build:fr"
