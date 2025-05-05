@@ -35,6 +35,8 @@ security:
     same-site: Strict
     domain: ${COOKIE_DOMAIN:localhost}
     path: /
+  cors:
+    allow-all: false
 
 logging:
   level:

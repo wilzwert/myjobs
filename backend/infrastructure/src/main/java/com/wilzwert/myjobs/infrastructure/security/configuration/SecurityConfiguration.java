@@ -10,6 +10,7 @@ import com.wilzwert.myjobs.infrastructure.security.service.CookieService;
 import com.wilzwert.myjobs.infrastructure.security.service.CustomUserDetailsService;
 import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
 import com.wilzwert.myjobs.infrastructure.security.service.RefreshTokenService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -37,9 +43,33 @@ public class SecurityConfiguration {
 
     private final JwtService jwtService;
 
-    public SecurityConfiguration(CustomUserDetailsService userDetailsService, JwtService jwtService) {
+    private final String frontendUrl;
+
+    private final boolean corsAllowAll;
+
+    public SecurityConfiguration(CustomUserDetailsService userDetailsService, JwtService jwtService, @Value("${application.frontend.url}") String frontendUrl, @Value("${security.cors.allow-all}") boolean corsAllowAll) {
         this.userDetailsService = userDetailsService;
         this.jwtService = jwtService;
+        this.frontendUrl = frontendUrl;
+        this.corsAllowAll = corsAllowAll;
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        if (corsAllowAll) {
+            config.addAllowedOriginPattern("*");
+        }
+        else {
+            config.setAllowedOrigins(List.of(frontendUrl));
+        }
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/api/**", config);
+        return source;
     }
 
     @Bean
@@ -60,6 +90,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, CookieService cookieService) throws Exception {
         return http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 // disable CSRF protection, as the app is RESTful API
                 .csrf(AbstractHttpConfigurer::disable)
                 // RESTFul API should not use HTTP sessions
