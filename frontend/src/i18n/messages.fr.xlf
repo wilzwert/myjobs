@@ -342,15 +342,9 @@
       </trans-unit>
       <trans-unit id="input.url_create.placeholder" datatype="html">
         <source>Type or paste the job's URL</source>
-        <target state="translated">Saisissez ou coller l'URL du job</target>
+        <target state="translated">Saisissez ou collez l'URL du job</target>
         <note priority="1" from="description">placeholder for url input to create new job</note>
         <note priority="1" from="meaning">create job url placeholder</note>
-      </trans-unit>
-      <trans-unit id="action.job.create" datatype="html">
-        <source>Create job</source>
-        <target state="translated">Créer un job</target>
-        <note priority="1" from="description">Create job action label</note>
-        <note priority="1" from="meaning">create job</note>
       </trans-unit>
       <trans-unit id="input.filter_by_status.label" datatype="html">
         <source>Filter by status</source>
@@ -420,8 +414,6 @@
       <trans-unit id="action.job.edit" datatype="html">
         <source>Edit</source>
         <target state="translated">Modifier</target>
-        <note priority="1" from="description">label of a job's edition action</note>
-        <note priority="1" from="meaning">edit job</note>
       </trans-unit>
       <trans-unit id="action.job.attachements" datatype="html">
         <source>Attachments</source>
@@ -438,8 +430,6 @@
       <trans-unit id="action.job.delete" datatype="html">
         <source>Delete</source>
         <target state="translated">Supprimer</target>
-        <note priority="1" from="description">label of a job's delete action</note>
-        <note priority="1" from="meaning">delete a job</note>
       </trans-unit>
       <trans-unit id="pagination.first_page_label" datatype="html">
         <source>First page</source>
@@ -473,6 +463,18 @@
         <source>Select list page</source>
         <target state="translated">Aller à la page</target>
         <note priority="1" from="description">select list page</note>
+      </trans-unit>
+      <trans-unit id="action.job.quick_create" datatype="html">
+        <source>Create</source>
+        <target state="translated">Créer</target>
+        <note priority="1" from="description">Create job with its url form action label</note>
+        <note priority="1" from="meaning">quick create job</note>
+      </trans-unit>
+      <trans-unit id="action.job.add_activity" datatype="html">
+        <source>Add activity</source>
+        <target state="translated">Ajouter une activité</target>
+        <note priority="1" from="description">Add an activity to a job</note>
+        <note priority="1" from="meaning">add activity</note>
       </trans-unit>
     </body>
   </file>

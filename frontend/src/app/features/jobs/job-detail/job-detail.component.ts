@@ -4,7 +4,7 @@ import { JobService } from '../../../core/services/job.service';
 import { catchError, Observable, Subject, take, takeUntil, tap, throwError } from 'rxjs';
 import { Job } from '../../../core/model/job.interface';
 import { Title } from '@angular/platform-browser';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { FileService } from '../../../core/services/file.service';
 import { ActivityType } from '../../../core/model/activity-type';
 import { ActivityLabelPipe } from '../../../core/pipe/activity-label.pipe';
@@ -19,7 +19,7 @@ import { JobAttachmentsComponent } from '../job-attachments/job-attachments.comp
 
 @Component({
   selector: 'app-job-detail',
-  imports: [AsyncPipe, ActivityLabelPipe, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatCardSubtitle, MatCardActions, MatButton, RatingComponent, JobAttachmentsComponent],
+  imports: [AsyncPipe, DatePipe, ActivityLabelPipe, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatCardSubtitle, MatCardActions, MatButton, RatingComponent, JobAttachmentsComponent],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss'
 })

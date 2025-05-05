@@ -271,15 +271,8 @@
         <note priority="1" from="description">label of a job&apos;s attachments management action</note>
         <note priority="1" from="meaning">edit job&apos;s attachments</note>
       </trans-unit>
-      <trans-unit id="action.job.create" datatype="html">
-        <source>Create job</source>
-        <note priority="1" from="description">Create job action label</note>
-        <note priority="1" from="meaning">create job</note>
-      </trans-unit>
       <trans-unit id="action.job.delete" datatype="html">
         <source>Delete</source>
-        <note priority="1" from="description">label of a job&apos;s delete action</note>
-        <note priority="1" from="meaning">delete a job</note>
       </trans-unit>
       <trans-unit id="action.job.details" datatype="html">
         <source>Details</source>
@@ -288,8 +281,6 @@
       </trans-unit>
       <trans-unit id="action.job.edit" datatype="html">
         <source>Edit</source>
-        <note priority="1" from="description">label of a job&apos;s edition action</note>
-        <note priority="1" from="meaning">edit job</note>
       </trans-unit>
       <trans-unit id="input.filter_by_status.label" datatype="html">
         <source>Filter by status</source>
@@ -378,6 +369,16 @@
       </trans-unit>
       <trans-unit id="pagination.previous_page_label" datatype="html">
         <source>Previous page</source>
+      </trans-unit>
+      <trans-unit id="action.job.quick_create" datatype="html">
+        <source>Create</source>
+        <note priority="1" from="description">Create job with its url form action label</note>
+        <note priority="1" from="meaning">quick create job</note>
+      </trans-unit>
+      <trans-unit id="action.job.add_activity" datatype="html">
+        <source>Add activity</source>
+        <note priority="1" from="description">Add an activity to a job</note>
+        <note priority="1" from="meaning">add activity</note>
       </trans-unit>
     </body>
   </file>

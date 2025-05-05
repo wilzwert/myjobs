@@ -1,7 +1,7 @@
 
 @if(job$ | async ; as job) {
-    <button mat-raised-button (click)="editJob(job)">Edit</button>
-    <button mat-raised-button (click)="deleteJob(job)">Delete</button>
+    <button mat-raised-button (click)="editJob(job)" i18n="@@action.job.edit">Edit</button>
+    <button mat-raised-button (click)="deleteJob(job)" i18n="@@action.job.delete">Delete</button>
 
 
     <mat-card appearance="outlined" [attr.aria-label]="'Job '+job.title">
@@ -11,37 +11,35 @@
             <mat-card-subtitle>{{ job.company }}</mat-card-subtitle>
             <app-rating [rating]="job.rating ? job.rating.value : 0" (ratingChange)="updateJobRating(job, $event)"></app-rating>
         </mat-card-header>
-        <mat-card-content>CARD CONTENT</mat-card-content>
     </mat-card>
-    <mat-card appearance="outlined" [attr.aria-label]="'Job description'">
+    <mat-card appearance="outlined" i18-aria-label="job description label@@job.description.label" aria-label="Job description">
         <mat-card-content><div [innerHTML]="job.description"></div></mat-card-content>
     </mat-card>
 
-    <mat-card appearance="outlined" [attr.aria-label]="'Job profile'">
+    <mat-card appearance="outlined" i18-aria-label="job profile label@@job.profile.label" aria-label="Job profile">
         <mat-card-content><div [innerHTML]="job.profile"></div></mat-card-content>
     </mat-card>
 
     @if(job.attachments !== null) {
-        <mat-card appearance="outlined" [attr.aria-label]="'Job attachments'">
+        <mat-card appearance="outlined" i18-aria-label="job attachments label@@job.attachments.label" aria-label="Job attachments">
             <mat-card-content>
             <app-job-attachments [job]="job" [formMode]="'modal'"></app-job-attachments>
             </mat-card-content>
         </mat-card>
     }   
     @if(job.activities !== null) {
-        <mat-card appearance="outlined" [attr.aria-label]="'Job activities'">
+        <mat-card appearance="outlined" i18-aria-label="job activities label@@job.activities.label" aria-label="Job activities">
         @if(job.activities.length > 0) {
-            
-                <mat-card-content>
+            <mat-card-content>
             @for (activity of job.activities ; track $index) {
-                <p>{{ activity.type|activityLabel }} {{ activity.comment }} <p>
-                <p>{{ activity.createdAt }}</p>
+                <p>{{ activity.type | activityLabel }} {{ activity.comment }} <p>
+                <p>{{ activity.createdAt | date }}</p>
             }
-                </mat-card-content>
+            </mat-card-content>
         }
 
         <mat-card-actions>
-            <button mat-flat-button (click)="addActivity(job)">Add activity</button>
+            <button mat-flat-button (click)="addActivity(job)" i18n="add activity|Add an activity to a job@@action.job.add_activity">Add activity</button>
         </mat-card-actions>
         </mat-card>
     }
