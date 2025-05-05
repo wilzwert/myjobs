@@ -83,10 +83,10 @@ export class JobFormComponent implements OnInit {
     this.error = null;
     this.loading = true;
     let observableResult: Observable<Job>;
-    let term = $localize `:@@job.created:created`;
+    let term = $localize `:@@info.job.created:created`;
     if(this.job !== null && this.job.id !== null) {
       observableResult = this.jobService.updateJob(this.job.id, this.form?.value as UpdateJobRequest);
-      term = $localize `:@@job.updated:updated`;
+      term = $localize `:@@info.job.updated:updated`;
     }
     else {
       observableResult = this.jobService.createJob(this.form?.value as CreateJobRequest);
@@ -105,7 +105,7 @@ export class JobFormComponent implements OnInit {
     )
     .subscribe((job) => {
       this.loading = false;
-      this.notificationService.confirmation($localize `:@@job_created_or_saved:Job ${term} successfully`);
+      this.notificationService.confirmation($localize `:@@job.created_or_saved:Job ${term} successfully`);
       this.jobSaved.emit(job);
     });
   }

@@ -1,16 +1,23 @@
-<h1>Login</h1>
+<h1 i18n="login title|title of the component used to login@@user.login.title">Login</h1>
 <form  [formGroup]="form" (ngSubmit)="submit()">
+    <mat-form-field>
+        <mat-label i18n="email|email input label@@input.email.label">Email</mat-label>
+        <input matInput formControlName="email" i18n-placeholder="email placeholder|email input placeholder@@input.email.placeholder" placeholder="Enter your email">
+    </mat-form-field>
+    <mat-form-field>
+        <mat-label i18n="@@input.password.label">Password</mat-label>
+        <input maxlength="128" matInput formControlName="password" type="password" i18n-placeholder="password placeholder@@input.password.placeholder" placeholder="Enter your password">
+    </mat-form-field>
     
-        <mat-form-field>
-            <input matInput placeholder="Email" formControlName="email">
-        </mat-form-field>
-        <mat-form-field>
-            <input matInput type="password" placeholder="Password"
-                formControlName="password">
-        </mat-form-field>
-    
-    <button mat-raised-button type="submit" [disabled]="form.invalid || isSubmitting">@if (isSubmitting) { Loading... } @else {Log in} </button>
+    <button mat-raised-button type="submit" [disabled]="form.invalid || isSubmitting">
+        @if (isSubmitting) { 
+            <span i18n="loading|inform the user loading occurs@@info.loading">Loading...</span>
+        } 
+        @else {
+            <span i18n="@@action.login">Login</span>
+        } 
+    </button>
 </form>
 
-<p><a routerLink="/password/reset">Forgot password ?</a></p>
-<p><a routerLink="/register">Register</a></p>
+<p><a routerLink="/password/reset" i18n="forgot password link@@action.password.forgotten">Forgot password ?</a></p>
+<p><a routerLink="/register" i18n="@@action.register">Register</a></p>

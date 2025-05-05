@@ -3,29 +3,29 @@
         @for(attachment of attachments.controls ; track $index) {
         <div [formGroupName]="$index">
             <mat-form-field>
-                <mat-label [attr.for]="'name'+$index">Name</mat-label>
-                <input matInput type="text" [id]="'name'+$index" formControlName="name" placeholder="Attachment name" required>            
+                <mat-label [attr.for]="'name'+$index" i18n="Attachment name input label|Label of the attachement name input@@input.attachment.name.label">Name</mat-label>
+                <input matInput type="text" [id]="'name'+$index" formControlName="name" required i18n-placeholder="Attachment name placeholder|Placeholder of the attachement name input@@input.attachment.name.placeholder" placeholder="Attachment name">
             </mat-form-field>
             <mat-form-field>
-                <mat-label [attr.for]="'file'+$index">File</mat-label>
+                <mat-label [attr.for]="'file'+$index" i18n="Attachment file input label|Label of the attachement file input@@input.attachment.file.label">File</mat-label>
                 <input class="file-u" [required]="true" type="text" matInput formControlName="fileU">
                 <input type="file" formControlName="file" (change)="onFileChange($event, $index)" required>
                 <input type="hidden" name="MAX_FILE_SIZE" [value]="maxFileSize" />
             </mat-form-field>
              @if($index >= defaultAttachements) {
                 <button mat-icon-button (click)="removeAttachment($index)">
-                    <mat-icon aria-hidden="false" aria-label="Remove this attachment" fontIcon="remove">Remove this attachment</mat-icon>
+                    <mat-icon aria-hidden="false" i18n="Attachements form attachment remove action label@@action.attachment.remove" i18n-aria-label="@@action.attachment.remove" aria-label="Remove this attachment" fontIcon="remove">Remove this attachment</mat-icon>
                 </button>
             }
         </div>
         }
     </div>
     @if(attachments.controls.length > 0) {
-        <button mat-raised-button type="submit" [disabled]="attachmentForm.invalid || loading">Save attachements</button>
+        <button mat-raised-button type="submit" [disabled]="attachmentForm.invalid || loading" i18n="save|Save action label@@action.save">Save</button>
     }
 
-    <button aria-hidden="false" aria-label="Add an attachment"  mat-icon-button (click)="addAttachment()">
-        <mat-icon fontIcon="add">Add an attachment</mat-icon>
+    <button aria-hidden="false" i18n-aria-label="@@attachment.form.add" aria-label="Add an attachment"  mat-icon-button (click)="addAttachment()">
+        <mat-icon fontIcon="add" i18n="Attachments form add attachment action label@@attachment.form.add" >Add an attachment</mat-icon>
     </button>
 
   </form>

@@ -64,7 +64,7 @@ export class MeComponent {
   }
 
   public deleteAccount() :void {
-    this.dialogService.openConfirmDialog($localize `:@@warning.account_delete:Delete your accout ? All data will be definitely deleted !`, this.confirmDeleteAccount.bind(this));
+    this.dialogService.openConfirmDialog($localize `:@@warning.user.account_delete:Delete your accout ? All data will be definitely deleted !`, this.confirmDeleteAccount.bind(this));
   }
 
   public confirmSendVerificationEmail() {
@@ -76,13 +76,13 @@ export class MeComponent {
       )
       .subscribe(
         () => {
-          this.notificationService.confirmation($localize `:@@info.validation_email_sent:The verification email has been sent ; please check your emails.`);
+          this.notificationService.confirmation($localize `:@@info.user.validation_email_sent:The verification email has been sent ; please check your emails.`);
         }
       );
   }
 
   public sendVerificationEmail() :void {
-    this.dialogService.openConfirmDialog($localize `:@@action.send_validation_email:Send validation email`, this.confirmSendVerificationEmail.bind(this));
+    this.dialogService.openConfirmDialog($localize `:@@action.user.send_validation_email:Send validation email`, this.confirmSendVerificationEmail.bind(this));
   }
 
   public editUser(user: User) :void {

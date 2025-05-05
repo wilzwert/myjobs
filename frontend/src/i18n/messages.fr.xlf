@@ -52,7 +52,7 @@
       </trans-unit>
       <trans-unit id="error.no_metadata_extractor_found" datatype="html">
         <source>Job metadata could not be extracted</source>
-        <target>Impossible d'extraire les données du Job</target>
+        <target>Impossible d&apos;extraire les données du Job</target>
       </trans-unit>
       <trans-unit id="error.user_weak_password" datatype="html">
         <source>Password does not meet requirements</source>
@@ -60,7 +60,7 @@
       </trans-unit>
       <trans-unit id="error.user_already_exists" datatype="html">
         <source>User already exists</source>
-        <target>L'utilisateur existe déjà</target>
+        <target>L&apos;utilisateur existe déjà</target>
       </trans-unit>
       <trans-unit id="error.user_not_found" datatype="html">
         <source>User not found</source>
@@ -72,7 +72,7 @@
       </trans-unit>
       <trans-unit id="error.user_password_match_failed" datatype="html">
         <source>Invalid old password</source>
-        <target>L'ancien mot de passe est incorrect</target>
+        <target>L&apos;ancien mot de passe est incorrect</target>
       </trans-unit>
       <trans-unit id="error.user_password_reset_expired" datatype="html">
         <source>Reset password token expired</source>
@@ -103,18 +103,6 @@
         <target>Inscrit</target>
         <note priority="1" from="description">label preceding registration date in user account</note>
         <note priority="1" from="meaning">registered</note>
-      </trans-unit>
-      <trans-unit id="login" datatype="html">
-        <source>Log in</source>
-        <target>Connexion</target>
-        <note priority="1" from="description">login button or link label</note>
-        <note priority="1" from="meaning">login</note>
-      </trans-unit>
-      <trans-unit id="register" datatype="html">
-        <source>Register</source>
-        <target>Inscription</target>
-        <note priority="1" from="description">register button or link label</note>
-        <note priority="1" from="meaning">register</note>
       </trans-unit>
       <trans-unit id="info.invalid" datatype="html">
         <source>Invalid</source>
@@ -158,7 +146,7 @@
         <note priority="1" from="description">Log out action label</note>
         <note priority="1" from="meaning">log out</note>
       </trans-unit>
-      <trans-unit id="action.delete_account" datatype="html">
+      <trans-unit id="action.user.delete_account" datatype="html">
         <source>Delete my account</source>
         <target state="translated">Supprimer mon compte</target>
         <note priority="1" from="description">Delete account action label</note>
@@ -171,20 +159,20 @@
         <note priority="1" from="meaning">email</note>
       </trans-unit>
       <trans-unit id="input.email.placeholder" datatype="html">
-        <source>Type your email</source>
+        <source>Enter your email</source>
         <target state="translated">Saisissez votre email</target>
         <note priority="1" from="description">email input placeholder</note>
         <note priority="1" from="meaning">email placeholder</note>
       </trans-unit>
       <trans-unit id="input.username.label" datatype="html">
         <source>Username</source>
-        <target state="translated">Nom d'utilisateur</target>
+        <target state="translated">Nom d&apos;utilisateur</target>
         <note priority="1" from="description">username input label</note>
         <note priority="1" from="meaning">username</note>
       </trans-unit>
       <trans-unit id="input.username.placeholder" datatype="html">
         <source>Type your username</source>
-        <target state="translated">Saisissez votre nom d'utilisateur</target>
+        <target state="translated">Saisissez votre nom d&apos;utilisateur</target>
         <note priority="1" from="description">username input placeholder</note>
         <note priority="1" from="meaning">username placeholder</note>
       </trans-unit>
@@ -217,15 +205,15 @@
         <target state="translated">Modifier mes informations</target>
         <note priority="1" from="description">edit user info</note>
       </trans-unit>
-      <trans-unit id="info.email-exists" datatype="html">
+      <trans-unit id="info.email_exists" datatype="html">
         <source>Email already exists</source>
         <target state="translated">Cet email est déjà utilisé</target>
         <note priority="1" from="description">inform the user the email already exists</note>
         <note priority="1" from="meaning">email exists</note>
       </trans-unit>
-      <trans-unit id="info.username-exists" datatype="html">
+      <trans-unit id="info.username_exists" datatype="html">
         <source>Username already taken</source>
-        <target state="translated">Ce nom d'utilisateur est déjà utilisé</target>
+        <target state="translated">Ce nom d&apos;utilisateur est déjà utilisé</target>
         <note priority="1" from="description">inform the user the username already exists</note>
         <note priority="1" from="meaning">username exists</note>
       </trans-unit>
@@ -294,9 +282,9 @@
         <note priority="1" from="description">confirml action label</note>
         <note priority="1" from="meaning">confirm</note>
       </trans-unit>
-      <trans-unit id="action.send_validation_email" datatype="html">
+      <trans-unit id="action.user.send_validation_email" datatype="html">
         <source>Send validation email</source>
-        <target state="translated">Envoyer l'email de vérification</target>
+        <target state="translated">Envoyer l&apos;email de vérification</target>
       </trans-unit>
       <trans-unit id="error.unexpected" datatype="html">
         <source>An unexpected error occured</source>
@@ -304,15 +292,15 @@
       </trans-unit>
       <trans-unit id="info.account_deleted" datatype="html">
         <source>Your account has been deleted. Thank your for using MyJobs.</source>
-        <target state="translated">Votre compte a été supprimé. Merci d'avoir utilisé MyJobs.</target>
+        <target state="translated">Votre compte a été supprimé. Merci d&apos;avoir utilisé MyJobs.</target>
       </trans-unit>
-      <trans-unit id="warning.account_delete" datatype="html">
+      <trans-unit id="warning.user.account_delete" datatype="html">
         <source>Delete your accout ? All data will be definitely deleted !</source>
         <target state="translated">Supprimer votre compte ? Toutes vos données seront définitivement supprimées !</target>
       </trans-unit>
-      <trans-unit id="info.validation_email_sent" datatype="html">
+      <trans-unit id="info.user.validation_email_sent" datatype="html">
         <source>The verification email has been sent ; please check your emails.</source>
-        <target state="translated">L'email de vérification a été envoyé ; merci de vérifier vos emails.</target>
+        <target state="translated">L&apos;email de vérification a été envoyé ; merci de vérifier vos emails.</target>
       </trans-unit>
       <trans-unit id="job.status.created" datatype="html">
         <source>Created</source>
@@ -332,46 +320,46 @@
       </trans-unit>
       <trans-unit id="job.status.company_refused" datatype="html">
         <source>Refused (by company)</source>
-        <target state="translated">Refusé (par l'entreprise)</target>
+        <target state="translated">Refusé (par l&apos;entreprise)</target>
       </trans-unit>
-      <trans-unit id="input.url_create.label" datatype="html">
+      <trans-unit id="input.job.url_create.label" datatype="html">
         <source>Create job with its url</source>
         <target state="translated">Créer un job à partir de son URL</target>
         <note priority="1" from="description">label for url input to create new job</note>
         <note priority="1" from="meaning">create job url label</note>
       </trans-unit>
-      <trans-unit id="input.url_create.placeholder" datatype="html">
-        <source>Type or paste the job's URL</source>
-        <target state="translated">Saisissez ou collez l'URL du job</target>
+      <trans-unit id="input.job.url_create.placeholder" datatype="html">
+        <source>Type or paste the job&apos;s URL</source>
+        <target state="translated">Saisissez ou collez l&apos;URL du job</target>
         <note priority="1" from="description">placeholder for url input to create new job</note>
         <note priority="1" from="meaning">create job url placeholder</note>
       </trans-unit>
-      <trans-unit id="input.filter_by_status.label" datatype="html">
+      <trans-unit id="input.job.filter_by_status.label" datatype="html">
         <source>Filter by status</source>
         <target state="translated">Filtrer par statut</target>
         <note priority="1" from="description">filter by status</note>
       </trans-unit>
-      <trans-unit id="input.jobs_sort.label" datatype="html">
+      <trans-unit id="input.jobs.sort.label" datatype="html">
         <source>Sort</source>
         <target state="translated">Trier</target>
         <note priority="1" from="description">sort jobs</note>
       </trans-unit>
-      <trans-unit id="input.jobs_sort.option.date_desc" datatype="html">
+      <trans-unit id="input.jobs.sort.option.date_desc" datatype="html">
         <source>Date (newest first)</source>
         <target state="translated">Date (plus récentes)</target>
         <note priority="1" from="description">sort jobs by date desc</note>
       </trans-unit>
-      <trans-unit id="input.jobs_sort.option.date_asc" datatype="html">
+      <trans-unit id="input.jobs.sort.option.date_asc" datatype="html">
         <source>Date (oldest first)</source>
         <target state="translated">Date (plus anciennes)</target>
         <note priority="1" from="description">sort jobs by date asc</note>
       </trans-unit>
-      <trans-unit id="input.jobs_sort.option.rating_desc" datatype="html">
+      <trans-unit id="input.jobs.sort.option.rating_desc" datatype="html">
         <source>Rating (highest first)</source>
         <target state="translated">Note (décroissante)</target>
         <note priority="1" from="description">sort jobs by rating desc</note>
       </trans-unit>
-      <trans-unit id="input.jobs_sort.option.rating_asc" datatype="html">
+      <trans-unit id="input.jobs.sort.option.rating_asc" datatype="html">
         <source>Rating (lowest first)</source>
         <target state="translated">Note (croissante)</target>
         <note priority="1" from="description">sort jobs by rating asc</note>
@@ -384,29 +372,31 @@
       <trans-unit id="job.status" datatype="html">
         <source>Status</source>
         <target state="translated">Statut</target>
-        <note priority="1" from="description">label preceeding a job's status</note>
+        <note priority="1" from="description">label preceeding a job&apos;s status</note>
         <note priority="1" from="meaning">job status</note>
       </trans-unit>
       <trans-unit id="input.job.change_status.label" datatype="html">
         <source>Change status</source>
         <target state="translated">Modifier le statut</target>
-        <note priority="1" from="description">label of the input used to change a job's status</note>
+        <note priority="1" from="description">label of the input used to change a job&apos;s status</note>
         <note priority="1" from="meaning">change job status</note>
       </trans-unit>
       <trans-unit id="job.created" datatype="html">
-        <source>created</source>
-        <target state="translated">créé</target>
+        <source>Created</source>
+        <target state="translated">Créé</target>
+        <note priority="1" from="description">label preceeding a job&apos;s creationg date</note>
+        <note priority="1" from="meaning">job status</note>
       </trans-unit>
       <trans-unit id="job.activities.count" datatype="html">
         <source>Activities</source>
         <target state="translated">Activités</target>
-        <note priority="1" from="description">label preceeding a job's activities count</note>
+        <note priority="1" from="description">label preceeding a job&apos;s activities count</note>
         <note priority="1" from="meaning">job activities count</note>
       </trans-unit>
       <trans-unit id="job.attachments.count" datatype="html">
         <source>Attachments</source>
         <target state="translated">Pièces jointes</target>
-        <note priority="1" from="description">label preceeding a job's attachments count</note>
+        <note priority="1" from="description">label preceeding a job&apos;s attachments count</note>
         <note priority="1" from="meaning">job attachments count</note>
       </trans-unit>
       <trans-unit id="action.job.edit" datatype="html">
@@ -416,14 +406,14 @@
       <trans-unit id="action.job.attachements" datatype="html">
         <source>Attachments</source>
         <target state="translated">Pièces jointes</target>
-        <note priority="1" from="description">label of a job's attachments management action</note>
-        <note priority="1" from="meaning">edit job's attachments</note>
+        <note priority="1" from="description">label of a job&apos;s attachments management action</note>
+        <note priority="1" from="meaning">edit job&apos;s attachments</note>
       </trans-unit>
       <trans-unit id="action.job.details" datatype="html">
         <source>Details</source>
         <target state="translated">Details</target>
-        <note priority="1" from="description">label of a job's details view action</note>
-        <note priority="1" from="meaning">view job's details</note>
+        <note priority="1" from="description">label of a job&apos;s details view action</note>
+        <note priority="1" from="meaning">view job&apos;s details</note>
       </trans-unit>
       <trans-unit id="action.job.delete" datatype="html">
         <source>Delete</source>
@@ -500,7 +490,7 @@
       </trans-unit>
       <trans-unit id="job.activity.company_refusal" datatype="html">
         <source>Refusal (by company)</source>
-        <target state="translated">Refus (par l'entreprise)</target>
+        <target state="translated">Refus (par l&apos;entreprise)</target>
       </trans-unit>
       <trans-unit id="job.activity.email" datatype="html">
         <source>Email</source>
@@ -554,7 +544,7 @@
       </trans-unit>
       <trans-unit id="input.job.title.placeholder" datatype="html">
         <source>Job title</source>
-        <target state="translated">Saisissez l'intitulé du poste</target>
+        <target state="translated">Saisissez l&apos;intitulé du poste</target>
         <note priority="1" from="description">job title input placeholder</note>
         <note priority="1" from="meaning">job title placeholder</note>
       </trans-unit>
@@ -566,7 +556,7 @@
       </trans-unit>
       <trans-unit id="input.job.company.placeholder" datatype="html">
         <source>Company</source>
-        <target state="translated">Saisissez le nom de l'entreprise</target>
+        <target state="translated">Saisissez le nom de l&apos;entreprise</target>
         <note priority="1" from="description">job company input placeholder</note>
         <note priority="1" from="meaning">job company placeholder</note>
       </trans-unit>
@@ -618,17 +608,204 @@
         <note priority="1" from="description">Create action label</note>
         <note priority="1" from="meaning">create</note>
       </trans-unit>
-      <trans-unit id="job_created_or_saved" datatype="html">
+      <trans-unit id="job.created_or_saved" datatype="html">
         <source>Job <x id="PH" equiv-text="term"/> successfully</source>
         <target state="translated">Le job a bien été <x id="PH" equiv-text="term"/></target>
       </trans-unit>
-      <trans-unit id="job.updated" datatype="html">
+      <trans-unit id="info.job.updated" datatype="html">
         <source>updated</source>
         <target state="translated">enregistré</target>
       </trans-unit>
       <trans-unit id="error.job.create_or_save" datatype="html">
         <source>Job could not be <x id="PH" equiv-text="term"/>.<x id="PH_1" equiv-text="error.message"/></source>
-        <target state="translated">Le job n'a pas pu être <x id="PH" equiv-text="term"/>.<x id="PH_1" equiv-text="error.message"/></target>
+        <target state="translated">Le job n&apos;a pas pu être <x id="PH" equiv-text="term"/>.<x id="PH_1" equiv-text="error.message"/></target>
+      </trans-unit>
+      <trans-unit id="job.stepper.create.label" datatype="html">
+        <source>Job creation</source>
+        <target state="translated">Création du job</target>
+        <note priority="1" from="description">Job stepper job creation step label</note>
+      </trans-unit>
+      <trans-unit id="job.stepper.attachments.label" datatype="html">
+        <source>Attachments</source>
+        <target state="translated">Pièces jointes</target>
+        <note priority="1" from="description">Job stepper attachments step label</note>
+      </trans-unit>
+      <trans-unit id="job.stepper.action.skip" datatype="html">
+        <source>Skip</source>
+        <target state="translated">Passer</target>
+        <note priority="1" from="description">Skip step</note>
+      </trans-unit>
+      <trans-unit id="job.stepper.activities.label" datatype="html">
+        <source>Activities</source>
+        <target state="translated">Activités</target>
+        <note priority="1" from="description">Job stepper activities step label</note>
+      </trans-unit>
+      <trans-unit id="stepper.optional.label" datatype="html">
+        <source>Optional</source>
+        <target state="translated">Optionnel</target>
+      </trans-unit>
+      <trans-unit id="job.deleted" datatype="html">
+        <source>Job successfully deleted.</source>
+        <target state="translated">Job supprimé.</target>
+      </trans-unit>
+      <trans-unit id="warning.job.delete" datatype="html">
+        <source>Delete job &quot;<x id="PH" equiv-text="job.title"/>&quot; ?</source>
+        <target state="translated">Supprimer &quot;<x id="PH" equiv-text="job.title"/>&quot; ?</target>
+      </trans-unit>
+      <trans-unit id="info.job.status.updated" datatype="html">
+        <source>Status updated successfully.</source>
+        <target state="translated">Le statut a bien été modifié.</target>
+      </trans-unit>
+      <trans-unit id="info.job.rating.updated" datatype="html">
+        <source>Rating updated successfully.</source>
+        <target state="translated">La note a bien été modifiée.</target>
+      </trans-unit>
+      <trans-unit id="info.job.created" datatype="html">
+        <source>created</source>
+        <target state="translated">créé</target>
+      </trans-unit>
+      <trans-unit id="action.job.attachement.download" datatype="html">
+        <source>Download</source>
+        <target state="translated">Télécharger</target>
+        <note priority="1" from="description">download attachement action label</note>
+        <note priority="1" from="meaning">Download attachment</note>
+      </trans-unit>
+      <trans-unit id="action.job.attachement.delete" datatype="html">
+        <source>Delete</source>
+        <target state="translated">Supprimer</target>
+        <note priority="1" from="description">delete attachement action label</note>
+        <note priority="1" from="meaning">Delete attachment</note>
+      </trans-unit>
+      <trans-unit id="action.job.attachement.add" datatype="html">
+        <source>Add attachment</source>
+        <target state="translated">Ajouter une pièce jointe</target>
+        <note priority="1" from="description">add attachement action label</note>
+        <note priority="1" from="meaning">Add attachment</note>
+      </trans-unit>
+      <trans-unit id="job.attachments.manage" datatype="html">
+        <source>Manage attachements</source>
+        <target state="translated">Gérer les pièces jointes</target>
+        <note priority="1" from="description">attachments management ui title</note>
+        <note priority="1" from="meaning">manage attachments</note>
+      </trans-unit>
+      <trans-unit id="job.attachments.add" datatype="html">
+        <source>Add attachments</source>
+        <target state="translated">Ajouter des pièces jointes</target>
+        <note priority="1" from="description">attachments creation ui title</note>
+        <note priority="1" from="meaning">add attachments</note>
+      </trans-unit>
+      <trans-unit id="job.activities.manage" datatype="html">
+        <source>Manage activities</source>
+        <target state="translated">Gérer les activités</target>
+        <note priority="1" from="description">activities management ui title</note>
+        <note priority="1" from="meaning">manage activities</note>
+      </trans-unit>
+      <trans-unit id="job.activities.add" datatype="html">
+        <source>Add activities</source>
+        <target state="translated">Ajouter des activités</target>
+        <note priority="1" from="description">activities creation ui title</note>
+        <note priority="1" from="meaning">add activities</note>
+      </trans-unit>
+      <trans-unit id="input.attachment.name.label" datatype="html">
+        <source>Name</source>
+        <target state="translated">Nom</target>
+        <note priority="1" from="description">Label of the attachement name input</note>
+        <note priority="1" from="meaning">Attachment name input label</note>
+      </trans-unit>
+      <trans-unit id="input.attachment.file.label" datatype="html">
+        <source>File</source>
+        <target state="translated">Fichier</target>
+        <note priority="1" from="description">Label of the attachement file input</note>
+        <note priority="1" from="meaning">Attachment file input label</note>
+      </trans-unit>
+      <trans-unit id="action.attachment.remove" datatype="html">
+        <source>Remove this attachment</source>
+        <target state="translated">Retirer cette pièce jointe</target>
+      </trans-unit>
+      <trans-unit id="attachment.form.add" datatype="html">
+        <source>Add an attachment</source>
+        <target state="translated">Ajouter une pièce jointe</target>
+      </trans-unit>
+      <trans-unit id="input.attachment.name.placeholder" datatype="html">
+        <source>Attachment name</source>
+        <target state="translated">Nom de la pièce jointe</target>
+        <note priority="1" from="description">Placeholder of the attachement name input</note>
+        <note priority="1" from="meaning">Attachment name placeholder</note>
+      </trans-unit>
+      <trans-unit id="error.password.too_short" datatype="html">
+        <source>too short (min 8 characters)</source>
+        <target state="translated">trop court (min 8 caractères)</target>
+      </trans-unit>
+      <trans-unit id="error.password.too_long" datatype="html">
+        <source>too long (max 128 characters)</source>
+        <target state="translated">trop long (max 16 caractères)</target>
+      </trans-unit>
+      <trans-unit id="error.password.uppercase" datatype="html">
+        <source>needs at least 1 uppercase character</source>
+        <target state="translated">au moins 1 majuscule</target>
+      </trans-unit>
+      <trans-unit id="error.password.lowercase" datatype="html">
+        <source>needs at least 1 lowercase character</source>
+        <target state="translated">au moins 1 minuscule</target>
+      </trans-unit>
+      <trans-unit id="error.password.digit" datatype="html">
+        <source>needs at least 1 digit</source>
+        <target state="translated">au moins 1 chiffre</target>
+      </trans-unit>
+      <trans-unit id="error.password.symbol" datatype="html">
+        <source>needs at least 1 symbol (!@#$%^&amp;*(),.?&quot;:{}|&lt;&gt;)</source>
+        <target state="translated">au moins 1 caractère spécial (!@#$%^&amp;*(),.?&quot;:{}|&lt;&gt;)</target>
+      </trans-unit>
+      <trans-unit id="user.password.new" datatype="html">
+        <source>Create a new password</source>
+        <target state="translated">Créer un nouveau mot de passe</target>
+        <note priority="1" from="description">Create new password</note>
+      </trans-unit>
+      <trans-unit id="action.password.reset" datatype="html">
+        <source>Reset your password</source>
+        <target state="translated">Réinitialiser</target>
+        <note priority="1" from="description">reset password form validation button label</note>
+        <note priority="1" from="meaning">reset password</note>
+      </trans-unit>
+      <trans-unit id="user.password.reset.title" datatype="html">
+        <source>Reset your password</source>
+        <target state="translated">Réinitialiser votre mot de passe</target>
+        <note priority="1" from="description">title of the component used to reset user password</note>
+        <note priority="1" from="meaning">reset password title</note>
+      </trans-unit>
+      <trans-unit id="action.register" datatype="html">
+        <source>Register</source>
+        <target state="translated">Inscription</target>
+      </trans-unit>
+      <trans-unit id="user.registration.title" datatype="html">
+        <source>Registration</source>
+        <target state="translated">Inscription</target>
+        <note priority="1" from="description">title of the component used to register user</note>
+        <note priority="1" from="meaning">registration title</note>
+      </trans-unit>
+      <trans-unit id="user.login.title" datatype="html">
+        <source>Login</source>
+        <target state="translated">Login</target>
+        <note priority="1" from="description">title of the component used to login</note>
+        <note priority="1" from="meaning">login title</note>
+      </trans-unit>
+      <trans-unit id="action.login" datatype="html">
+        <source>Login</source>
+        <target state="translated">Login</target>
+      </trans-unit>
+      <trans-unit id="action.password.forgotten" datatype="html">
+        <source>Forgot password ?</source>
+        <target state="translated">Mot de passe oublié ?</target>
+        <note priority="1" from="description">forgot password link</note>
+      </trans-unit>
+      <trans-unit id="input.password.label" datatype="html">
+        <source>Password</source>
+        <target state="translated">Mot de passe</target>
+      </trans-unit>
+      <trans-unit id="input.password.placeholder" datatype="html">
+        <source>Enter your password</source>
+        <target state="translated">Saisissez votre mot de passe</target>
+        <note priority="1" from="description">password placeholder</note>
       </trans-unit>
     </body>
   </file>

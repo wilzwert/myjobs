@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, EventEmitter, Inject, OnInit, Output, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
-import { MatStepper, MatStepperModule } from '@angular/material/stepper';
+import { MatStepper, MatStepperIntl, MatStepperModule } from '@angular/material/stepper';
 import { Job } from '../../../core/model/job.interface';
 import { JobFormComponent } from '../job-form/job-form.component';
 import { JobActivitiesFormComponent } from '../job-actitivies-form/job-actitivities-form.component';
@@ -9,10 +9,12 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { BaseChildComponent } from '../../../core/component/base-child.component';
 import { JobMetadata } from '../../../core/model/job-metadata.interface';
+import { JobStepperIntl } from '../../../core/services/job-stepper-intl';
 
 @Component({
   selector: 'app-job-stepper',
   imports: [ReactiveFormsModule, MatButton, MatStepperModule, JobFormComponent, JobActivitiesFormComponent, JobAttachmentsFormComponent],
+  providers: [{provide: MatStepperIntl, useClass: JobStepperIntl}],
   templateUrl: './job-stepper.component.html',
   styleUrl: './job-stepper.component.scss'
 })

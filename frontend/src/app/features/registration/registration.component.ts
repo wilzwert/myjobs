@@ -13,6 +13,8 @@ import { ApiError } from '../../core/errors/api-error';
 import { AuthValidators } from '../../core/services/auth.validators';
 import { NgxCaptchaModule } from 'ngx-captcha';
 import { PasswordValidator } from '../../core/validators/password-validator';
+import { StatusIconComponent } from "../../layout/shared/status-icon/status-icon.component";
+import { InputBackendErrorsComponent } from "../../layout/shared/input-backend-errors/input-backend-errors.component";
 
 @Component({
   selector: 'app-register',
@@ -24,8 +26,10 @@ import { PasswordValidator } from '../../core/validators/password-validator';
     MatInputModule,
     ReactiveFormsModule,
     RouterLink,
-    NgxCaptchaModule
-  ],
+    NgxCaptchaModule,
+    StatusIconComponent,
+    InputBackendErrorsComponent
+],
   templateUrl: './registration.component.html',
   styleUrl: './registration.component.scss'
 })

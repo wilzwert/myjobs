@@ -10,12 +10,13 @@ import { NgxCaptchaModule } from 'ngx-captcha';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { ResetPasswordRequest } from '../../../../core/model/reset-password-request.interface';
 import { UserService } from '../../../../core/services/user.service';
+import { StatusIconComponent } from "../../../../layout/shared/status-icon/status-icon.component";
 
 
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, ReactiveFormsModule, RouterLink, NgxCaptchaModule],
+  imports: [MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, ReactiveFormsModule, NgxCaptchaModule, StatusIconComponent],
   templateUrl: './reset-password.component.html',
   styleUrl: './reset-password.component.scss'
 })

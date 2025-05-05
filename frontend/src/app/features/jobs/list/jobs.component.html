@@ -1,8 +1,8 @@
 @if( urlForm) {
     <form class="loggedin-form job-quick-create-form" [formGroup]="urlForm!" (ngSubmit)="createJobWithMetadata()">
         <mat-form-field>
-            <mat-label i18n="create job url label|label for url input to create new job@@input.url_create.label">Create job with its url</mat-label>
-            <input matInput formControlName="url" type="url" i18n-placeholder="create job url placeholder|placeholder for url input to create new job@@input.url_create.placeholder" placeholder="Type or paste the job's URL">
+            <mat-label i18n="create job url label|label for url input to create new job@@input.job.url_create.label">Create job with its url</mat-label>
+            <input matInput formControlName="url" type="url" i18n-placeholder="create job url placeholder|placeholder for url input to create new job@@input.job.url_create.placeholder" placeholder="Type or paste the job's URL">
             @if(url?.value !== '') {
                 <mat-hint class="url-hint" align="end">
                     <app-status-icon [isValid]="!url?.invalid" />
@@ -22,7 +22,7 @@
 
 <div>
     <mat-form-field>
-        <mat-label i18n="filter by status@@input.filter_by_status.label">Filter by status</mat-label>
+        <mat-label i18n="filter by status@@input.job.filter_by_status.label">Filter by status</mat-label>
         <mat-select (selectionChange)="setStatus($event)" [value]="currentStatus">
         @for(status of statusKeys ; track $index) {
             <mat-option [value]="status">{{ status | statusLabel }} </mat-option>
@@ -34,12 +34,12 @@
 @let page = jobs$ | async;
 @if(page !== null) {
     <mat-form-field appearance="outline">
-        <mat-label i18n="sort jobs@@input.jobs_sort.label">Sort</mat-label>
+        <mat-label i18n="sort jobs@@input.jobs.sort.label">Sort</mat-label>
         <mat-select [(ngModel)]="currentSort" (selectionChange)="changeSort()">
-            <mat-option value="createdAt,desc" i18n="sort jobs by date desc@@input.jobs_sort.option.date_desc">Date (newest first)</mat-option>
-            <mat-option value="createdAt,asc" i18n="sort jobs by date asc@@input.jobs_sort.option.date_asc">Date (oldest first)</mat-option>
-            <mat-option value="rating,desc" i18n="sort jobs by rating desc@@input.jobs_sort.option.rating_desc">Rating (highest first)</mat-option>
-            <mat-option value="rating,asc" i18n="sort jobs by rating asc@@input.jobs_sort.option.rating_asc">Rating (lowest first)</mat-option>
+            <mat-option value="createdAt,desc" i18n="sort jobs by date desc@@input.jobs.sort.option.date_desc">Date (newest first)</mat-option>
+            <mat-option value="createdAt,asc" i18n="sort jobs by date asc@@input.jobs.sort.option.date_asc">Date (oldest first)</mat-option>
+            <mat-option value="rating,desc" i18n="sort jobs by rating desc@@input.jobs.sort.option.rating_desc">Rating (highest first)</mat-option>
+            <mat-option value="rating,asc" i18n="sort jobs by rating asc@@input.jobs.sort.option.rating_asc">Rating (lowest first)</mat-option>
         </mat-select>
       </mat-form-field>
 
@@ -76,7 +76,7 @@
                             </mat-form-field>
 
                     </p>
-                    <p><span i18n="job status|label preceeding a job's creationg date@@job.created">Created</span> : {{ job.createdAt}}</p>
+                    <p><span i18n="job status|label preceeding a job's creationg date@@job.created">Created</span> : {{ job.createdAt | date }}</p>
                     <p><span i18n="job activities count|label preceeding a job's activities count@@job.activities.count">Activities</span> : {{ job.activities.length}}</p>
                     <p><span i18n="job attachments count|label preceeding a job's attachments count@@job.attachments.count">Attachments</span> : {{ job.attachments.length}}</p>
                     <app-rating [rating]="job.rating ? job.rating.value : 0" (ratingChange)="updateJobRating(job, $event)"></app-rating>
