@@ -23,7 +23,7 @@ export class ModalService {
 
   constructor(private dialog: MatDialog) {}
 
-  openJobModal(type: 'job' | 'attachments' | 'attachments-form' | 'activity', job: Job | null = null, succeeded: () => void, metadata = {}) {
+  openJobModal(type: 'job' | 'attachments' | 'attachments-form' | 'activities' | 'activities-form', job: Job | null = null, succeeded: () => void, metadata = {}) {
     const componentInputData: ComponentInputData = { component: JobEditionComponent, succeeded: succeeded, data: {job: job, metadata: {...metadata, type: type}} as ComponentInputDomainData } as ComponentInputData
     const dialogRef: MatDialogRef<ModalComponent> =  this.dialog.open(ModalComponent, {
       ...ModalService.MODAL_OPTIONS,

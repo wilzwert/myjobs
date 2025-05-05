@@ -10,19 +10,21 @@ import { CreateJobActivitiesRequest } from '../../../core/model/create-job-activ
 import { NotificationService } from '../../../core/services/notification.service';
 import { CreateJobActivityRequest } from '../../../core/model/create-job-activity-request.interface';
 import { MatButton } from '@angular/material/button';
-import { ActivityType, UserActitivityType } from '../../../core/model/activity-type';
+import { UserActitivityType } from '../../../core/model/activity-type';
 import { ActivityLabelPipe } from '../../../core/pipe/activity-label.pipe';
 import { MatOption, MatSelect } from '@angular/material/select';
+import { MatIcon } from '@angular/material/icon';
 
 
 @Component({
   selector: 'app-job-activities-form',
-  imports: [ActivityLabelPipe, ReactiveFormsModule, MatFormField, MatInput, MatLabel, MatButton, MatSelect, MatOption],
+  imports: [ActivityLabelPipe, ReactiveFormsModule, MatFormField, MatInput, MatLabel, MatButton, MatSelect, MatOption, MatIcon],
   templateUrl: './job-actitivities-form.component.html',
   styleUrl: './job-actitivities-form.component.scss'
 })
 export class JobActivitiesFormComponent implements OnInit {
   @Input({ required: true }) job!: Job;
+  @Input() defaultActivities = 0;
   @Output() activitiesSaved = new EventEmitter<Job>();
 
   loading = false;
@@ -37,6 +39,10 @@ export class JobActivitiesFormComponent implements OnInit {
     this.activityForm = this.fb.group({
       activities: this.fb.array([])
     });
+    
+    for(let a=0; a<this.defaultActivities; a++) {
+      this.addActivity();
+    }
   }
 
   get activities(): FormArray {

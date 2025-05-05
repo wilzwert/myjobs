@@ -15,12 +15,20 @@
                 <mat-label [attr.for]="'comment'+$index">Comment</mat-label>
                 <textarea matInput [id]="'comment'+$index" formControlName="comment" placeholder="Comment"></textarea>
             </mat-form-field>
-            <button mat-button type="button" (click)="removeActivity($index)">Remove</button>
+            @if($index >= defaultActivities) {
+                <button mat-icon-button (click)="removeActivity($index)">
+                    <mat-icon aria-hidden="false" aria-label="Remove this activity" fontIcon="remove">Remove this activitiy</mat-icon>
+                </button>
+            }
             
         </div>
         }
     </div>
-  
-    <button mat-button type="button" (click)="addActivity()">Add activity</button>
-    <button mat-button type="submit" [disabled]="activityForm.invalid || loading">Submit</button>
+    @if(activities.controls.length > 0) {
+        <button mat-raised-button type="submit" [disabled]="activities.invalid || loading">Save activities</button>
+    }
+
+    <button aria-hidden="false" aria-label="Add an activity"  mat-icon-button (click)="addActivity()">
+        <mat-icon fontIcon="add">Add an activity</mat-icon>
+    </button>
   </form>
