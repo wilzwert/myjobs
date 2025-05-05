@@ -21,6 +21,7 @@ public enum ErrorCode {
     PAGINATION_INVALID_PAGE,
     PAGINATION_INVALID_PAGE_SIZE,
     PAGINATION_OFFSET_TOO_BIG,
+    UNEXPECTED_ERROR,
 
     // fetch / extract parse jobs specific errors
     NO_HTML_FETCHER_FOUND,

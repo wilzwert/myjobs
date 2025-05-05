@@ -125,7 +125,7 @@ public class ErrorResponse {
     }
 
     public static ErrorResponse fromException(Exception ex) {
-        return build(HttpStatus.INTERNAL_SERVER_ERROR, "An error occurred.");
+        return build(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.UNEXPECTED_ERROR.name());
     }
 
     private static ErrorResponse build(HttpStatusCode status, String message) {
