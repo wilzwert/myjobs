@@ -32,8 +32,10 @@
         @if(job.activities.length > 0) {
             <mat-card-content>
             @for (activity of job.activities ; track $index) {
-                <p>{{ activity.type | activityLabel }} {{ activity.comment }} <p>
-                <p>{{ activity.createdAt | date }}</p>
+                <div style="display: flex">
+                    <p>{{ activity.createdAt | date }}</p>
+                    <p>{{ activity.type | activityLabel }} @if(activity.comment !== "") { : {{ activity.comment }} } <p>
+                </div>
             }
             </mat-card-content>
         }

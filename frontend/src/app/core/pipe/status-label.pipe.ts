@@ -10,8 +10,6 @@ export class StatusLabelPipe implements PipeTransform {
   constructor(private translatorService: TranslatorService){}
 
   transform(type: string): string {
-    console.log(`transformin ${type}`);
-    // return 'chloupi';
     return this.translatorService.translateJobStatus(type);
     return JobStatus[type as keyof typeof JobStatus] || type;
   }

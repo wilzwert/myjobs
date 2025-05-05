@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { JobService } from './job.service';
 import { JobStatus } from '../model/job.interface';
+import { ActivityType } from '../model/activity-type';
 
 @Injectable({
   providedIn: 'root'
@@ -87,6 +88,36 @@ export class TranslatorService {
         return $localize `:@@job.status.applicant_refused:Refused (by me)`;
       case JobStatus.COMPANY_REFUSED :
         return $localize `:@@job.status.company_refused:Refused (by company)`;
+    }
+  }
+
+  translateActivityType(activityType: string) :string {
+    const a = activityType as keyof typeof ActivityType;
+    switch(ActivityType[a]) {
+      case ActivityType.CREATION :
+        return $localize `:@@job.activity.creation:Creation`;
+      case ActivityType.APPLICANT_REFUSAL :
+        return $localize `:@@job.activity.applicant_refusal:Refusal (by me)`;
+      case ActivityType.ATTACHMENT_CREATION :
+        return $localize `:@@job.activity.attachment_creation:Attachement creation`;
+        case ActivityType.ATTACHMENT_DELETION :
+        return $localize `:@@job.activity.attachment_deletion:Attachement deletion`;
+      case ActivityType.APPLICATION :
+        return $localize `:@@job.activity.application:Application`;
+      case ActivityType.RELAUNCH :
+        return $localize `:@@job.activity.relaunch:Relaunch`;
+      case ActivityType.COMPANY_REFUSAL :
+        return $localize `:@@job.activity.company_refusal:Refusal (by company)`;
+      case ActivityType.EMAIL :
+        return $localize `:@@job.activity.email:Email`;
+      case ActivityType.IN_PERSON_INTERVIEW :
+        return $localize `:@@job.activity.in_person_interview:In person interview`;
+      case ActivityType.VIDEO_INTERVIEW :
+        return $localize `:@@job.activity.video_interview:Video interview`;
+      case ActivityType.TEL_INTERVIEW :
+        return $localize `:@@job.activity.phone_interview:Phone interview`;
+      case ActivityType.RATING :
+        return $localize `:@@job.activity.rating:Rating`;
     }
   }
 }

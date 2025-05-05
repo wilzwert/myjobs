@@ -9,9 +9,12 @@ export enum ActivityType {
     VIDEO_INTERVIEW = "Video interview",
     IN_PERSON_INTERVIEW = "In-person interview",  
     APPLICANT_REFUSAL = "Refused by applicant",
-    COMPANY_REFUSAL = "Refused by company"
+    COMPANY_REFUSAL = "Refused by company",
+    RATING = "Rating"
+
 }
 
+// activities types that may be manually added by a user
 export enum UserActitivityType {
     APPLICATION = "A",
     RELAUNCH = "R",
