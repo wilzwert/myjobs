@@ -166,9 +166,14 @@
           }
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "builder": "ng-extract-i18n-merge:ng-extract-i18n-merge",
           "options": {
-            "outputPath": "src/i18n"
+            "buildTarget": "myjobs:build",
+            "format": "xlf",
+            "outputPath": "src/i18n",
+            "targetFiles": [
+              "messages.fr.xlf"
+            ]
           }
         },
         "test": {

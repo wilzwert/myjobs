@@ -25,6 +25,6 @@ export enum JobStatus {
     CREATED = "Created",
     PENDING = "Pending",
     RELAUNCHED = "Relaunched",
-    APPLICANT_REFUSED = "Refused by applicant",
-    COMPANY_REFUSED = "Refused by company"
+    APPLICANT_REFUSED = "Refused (by me)",
+    COMPANY_REFUSED = "Refused (by company)"
 }

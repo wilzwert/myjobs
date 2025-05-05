@@ -2,58 +2,62 @@
     <form class="loggedin-form post-form" [formGroup]="urlForm!" (ngSubmit)="createJobWithMetadata()">
         <p>
             <mat-form-field>
-                <mat-label>Create job with its url</mat-label>
-                <input matInput placeholder="Create job with its url" formControlName="url" type="url">
-                <mat-hint class="url-hint" align="end">
-                    @if(url?.invalid) {
-                        <mat-icon class="input-invalid" svgIcon="invalid">Invalid</mat-icon>
-                    } 
-                    @else {
-                        <mat-icon class="input-valid"  svgIcon="valid">Valid</mat-icon>
-                    }</mat-hint>
+                <mat-label i18n="create job url label|label for url input to create new job@@input.url_create.label">Create job with its url</mat-label>
+                <input matInput formControlName="url" type="url" i18n-placeholder="create job url placeholder|placeholder for url input to create new job@@input.url_create.placeholder" placeholder="Type or paste the job's URL">
+                @if(url?.value !== '') {
+                    <mat-hint class="url-hint" align="end">
+                        <app-status-icon [isValid]="!url?.invalid" />
+                    </mat-hint>
+                }
             </mat-form-field>
         </p>
-        <button mat-raised-button type="submit" [disabled]="urlForm.invalid || urlFormLoading"> @if (urlFormLoading) { Loading... } @else { Create job }</button>
+        <button mat-raised-button type="submit" [disabled]="urlForm.invalid || urlFormLoading"> 
+            @if (urlFormLoading) { 
+                <span i18n="loading|inform the user loading occurs@@info.loading">Loading...</span>
+            } 
+            @else { 
+                <span i18n="create job|Create job action label@@action.job.create">Create job</span>
+            }
+        </button>
     </form>
 }
 
-<button hidden mat-flat-button (click)="createJob()">Create Job</button>
-
 <div>
     <mat-form-field>
-    <mat-label>Filter by status</mat-label>
-    <mat-select (selectionChange)="setStatus($event)" [value]="currentStatus">
-    @for(status of statusKeys ; track $index) {
-        <mat-option [value]="status">{{ status | statusLabel }} </mat-option>
-    }
-    </mat-select>
+        <mat-label i18n="filter by status@@input.filter_by_status.label">Filter by status</mat-label>
+        <mat-select (selectionChange)="setStatus($event)" [value]="currentStatus">
+        @for(status of statusKeys ; track $index) {
+            <mat-option [value]="status">{{ status | statusLabel }} </mat-option>
+        }
+        </mat-select>
     </mat-form-field>
 </div>
 
 @let page = jobs$ | async;
 @if(page !== null) {
     <mat-form-field appearance="outline">
-        <mat-label>Trier par</mat-label>
+        <mat-label i18n="sort jobs@@input.jobs_sort.label">Sort</mat-label>
         <mat-select [(ngModel)]="currentSort" (selectionChange)="changeSort()">
-            <mat-option value="createdAt,desc">Date (newest first)</mat-option>
-            <mat-option value="createdAt,asc">Date (oldest first)</mat-option>
-            <mat-option value="rating,desc">Rating (highest first)</mat-option>
-            <mat-option value="rating,asc">Rating (lowest first)</mat-option>
+            <mat-option value="createdAt,desc" i18n="sort jobs by date desc@@input.jobs_sort.option.date_desc">Date (newest first)</mat-option>
+            <mat-option value="createdAt,asc" i18n="sort jobs by date asc@@input.jobs_sort.option.date_asc">Date (oldest first)</mat-option>
+            <mat-option value="rating,desc" i18n="sort jobs by rating desc@@input.jobs_sort.option.rating_desc">Rating (highest first)</mat-option>
+            <mat-option value="rating,asc" i18n="sort jobs by rating asc@@input.jobs_sort.option.rating_asc">Rating (lowest first)</mat-option>
         </mat-select>
       </mat-form-field>
 
     <mat-paginator #paginator
-               class="demo-paginator"
+               class="jobs-paginator"
                (page)="handlePageEvent($event)"
                [length]="page.totalElementsCount"
                [pageSize]="currentPageSize"
                [pageIndex]="currentPage"
-               aria-label="Select page">
+               aria-label="Select list page"
+               i18n-aria-label="select list page@@pagination.jobs.select_page_label">
     </mat-paginator>
     @let content = page.content;
     @if(content !== null) {
         @for (job of page.content ; track $index) {
-            <mat-card appearance="outlined" aria-label="Job details">
+            <mat-card appearance="outlined" aria-label="Job details" i18n-aria-label="job details@@job.details">
                 <mat-card-header>
                     <mat-card-title>{{ job.title }}</mat-card-title>
                     <mat-card-subtitle>{{ job.url }}</mat-card-subtitle>
@@ -61,9 +65,9 @@
                     <mat-card-subtitle>{{ job.salary }}</mat-card-subtitle>
                 </mat-card-header>
                 <mat-card-content>
-                    <p>Status : {{ job.status | statusLabel}}
+                    <p><span i18n="job status|label preceeding a job's status@@job.status">Status</span> : {{ job.status | statusLabel}}
                         <mat-form-field>
-                            <mat-label>Change status</mat-label>
+                            <mat-label i18n="change job status|label of the input used to change a job's status@@input.job.change_status.label">Change status</mat-label>
                             <mat-select (selectionChange)="updateJobStatus(job, $event)" [value]="currentStatus">
                             @for(status of statusKeys ; track $index) {
                                 @if(status != job.status) {
@@ -74,16 +78,16 @@
                             </mat-form-field>
 
                     </p>
-                    <p>Created : {{ job.createdAt}}</p>
-                    <p>Activities : {{ job.activities.length}}</p>
-                    <p>Attachments : {{ job.attachments.length}}</p>
+                    <p><span i18n="job status|label preceeding a job's creationg date@@job.created">Created</span> : {{ job.createdAt}}</p>
+                    <p><span i18n="job activities count|label preceeding a job's activities count@@job.activities.count">Activities</span> : {{ job.activities.length}}</p>
+                    <p><span i18n="job attachments count|label preceeding a job's attachments count@@job.attachments.count">Attachments</span> : {{ job.attachments.length}}</p>
                     <app-rating [rating]="job.rating ? job.rating.value : 0" (ratingChange)="updateJobRating(job, $event)"></app-rating>
                 </mat-card-content>
                 <mat-card-actions>
-                    <button mat-flat-button (click)="editJob($event, job)">Edit</button>
-                    <button mat-flat-button (click)="manageAttachments($event, job)">Attachments</button>
-                    <button mat-flat-button [routerLink]="job.id" aria-label="Go to job details">Details</button>
-                    <button mat-flat-button (click)="deleteJob(job)" aria-label="Delete job">Delete</button>
+                    <button mat-flat-button (click)="editJob($event, job)" i18n="edit job|label of a job's edition action@@action.job.edit">Edit</button>
+                    <button mat-flat-button (click)="manageAttachments($event, job)" i18n="edit job's attachments|label of a job's attachments management action@@action.job.attachements">Attachments</button>
+                    <button mat-flat-button [routerLink]="job.id" aria-label="Go to job details" i18n="view job's details|label of a job's details view action@@action.job.details">Details</button>
+                    <button mat-flat-button (click)="deleteJob(job)" aria-label="Delete job" i18n="delete a job|label of a job's delete action@@action.job.delete">Delete</button>
                 </mat-card-actions>
                 
             </mat-card>

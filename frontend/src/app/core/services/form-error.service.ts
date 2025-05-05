@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ErrorTranslatorService } from './error-translator.service';
+import { TranslatorService } from './translator.service';
 import { AbstractControl, FormGroup } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
@@ -10,7 +10,7 @@ export class FormErrorService  {
     // useful to cancel subsriptions when user changes a value
     private cleanupSubscriptions = new Map<AbstractControl, Subscription>();
 
-  constructor(private errorTranslatorService: ErrorTranslatorService) { }
+  constructor(private translatorService: TranslatorService) { }
 
   setBackendErrors(
     form: FormGroup,
@@ -20,7 +20,7 @@ export class FormErrorService  {
       const control = form.get(fieldName);
       if (control) {
         const translatedErrors = errors.map((err:string) =>
-          this.errorTranslatorService.translate(err)
+          this.translatorService.translateError(err)
         );
         control.setErrors({ backend: translatedErrors });
         // unsub the previous subscription if it exists

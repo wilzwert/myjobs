@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
+import { JobService } from './job.service';
+import { JobStatus } from '../model/job.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 
-export class ErrorTranslatorService {
-  translate(code: string, params: Record<string, any> = {}): string {
+export class TranslatorService {
+  translateError(code: string, params: Record<string, any> = {}): string {
     switch (code) {
       case 'VALIDATION_FAILED':
         return $localize`:@@error.validation_failed:Validation error`;
@@ -29,6 +31,9 @@ export class ErrorTranslatorService {
         return $localize`:@@error.pagination_invalid_page_size:Invalid page size`;
       case 'PAGINATION_OFFSET_TOO_BIG':
         return $localize`:@@error.pagination_offset_too_big:Pagination offset too big`;
+
+      case 'UNEXPECTED_ERROR':
+        return $localize`:@@error.unexpected:An unexpected error occured`;
   
       // fetch / extract parse jobs specific errors
       case 'NO_HTML_FETCHER_FOUND':
@@ -65,7 +70,23 @@ export class ErrorTranslatorService {
 
 
       default:
-        return $localize`:@@error.unknown:An unexpected error occurred ${code}`;
+        return $localize`:@@error.unknown:An unknown error occurred ${code}`;
+    }
+  }
+  
+  translateJobStatus(jobStatus: string) :string {
+    const s = jobStatus as keyof typeof JobStatus;
+    switch(JobStatus[s]) {
+      case JobStatus.CREATED :
+        return $localize `:@@job.status.created:Created`;
+      case JobStatus.PENDING :
+        return $localize `:@@job.status.pending:Pending`;
+      case JobStatus.RELAUNCHED :
+        return $localize `:@@job.status.relaunched:Relaunched`;
+      case JobStatus.APPLICANT_REFUSED :
+        return $localize `:@@job.status.applicant_refused:Refused (by me)`;
+      case JobStatus.COMPANY_REFUSED :
+        return $localize `:@@job.status.company_refused:Refused (by company)`;
     }
   }
 }

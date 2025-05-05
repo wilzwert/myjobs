@@ -1,23 +1,23 @@
-import { Component, EventEmitter, Inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { User } from '../../../core/model/user.interface';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
-import { MatIcon } from '@angular/material/icon';
 import { AuthValidators } from '../../../core/services/auth.validators';
 import { MatInput } from '@angular/material/input';
 import { UserService } from '../../../core/services/user.service';
 import { EditUserRequest } from '../../../core/model/edit-user-request.interface';
-import { catchError, take, throwError } from 'rxjs';
+import { catchError, throwError } from 'rxjs';
 import { ApiError } from '../../../core/errors/api-error';
 import { NotificationService } from '../../../core/services/notification.service';
 import { BaseChildComponent } from '../../../core/component/base-child.component';
-import { ErrorTranslatorService } from '../../../core/services/error-translator.service';
 import { FormErrorService } from '../../../core/services/form-error.service';
+import { StatusIconComponent } from '../../../layout/shared/status-icon/status-icon.component';
+import { InputBackendErrorsComponent } from "../../../layout/shared/input-backend-errors/input-backend-errors.component";
+import { MatButton } from '@angular/material/button';
 
 @Component({
   selector: 'app-user-form',
-  imports: [ReactiveFormsModule, MatFormField, MatInput, MatLabel, MatHint, MatIcon],
+  imports: [ReactiveFormsModule, MatButton, MatFormField, MatInput, MatLabel, MatHint, StatusIconComponent, InputBackendErrorsComponent],
   templateUrl: './user-form.component.html',
   styleUrl: './user-form.component.scss'
 })
@@ -104,7 +104,6 @@ export class UserFormComponent extends BaseChildComponent implements OnInit, OnD
               catchError(
                 (error: ApiError) => {
                   this.isSubmitting = false;
-                  // this.fail();
                   
                   this.formErrorService.setBackendErrors(this.form, error.errors);
 

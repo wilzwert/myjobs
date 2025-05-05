@@ -3,7 +3,7 @@ import { NotificationService } from '../../core/services/notification.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { AppNotification } from '../../core/model/app-notification.interface';
 import { ApiError } from '../../core/errors/api-error';
-import { ErrorTranslatorService } from '../../core/services/error-translator.service';
+import { TranslatorService } from '../../core/services/translator.service';
 
 @Component({
   selector: 'app-notification',
@@ -13,15 +13,22 @@ import { ErrorTranslatorService } from '../../core/services/error-translator.ser
   styleUrl: './notification.component.scss'
 })
 export class NotificationComponent implements OnInit {
-  constructor(private notificationService: NotificationService, private matSnackBar: MatSnackBar, private errorTranslatorService: ErrorTranslatorService) {}
+  constructor(private notificationService: NotificationService, private matSnackBar: MatSnackBar, private translatorService: TranslatorService) {}
 
   ngOnInit(): void {
     this.notificationService.notification$.subscribe((notification: AppNotification | null) => {
         if(notification != null) {
-          // display snack bar only if error is not 401 returned from the API
-          // when a 401 is returned from the API the notification MUST be handled by a session service or a auth-related component
-          if(notification.error == null || !(notification.error instanceof ApiError) || notification.error.httpStatus !== 401) {
-            this.matSnackBar.open(this.errorTranslatorService.translate(notification.message), 'Close', {duration: 3000});
+          // in case notification is a confirmation or an information, just display it
+          if(notification.type != 'error') {
+            this.matSnackBar.open(notification.message, 'Close', {duration: 3000});
+          }
+          else {
+            // display snack bar only if error is not 401 returned from the API
+            // when a 401 is returned from the API the notification MUST be handled by a session service or a auth-related component
+            // in case of an error we call the translator service to handle backend error codes
+            if(notification.error == null || !(notification.error instanceof ApiError) || notification.error.httpStatus !== 401) {
+              this.matSnackBar.open(this.translatorService.translateError(notification.message), 'Close', {duration: 3000});
+            }
           }
         }
     });

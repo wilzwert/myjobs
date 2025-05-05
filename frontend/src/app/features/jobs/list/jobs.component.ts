@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable, take, tap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
-import {MatPaginatorModule, PageEvent} from '@angular/material/paginator';
+import {MatPaginatorIntl, MatPaginatorModule, PageEvent} from '@angular/material/paginator';
 import {MatCardModule} from '@angular/material/card';
 import { Page } from '../../../core/model/page.interface';
 import { Job, JobStatus } from '../../../core/model/job.interface';
@@ -17,14 +17,16 @@ import { NotificationService } from '../../../core/services/notification.service
 import { RatingComponent } from '../rating/rating.component';
 import { UpdateJobRatingRequest } from '../../../core/model/update-job-rating-request.interface';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import { JobMetadata } from '../../../core/model/job-metadata.interface';
+import { StatusIconComponent } from "../../../layout/shared/status-icon/status-icon.component";
+import { CustomPaginatorIntl } from '../../../core/services/custom-paginator-intl';
 
 
 @Component({
   selector: 'app-jobs',
-  imports: [AsyncPipe, MatCardModule, MatPaginatorModule, RatingComponent, RouterLink, StatusLabelPipe, MatFormField, MatInput, MatLabel, MatSelect, MatOption, MatButton, FormsModule, ReactiveFormsModule, MatHint, MatIcon],
+  imports: [AsyncPipe, MatCardModule, MatPaginatorModule, RatingComponent, RouterLink, StatusLabelPipe, MatFormField, MatInput, MatLabel, MatSelect, MatOption, MatButton, FormsModule, ReactiveFormsModule, MatHint, StatusIconComponent],
+  providers: [{provide: MatPaginatorIntl, useClass: CustomPaginatorIntl}],
   templateUrl: './jobs.component.html',
   styleUrl: './jobs.component.scss'
 })
