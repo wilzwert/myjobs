@@ -1,6 +1,6 @@
 import { defineConfig } from 'cypress'
 const dotenv = require('dotenv').config({systemvars: true})
-console.log(process.env["API_TARGET"]);
+console.log(process.env["API_URL"]);
 
 export default defineConfig({
   
