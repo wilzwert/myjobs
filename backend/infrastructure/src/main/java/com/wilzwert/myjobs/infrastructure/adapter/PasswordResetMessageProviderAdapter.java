@@ -23,7 +23,7 @@ public class PasswordResetMessageProviderAdapter implements PasswordResetMessage
             var message = mailProvider.createMessage("mail/reset_password", user.getEmail(), user.getFirstName(), "email.password_reset.subject", user.getLang().toString());
 
             // generate URL
-            String url = mailProvider.createUrl("/password/new?token=" + user.getResetPasswordToken());
+            String url = mailProvider.createUrl("uri.password.new", message.getLocale(), user.getResetPasswordToken());
             message.setVariable("url", url);
 
             mailProvider.send(message);

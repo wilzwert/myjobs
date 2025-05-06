@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.UnsupportedEncodingException;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,9 +36,10 @@ public class PasswordResetMessageProviderAdapterTest {
 
     @Test
     public void testSendEmail() throws MessagingException, UnsupportedEncodingException {
+        Locale locale = Locale.of(Lang.EN.name());
         CustomMailMessage mailMessage = new CustomMailMessage("mail/reset_password", "user@example.com", "John", "email.password_reset.subject", "EN");
         when(mailProvider.createMessage("mail/reset_password", "user@example.com", "John", "email.password_reset.subject", "EN")).thenReturn(mailMessage);
-        when(mailProvider.createUrl("/password/new?token=reset-token")).thenReturn("http://myjobs.com/password/new?token=reset-token")  ;
+        when(mailProvider.createUrl("uri.password.new", locale, "reset-token")).thenReturn("http://myjobs.com/password/new?token=reset-token")  ;
 
         User user = User.builder()
                 .id(UserId.generate())
@@ -54,7 +56,7 @@ public class PasswordResetMessageProviderAdapterTest {
 
         assertDoesNotThrow(() -> underTest.send(user));
         verify(mailProvider).createMessage("mail/reset_password", "user@example.com", "John", "email.password_reset.subject", "EN");
-        verify(mailProvider).createUrl("/password/new?token=reset-token");
+        verify(mailProvider).createUrl("uri.password.new", locale, "reset-token");
         verify(mailProvider).send(mailMessage);
 
         assertThat(mailMessage.getVariables())

@@ -19,7 +19,6 @@ import org.thymeleaf.context.Context;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Locale;
-import java.util.concurrent.CompletableFuture;
 
 @Component
 public class MailProvider {
@@ -62,8 +61,44 @@ public class MailProvider {
         return new CustomMailMessage(template, recipientMail, recipientName, subject, (lang != null ? lang : defaultLanguage));
     }
 
-    public String createUrl(String uri) {
-        return frontendUrl + uri;
+    /**
+     *
+     * Creates a URL based on the uri and the locale provided
+     * Locale is used as is because it is based on the Lang enum,
+     * therefore we know its language tag will be either 'en' or 'fr'
+     *
+     * @param uri the uri
+     * @param locale the locale which will be used as a uri prefix
+     * @return the complete url
+     */
+    public String createUrl(String uri, Locale locale) {
+        String realUri = messageSource.getMessage(uri, null, locale);
+        return frontendUrl + "/" + locale.toLanguageTag() + "/" + realUri;
+    }
+
+    /**
+     *
+     * Creates a URL based on the uri, the locale provided, and some args
+     * Locale is used as is because it is based on the Lang enum,
+     * therefore we know its language tag will be either 'en' or 'fr'
+     *
+     * @param uri the uri
+     * @param locale the locale which will be used as a uri prefix
+     * @return the complete url
+     */
+    public String createUrl(String uri, Locale locale, Object... args) {
+        String realUri = messageSource.getMessage(uri, args, locale);
+        System.out.println(realUri);
+        return frontendUrl + "/" + locale.toLanguageTag() + "/" + realUri;
+    }
+
+    /**
+     * Shortcut to generate /lang/me urls
+     * @param locale the local to use to create the url
+     * @return the url to the user account
+     */
+    public String createMeUrl(Locale locale) {
+        return createUrl("uri.me", locale);
     }
 
     private MimeMessage createMimeMessage(CustomMailMessage messageToSend, Locale locale, String htmlContent) throws MessagingException, UnsupportedEncodingException {
@@ -76,7 +111,7 @@ public class MailProvider {
         Multipart multipart = new MimeMultipart("related");
 
         MimeBodyPart htmlPart = new MimeBodyPart();
-        htmlPart.setText(htmlContent, "UTF-8", "html");
+        htmlPart.setContent(htmlContent, "text/html; charset=UTF-8");
         multipart.addBodyPart(htmlPart);
 
         try {
@@ -94,17 +129,11 @@ public class MailProvider {
     }
 
     // TODO : improve exception handling with custom exceptions
-    public void send(CustomMailMessage messageToSend) throws MessagingException, UnsupportedEncodingException {
-        Locale locale = Locale.forLanguageTag(messageToSend.getLang().toLowerCase()); // e.g. "EN", "FR"
-        send(messageToSend, locale);
-    }
-
     @Async
-    public CompletableFuture<Void> send(CustomMailMessage messageToSend, Locale locale) throws MessagingException, UnsupportedEncodingException {
-        Context context = new Context(locale);
+    public void send(CustomMailMessage messageToSend) throws MessagingException, UnsupportedEncodingException {
+        Context context = new Context(messageToSend.getLocale());
         messageToSend.getVariables().forEach(context::setVariable);
         String htmlContent = templateEngine.process(messageToSend.getTemplate(), context);
-        mailSender.send(createMimeMessage(messageToSend, locale, htmlContent));
-        return CompletableFuture.completedFuture(null);
+        mailSender.send(createMimeMessage(messageToSend, messageToSend.getLocale(), htmlContent));
     }
 }
