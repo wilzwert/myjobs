@@ -17,7 +17,7 @@ public class EmailVerificationMessageProviderAdapter implements EmailVerificatio
     @Override
     public void send(User user) {
         try {
-            var message = mailProvider.createMessage("mail/email_verification", user.getEmail(), user.getFirstName(), "Email verification");
+            var message = mailProvider.createMessage("mail/email_verification", user.getEmail(), user.getFirstName(), "email.email_verification.subject", user.getLang().toString());
             // generate URL
             String url = mailProvider.createUrl("/me");
             message.setVariable("url", url);

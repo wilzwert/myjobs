@@ -9,6 +9,8 @@ spring:
     username: ${MAIL_USERNAME:}
     password: ${MAIL_PASSWORD:}
     properties:
+      mime:
+        charset: UTF-8
       mail:
         smtp:
           auth: ${MAIL_SMTP_AUTH:false}
@@ -23,6 +25,9 @@ spring:
       auto-index-creation: true
       uuid-representation: standard
       replica-set-name: ${MONGODB_RS_NAME:rs0}
+  thymeleaf:
+    encoding: UTF-8
+
 
 # security
 security:
@@ -65,3 +70,4 @@ application:
   mail:
     from: ${APPLICATION_MAIL_FROM:noreply@locahost}
     from-name: ${APPLICATION_MAIL_FROM_NAME:MyJobs}
+  default-language: EN

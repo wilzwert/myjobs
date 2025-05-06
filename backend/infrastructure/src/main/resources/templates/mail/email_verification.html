@@ -4,18 +4,16 @@
 
 <section>
     <p th:style="${paragraphStyle}">
-        Dear <span th:text="${firstName}"></span> <span th:text="${lastName}"></span>
+        <span th:text="#{email.common.content.dear}"></span> <span th:text="${firstName}"></span> <span th:text="${lastName}"></span>
     </p>
+    <p th:style="${paragraphStyle}" th:text="#{email.common.info.email_validate}"></p>
+
     <p th:style="${paragraphStyle}">
-        Please click on the link below to validate your email address.
+        <a th:style="${buttonStyle}" th:href="${validationUrl}" th:text="#{email.common.action.email_validate}"></a>
     </p>
 
     <p th:style="${paragraphStyle}">
-        <a th:style="${buttonStyle}" th:href="${validationUrl}">Validate my email address</a>
-    </p>
-
-    <p th:style="${paragraphStyle}">
-        <a th:style="${buttonStyle}" th:href="${url}" >Go to my account</a>
+        <a th:style="${buttonStyle}" th:href="${url}" th:text="#{email.common.action.go_to_account}" ></a>
     </p>
 </section>
 

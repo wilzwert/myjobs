@@ -19,14 +19,17 @@ public class CustomMailMessage {
 
     private String body;
 
+    private String lang;
+
     private HashMap<String, String> variables = new HashMap<>();
 
-    public CustomMailMessage(String template, String recipientMail, String recipientName, String subject) {
+    public CustomMailMessage(String template, String recipientMail, String recipientName, String subject, String lang) {
         this.template = template;
         this.recipientMail = recipientMail;
         this.recipientName = recipientName;
         this.subject = subject;
         this.body = "";
+        this.lang = lang;
     }
 
     public void setVariable(String key, String value) {

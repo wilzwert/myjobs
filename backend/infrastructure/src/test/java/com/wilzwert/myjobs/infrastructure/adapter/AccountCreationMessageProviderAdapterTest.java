@@ -35,8 +35,8 @@ public class AccountCreationMessageProviderAdapterTest {
 
     @Test
     public void testSendEmail() throws MessagingException, UnsupportedEncodingException {
-        CustomMailMessage mailMessage = new CustomMailMessage("mail/account_creation", "user@example.com", "John", "Account creation");
-        when(mailProvider.createMessage("mail/account_creation", "user@example.com", "John", "Account creation")).thenReturn(mailMessage);
+        CustomMailMessage mailMessage = new CustomMailMessage("mail/account_creation", "user@example.com", "John", "email.account_creation.subject", "EN");
+        when(mailProvider.createMessage("mail/account_creation", "user@example.com", "John", "email.account_creation.subject", "EN")).thenReturn(mailMessage);
         when(mailProvider.createUrl("/me")).thenReturn("http://myjobs.com/me");
         when(mailProvider.createUrl("/me/email/validation?code=validation-code")).thenReturn("http://myjobs.com/me/email/validation?code=validation-code")  ;
 
@@ -53,7 +53,7 @@ public class AccountCreationMessageProviderAdapterTest {
                 .build();
 
         assertDoesNotThrow(() -> underTest.send(user));
-        verify(mailProvider).createMessage("mail/account_creation", "user@example.com", "John", "Account creation");
+        verify(mailProvider).createMessage("mail/account_creation", "user@example.com", "John", "email.account_creation.subject", "EN");
         verify(mailProvider).createUrl("/me");
         verify(mailProvider).send(mailMessage);
 

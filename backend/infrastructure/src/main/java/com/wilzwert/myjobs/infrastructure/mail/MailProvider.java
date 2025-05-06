@@ -8,6 +8,7 @@ import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
@@ -17,6 +18,8 @@ import org.thymeleaf.context.Context;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 
 @Component
 public class MailProvider {
@@ -24,47 +27,56 @@ public class MailProvider {
 
     private final TemplateEngine templateEngine;
 
+    private final MessageSource messageSource;
+
     private final String frontendUrl;
 
     private final String from;
 
     private final String fromName;
 
+    private final String defaultLanguage;
+
+
+
     public MailProvider(
             final JavaMailSender mailSender,
             final TemplateEngine templateEngine,
+            final MessageSource messageSource,
             @Value("${application.frontend.url}") String frontendUrl,
             @Value("${application.mail.from}") String from,
-            @Value("${application.mail.from-name}") String fromName
+            @Value("${application.mail.from-name}") String fromName,
+            @Value("${application.default-language}") String defaultLanguage
     ) {
         this.mailSender = mailSender;
         this.templateEngine = templateEngine;
+        this.messageSource = messageSource;
         this.frontendUrl = frontendUrl;
         this.from = from;
         this.fromName = fromName;
+        this.defaultLanguage = defaultLanguage;
     }
 
     // TODO : improve exception handling with custom exceptions
-    public CustomMailMessage createMessage(String template, String recipientMail, String recipientName, String subject)  {
-        return new CustomMailMessage(template, recipientMail, recipientName, subject);
+    public CustomMailMessage createMessage(String template, String recipientMail, String recipientName, String subject, String lang)  {
+        return new CustomMailMessage(template, recipientMail, recipientName, subject, (lang != null ? lang : defaultLanguage));
     }
 
     public String createUrl(String uri) {
         return frontendUrl + uri;
     }
 
-    private MimeMessage createMimeMessage(CustomMailMessage messageToSend, String htmlContent) throws MessagingException, UnsupportedEncodingException {
+    private MimeMessage createMimeMessage(CustomMailMessage messageToSend, Locale locale, String htmlContent) throws MessagingException, UnsupportedEncodingException {
         MimeMessage message =  mailSender.createMimeMessage();
-        System.out.println("message has been created with class " + message.getClass());
         message.setFrom(new InternetAddress(from, fromName));
         message.setRecipients(Message.RecipientType.TO, new InternetAddress(messageToSend.getRecipientMail(), messageToSend.getRecipientName()).toUnicodeString());
-        message.setSubject(messageToSend.getSubject());
+        message.setSubject(messageSource.getMessage(messageToSend.getSubject(), null, locale), "UTF-8");
 
         // send a multipart message to allow logo embedding
         Multipart multipart = new MimeMultipart("related");
 
         MimeBodyPart htmlPart = new MimeBodyPart();
-        htmlPart.setText(htmlContent, "utf-8", "html");
+        htmlPart.setText(htmlContent, "UTF-8", "html");
         multipart.addBodyPart(htmlPart);
 
         try {
@@ -82,11 +94,17 @@ public class MailProvider {
     }
 
     // TODO : improve exception handling with custom exceptions
-    @Async
     public void send(CustomMailMessage messageToSend) throws MessagingException, UnsupportedEncodingException {
-        Context context = new Context();
+        Locale locale = Locale.forLanguageTag(messageToSend.getLang().toLowerCase()); // e.g. "EN", "FR"
+        send(messageToSend, locale);
+    }
+
+    @Async
+    public CompletableFuture<Void> send(CustomMailMessage messageToSend, Locale locale) throws MessagingException, UnsupportedEncodingException {
+        Context context = new Context(locale);
         messageToSend.getVariables().forEach(context::setVariable);
         String htmlContent = templateEngine.process(messageToSend.getTemplate(), context);
-        mailSender.send(createMimeMessage(messageToSend, htmlContent));
+        mailSender.send(createMimeMessage(messageToSend, locale, htmlContent));
+        return CompletableFuture.completedFuture(null);
     }
 }
