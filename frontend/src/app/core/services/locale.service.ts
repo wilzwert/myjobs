@@ -52,6 +52,7 @@ export class LocaleService {
     // observe locale changes to update user if needed
     this._locale$
       .pipe(
+        // don't take unknown lang ie don't handle lang before it is resolved
         filter((l) => l !== LocaleService.UNKNOWN_LANG),
         distinctUntilChanged(), // avoid duplicates
         switchMap((lang) => {
@@ -79,7 +80,7 @@ export class LocaleService {
       }
     }
 
-    // TODO retriev from cookie instead of localstorage
+    // TODO retrieve from cookie instead of localstorage
     const lang = localStorage.getItem("lang");
     if(lang !== null) {
       return lang;

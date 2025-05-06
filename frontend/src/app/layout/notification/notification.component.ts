@@ -27,7 +27,8 @@ export class NotificationComponent implements OnInit {
             // when a 401 is returned from the API the notification MUST be handled by a session service or a auth-related component
             // in case of an error we call the translator service to handle backend error codes
             if(notification.error == null || !(notification.error instanceof ApiError) || notification.error.httpStatus !== 401) {
-              this.matSnackBar.open(this.translatorService.translateError(notification.message), 'Close', {duration: 3000});
+              // only ApiError messages are translatable by the TranslatorService
+              this.matSnackBar.open((notification.error instanceof ApiError ? this.translatorService.translateError(notification.message) : notification.message), $localize `:@@action.close:Close`, {duration: 3000});
             }
           }
         }

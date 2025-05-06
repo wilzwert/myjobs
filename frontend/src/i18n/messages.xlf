@@ -644,6 +644,21 @@
         <source>Enter your password</source>
         <note priority="1" from="description">password placeholder</note>
       </trans-unit>
+      <trans-unit id="message.disconnected" datatype="html">
+        <source>You have been disconnected.</source>
+      </trans-unit>
+      <trans-unit id="message.registration.success" datatype="html">
+        <source>Registration completed successfully, you may now log in.</source>
+      </trans-unit>
+      <trans-unit id="action.close" datatype="html">
+        <source>Close</source>
+      </trans-unit>
+      <trans-unit id="error.login" datatype="html">
+        <source>Login failed</source>
+      </trans-unit>
+      <trans-unit id="info.login.verify" datatype="html">
+        <source>Please verify your email or password</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>

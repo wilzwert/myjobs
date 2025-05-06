@@ -15,6 +15,7 @@ import { NgxCaptchaModule } from 'ngx-captcha';
 import { PasswordValidator } from '../../core/validators/password-validator';
 import { StatusIconComponent } from "../../layout/shared/status-icon/status-icon.component";
 import { InputBackendErrorsComponent } from "../../layout/shared/input-backend-errors/input-backend-errors.component";
+import { LocaleService } from '../../core/services/locale.service';
 
 @Component({
   selector: 'app-register',
@@ -36,14 +37,17 @@ import { InputBackendErrorsComponent } from "../../layout/shared/input-backend-e
 export class RegistrationComponent {
   public form: FormGroup;
   public isSubmitting = false;
+  public currentLang: string;
 
   constructor(
     private authService: AuthService,
     private authValidators: AuthValidators,
     private router: Router,
     private fb: FormBuilder,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private localeService: LocaleService
   ) {
+    this.currentLang = this.localeService.currentLocale.toUpperCase();
     this.form = this.fb.group({
       email: [
         '', 
@@ -81,7 +85,8 @@ export class RegistrationComponent {
           Validators.required,
           PasswordValidator
         ]
-      ]
+      ],
+      lang: [this.currentLang]
     });
   }
 
@@ -105,6 +110,10 @@ export class RegistrationComponent {
     return this.form.get('lastName');
   }
 
+  get lang() {
+    return this.form.get('lang');
+  }
+
   submit() :void {
     if(!this.isSubmitting && this.form.valid) {
       this.isSubmitting = true;
@@ -114,14 +123,12 @@ export class RegistrationComponent {
         catchError(
           (error: ApiError) => {
             this.isSubmitting = false;
-            return throwError(() => new Error(
-              'Registration failed. '+(error.httpStatus === 409 ? "Email or username already in use" : 'An error occured')
-            ));
+            return throwError(() => error);
           }
       ))
       .subscribe(() => {
           this.isSubmitting = false;
-          this.notificationService.confirmation("Registration completed successfully, you may now log in.");
+          this.notificationService.confirmation($localize `:@@message.registration.success:Registration completed successfully, you may now log in.`);
           this.router.navigate(["/login"])
       });
     }

@@ -55,7 +55,7 @@ export class SessionService {
     if(redirect) {
       this.router.navigate(['']);
     }
-    this.notificationService.information("You have been disconnected.");
+    this.notificationService.information($localize `:@@message.disconnected:You have been disconnected.`);
   }
 
   private next(): void {

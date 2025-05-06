@@ -807,6 +807,26 @@
         <target state="translated">Saisissez votre mot de passe</target>
         <note priority="1" from="description">password placeholder</note>
       </trans-unit>
+      <trans-unit id="message.disconnected" datatype="html">
+        <source>You have been disconnected.</source>
+        <target state="translated">Vous avez été déconnecté.</target>
+      </trans-unit>
+      <trans-unit id="message.registration.success" datatype="html">
+        <source>Registration completed successfully, you may now log in.</source>
+        <target state="translated">Votre compte a bien été créé, vous pouvez maintenant vous connecter.</target>
+      </trans-unit>
+      <trans-unit id="action.close" datatype="html">
+        <source>Close</source>
+        <target state="translated">Fermer</target>
+      </trans-unit>
+      <trans-unit id="error.login" datatype="html">
+        <source>Login failed</source>
+        <target state="translated">La connexion a échoué</target>
+      </trans-unit>
+      <trans-unit id="info.login.verify" datatype="html">
+        <source>Please verify your email or password</source>
+        <target state="translated">Merci de vérifier votre email et votre mot de passe</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

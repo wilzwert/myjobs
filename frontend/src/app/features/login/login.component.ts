@@ -64,7 +64,7 @@ export class LoginComponent {
               // here we have to build a "regular" Error
               // otherwise the NotificationService would not display as it is specifically designed to skip  401 errors
               return throwError(() => new Error(
-                'Login failed.'+(error.httpStatus === 401 ? ' Pleas verify your email or password' : '')
+                $localize `:@@error.login:Login failed`+'.'+(error.httpStatus === 401 ? ' '+$localize `:@@info.login.verify:Please verify your email or password` +'.' : '')
               ));
             }
           )
