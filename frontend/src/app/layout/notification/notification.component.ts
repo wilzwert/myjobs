@@ -20,7 +20,7 @@ export class NotificationComponent implements OnInit {
         if(notification != null) {
           // in case notification is a confirmation or an information, just display it
           if(notification.type != 'error') {
-            this.matSnackBar.open(notification.message, 'Close', {duration: 3000});
+            this.matSnackBar.open(notification.message, $localize `:@@action.close:Close`, {duration: 3000});
           }
           else {
             // display snack bar only if error is not 401 returned from the API
