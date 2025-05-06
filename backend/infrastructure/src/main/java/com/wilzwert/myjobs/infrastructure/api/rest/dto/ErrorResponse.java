@@ -92,7 +92,6 @@ public class ErrorResponse {
     public static ErrorResponse fromException(HttpMessageNotReadableException ex) {
         Throwable cause = ex.getCause();
         if (cause instanceof JsonMappingException formatEx) {
-            System.out.println(formatEx.getMessage());
             String fieldName = "";
             if (!formatEx.getPath().isEmpty()) {
                 fieldName = formatEx.getPath().getFirst().getFieldName();

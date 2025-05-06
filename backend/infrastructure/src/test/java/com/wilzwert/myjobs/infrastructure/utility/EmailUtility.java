@@ -21,7 +21,6 @@ public class EmailUtility {
         }
 
         if (content instanceof Multipart multipart) {
-            System.out.println("message is multipart ("+multipart.getCount()+" parts)");
             for (int i = 0; i < multipart.getCount(); i++) {
                 BodyPart part = multipart.getBodyPart(i);
                 if (part.isMimeType("text/html")) {

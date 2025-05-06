@@ -70,7 +70,6 @@ public class AccountCreationMessageProviderAdapterIT extends AbstractBaseIntegra
         MimeMessage message = argument.getValue();
 
         assertThat(message.getSubject()).isEqualTo(expectedSubject);
-        System.out.println(message.getSubject());
         String htmlBody = EmailUtility.extractHtmlContent(message);
         assertThat(htmlBody.indexOf(expectedHtml)).isGreaterThan(-1);
         assertThat(message.getAllRecipients()[0].toString()).isEqualTo("John <user@example.com>");

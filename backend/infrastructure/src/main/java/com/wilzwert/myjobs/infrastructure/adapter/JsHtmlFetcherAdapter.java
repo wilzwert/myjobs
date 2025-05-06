@@ -14,8 +14,6 @@ import java.util.Optional;
 public class JsHtmlFetcherAdapter implements JsHtmlFetcher {
     @Override
     public Optional<String> fetchHtml(String url) {
-        System.out.println("in JsHtmlFetcherAdapter.fetchHtml");
-        // return Optional.empty();
         return Optional.of("<html><head><title>JS</title></head><body>" + url + "</body></html>");
     }
 }

@@ -35,7 +35,6 @@ public class MockFileStorageTest {
         String fileId = uploadedFile.path(); // Utilise le fileId retourné
         String url = underTest.generateProtectedUrl(fileId);
         assertEquals("https://mockstorage.local/fake-url/faked_uploads/cv.doc", url);
-        System.out.println("URL signée : " + url);
 
         // Test de la suppression
         underTest.delete(fileId);

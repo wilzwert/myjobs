@@ -88,7 +88,6 @@ public class MailProvider {
      */
     public String createUrl(String uri, Locale locale, Object... args) {
         String realUri = messageSource.getMessage(uri, args, locale);
-        System.out.println(realUri);
         return frontendUrl + "/" + locale.toLanguageTag() + "/" + realUri;
     }
 

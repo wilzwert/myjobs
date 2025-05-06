@@ -59,7 +59,7 @@ public class ErrorResponseTest {
         ErrorResponse response = ErrorResponse.fromException(new Exception());
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getHttpStatusCode());
         assertEquals("500", response.getStatus());
-        assertEquals("An error occurred.", response.getMessage());
+        assertEquals(ErrorCode.UNEXPECTED_ERROR.name(), response.getMessage());
         assertEquals(new Date().toString(), response.getTime());
     }
 

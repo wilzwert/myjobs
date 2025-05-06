@@ -45,7 +45,6 @@ public class JwtService {
                     .findFirst()
                     .orElse(null);
             token = jwtCookie != null ? jwtCookie.getValue() : null;
-            System.out.println("token : "+token);
             if(token != null && !token.isEmpty()) {
                 return Optional.of(token);
             }
