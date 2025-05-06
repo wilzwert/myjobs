@@ -21,7 +21,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.verify;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -37,17 +38,17 @@ import static org.mockito.Mockito.*;
 @ActiveProfiles("integration")
 @Tag("Integration")
 @Import(SyncTestExecutorConfiguration.class)
-public class AccountCreationMessageProviderAdapterIT extends AbstractBaseIntegrationTest {
+public class PasswordResetMessageProviderAdapterIT extends AbstractBaseIntegrationTest {
     @MockitoSpyBean
     private JavaMailSender mailSender;
 
     @Autowired
-    private AccountCreationMessageProviderAdapter underTest;
+    private PasswordResetMessageProviderAdapter underTest;
 
     @ParameterizedTest
     @CsvSource({
-            "'EN', 'Account creation', 'Thank you for signing up for MyJobs'",
-            "'FR', 'Création de votre compte', 'Merci de vous être inscrit à MyJobs'"
+            "'EN', 'Password reset', 'To reset your password, please follow the link below'",
+            "'FR', 'Réinitialisation de votre mot de passe', 'Pour réinitialiser votre mot de passe, merci de suivre le lien ci-dessous'"
     })
     public void shouldSendMail(String lang, String expectedSubject, String expectedHtml) throws Exception {
         User user = User.builder()
