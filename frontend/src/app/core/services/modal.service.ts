@@ -8,6 +8,7 @@ import { UserFormComponent } from '../../features/user/user-form/user-form.compo
 import { User } from '../model/user.interface';
 import { ModalComponent } from '../../layout/modal/modal.component';
 import { ComponentInputData, ComponentInputDomainData } from '../model/component-input-data.interface';
+import { UserEditComponent } from '../../features/user/user-edit/user-edit.component';
 
 @Injectable({
   providedIn: 'root'
@@ -48,7 +49,7 @@ export class ModalService {
   }
 
   openUserEditModal(user: User, succeeded: (data: ComponentInputDomainData) => void) {
-    const componentInputData: ComponentInputData = { component: UserFormComponent, succeeded: succeeded, data: {user: user} as ComponentInputDomainData } as ComponentInputData
+    const componentInputData: ComponentInputData = { component: UserEditComponent, succeeded: succeeded, data: {user: user} as ComponentInputDomainData } as ComponentInputData
     const dialogRef: MatDialogRef<ModalComponent> =  this.dialog.open(ModalComponent, {
       ...ModalService.MODAL_OPTIONS,
       data: componentInputData

@@ -7,15 +7,13 @@ import { MatInputModule } from '@angular/material/input';
 import { AuthService } from '../../core/services/auth.service';
 import { RegistrationRequest } from '../../core/model/registration-request.interface';
 import { catchError, take, throwError } from 'rxjs';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { NotificationService } from '../../core/services/notification.service';
 import { ApiError } from '../../core/errors/api-error';
 import { AuthValidators } from '../../core/services/auth.validators';
 import { NgxCaptchaModule } from 'ngx-captcha';
 import { PasswordValidator } from '../../core/validators/password-validator';
-import { StatusIconComponent } from "../../layout/shared/status-icon/status-icon.component";
-import { InputBackendErrorsComponent } from "../../layout/shared/input-backend-errors/input-backend-errors.component";
-import { LocaleService } from '../../core/services/locale.service';
+import { UserFormComponent } from "../user/user-form/user-form.component";
 
 @Component({
   selector: 'app-register',
@@ -26,10 +24,8 @@ import { LocaleService } from '../../core/services/locale.service';
     MatIconModule,
     MatInputModule,
     ReactiveFormsModule,
-    RouterLink,
     NgxCaptchaModule,
-    StatusIconComponent,
-    InputBackendErrorsComponent
+    UserFormComponent
 ],
   templateUrl: './registration.component.html',
   styleUrl: './registration.component.scss'
@@ -37,17 +33,14 @@ import { LocaleService } from '../../core/services/locale.service';
 export class RegistrationComponent {
   public form: FormGroup;
   public isSubmitting = false;
-  public currentLang: string;
-
+  
   constructor(
     private authService: AuthService,
     private authValidators: AuthValidators,
     private router: Router,
     private fb: FormBuilder,
-    private notificationService: NotificationService,
-    private localeService: LocaleService
+    private notificationService: NotificationService
   ) {
-    this.currentLang = this.localeService.currentLocale.toUpperCase();
     this.form = this.fb.group({
       email: [
         '', 
@@ -85,33 +78,8 @@ export class RegistrationComponent {
           Validators.required,
           PasswordValidator
         ]
-      ],
-      lang: [this.currentLang]
+      ]
     });
-  }
-
-  get email() {
-    return this.form.get('email');
-  }
-
-  get username() {
-    return this.form.get('username');
-  }
-
-  get password() {
-    return this.form.get('password');
-  }
-
-  get firstName() {
-    return this.form.get('firstName');
-  }
-
-  get lastName() {
-    return this.form.get('lastName');
-  }
-
-  get lang() {
-    return this.form.get('lang');
   }
 
   submit() :void {

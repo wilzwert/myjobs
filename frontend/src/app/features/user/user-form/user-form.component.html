@@ -1,5 +1,3 @@
-<h1 i18n="edit user info@@user.information.edit">Edit my information</h1>
-
 <form [formGroup]="form" (ngSubmit)="submit()">
     <mat-form-field>
         <mat-label i18n="email|email input label@@input.email.label">Email</mat-label>                
@@ -25,6 +23,27 @@
         </mat-hint>
     </mat-form-field>
 
+    @if(showPassword) {
+        <mat-form-field>
+            <mat-label i18n="@@input.password.label">Password</mat-label>
+            <input maxlength="128" matInput formControlName="password" type="password" i18n-placeholder="password placeholder@@input.password.placeholder" placeholder="Enter your password">
+            @if(password?.invalid) {
+                @if(password?.errors !== null && password?.errors?.['passwordStrength'] !== null) {
+                    @let errors = password!.errors?.['passwordStrength'];
+                    @if(errors !== undefined && errors?.message !== undefined) {
+                        <mat-hint class="password-hint" align="start">
+                            {{  errors.message }}
+                        </mat-hint>
+                    }
+                }
+            }
+
+            <mat-hint class="password-hint" align="end">
+                <app-status-icon [isValid]="!password?.invalid" />
+            </mat-hint>
+        </mat-form-field>
+    }
+
 
     <mat-form-field>
         <mat-label i18n="first name|first name input label@@input.first_name.label">First name</mat-label>
@@ -44,14 +63,19 @@
         </mat-hint>
     </mat-form-field>
 
+    <input type="hidden" readonly formControlName="lang" name="lang">
+
     <button mat-raised-button type="submit" [disabled]="form.invalid || isSubmitting">
         @if (isSubmitting) { 
             <span i18n="loading|inform the user loading occurs@@info.loading">Loading...</span>
         } 
         @else { 
-            <span i18n="save|Save action label@@action.save">Save</span>
+            @if(submitLabel === 'Save') {
+                <span i18n="save|Save action label@@action.save">Save</span>
+            }
+            @else {
+                <span i18n="register|Register action label@@action.register">Register</span>
+            }
         }
     </button>
 </form>
-    
-
