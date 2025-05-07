@@ -11,6 +11,5 @@ export class StatusLabelPipe implements PipeTransform {
 
   transform(type: string): string {
     return this.translatorService.translateJobStatus(type);
-    return JobStatus[type as keyof typeof JobStatus] || type;
   }
 }

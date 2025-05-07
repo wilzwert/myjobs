@@ -47,12 +47,12 @@
         <target>Position invalide</target>
       </trans-unit>
       <trans-unit id="error.no_html_fetcher_found" datatype="html">
-        <source>Html could not be fetched</source>
-        <target>Impossible de récupérer le HTML</target>
+        <source>HTML could not be fetched</source>
+        <target state="translated">Impossible de récupérer le HTML</target>
       </trans-unit>
       <trans-unit id="error.no_metadata_extractor_found" datatype="html">
         <source>Job metadata could not be extracted</source>
-        <target>Impossible d&apos;extraire les données du Job</target>
+        <target>Impossible d'extraire les données du Job</target>
       </trans-unit>
       <trans-unit id="error.user_weak_password" datatype="html">
         <source>Password does not meet requirements</source>
@@ -60,7 +60,7 @@
       </trans-unit>
       <trans-unit id="error.user_already_exists" datatype="html">
         <source>User already exists</source>
-        <target>L&apos;utilisateur existe déjà</target>
+        <target>L'utilisateur existe déjà</target>
       </trans-unit>
       <trans-unit id="error.user_not_found" datatype="html">
         <source>User not found</source>
@@ -72,7 +72,7 @@
       </trans-unit>
       <trans-unit id="error.user_password_match_failed" datatype="html">
         <source>Invalid old password</source>
-        <target>L&apos;ancien mot de passe est incorrect</target>
+        <target>L'ancien mot de passe est incorrect</target>
       </trans-unit>
       <trans-unit id="error.user_password_reset_expired" datatype="html">
         <source>Reset password token expired</source>
@@ -95,8 +95,8 @@
         <target>Job non trouvé</target>
       </trans-unit>
       <trans-unit id="error.unknown" datatype="html">
-        <source>An unknown error occurred <x id="PH" equiv-text="code"/></source>
-        <target state="translated">Une erreur inconnue est survenue <x id="PH" equiv-text="code"/></target>
+        <source>An unknown error occurred</source>
+        <target state="translated">Une erreur inconnue est survenue<x id="PH" equiv-text="code"/></target>
       </trans-unit>
       <trans-unit id="info.registered" datatype="html">
         <source>Registered</source>
@@ -166,13 +166,13 @@
       </trans-unit>
       <trans-unit id="input.username.label" datatype="html">
         <source>Username</source>
-        <target state="translated">Nom d&apos;utilisateur</target>
+        <target state="translated">Nom d'utilisateur</target>
         <note priority="1" from="description">username input label</note>
         <note priority="1" from="meaning">username</note>
       </trans-unit>
       <trans-unit id="input.username.placeholder" datatype="html">
         <source>Type your username</source>
-        <target state="translated">Saisissez votre nom d&apos;utilisateur</target>
+        <target state="translated">Saisissez votre nom d'utilisateur</target>
         <note priority="1" from="description">username input placeholder</note>
         <note priority="1" from="meaning">username placeholder</note>
       </trans-unit>
@@ -213,7 +213,7 @@
       </trans-unit>
       <trans-unit id="info.username_exists" datatype="html">
         <source>Username already taken</source>
-        <target state="translated">Ce nom d&apos;utilisateur est déjà utilisé</target>
+        <target state="translated">Ce nom d'utilisateur est déjà utilisé</target>
         <note priority="1" from="description">inform the user the username already exists</note>
         <note priority="1" from="meaning">username exists</note>
       </trans-unit>
@@ -284,15 +284,15 @@
       </trans-unit>
       <trans-unit id="action.user.send_validation_email" datatype="html">
         <source>Send validation email</source>
-        <target state="translated">Envoyer l&apos;email de vérification</target>
+        <target state="translated">Envoyer l'email de vérification</target>
       </trans-unit>
-      <trans-unit id="error.unexpected" datatype="html">
-        <source>An unexpected error occured</source>
+      <trans-unit id="error.unexpected_error" datatype="html">
+        <source>An unexpected error occurred</source>
         <target state="translated">Une erreur inattendue est survenue</target>
       </trans-unit>
       <trans-unit id="info.account_deleted" datatype="html">
         <source>Your account has been deleted. Thank your for using MyJobs.</source>
-        <target state="translated">Votre compte a été supprimé. Merci d&apos;avoir utilisé MyJobs.</target>
+        <target state="translated">Votre compte a été supprimé. Merci d'avoir utilisé MyJobs.</target>
       </trans-unit>
       <trans-unit id="warning.user.account_delete" datatype="html">
         <source>Delete your accout ? All data will be definitely deleted !</source>
@@ -300,7 +300,7 @@
       </trans-unit>
       <trans-unit id="info.user.validation_email_sent" datatype="html">
         <source>The verification email has been sent ; please check your emails.</source>
-        <target state="translated">L&apos;email de vérification a été envoyé ; merci de vérifier vos emails.</target>
+        <target state="translated">L'email de vérification a été envoyé ; merci de vérifier vos emails.</target>
       </trans-unit>
       <trans-unit id="job.status.created" datatype="html">
         <source>Created</source>
@@ -320,7 +320,7 @@
       </trans-unit>
       <trans-unit id="job.status.company_refused" datatype="html">
         <source>Refused (by company)</source>
-        <target state="translated">Refusé (par l&apos;entreprise)</target>
+        <target state="translated">Refusé (par l'entreprise)</target>
       </trans-unit>
       <trans-unit id="input.job.url_create.label" datatype="html">
         <source>Create job with its url</source>
@@ -329,8 +329,8 @@
         <note priority="1" from="meaning">create job url label</note>
       </trans-unit>
       <trans-unit id="input.job.url_create.placeholder" datatype="html">
-        <source>Type or paste the job&apos;s URL</source>
-        <target state="translated">Saisissez ou collez l&apos;URL du job</target>
+        <source>Type or paste the job's URL</source>
+        <target state="translated">Saisissez ou collez l'URL du job</target>
         <note priority="1" from="description">placeholder for url input to create new job</note>
         <note priority="1" from="meaning">create job url placeholder</note>
       </trans-unit>
@@ -372,31 +372,31 @@
       <trans-unit id="job.status" datatype="html">
         <source>Status</source>
         <target state="translated">Statut</target>
-        <note priority="1" from="description">label preceeding a job&apos;s status</note>
+        <note priority="1" from="description">label preceeding a job's status</note>
         <note priority="1" from="meaning">job status</note>
       </trans-unit>
       <trans-unit id="input.job.change_status.label" datatype="html">
         <source>Change status</source>
         <target state="translated">Modifier le statut</target>
-        <note priority="1" from="description">label of the input used to change a job&apos;s status</note>
+        <note priority="1" from="description">label of the input used to change a job's status</note>
         <note priority="1" from="meaning">change job status</note>
       </trans-unit>
       <trans-unit id="job.created" datatype="html">
         <source>Created</source>
         <target state="translated">Créé</target>
-        <note priority="1" from="description">label preceeding a job&apos;s creationg date</note>
+        <note priority="1" from="description">label preceeding a job's creationg date</note>
         <note priority="1" from="meaning">job status</note>
       </trans-unit>
       <trans-unit id="job.activities.count" datatype="html">
         <source>Activities</source>
         <target state="translated">Activités</target>
-        <note priority="1" from="description">label preceeding a job&apos;s activities count</note>
+        <note priority="1" from="description">label preceeding a job's activities count</note>
         <note priority="1" from="meaning">job activities count</note>
       </trans-unit>
       <trans-unit id="job.attachments.count" datatype="html">
         <source>Attachments</source>
         <target state="translated">Pièces jointes</target>
-        <note priority="1" from="description">label preceeding a job&apos;s attachments count</note>
+        <note priority="1" from="description">label preceeding a job's attachments count</note>
         <note priority="1" from="meaning">job attachments count</note>
       </trans-unit>
       <trans-unit id="action.job.edit" datatype="html">
@@ -406,14 +406,14 @@
       <trans-unit id="action.job.attachements" datatype="html">
         <source>Attachments</source>
         <target state="translated">Pièces jointes</target>
-        <note priority="1" from="description">label of a job&apos;s attachments management action</note>
-        <note priority="1" from="meaning">edit job&apos;s attachments</note>
+        <note priority="1" from="description">label of a job's attachments management action</note>
+        <note priority="1" from="meaning">edit job's attachments</note>
       </trans-unit>
       <trans-unit id="action.job.details" datatype="html">
         <source>Details</source>
         <target state="translated">Details</target>
-        <note priority="1" from="description">label of a job&apos;s details view action</note>
-        <note priority="1" from="meaning">view job&apos;s details</note>
+        <note priority="1" from="description">label of a job's details view action</note>
+        <note priority="1" from="meaning">view job's details</note>
       </trans-unit>
       <trans-unit id="action.job.delete" datatype="html">
         <source>Delete</source>
@@ -490,7 +490,7 @@
       </trans-unit>
       <trans-unit id="job.activity.company_refusal" datatype="html">
         <source>Refusal (by company)</source>
-        <target state="translated">Refus (par l&apos;entreprise)</target>
+        <target state="translated">Refus (par l'entreprise)</target>
       </trans-unit>
       <trans-unit id="job.activity.email" datatype="html">
         <source>Email</source>
@@ -544,7 +544,7 @@
       </trans-unit>
       <trans-unit id="input.job.title.placeholder" datatype="html">
         <source>Job title</source>
-        <target state="translated">Saisissez l&apos;intitulé du poste</target>
+        <target state="translated">Saisissez l'intitulé du poste</target>
         <note priority="1" from="description">job title input placeholder</note>
         <note priority="1" from="meaning">job title placeholder</note>
       </trans-unit>
@@ -556,7 +556,7 @@
       </trans-unit>
       <trans-unit id="input.job.company.placeholder" datatype="html">
         <source>Company</source>
-        <target state="translated">Saisissez le nom de l&apos;entreprise</target>
+        <target state="translated">Saisissez le nom de l'entreprise</target>
         <note priority="1" from="description">job company input placeholder</note>
         <note priority="1" from="meaning">job company placeholder</note>
       </trans-unit>
@@ -618,7 +618,7 @@
       </trans-unit>
       <trans-unit id="error.job.create_or_save" datatype="html">
         <source>Job could not be <x id="PH" equiv-text="term"/>.<x id="PH_1" equiv-text="error.message"/></source>
-        <target state="translated">Le job n&apos;a pas pu être <x id="PH" equiv-text="term"/>.<x id="PH_1" equiv-text="error.message"/></target>
+        <target state="translated">Le job n'a pas pu être <x id="PH" equiv-text="term"/>.<x id="PH_1" equiv-text="error.message"/></target>
       </trans-unit>
       <trans-unit id="job.stepper.create.label" datatype="html">
         <source>Job creation</source>
@@ -649,8 +649,8 @@
         <target state="translated">Job supprimé.</target>
       </trans-unit>
       <trans-unit id="warning.job.delete" datatype="html">
-        <source>Delete job &quot;<x id="PH" equiv-text="job.title"/>&quot; ?</source>
-        <target state="translated">Supprimer &quot;<x id="PH" equiv-text="job.title"/>&quot; ?</target>
+        <source>Delete job "<x id="PH" equiv-text="job.title"/>" ?</source>
+        <target state="translated">Supprimer "<x id="PH" equiv-text="job.title"/>" ?</target>
       </trans-unit>
       <trans-unit id="info.job.status.updated" datatype="html">
         <source>Status updated successfully.</source>
@@ -753,8 +753,8 @@
         <target state="translated">au moins 1 chiffre</target>
       </trans-unit>
       <trans-unit id="error.password.symbol" datatype="html">
-        <source>needs at least 1 symbol (!@#$%^&amp;*(),.?&quot;:{}|&lt;&gt;)</source>
-        <target state="translated">au moins 1 caractère spécial (!@#$%^&amp;*(),.?&quot;:{}|&lt;&gt;)</target>
+        <source>needs at least 1 symbol (!@#$%^&amp;*(),.?":{}|&lt;&gt;)</source>
+        <target state="translated">au moins 1 caractère spécial (!@#$%^&amp;*(),.?":{}|&lt;&gt;)</target>
       </trans-unit>
       <trans-unit id="user.password.new" datatype="html">
         <source>Create a new password</source>

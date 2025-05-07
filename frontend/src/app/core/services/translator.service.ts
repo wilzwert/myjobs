@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { JobService } from './job.service';
 import { JobStatus } from '../model/job.interface';
 import { ActivityType } from '../model/activity-type';
 
@@ -8,71 +7,43 @@ import { ActivityType } from '../model/activity-type';
 })
 
 export class TranslatorService {
+  private errorMessages: Record<string, string> = {
+    VALIDATION_FAILED: $localize`:@@error.validation_failed:Validation error`,
+    FIELD_CANNOT_BE_EMPTY: $localize`:@@error.field_cannot_be_empty:Field cannot be empty`,
+    INVALID_VALUE: $localize`:@@error.invalid_value:Invalid value`,
+    INVALID_EMAIL: $localize`:@@error.invalid_email:Invalid email`,
+    INVALID_URL: $localize`:@@error.invalid_url:Invalid url`,
+    FIELD_TOO_SHORT: $localize`:@@error.field_too_short:Field too short`,
+    FIELD_TOO_LONG: $localize`:@@error.field_too_long:Field too long`,
+    FIELD_MIN_MAX_LENGTH: $localize`:@@error.field_min_max_length:Invalid field size`,
+    PAGINATION_INVALID_PAGE: $localize`:@@error.pagination_invalid_page:Invalid page`,
+    PAGINATION_INVALID_PAGE_SIZE: $localize`:@@error.pagination_invalid_page_size:Invalid page size`,
+    PAGINATION_OFFSET_TOO_BIG: $localize`:@@error.pagination_offset_too_big:Pagination offset too big`,
+    UNEXPECTED_ERROR: $localize`:@@error.unexpected_error:An unexpected error occurred`,
+
+    NO_HTML_FETCHER_FOUND: $localize`:@@error.no_html_fetcher_found:HTML could not be fetched`,
+    NO_METADATA_EXTRACTOR_FOUND: $localize`:@@error.no_metadata_extractor_found:Job metadata could not be extracted`,
+
+    USER_WEAK_PASSWORD: $localize`:@@error.user_weak_password:Password does not meet requirements`,
+    USER_ALREADY_EXISTS: $localize`:@@error.user_already_exists:User already exists`,
+    USER_NOT_FOUND: $localize`:@@error.user_not_found:User not found`,
+    USER_LOGIN_FAILED: $localize`:@@error.user_login_failed:Login failed`,
+    USER_PASSWORD_MATCH_FAILED: $localize`:@@error.user_password_match_failed:Invalid old password`,
+    USER_PASSWORD_RESET_EXPIRED: $localize`:@@error.user_password_reset_expired:Reset password token expired`,
+
+    ATTACHMENT_NOT_FOUND: $localize`:@@error.attachment_not_found:Attachment not found`,
+    ATTACHMENT_FILE_NOT_READABLE: $localize`:@@error.attachment_file_not_readable:Attachment file not readable`,
+
+    JOB_ALREADY_EXISTS: $localize`:@@error.job_already_exists:Job already exists`,
+    JOB_NOT_FOUND: $localize`:@@error.job_not_found:Job not found`
+  };
+
   translateError(code: string, params: Record<string, any> = {}): string {
-    switch (code) {
-      case 'VALIDATION_FAILED':
-        return $localize`:@@error.validation_failed:Validation error`;
-      case 'FIELD_CANNOT_BE_EMPTY':
-        return $localize`:@@error.field_cannot_be_empty:Field cannot be empty`;
-      case 'INVALID_VALUE':
-        return $localize`:@@error.invalid_value:Invalid value`;
-      case 'INVALID_EMAIL':
-        return $localize`:@@error.invalid_email:Invalid email`;
-      case 'INVALID_URL':
-        return $localize`:@@error.invalid_url:Invalid url`;
-      case 'FIELD_TOO_SHORT':
-        return $localize`:@@error.field_too_short:Field too short`;
-      case 'FIELD_TOO_LONG':
-        return $localize`:@@error.field_too_long:Field too long`;
-      case 'FIELD_MIN_MAX_LENGTH':
-        return $localize`:@@error.field_min_max_length:Invalid field size`;
-      case 'PAGINATION_INVALID_PAGE':
-        return $localize`:@@error.pagination_invalid_page:Invalid page`;
-      case 'PAGINATION_INVALID_PAGE_SIZE':
-        return $localize`:@@error.pagination_invalid_page_size:Invalid page size`;
-      case 'PAGINATION_OFFSET_TOO_BIG':
-        return $localize`:@@error.pagination_offset_too_big:Pagination offset too big`;
-
-      case 'UNEXPECTED_ERROR':
-        return $localize`:@@error.unexpected:An unexpected error occured`;
-  
-      // fetch / extract parse jobs specific errors
-      case 'NO_HTML_FETCHER_FOUND':
-        return $localize`:@@error.no_html_fetcher_found:Html could not be fetched`;
-      case 'NO_METADATA_EXTRACTOR_FOUND':
-        return $localize`:@@error.no_metadata_extractor_found:Job metadata could not be extracted`;
-  
-  
-      // user specific errors
-      case 'USER_WEAK_PASSWORD':
-        return $localize`:@@error.user_weak_password:Password does not meet requirements`;
-      case 'USER_ALREADY_EXISTS':
-        return $localize`:@@error.user_already_exists:User already exists`;
-      case 'USER_NOT_FOUND':
-        return $localize`:@@error.user_not_found:User not found`;
-      case 'USER_LOGIN_FAILED':
-        return $localize`:@@error.user_login_failed:Login failed`;
-      case 'USER_PASSWORD_MATCH_FAILED':
-        return $localize`:@@error.user_password_match_failed:Invalid old password`;
-      case 'USER_PASSWORD_RESET_EXPIRED':
-        return $localize`:@@error.user_password_reset_expired:Reset password token expired`;
-  
-      // attachment specific errors
-      case 'ATTACHMENT_NOT_FOUND':
-        return $localize`:@@error.attachment_not_found:Attachment not found`;
-      case 'ATTACHMENT_FILE_NOT_READABLE':
-        return $localize`:@@error.attachment_file_not_readable:Attachment file not readable`;
-  
-      // job specific errors
-      case 'JOB_ALREADY_EXISTS':
-        return $localize`:@@error.job_already_exists:Job already exists`;
-      case 'JOB_NOT_FOUND':
-        return $localize`:@@error.job_not_found:Job not found`;
-
-
-      default:
-        return $localize`:@@error.unknown:An unknown error occurred ${code}`;
+    const errorMessage = this.errorMessages[code.toUpperCase()];
+    if(errorMessage) {
+      return errorMessage;
     }
+    return $localize`:@@error.unknown:An unknown error occurred ${code}`;
   }
   
   translateJobStatus(jobStatus: string) :string {

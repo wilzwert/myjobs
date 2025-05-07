@@ -36,7 +36,7 @@
         <source>Pagination offset too big</source>
       </trans-unit>
       <trans-unit id="error.no_html_fetcher_found" datatype="html">
-        <source>Html could not be fetched</source>
+        <source>HTML could not be fetched</source>
       </trans-unit>
       <trans-unit id="error.no_metadata_extractor_found" datatype="html">
         <source>Job metadata could not be extracted</source>
@@ -72,7 +72,7 @@
         <source>Job not found</source>
       </trans-unit>
       <trans-unit id="error.unknown" datatype="html">
-        <source>An unknown error occurred <x id="PH" equiv-text="code"/></source>
+        <source>An unknown error occurred</source>
       </trans-unit>
       <trans-unit id="info.invalid" datatype="html">
         <source>Invalid</source>
@@ -211,8 +211,8 @@
         <note priority="1" from="description">title of the modal indicating user has to confirm an action</note>
         <note priority="1" from="meaning">confirmation required</note>
       </trans-unit>
-      <trans-unit id="error.unexpected" datatype="html">
-        <source>An unexpected error occured</source>
+      <trans-unit id="error.unexpected_error" datatype="html">
+        <source>An unexpected error occurred</source>
       </trans-unit>
       <trans-unit id="info.account_deleted" datatype="html">
         <source>Your account has been deleted. Thank your for using MyJobs.</source>
