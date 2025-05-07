@@ -1,16 +1,64 @@
-import { TestBed } from '@angular/core/testing';
-
+import { FormControl, FormGroup } from '@angular/forms';
 import { FormErrorService } from './form-error.service';
 
 describe('FormErrorService', () => {
   let service: FormErrorService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(FormErrorService);
+    const translatorMock = {
+      translateError: jest.fn((e: string) => `translated_${e}`)
+    };
+    service = new FormErrorService(translatorMock as any);
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should set backend errors and clean them on value change', () => {
+    const form = new FormGroup({
+      email: new FormControl('old@example.com'),
+      username: new FormControl('oldUser')
+    });
+
+    const errors = {
+      'email': ['Email already taken'],
+      'username': ['Username is invalid']
+    };
+
+    service.setBackendErrors(form, errors);
+
+    expect(form.get('email')?.errors).toEqual({
+      backend: ['translated_Email already taken']
+    });
+
+    expect(form.get('username')?.errors).toEqual({
+      backend: ['translated_Username is invalid']
+    });
+
+    // simulate user changing value
+    form.get('email')?.setValue('new@example.com');
+
+    expect(form.get('email')?.errors).toBeNull();
+  });
+
+  it('should unsubscribe all on cleanup', () => {
+    const form = new FormGroup({
+      email: new FormControl('test')
+    });
+
+    const errors = {
+      'email': ['some error']
+    };
+
+    service.setBackendErrors(form, errors);
+
+    const sub = (service as any).cleanupSubscriptions.get(form.get('email')!);
+    const spy = jest.spyOn(sub, 'unsubscribe');
+
+    service.cleanup();
+
+    expect(spy).toHaveBeenCalled();
+    expect((service as any).cleanupSubscriptions.size).toBe(0);
   });
 });
