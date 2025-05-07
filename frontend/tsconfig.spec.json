@@ -5,16 +5,15 @@
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
     "types": [
-      "jest"
-    ],
-    "target": "ES2022",              
+      "node", "jest"
+    ],             
     "module": "CommonJS",            // use CommonJS for Jest
-    "moduleResolution": "node",      
+    /*"moduleResolution": "node",      
     "esModuleInterop": true,         
     "skipLibCheck": true,            
     "strict": true,                  
     "resolveJsonModule": true,       
-    "isolatedModules": true          
+    "isolatedModules": true*/   
   },
   "include": [
     "src/**/*.spec.ts",

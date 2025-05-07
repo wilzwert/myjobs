@@ -38,57 +38,43 @@ export class TranslatorService {
     JOB_NOT_FOUND: $localize`:@@error.job_not_found:Job not found`
   };
 
+  private jobStatuses: Record<keyof typeof JobStatus, string> = {
+    CREATED : $localize `:@@job.status.created:Created`,
+    PENDING : $localize `:@@job.status.pending:Pending`,
+    RELAUNCHED : $localize `:@@job.status.relaunched:Relaunched`,
+    APPLICANT_REFUSED : $localize `:@@job.status.applicant_refused:Refused (by me)`,
+    COMPANY_REFUSED : $localize `:@@job.status.company_refused:Refused (by company)`
+  };
+
+  private activityTypes: Record<keyof typeof ActivityType, string> = {
+    CREATION : $localize `:@@job.activity.creation:Creation`,
+    APPLICANT_REFUSAL : $localize `:@@job.activity.applicant_refusal:Refusal (by me)`,
+    ATTACHMENT_CREATION : $localize `:@@job.activity.attachment_creation:Attachement creation`,
+    ATTACHMENT_DELETION : $localize `:@@job.activity.attachment_deletion:Attachement deletion`,
+    APPLICATION : $localize `:@@job.activity.application:Application`,
+    RELAUNCH : $localize `:@@job.activity.relaunch:Relaunch`,
+    COMPANY_REFUSAL : $localize `:@@job.activity.company_refusal:Refusal (by company)`,
+    EMAIL : $localize `:@@job.activity.email:Email`,
+    IN_PERSON_INTERVIEW : $localize `:@@job.activity.in_person_interview:In person interview`,
+    VIDEO_INTERVIEW : $localize `:@@job.activity.video_interview:Video interview`,
+    TEL_INTERVIEW : $localize `:@@job.activity.phone_interview:Phone interview`,
+    RATING : $localize `:@@job.activity.rating:Rating`
+  }
+
   translateError(code: string, params: Record<string, any> = {}): string {
     const errorMessage = this.errorMessages[code.toUpperCase()];
-    if(errorMessage) {
-      return errorMessage;
-    }
-    return $localize`:@@error.unknown:An unknown error occurred ${code}`;
+    return errorMessage ??  $localize`:@@error.unknown:An unknown error occurred ${code}`;
   }
   
   translateJobStatus(jobStatus: string) :string {
     const s = jobStatus as keyof typeof JobStatus;
-    switch(JobStatus[s]) {
-      case JobStatus.CREATED :
-        return $localize `:@@job.status.created:Created`;
-      case JobStatus.PENDING :
-        return $localize `:@@job.status.pending:Pending`;
-      case JobStatus.RELAUNCHED :
-        return $localize `:@@job.status.relaunched:Relaunched`;
-      case JobStatus.APPLICANT_REFUSED :
-        return $localize `:@@job.status.applicant_refused:Refused (by me)`;
-      case JobStatus.COMPANY_REFUSED :
-        return $localize `:@@job.status.company_refused:Refused (by company)`;
-    }
+    const status = this.jobStatuses[s];
+    return status ?? 'unknown';
   }
 
   translateActivityType(activityType: string) :string {
     const a = activityType as keyof typeof ActivityType;
-    switch(ActivityType[a]) {
-      case ActivityType.CREATION :
-        return $localize `:@@job.activity.creation:Creation`;
-      case ActivityType.APPLICANT_REFUSAL :
-        return $localize `:@@job.activity.applicant_refusal:Refusal (by me)`;
-      case ActivityType.ATTACHMENT_CREATION :
-        return $localize `:@@job.activity.attachment_creation:Attachement creation`;
-        case ActivityType.ATTACHMENT_DELETION :
-        return $localize `:@@job.activity.attachment_deletion:Attachement deletion`;
-      case ActivityType.APPLICATION :
-        return $localize `:@@job.activity.application:Application`;
-      case ActivityType.RELAUNCH :
-        return $localize `:@@job.activity.relaunch:Relaunch`;
-      case ActivityType.COMPANY_REFUSAL :
-        return $localize `:@@job.activity.company_refusal:Refusal (by company)`;
-      case ActivityType.EMAIL :
-        return $localize `:@@job.activity.email:Email`;
-      case ActivityType.IN_PERSON_INTERVIEW :
-        return $localize `:@@job.activity.in_person_interview:In person interview`;
-      case ActivityType.VIDEO_INTERVIEW :
-        return $localize `:@@job.activity.video_interview:Video interview`;
-      case ActivityType.TEL_INTERVIEW :
-        return $localize `:@@job.activity.phone_interview:Phone interview`;
-      case ActivityType.RATING :
-        return $localize `:@@job.activity.rating:Rating`;
-    }
+    const type = this.activityTypes[a];
+    return type ?? 'unknown';
   }
 }
