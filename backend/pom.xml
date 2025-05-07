@@ -11,6 +11,22 @@
         <revision>0.1.0</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <sonar.projectBaseDir>.</sonar.projectBaseDir>
+        <sonar.projectKey>MyJobs_backend</sonar.projectKey>
+        <sonar.projectName>MyJobs_backend</sonar.projectName>
+        <sonar.organization>wilzwert</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+        <sonar.modules>core,infrastructure</sonar.modules>
+        <sonar.java.binaries>core/target/classes,infrastructure/target/classes</sonar.java.binaries>
+        <!-- TODO for reportPaths and xmlReportPaths, check if core/... and infrastructure/... are useful
+        it seems target/*** is enough because it is used in submodules context with paths relative to their respective paths -->
+        <sonar.junit.reportPaths>target/surefire-reports,core/target/surefire-reports,infrastructure/target/surefire-reports</sonar.junit.reportPaths>
+        <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco-merged/jacoco.xml,core/target/site/jacoco-merged/jacoco.xml,infrastructure/target/site/jacoco-merged/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+        <sonar.exclusions>**/target/**,**/generated/**,**/*Application.java,**/*Configuration.java,**/report/**</sonar.exclusions>
+        <sonar.test.inclusions>**/*Test.java,**/*IT.java</sonar.test.inclusions>
+        <sonar.test.exclusions>report/**/*</sonar.test.exclusions>
+        <sonar.coverage.exclusions>core/src/test/java/**,infrastructure/src/test/java/**</sonar.coverage.exclusions>
     </properties>
 
 
@@ -20,5 +36,21 @@
         <module>report</module>
     </modules>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>4.0.0.4121</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>sonar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
