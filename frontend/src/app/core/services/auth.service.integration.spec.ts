@@ -9,7 +9,7 @@ import { SessionInformation } from '../model/session-information.interface';
 import { of } from 'rxjs';
 import { CaptchaService } from './captcha.service';
 
-describe("AuthService unit tests", () =>  {
+describe("AuthService integration tests", () =>  {
     let service: AuthService;
     let mockHttpController: HttpTestingController;
 
@@ -48,7 +48,7 @@ describe("AuthService unit tests", () =>  {
             }}
         );
 
-        const testRequest: TestRequest = mockHttpController.expectOne("api/auth/login");
+        const testRequest: TestRequest = mockHttpController.expectOne("/api/auth/login");
         expect(testRequest.request.method).toEqual("POST");
         expect(testRequest.request.body).toEqual(loginRequest);
         testRequest.flush(mockSessionInfo);
@@ -62,7 +62,7 @@ describe("AuthService unit tests", () =>  {
             done()
         });
 
-        const testRequest: TestRequest = mockHttpController.expectOne("api/auth/register");
+        const testRequest: TestRequest = mockHttpController.expectOne("/api/auth/register");
         expect(testRequest.request.method).toEqual("POST");
         expect(testRequest.request.body).toEqual(registrationRequest);
         testRequest.flush(null);
@@ -84,7 +84,7 @@ describe("AuthService unit tests", () =>  {
             }
         );
 
-        const testRequest: TestRequest = mockHttpController.expectOne("api/auth/login");
+        const testRequest: TestRequest = mockHttpController.expectOne("/api/auth/login");
         expect(testRequest.request.method).toEqual("POST");
         expect(testRequest.request.body).toEqual(loginRequest);
         testRequest.error(mockError);
@@ -103,7 +103,7 @@ describe("AuthService unit tests", () =>  {
             }
         });
 
-        const testRequest: TestRequest = mockHttpController.expectOne("api/auth/register");
+        const testRequest: TestRequest = mockHttpController.expectOne("/api/auth/register");
         expect(testRequest.request.method).toEqual("POST");
         expect(testRequest.request.body).toEqual(registrationRequest);
         testRequest.error(mockError);
@@ -122,7 +122,7 @@ describe("AuthService unit tests", () =>  {
             }
        });
 
-       const testRequest: TestRequest = mockHttpController.expectOne("api/auth/logout");
+       const testRequest: TestRequest = mockHttpController.expectOne("/api/auth/logout");
        expect(testRequest.request.method).toEqual("POST");
        expect(testRequest.request.body).toBeNull();
        testRequest.error(mockError);
@@ -134,7 +134,7 @@ describe("AuthService unit tests", () =>  {
             done()
         });
 
-       const testRequest: TestRequest = mockHttpController.expectOne("api/auth/logout");
+       const testRequest: TestRequest = mockHttpController.expectOne("/api/auth/logout");
        expect(testRequest.request.method).toEqual("POST");
        expect(testRequest.request.body).toBeNull();
        testRequest.flush(null);
@@ -153,7 +153,7 @@ describe("AuthService unit tests", () =>  {
             }
        });
 
-       const testRequest: TestRequest = mockHttpController.expectOne("api/auth/refresh-token");
+       const testRequest: TestRequest = mockHttpController.expectOne("/api/auth/refresh-token");
        expect(testRequest.request.method).toEqual("POST");
        expect(testRequest.request.body).toBeNull();
        testRequest.error(mockError);
@@ -166,7 +166,7 @@ describe("AuthService unit tests", () =>  {
             done()
         });
 
-       const testRequest: TestRequest = mockHttpController.expectOne("api/auth/refresh-token");
+       const testRequest: TestRequest = mockHttpController.expectOne("/api/auth/refresh-token");
        expect(testRequest.request.method).toEqual("POST");
        expect(testRequest.request.body).toBeNull();
        testRequest.flush(mockSessionInfo);

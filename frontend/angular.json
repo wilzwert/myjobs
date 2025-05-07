@@ -163,10 +163,12 @@
               "buildTarget": "myjobs:build:integration"
             },
             "fr": {
-              "buildTarget": "myjobs:build:fr"
+              "buildTarget": "myjobs:build:fr",
+              "proxyConfig": "proxy.conf.js"
             },
             "en": {
-              "buildTarget": "myjobs:build:en"
+              "buildTarget": "myjobs:build:en",
+              "proxyConfig": "proxy.conf.js"
             }
           },
           "defaultConfiguration": "development",

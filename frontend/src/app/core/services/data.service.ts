@@ -9,7 +9,7 @@ import { environment } from '../../../environments/environment';
 export class DataService {
   // API's base URL
   private baseUrl = `${environment.apiUrl}/api/`;
-
+  
   constructor(private http: HttpClient) {}
 
    // GET

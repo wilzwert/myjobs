@@ -33,7 +33,7 @@ describe('DataService', () => {
 
     const data = await firstValueFrom(dataService.get<typeof mockData>('jobs'));
     expect(data).toEqual(mockData);
-    expect(httpClientMock.get).toHaveBeenCalledWith('api/jobs', {
+    expect(httpClientMock.get).toHaveBeenCalledWith('/api/jobs', {
       withCredentials: true
     });
   });
@@ -46,7 +46,7 @@ describe('DataService', () => {
 
     const data = await firstValueFrom(dataService.post<typeof mockResponse>('jobs', payload));
     expect(data).toEqual(mockResponse);
-    expect(httpClientMock.post).toHaveBeenCalledWith('api/jobs', payload, {
+    expect(httpClientMock.post).toHaveBeenCalledWith('/api/jobs', payload, {
       withCredentials: true
     });
 
@@ -61,7 +61,7 @@ describe('DataService', () => {
 
     const data = await firstValueFrom(dataService.put<typeof mockResponse>('jobs/12', payload));
     expect(data).toEqual(mockResponse);
-    expect(httpClientMock.put).toHaveBeenCalledWith('api/jobs/12', payload, {
+    expect(httpClientMock.put).toHaveBeenCalledWith('/api/jobs/12', payload, {
       withCredentials: true
     });
   });
@@ -71,7 +71,7 @@ describe('DataService', () => {
 
     const data = await firstValueFrom(dataService.delete<null>('jobs/12'));
     expect(data).toEqual(null);
-    expect(httpClientMock.delete).toHaveBeenCalledWith('api/jobs/12', {
+    expect(httpClientMock.delete).toHaveBeenCalledWith('/api/jobs/12', {
       withCredentials: true
     });
 
@@ -84,7 +84,7 @@ describe('DataService', () => {
 
     dataService.get<string>('jobs', { params, headers }).subscribe();
 
-    expect(httpClientMock.get).toHaveBeenCalledWith('api/jobs', {
+    expect(httpClientMock.get).toHaveBeenCalledWith('/api/jobs', {
       withCredentials: true,
       params,
       headers
