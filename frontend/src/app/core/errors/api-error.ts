@@ -3,7 +3,7 @@ import { HttpErrorResponse } from "@angular/common/http";
 export class ApiError extends Error {
     httpStatus: number;
     originalError: Error;
-    errors: Map<string, string[]>;
+    errors: Record<string, string[]>;
     
     constructor(originalError: HttpErrorResponse) {
         console.trace(originalError.status+'->'+originalError.message);
