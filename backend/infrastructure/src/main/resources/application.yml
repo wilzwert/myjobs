@@ -14,7 +14,8 @@ spring:
       mail:
         smtp:
           auth: ${MAIL_SMTP_AUTH:false}
-          starttls: ${MAIL_SMTP_STARTTLS:false}
+          starttls:
+            enable: ${MAIL_SMTP_STARTTLS:false}
   data:
     mongodb:
       host: ${MONGODB_HOST:localhost}
@@ -48,6 +49,7 @@ logging:
     org:
       springframework:
         security: DEBUG
+        mail: DEBUG
         data:
           mongodb: DEBUG
 
