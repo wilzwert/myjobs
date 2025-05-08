@@ -126,9 +126,11 @@ jobs:
 
       - name: SonarQube Quality Gate Check
         id: quality-gate
+        env:
+            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
         run: |
           echo "Waiting for SonarQube Quality Gate to be analyzed..."
-          curl -s -u ${{ secrets.SONAR_TOKEN_BACKEND }} \
+          curl -s -u "${{ secrets.SONAR_TOKEN_BACKEND }}:" \
             "https://sonarqube.example.com/api/qualitygates/project_status?projectKey=MyJobs_backend" \
             | jq -r '.projectStatus.status' | tee result.log
           RESULT=$(cat result.log)
@@ -137,7 +139,6 @@ jobs:
             exit 1
           fi
           echo "SonarQube Quality Gate passed."
-            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
         continue-on-error: true
 
       # fail job if coverage requirements not met
