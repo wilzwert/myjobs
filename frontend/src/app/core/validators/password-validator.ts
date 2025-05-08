@@ -51,12 +51,12 @@ import {
         null :
         {
             passwordStrength: {
-                hasMinimumLength: !hasMinimumLength,
-                hasMaximumLength: !hasMaximumLength,
-                hasUpperCase: !hasUpperCase,
-                hasLowerCase: !hasLowerCase,
-                hasNumeric: !hasNumeric,
-                hasSpecialChar: !hasSpecialChar,
+                minimumLengthError: !hasMinimumLength,
+                maximumLengthError: !hasMaximumLength,
+                upperCaseError: !hasUpperCase,
+                lowerCaseError: !hasLowerCase,
+                numericError: !hasNumeric,
+                specialCharError: !hasSpecialChar,
                 message: messages.charAt(0).toUpperCase() + messages.slice(1)
             }
         }

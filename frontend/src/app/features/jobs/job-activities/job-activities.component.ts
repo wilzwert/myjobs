@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Job } from '../../../core/model/job.interface';
 import { JobActivitiesFormComponent } from "../job-actitivies-form/job-actitivities-form.component";
-import { JobService } from '../../../core/services/job.service';
 import { ModalService } from '../../../core/services/modal.service';
 import { DatePipe } from '@angular/common';
 import { ActivityLabelPipe } from '../../../core/pipe/activity-label.pipe';
@@ -20,20 +19,14 @@ export class JobActivitiesComponent implements OnInit {
 
   protected displayForm = this.formMode === 'inline';
 
-  constructor(private jobService: JobService, private modalService: ModalService){}
+  constructor(private modalService: ModalService){}
 
   ngOnInit(): void {
     this.displayForm = this.formMode === 'inline';
   }
 
   addActivity(job: Job) :void {
-
-    if(this.formMode === 'inline') {
-      this.displayForm = true;
-    }
-    else {
-      this.modalService.openJobModal('activities-form', job, () => this.onActivitiesSaved(job), {defaultActivities: 1});
-    }
+    this.modalService.openJobModal('activities-form', job, () => this.onActivitiesSaved(job), {defaultActivities: 1});
   }
 
   onActivitiesSaved(job: Job): void {
