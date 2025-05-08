@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">33.33% </span>
+                <span class="strong">42.85% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>17/51</span>
+                <span class='fraction'>18/42</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">5.55% </span>
+                <span class="strong">12.5% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/18</span>
+                <span class='fraction'>1/8</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">41.17% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>14/34</span>
+                <span class='fraction'>15/30</span>
             </div>
         
             
@@ -166,28 +166,7 @@
 <a name='L101'></a><a href='#L101'>101</a>
 <a name='L102'></a><a href='#L102'>102</a>
 <a name='L103'></a><a href='#L103'>103</a>
-<a name='L104'></a><a href='#L104'>104</a>
-<a name='L105'></a><a href='#L105'>105</a>
-<a name='L106'></a><a href='#L106'>106</a>
-<a name='L107'></a><a href='#L107'>107</a>
-<a name='L108'></a><a href='#L108'>108</a>
-<a name='L109'></a><a href='#L109'>109</a>
-<a name='L110'></a><a href='#L110'>110</a>
-<a name='L111'></a><a href='#L111'>111</a>
-<a name='L112'></a><a href='#L112'>112</a>
-<a name='L113'></a><a href='#L113'>113</a>
-<a name='L114'></a><a href='#L114'>114</a>
-<a name='L115'></a><a href='#L115'>115</a>
-<a name='L116'></a><a href='#L116'>116</a>
-<a name='L117'></a><a href='#L117'>117</a>
-<a name='L118'></a><a href='#L118'>118</a>
-<a name='L119'></a><a href='#L119'>119</a>
-<a name='L120'></a><a href='#L120'>120</a>
-<a name='L121'></a><a href='#L121'>121</a>
-<a name='L122'></a><a href='#L122'>122</a>
-<a name='L123'></a><a href='#L123'>123</a>
-<a name='L124'></a><a href='#L124'>124</a>
-<a name='L125'></a><a href='#L125'>125</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L104'></a><a href='#L104'>104</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -199,6 +178,7 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -272,26 +252,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -300,8 +260,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -320,12 +278,13 @@ import { MatInputModule } from '@angular/material/input';
 import { AuthService } from '../../core/services/auth.service';
 import { RegistrationRequest } from '../../core/model/registration-request.interface';
 import { catchError, take, throwError } from 'rxjs';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { NotificationService } from '../../core/services/notification.service';
 import { ApiError } from '../../core/errors/api-error';
 import { AuthValidators } from '../../core/services/auth.validators';
 import { NgxCaptchaModule } from 'ngx-captcha';
 import { PasswordValidator } from '../../core/validators/password-validator';
+import { UserFormComponent } from "../user/user-form/user-form.component";
 &nbsp;
 @Component({
   selector: 'app-register',
@@ -336,16 +295,16 @@ import { PasswordValidator } from '../../core/validators/password-validator';
     MatIconModule,
     MatInputModule,
     ReactiveFormsModule,
-    RouterLink,
-    NgxCaptchaModule
-  ],
+    NgxCaptchaModule,
+    UserFormComponent
+],
   templateUrl: './registration.component.html',
   styleUrl: './registration.component.scss'
 })
 export class RegistrationComponent {
   public form: FormGroup;
   public isSubmitting = <span class="cstat-no" title="statement not covered" >false;</span>
-&nbsp;
+  
 <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  constructor(</span></span>
     private <span class="cstat-no" title="statement not covered" >authService: AuthService,</span>
     private <span class="cstat-no" title="statement not covered" >authValidators: AuthValidators,</span>
@@ -394,26 +353,6 @@ export class RegistrationComponent {
     });
   }
 &nbsp;
-<span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  get e</span></span>mail() {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    return this.form.get('email');</span></span>
-  }
-&nbsp;
-<span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  get u</span></span>sername() {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    return this.form.get('username');</span></span>
-  }
-&nbsp;
-<span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  get p</span></span>assword() {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    return this.form.get('password');</span></span>
-  }
-&nbsp;
-<span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  get f</span></span>irstName() {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    return this.form.get('firstName');</span></span>
-  }
-&nbsp;
-<span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  get l</span></span>astName() {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    return this.form.get('lastName');</span></span>
-  }
-&nbsp;
 <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  submit(</span></span>) :void {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if(!this.isSubmitting &amp;&amp; this.form.valid) {</span></span>
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >      this.isSubmitting = true;</span></span>
@@ -421,16 +360,14 @@ export class RegistrationComponent {
       .pipe(
         take(1),
         catchError(
-          (<span class="fstat-no" title="function not covered" >error: ApiError)</span> =&gt; {
+<span class="fstat-no" title="function not covered" >          (e</span>rror: ApiError) =&gt; {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >            this.isSubmitting = false;</span></span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >            return throwError(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >n</span>ew Error(</span></span></span>
-              'Registration failed. '+(error.httpStatus === 409 ? "Email or username already in use" : 'An error occured')
-            ));
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >            return throwError(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >error)</span>;</span></span>
           }
       ))
-      .subscribe(<span class="fstat-no" title="function not covered" >() =&gt; </span>{
+      .subscribe(<span class="fstat-no" title="function not covered" >() =</span>&gt; {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >          this.isSubmitting = false;</span></span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >          this.notificationService.confirmation("Registration completed successfully, you may now log in.");</span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >          this.notificationService.confirmation($localize `:@@message.registration.success:Registration completed successfully, you may now log in.`);</span></span>
 <span class="cstat-no" title="statement not covered" >          this.router.navigate(["/login"])</span>
       });
     }
@@ -442,7 +379,7 @@ export class RegistrationComponent {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-04-30T07:30:13.187Z
+                at 2025-05-08T14:16:34.916Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

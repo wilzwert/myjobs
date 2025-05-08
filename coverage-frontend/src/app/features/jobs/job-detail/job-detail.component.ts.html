@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">28.57% </span>
+                <span class="strong">29.85% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>20/70</span>
+                <span class='fraction'>20/67</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/2</span>
+                <span class='fraction'>0/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">3.33% </span>
+                <span class="strong">3.44% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/30</span>
+                <span class='fraction'>1/29</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">36.95% </span>
+                <span class="strong">38.63% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>17/46</span>
+                <span class='fraction'>17/44</span>
             </div>
         
             
@@ -166,10 +166,7 @@
 <a name='L101'></a><a href='#L101'>101</a>
 <a name='L102'></a><a href='#L102'>102</a>
 <a name='L103'></a><a href='#L103'>103</a>
-<a name='L104'></a><a href='#L104'>104</a>
-<a name='L105'></a><a href='#L105'>105</a>
-<a name='L106'></a><a href='#L106'>106</a>
-<a name='L107'></a><a href='#L107'>107</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L104'></a><a href='#L104'>104</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -182,9 +179,9 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -210,7 +207,6 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -219,10 +215,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -235,12 +228,13 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -281,22 +275,22 @@ import { JobService } from '../../../core/services/job.service';
 import { catchError, Observable, Subject, take, takeUntil, tap, throwError } from 'rxjs';
 import { Job } from '../../../core/model/job.interface';
 import { Title } from '@angular/platform-browser';
-import { AsyncPipe } from '@angular/common';
-import { FileService } from '../../../core/services/file.service';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { ActivityType } from '../../../core/model/activity-type';
-import { ActivityLabelPipe } from '../../../core/pipe/activity-label.pipe';
 import { MatButton } from '@angular/material/button';
 import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
-import { MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardSubtitle, MatCardTitle } from '@angular/material/card';
+import { MatCard, MatCardContent, MatCardHeader, MatCardSubtitle, MatCardTitle } from '@angular/material/card';
 import { ModalService } from '../../../core/services/modal.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { ApiError } from '../../../core/errors/api-error';
 import { RatingComponent } from '../rating/rating.component';
 import { JobAttachmentsComponent } from '../job-attachments/job-attachments.component';
+import { JobActivitiesComponent } from "../job-activities/job-activities.component";
+import { StatusLabelPipe } from '../../../core/pipe/status-label.pipe';
 &nbsp;
 @Component({
   selector: 'app-job-detail',
-  imports: [AsyncPipe, ActivityLabelPipe, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatCardSubtitle, MatCardActions, MatButton, RatingComponent, JobAttachmentsComponent],
+  imports: [AsyncPipe, DatePipe, StatusLabelPipe, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatCardSubtitle, MatButton, RatingComponent, JobAttachmentsComponent, JobActivitiesComponent],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss'
 })
@@ -311,8 +305,7 @@ export class JobDetailComponent implements OnInit, OnDestroy {
 <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  constructor(</span></span>
     private <span class="cstat-no" title="statement not covered" >router: Router,</span>
     private <span class="cstat-no" title="statement not covered" >activatedRoute: ActivatedRoute, </span>
-    private <span class="cstat-no" title="statement not covered" >jobService: JobService, </span>
-    private <span class="cstat-no" title="statement not covered" >fileService: FileService,</span>
+    private <span class="cstat-no" title="statement not covered" >jobService: JobService,</span>
     private <span class="cstat-no" title="statement not covered" >confirmDialogService: ConfirmDialogService,</span>
     private <span class="cstat-no" title="statement not covered" >modalService: ModalService,</span>
     private <span class="cstat-no" title="statement not covered" >notificationService: NotificationService,</span>
@@ -322,15 +315,16 @@ export class JobDetailComponent implements OnInit, OnDestroy {
   private <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >loadJob(</span></span>jobId: string): void {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.job$ = this.jobService.getJobById(jobId).pipe(</span></span>
       // set page title once the job  is available
-      tap((<span class="fstat-no" title="function not covered" >job: Job)</span> =&gt;{<span class="cstat-no" title="statement not covered" >this.title.setTitle(`Job - ${job.title}`)})</span>,
-      catchError((<span class="fstat-no" title="function not covered" >error: ApiError)</span> =&gt; {
+      tap(<span class="fstat-no" title="function not covered" >(j</span>ob: Job) =&gt;{<span class="cstat-no" title="statement not covered" >this.title.setTitle(`Job - ${job.title}`)})</span>,
+      catchError(<span class="fstat-no" title="function not covered" >(e</span>rror: ApiError) =&gt; {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        this.router.navigate(["/jobs"]);</span></span>
-        // set an explicit error message
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        error.message = 'Unable to load job';</span></span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        return throwError(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >e</span>rror)</span>;</span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        return throwError(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >error)</span>;</span></span>
       })
     );
+  }
 &nbsp;
+<span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  reloadJob(</span></span>job: Job) {
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.loadJob(job.id);</span></span>
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  ngOnDestroy(</span></span>): void {
@@ -345,18 +339,15 @@ export class JobDetailComponent implements OnInit, OnDestroy {
     });
   }
 &nbsp;
-<span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  addActivity(</span></span>job: Job) :void {
-<span class="cstat-no" title="statement not covered" >    this.modalService.openJobModal('activity', job, <span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >t</span>his.loadJob(job.id))</span></span>
-  }
 &nbsp;
 <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  editJob(</span></span>job: Job) :void {
-<span class="cstat-no" title="statement not covered" >    this.modalService.openJobModal('job', job, <span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >t</span>his.loadJob(job.id))</span></span>
+<span class="cstat-no" title="statement not covered" >    this.modalService.openJobModal('job', job, <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >this.loadJob(job.id))</span></span>
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  confirmDeleteJob(</span></span>job: Job) :void {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.jobService.deleteJob(job.id).pipe(</span></span>
       take(1),
-      tap(<span class="fstat-no" title="function not covered" >() =&gt; </span>{
+      tap(<span class="fstat-no" title="function not covered" >() =</span>&gt; {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        this.notificationService.confirmation("Job deleted successfully.");</span></span>
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        this.router.navigate(["/jobs"]);</span></span>
       })
@@ -364,18 +355,18 @@ export class JobDetailComponent implements OnInit, OnDestroy {
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  deleteJob(</span></span>job: Job) :void {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.confirmDialogService.openConfirmDialog(`Delete job "${job.title}" ? ALL DATA WILL BE LOST`, <span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >t</span>his.confirmDeleteJob(job))</span>;</span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.confirmDialogService.openConfirmDialog(`Delete job "${job.title}" ? ALL DATA WILL BE LOST`, <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >this.confirmDeleteJob(job))</span>;</span></span>
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  updateJobRating(</span></span>job: Job, rating: number) :void {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.jobService.updateJobRating(job.id, {rating: rating}).pipe(</span></span>
       take(1),
-      catchError((<span class="fstat-no" title="function not covered" >error: ApiError)</span> =&gt; {
+      catchError(<span class="fstat-no" title="function not covered" >(e</span>rror: ApiError) =&gt; {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        this.notificationService.confirmation("Job rating update failed.");</span></span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        return throwError(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >e</span>rror)</span>;</span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        return throwError(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >error)</span>;</span></span>
 &nbsp;
       })
-    ).subscribe(<span class="fstat-no" title="function not covered" >() =&gt; </span>{
+    ).subscribe(<span class="fstat-no" title="function not covered" >() =</span>&gt; {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >      this.notificationService.confirmation("Job rating updated successfully.");</span></span>
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >      this.loadJob(job.id);</span></span>
     });
@@ -388,7 +379,7 @@ export class JobDetailComponent implements OnInit, OnDestroy {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-04-30T07:30:13.187Z
+                at 2025-05-08T14:16:34.916Z
             </div>
         <script src="../../../../../prettify.js"></script>
         <script>

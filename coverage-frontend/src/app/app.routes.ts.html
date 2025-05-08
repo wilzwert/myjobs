@@ -131,7 +131,14 @@
 <a name='L66'></a><a href='#L66'>66</a>
 <a name='L67'></a><a href='#L67'>67</a>
 <a name='L68'></a><a href='#L68'>68</a>
-<a name='L69'></a><a href='#L69'>69</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -199,6 +206,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Routes } from '@angular/router';
 import { HomeComponent } from './layout/home/home.component';
 import { LoginComponent } from './features/login/login.component';
@@ -211,70 +223,76 @@ import { AuthGuard } from './core/guards/auth.guard';
 import { ResetPasswordComponent } from './features/user/password/reset-password/reset-password.component';
 import { NewPasswordComponent } from './features/user/password/new-password/new-password.component';
 import { EmailValidationComponent } from './features/user/email-validation/email-validation.component';
+import { LanguageRedirectGuard } from './core/guards/language-redirect.guard';
 &nbsp;
 export const routes: Routes = [
-    { 
-        path: '', 
-        component: HomeComponent,
-        title: 'MyJobs - home' 
-    },
-    { 
-        path: 'login',
-        canActivate: [UnauthGuard], 
-        component: LoginComponent,
-        title: 'Login',
-    },
-    { 
-        path: 'register',
-        canActivate: [UnauthGuard],
-        component: RegistrationComponent, 
-        title: 'Registration', 
-    },
-    { 
-        path: 'password/reset',
-        canActivate: [UnauthGuard],
-        component: ResetPasswordComponent, 
-        title: 'Reset password', 
-    },
-    { 
-        path: 'password/new',
-        canActivate: [UnauthGuard],
-        component: NewPasswordComponent, 
-        title: 'Create new password', 
-    },
-    { 
-        path: 'me',
-        canActivate: [AuthGuard],
-        component: MeComponent, 
-        title: 'My profile', 
-    },
-    { 
-        path: 'me/email/validation',
-        component: EmailValidationComponent, 
-        title: 'Email validation', 
-    },
-    { 
-        path: 'jobs',
-        canActivate: [AuthGuard],
-        component: JobsComponent, 
-        title: 'My Jobs', 
-    },
-    { 
-        path: 'jobs/:id', 
-        canActivate: [AuthGuard],
-        component: JobDetailComponent, 
-        title: 'Job details',
-        data: {goBackToRoute: "jobs"} 
-    },
-];
- </pre></td></tr></table></pre>
+    {
+        path: '',
+        canActivate: [LanguageRedirectGuard],
+        children: [
+            { 
+                path: '', 
+                component: HomeComponent,
+                title: 'MyJobs - home' 
+            },
+            { 
+                path: 'login',
+                canActivate: [UnauthGuard], 
+                component: LoginComponent,
+                title: 'Login',
+            },
+            { 
+                path: 'register',
+                canActivate: [UnauthGuard],
+                component: RegistrationComponent, 
+                title: 'Registration', 
+            },
+            { 
+                path: 'password/reset',
+                canActivate: [UnauthGuard],
+                component: ResetPasswordComponent, 
+                title: 'Reset password', 
+            },
+            { 
+                path: 'password/new',
+                canActivate: [UnauthGuard],
+                component: NewPasswordComponent, 
+                title: 'Create new password', 
+            },
+            { 
+                path: 'me',
+                canActivate: [AuthGuard],
+                component: MeComponent, 
+                title: 'My profile', 
+            },
+            { 
+                path: 'me/email/validation',
+                component: EmailValidationComponent, 
+                title: 'Email validation', 
+            },
+            { 
+                path: 'jobs',
+                canActivate: [AuthGuard],
+                component: JobsComponent, 
+                title: 'My Jobs', 
+            },
+            { 
+                path: 'jobs/:id', 
+                canActivate: [AuthGuard],
+                component: JobDetailComponent, 
+                title: 'Job details',
+                data: {goBackToRoute: "jobs"} 
+            },
+        ]
+    }
+];</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-04-30T07:30:13.187Z
+                at 2025-05-08T14:16:34.916Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

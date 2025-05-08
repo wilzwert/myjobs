@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">74.41% </span>
+                <span class="strong">59.57% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>32/43</span>
+                <span class='fraction'>28/47</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">50% </span>
+                <span class="strong">42.85% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>7/14</span>
+                <span class='fraction'>6/14</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">75% </span>
+                <span class="strong">44.44% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>12/16</span>
+                <span class='fraction'>8/18</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">89.28% </span>
+                <span class="strong">80.64% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>25/28</span>
+                <span class='fraction'>25/31</span>
             </div>
         
             
@@ -133,7 +133,14 @@
 <a name='L68'></a><a href='#L68'>68</a>
 <a name='L69'></a><a href='#L69'>69</a>
 <a name='L70'></a><a href='#L70'>70</a>
-<a name='L71'></a><a href='#L71'>71</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
@@ -151,15 +158,16 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">6x</span>
-<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">35x</span>
@@ -185,13 +193,13 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">22x</span>
+<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
@@ -200,22 +208,27 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AsyncPipe, CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { SessionService } from '../../core/services/session.service';
 import { filter, Observable, Subject, takeUntil } from 'rxjs';
 import { NavigationEnd, NavigationSkipped, Route, Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { BreakpointObserver } from '@angular/cdk/layout';
+import { LocaleService } from '../../core/services/locale.service';
 &nbsp;
 @Component({
   selector: 'app-menu',
   standalone: true,
-  imports: [MatToolbarModule, MatIconModule, AsyncPipe, RouterLink],
+  imports: [MatToolbarModule, MatIconModule, AsyncPipe, RouterLink, CommonModule],
   templateUrl: './menu.component.html',
   styleUrl: './menu.component.scss'
 })
@@ -226,13 +239,14 @@ export class MenuComponent implements OnInit, OnDestroy {
   public menuOpen: boolean = false;
   
 &nbsp;
-  constructor(
+<span class="fstat-no" title="function not covered" >  constructor(</span>
     private sessionService: SessionService,
     private breakpointObserver: BreakpointObserver,
-    private router: Router) {}
+    private router: Router,
+    private localeService: LocaleService) {}
 &nbsp;
-  public $isLogged(): Observable&lt;boolean&gt; {
-    return this.sessionService.$isLogged();
+  public <span class="fstat-no" title="function not covered" >$isLogged(</span>): Observable&lt;boolean&gt; {
+<span class="cstat-no" title="statement not covered" >    return this.sessionService.$isLogged();</span>
   }
 &nbsp;
   public <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >openNav(</span></span>) :void {
@@ -247,19 +261,19 @@ export class MenuComponent implements OnInit, OnDestroy {
     }
   }
 &nbsp;
-  ngOnInit(): void {
-    this.breakpointObserver.observe(['(min-width:769px)'])
+<span class="fstat-no" title="function not covered" >  ngOnInit(</span>): void {
+<span class="cstat-no" title="statement not covered" >    this.breakpointObserver.observe(['(min-width:769px)'])</span>
     .pipe(takeUntil(this.destroy$))
     .subscribe((screensize) =&gt; {
-      <span class="missing-if-branch" title="if path not taken" >I</span><span class="missing-if-branch" title="else path not taken" >E</span>if(screensize.matches) {
+<span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="else path not taken" >E</span>if(screensize.matches) {</span>
 <span class="cstat-no" title="statement not covered" >        this.isMobile = false;</span>
       }
       else {
-<span class="cstat-no" title="statement not covered" >        this.isMobile = true;</span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        this.isMobile = true;</span></span>
       }
     });
 &nbsp;
-    this.router.events.pipe(
+<span class="cstat-no" title="statement not covered" >    this.router.events.pipe(</span>
       takeUntil(this.destroy$),
       filter(event =&gt; event instanceof NavigationEnd || event instanceof NavigationSkipped)
     )
@@ -268,9 +282,13 @@ export class MenuComponent implements OnInit, OnDestroy {
     });
   }
 &nbsp;
-  public <span class="fstat-no" title="function not covered" >ngOnDestroy(</span>): void {
+  public <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >ngOnDestroy(</span></span>): void {
     // emit to Subject to unsubscribe from observables
-<span class="cstat-no" title="statement not covered" >    this.destroy$.next(true);</span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.destroy$.next(true);</span></span>
+  }
+&nbsp;
+  public <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >changeLang(</span></span>lang: 'fr' | 'en'): void {
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.localeService.changeLocale(lang);</span></span>
   }
 }
 &nbsp;</pre></td></tr></table></pre>
@@ -280,7 +298,7 @@ export class MenuComponent implements OnInit, OnDestroy {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-04-30T07:30:13.187Z
+                at 2025-05-08T14:16:34.916Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>
