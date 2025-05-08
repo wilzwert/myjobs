@@ -47,7 +47,7 @@ public class ErrorResponse {
 <span class="fc bfc" id="L47" title="All 2 branches covered.">        for (ValidationError error : ex.getFlatErrors()) {</span>
 <span class="fc" id="L48">            errors.computeIfAbsent(error.field(), k -&gt; new ArrayList&lt;&gt;()).add(error.code().name());</span>
 <span class="fc" id="L49">        }</span>
-<span class="fc" id="L50">        return build(HttpStatus.BAD_REQUEST, &quot;Validation error&quot;, errors);</span>
+<span class="fc" id="L50">        return build(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_FAILED.name(), errors);</span>
     }
 
     public static ErrorResponse fromException(DomainException ex) {
@@ -66,7 +66,7 @@ public class ErrorResponse {
 <span class="fc bfc" id="L66" title="All 2 branches covered.">        for(FieldError fieldError : fieldErrors){</span>
 <span class="fc" id="L67">            errors.computeIfAbsent(fieldError.getField(), k -&gt; new ArrayList&lt;&gt;()).add(fieldError.getDefaultMessage());</span>
 <span class="fc" id="L68">        }</span>
-<span class="fc" id="L69">        return build(ex.getStatusCode(), &quot;Validation error&quot;, errors);</span>
+<span class="fc" id="L69">        return build(ex.getStatusCode(), ErrorCode.VALIDATION_FAILED.name(), errors);</span>
     }
 
     public static ErrorResponse fromException(LoginException ex) {
@@ -92,48 +92,47 @@ public class ErrorResponse {
     public static ErrorResponse fromException(HttpMessageNotReadableException ex) {
 <span class="fc" id="L93">        Throwable cause = ex.getCause();</span>
 <span class="fc bfc" id="L94" title="All 2 branches covered.">        if (cause instanceof JsonMappingException formatEx) {</span>
-<span class="fc" id="L95">            System.out.println(formatEx.getMessage());</span>
-<span class="fc" id="L96">            String fieldName = &quot;&quot;;</span>
-<span class="fc bfc" id="L97" title="All 2 branches covered.">            if (!formatEx.getPath().isEmpty()) {</span>
-<span class="fc" id="L98">                fieldName = formatEx.getPath().getFirst().getFieldName();</span>
+<span class="fc" id="L95">            String fieldName = &quot;&quot;;</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">            if (!formatEx.getPath().isEmpty()) {</span>
+<span class="fc" id="L97">                fieldName = formatEx.getPath().getFirst().getFieldName();</span>
             }
-<span class="fc bfc" id="L100" title="All 2 branches covered.">            if(!fieldName.isEmpty()) {</span>
-<span class="fc" id="L101">                Map&lt;String, List&lt;String&gt;&gt; errors = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L102">                errors.put(fieldName, List.of(ErrorCode.INVALID_VALUE.name()));</span>
-<span class="fc" id="L103">                return build(HttpStatus.BAD_REQUEST, &quot;Validation error&quot;, errors);</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">            if(!fieldName.isEmpty()) {</span>
+<span class="fc" id="L100">                Map&lt;String, List&lt;String&gt;&gt; errors = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L101">                errors.put(fieldName, List.of(ErrorCode.INVALID_VALUE.name()));</span>
+<span class="fc" id="L102">                return build(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_FAILED.name(), errors);</span>
             }
-<span class="fc" id="L105">            return build(HttpStatus.BAD_REQUEST, &quot;Validation error&quot;);</span>
+<span class="fc" id="L104">            return build(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_FAILED.name());</span>
         }
 
-<span class="fc" id="L108">        return build(HttpStatus.BAD_REQUEST, ex.getMessage());</span>
+<span class="fc" id="L107">        return build(HttpStatus.BAD_REQUEST, ex.getMessage());</span>
     }
 
     public static ErrorResponse fromException(MissingServletRequestParameterException ex) {
-<span class="fc" id="L112">        return build(HttpStatus.BAD_REQUEST, ex.getMessage());</span>
+<span class="fc" id="L111">        return build(HttpStatus.BAD_REQUEST, ex.getMessage());</span>
     }
 
     public static ErrorResponse fromException(IllegalArgumentException ex) {
-<span class="fc" id="L116">        return build(HttpStatus.BAD_REQUEST, ex.getMessage());</span>
+<span class="fc" id="L115">        return build(HttpStatus.BAD_REQUEST, ex.getMessage());</span>
     }
 
     public static ErrorResponse fromException(HttpMediaTypeException ex) {
-<span class="fc" id="L120">        return build(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ex.getMessage());</span>
+<span class="fc" id="L119">        return build(HttpStatus.UNSUPPORTED_MEDIA_TYPE, ex.getMessage());</span>
     }
 
     public static ErrorResponse fromException(HttpClientErrorException ex) {
-<span class="fc" id="L124">        return build(ex.getStatusCode(), ex.getMessage());</span>
+<span class="fc" id="L123">        return build(ex.getStatusCode(), ex.getMessage());</span>
     }
 
     public static ErrorResponse fromException(Exception ex) {
-<span class="fc" id="L128">        return build(HttpStatus.INTERNAL_SERVER_ERROR, &quot;An error occurred.&quot;);</span>
+<span class="fc" id="L127">        return build(HttpStatus.INTERNAL_SERVER_ERROR, ErrorCode.UNEXPECTED_ERROR.name());</span>
     }
 
     private static ErrorResponse build(HttpStatusCode status, String message) {
-<span class="fc" id="L132">        return new ErrorResponse(status, String.valueOf(status.value()), message, Collections.emptyMap(), new Date().toString());</span>
+<span class="fc" id="L131">        return new ErrorResponse(status, String.valueOf(status.value()), message, Collections.emptyMap(), new Date().toString());</span>
     }
 
     private static ErrorResponse build(HttpStatusCode status, String message, Map&lt;String, List&lt;String&gt;&gt; errors) {
-<span class="fc" id="L136">        return new ErrorResponse(status, String.valueOf(status.value()), message, errors, new Date().toString());</span>
+<span class="fc" id="L135">        return new ErrorResponse(status, String.valueOf(status.value()), message, errors, new Date().toString());</span>
     }
 
 

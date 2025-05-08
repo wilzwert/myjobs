@@ -8,6 +8,7 @@ import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
@@ -17,6 +18,7 @@ import org.thymeleaf.context.Context;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Locale;
 
 @Component
 public class MailProvider {
@@ -24,70 +26,114 @@ public class MailProvider {
 
     private final TemplateEngine templateEngine;
 
+    private final MessageSource messageSource;
+
     private final String frontendUrl;
 
     private final String from;
 
     private final String fromName;
 
+    private final String defaultLanguage;
+
+
+
     public MailProvider(
             final JavaMailSender mailSender,
             final TemplateEngine templateEngine,
+            final MessageSource messageSource,
             @Value(&quot;${application.frontend.url}&quot;) String frontendUrl,
             @Value(&quot;${application.mail.from}&quot;) String from,
-            @Value(&quot;${application.mail.from-name}&quot;) String fromName
-<span class="fc" id="L39">    ) {</span>
-<span class="fc" id="L40">        this.mailSender = mailSender;</span>
-<span class="fc" id="L41">        this.templateEngine = templateEngine;</span>
-<span class="fc" id="L42">        this.frontendUrl = frontendUrl;</span>
-<span class="fc" id="L43">        this.from = from;</span>
-<span class="fc" id="L44">        this.fromName = fromName;</span>
-<span class="fc" id="L45">    }</span>
+            @Value(&quot;${application.mail.from-name}&quot;) String fromName,
+            @Value(&quot;${application.default-language}&quot;) String defaultLanguage
+<span class="fc" id="L49">    ) {</span>
+<span class="fc" id="L50">        this.mailSender = mailSender;</span>
+<span class="fc" id="L51">        this.templateEngine = templateEngine;</span>
+<span class="fc" id="L52">        this.messageSource = messageSource;</span>
+<span class="fc" id="L53">        this.frontendUrl = frontendUrl;</span>
+<span class="fc" id="L54">        this.from = from;</span>
+<span class="fc" id="L55">        this.fromName = fromName;</span>
+<span class="fc" id="L56">        this.defaultLanguage = defaultLanguage;</span>
+<span class="fc" id="L57">    }</span>
 
     // TODO : improve exception handling with custom exceptions
-    public CustomMailMessage createMessage(String template, String recipientMail, String recipientName, String subject)  {
-<span class="fc" id="L49">        return new CustomMailMessage(template, recipientMail, recipientName, subject);</span>
+    public CustomMailMessage createMessage(String template, String recipientMail, String recipientName, String subject, String lang)  {
+<span class="pc bpc" id="L61" title="1 of 2 branches missed.">        return new CustomMailMessage(template, recipientMail, recipientName, subject, (lang != null ? lang : defaultLanguage));</span>
     }
 
-    public String createUrl(String uri) {
-<span class="fc" id="L53">        return frontendUrl + uri;</span>
+    /**
+     *
+     * Creates a URL based on the uri and the locale provided
+     * Locale is used as is because it is based on the Lang enum,
+     * therefore we know its language tag will be either 'en' or 'fr'
+     *
+     * @param uri the uri
+     * @param locale the locale which will be used as a uri prefix
+     * @return the complete url
+     */
+    public String createUrl(String uri, Locale locale) {
+<span class="fc" id="L75">        String realUri = messageSource.getMessage(uri, null, locale);</span>
+<span class="fc" id="L76">        return frontendUrl + &quot;/&quot; + locale.toLanguageTag() + &quot;/&quot; + realUri;</span>
     }
 
-    private MimeMessage createMimeMessage(CustomMailMessage messageToSend, String htmlContent) throws MessagingException, UnsupportedEncodingException {
-<span class="fc" id="L57">        MimeMessage message =  mailSender.createMimeMessage();</span>
-<span class="fc" id="L58">        System.out.println(&quot;message has been created with class &quot; + message.getClass());</span>
-<span class="fc" id="L59">        message.setFrom(new InternetAddress(from, fromName));</span>
-<span class="fc" id="L60">        message.setRecipients(Message.RecipientType.TO, new InternetAddress(messageToSend.getRecipientMail(), messageToSend.getRecipientName()).toUnicodeString());</span>
-<span class="fc" id="L61">        message.setSubject(messageToSend.getSubject());</span>
+    /**
+     *
+     * Creates a URL based on the uri, the locale provided, and some args
+     * Locale is used as is because it is based on the Lang enum,
+     * therefore we know its language tag will be either 'en' or 'fr'
+     *
+     * @param uri the uri
+     * @param locale the locale which will be used as a uri prefix
+     * @return the complete url
+     */
+    public String createUrl(String uri, Locale locale, Object... args) {
+<span class="fc" id="L90">        String realUri = messageSource.getMessage(uri, args, locale);</span>
+<span class="fc" id="L91">        return frontendUrl + &quot;/&quot; + locale.toLanguageTag() + &quot;/&quot; + realUri;</span>
+    }
+
+    /**
+     * Shortcut to generate /lang/me urls
+     * @param locale the local to use to create the url
+     * @return the url to the user account
+     */
+    public String createMeUrl(Locale locale) {
+<span class="fc" id="L100">        return createUrl(&quot;uri.me&quot;, locale);</span>
+    }
+
+    private MimeMessage createMimeMessage(CustomMailMessage messageToSend, Locale locale, String htmlContent) throws MessagingException, UnsupportedEncodingException {
+<span class="fc" id="L104">        MimeMessage message =  mailSender.createMimeMessage();</span>
+<span class="fc" id="L105">        message.setFrom(new InternetAddress(from, fromName));</span>
+<span class="fc" id="L106">        message.setRecipients(Message.RecipientType.TO, new InternetAddress(messageToSend.getRecipientMail(), messageToSend.getRecipientName()).toUnicodeString());</span>
+<span class="fc" id="L107">        message.setSubject(messageSource.getMessage(messageToSend.getSubject(), null, locale), &quot;UTF-8&quot;);</span>
 
         // send a multipart message to allow logo embedding
-<span class="fc" id="L64">        Multipart multipart = new MimeMultipart(&quot;related&quot;);</span>
+<span class="fc" id="L110">        Multipart multipart = new MimeMultipart(&quot;related&quot;);</span>
 
-<span class="fc" id="L66">        MimeBodyPart htmlPart = new MimeBodyPart();</span>
-<span class="fc" id="L67">        htmlPart.setText(htmlContent, &quot;utf-8&quot;, &quot;html&quot;);</span>
-<span class="fc" id="L68">        multipart.addBodyPart(htmlPart);</span>
+<span class="fc" id="L112">        MimeBodyPart htmlPart = new MimeBodyPart();</span>
+<span class="fc" id="L113">        htmlPart.setContent(htmlContent, &quot;text/html; charset=UTF-8&quot;);</span>
+<span class="fc" id="L114">        multipart.addBodyPart(htmlPart);</span>
 
         try {
-<span class="fc" id="L71">            MimeBodyPart imgPart = new MimeBodyPart();</span>
-<span class="fc" id="L72">            imgPart.attachFile(new ClassPathResource(&quot;static/images/logo_email.png&quot;).getFile());</span>
-<span class="fc" id="L73">            imgPart.setContentID(&quot;&lt;logoImage&gt;&quot;);</span>
-<span class="fc" id="L74">            multipart.addBodyPart(imgPart);</span>
+<span class="fc" id="L117">            MimeBodyPart imgPart = new MimeBodyPart();</span>
+<span class="fc" id="L118">            imgPart.attachFile(new ClassPathResource(&quot;static/images/logo_email.png&quot;).getFile());</span>
+<span class="fc" id="L119">            imgPart.setContentID(&quot;&lt;logoImage&gt;&quot;);</span>
+<span class="fc" id="L120">            multipart.addBodyPart(imgPart);</span>
         }
-<span class="nc" id="L76">        catch (IOException e) {</span>
+<span class="nc" id="L122">        catch (IOException e) {</span>
             // TODO ?
-<span class="fc" id="L78">        }</span>
+<span class="fc" id="L124">        }</span>
 
-<span class="fc" id="L80">        message.setContent(multipart);</span>
-<span class="fc" id="L81">        return message;</span>
+<span class="fc" id="L126">        message.setContent(multipart);</span>
+<span class="fc" id="L127">        return message;</span>
     }
 
     // TODO : improve exception handling with custom exceptions
     @Async
     public void send(CustomMailMessage messageToSend) throws MessagingException, UnsupportedEncodingException {
-<span class="fc" id="L87">        Context context = new Context();</span>
-<span class="fc" id="L88">        messageToSend.getVariables().forEach(context::setVariable);</span>
-<span class="fc" id="L89">        String htmlContent = templateEngine.process(messageToSend.getTemplate(), context);</span>
-<span class="fc" id="L90">        mailSender.send(createMimeMessage(messageToSend, htmlContent));</span>
-<span class="fc" id="L91">    }</span>
+<span class="fc" id="L133">        Context context = new Context(messageToSend.getLocale());</span>
+<span class="fc" id="L134">        messageToSend.getVariables().forEach(context::setVariable);</span>
+<span class="fc" id="L135">        String htmlContent = templateEngine.process(messageToSend.getTemplate(), context);</span>
+<span class="fc" id="L136">        mailSender.send(createMimeMessage(messageToSend, messageToSend.getLocale(), htmlContent));</span>
+<span class="fc" id="L137">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

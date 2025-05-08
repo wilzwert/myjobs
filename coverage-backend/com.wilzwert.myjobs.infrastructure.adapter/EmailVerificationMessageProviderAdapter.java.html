@@ -17,20 +17,19 @@ public class EmailVerificationMessageProviderAdapter implements EmailVerificatio
     @Override
     public void send(User user) {
         try {
-<span class="fc" id="L20">            var message = mailProvider.createMessage(&quot;mail/email_verification&quot;, user.getEmail(), user.getFirstName(), &quot;Email verification&quot;);</span>
-            // generate URL
-<span class="fc" id="L22">            String url = mailProvider.createUrl(&quot;/me&quot;);</span>
-<span class="fc" id="L23">            message.setVariable(&quot;url&quot;, url);</span>
-<span class="fc" id="L24">            message.setVariable(&quot;firstName&quot;, user.getFirstName());</span>
-<span class="fc" id="L25">            message.setVariable(&quot;lastName&quot;, user.getLastName());</span>
-<span class="fc" id="L26">            message.setVariable(&quot;validationUrl&quot;, mailProvider.createUrl(&quot;/me/email/validation?code=&quot;+user.getEmailValidationCode()));</span>
-<span class="fc" id="L27">            mailProvider.send(message);</span>
+<span class="fc" id="L20">            var message = mailProvider.createMessage(&quot;mail/email_verification&quot;, user.getEmail(), user.getFirstName(), &quot;email.email_verification.subject&quot;, user.getLang().toString());</span>
+
+<span class="fc" id="L22">            message.setVariable(&quot;url&quot;, mailProvider.createMeUrl(message.getLocale()));</span>
+<span class="fc" id="L23">            message.setVariable(&quot;firstName&quot;, user.getFirstName());</span>
+<span class="fc" id="L24">            message.setVariable(&quot;lastName&quot;, user.getLastName());</span>
+<span class="fc" id="L25">            message.setVariable(&quot;validationUrl&quot;, mailProvider.createUrl(&quot;uri.email_validation&quot;, message.getLocale(), user.getEmailValidationCode()));</span>
+<span class="fc" id="L26">            mailProvider.send(message);</span>
         }
         // TODO : improve exception handling
-<span class="nc" id="L30">        catch (Exception e) {</span>
-<span class="nc" id="L31">            throw new RuntimeException(e);</span>
-<span class="fc" id="L32">        }</span>
+<span class="nc" id="L29">        catch (Exception e) {</span>
+<span class="nc" id="L30">            throw new RuntimeException(e);</span>
+<span class="fc" id="L31">        }</span>
 
-<span class="fc" id="L34">    }</span>
+<span class="fc" id="L33">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -56,29 +56,27 @@ public class UserServiceAdapter implements UserService {
 
     @Override
     public Optional&lt;User&gt; findByResetPasswordToken(String token) {
-<span class="fc" id="L59">        System.out.println(&quot;TOKEN &quot;+token);</span>
-<span class="fc" id="L60">        return mongoUserRepository.findByResetPasswordToken(token).map(userMapper::toDomain).or(Optional::empty);</span>
+<span class="fc" id="L59">        return mongoUserRepository.findByResetPasswordToken(token).map(userMapper::toDomain).or(Optional::empty);</span>
     }
 
     @Override
     public Optional&lt;User&gt; findByUsername(String username) {
-<span class="fc" id="L65">        return mongoUserRepository.findByUsername(username).map(userMapper::toDomain).or(Optional::empty);</span>
+<span class="fc" id="L64">        return mongoUserRepository.findByUsername(username).map(userMapper::toDomain).or(Optional::empty);</span>
     }
 
     @Override
     public Optional&lt;User&gt; findByEmailOrUsername(String email, String username) {
-<span class="fc" id="L70">        System.out.println(mongoUserRepository.findByEmailOrUsername(email, username));</span>
-<span class="fc" id="L71">        return mongoUserRepository.findByEmailOrUsername(email, username).map(userMapper::toDomain).or(Optional::empty);</span>
+<span class="fc" id="L69">        return mongoUserRepository.findByEmailOrUsername(email, username).map(userMapper::toDomain).or(Optional::empty);</span>
     }
 
     @Override
     public Optional&lt;User&gt; findById(UserId id) {
-<span class="fc" id="L76">        return mongoUserRepository.findById(id.value()).map(userMapper::toDomain).or(Optional::empty);</span>
+<span class="fc" id="L74">        return mongoUserRepository.findById(id.value()).map(userMapper::toDomain).or(Optional::empty);</span>
     }
 
     @Override
     public Optional&lt;User&gt; findByIdWithJobs(UserId id) {
-<span class="fc" id="L81">        return findById(id).map(u -&gt; u.withJobs(jobMapper.toDomain(mongoJobRepository.findByUserId(u.getId().value(), null).getContent())));</span>
+<span class="fc" id="L79">        return findById(id).map(u -&gt; u.withJobs(jobMapper.toDomain(mongoJobRepository.findByUserId(u.getId().value(), null).getContent())));</span>
     }
 
     @Override
@@ -89,36 +87,34 @@ public class UserServiceAdapter implements UserService {
         }
     )
     public User save(User user) {
-<span class="fc" id="L92">        return this.userMapper.toDomain(mongoUserRepository.save(this.userMapper.toEntity(user)));</span>
+<span class="fc" id="L90">        return this.userMapper.toDomain(mongoUserRepository.save(this.userMapper.toEntity(user)));</span>
     }
 
 
     @Override
     @Transactional
     public User saveUserAndJob(User user, Job job) {
-<span class="fc" id="L99">        this.mongoJobRepository.save(this.jobMapper.toEntity(job));</span>
-<span class="fc" id="L100">        return this.save(user);</span>
+<span class="fc" id="L97">        this.mongoJobRepository.save(this.jobMapper.toEntity(job));</span>
+<span class="fc" id="L98">        return this.save(user);</span>
     }
 
     @Override
     @Transactional
     public User deleteJobAndSaveUser(User user, Job job) {
-<span class="fc" id="L106">        this.mongoJobRepository.delete(this.jobMapper.toEntity(job));</span>
-<span class="fc" id="L107">        return this.userMapper.toDomain(this.mongoUserRepository.save(this.userMapper.toEntity(user)));</span>
+<span class="fc" id="L104">        this.mongoJobRepository.delete(this.jobMapper.toEntity(job));</span>
+<span class="fc" id="L105">        return this.userMapper.toDomain(this.mongoUserRepository.save(this.userMapper.toEntity(user)));</span>
     }
 
     @Override
     @Cacheable(value = &quot;emailExists&quot;, key = &quot;#email&quot;)
     public boolean emailExists(String email) {
-<span class="fc" id="L113">        System.out.println(&quot;in emailExists &quot;+email);</span>
-<span class="fc" id="L114">        return findByEmail(email).isPresent();</span>
+<span class="fc" id="L111">        return findByEmail(email).isPresent();</span>
     }
 
     @Override
     @Cacheable(value = &quot;usernameExists&quot;, key = &quot;#username&quot;)
     public boolean usernameExists(String username) {
-<span class="fc" id="L120">        System.out.println(&quot;in usernameExists &quot;+username);</span>
-<span class="fc" id="L121">        return findByUsername(username).isPresent();</span>
+<span class="fc" id="L117">        return findByUsername(username).isPresent();</span>
     }
 
     @Override
@@ -131,9 +127,9 @@ public class UserServiceAdapter implements UserService {
     )
     @Transactional
     public void deleteUser(User user) {
-<span class="fc" id="L134">        mongoJobRepository.deleteByUserId(user.getId().value());</span>
-<span class="fc" id="L135">        mongoRefreshTokenRepository.deleteByUserId(user.getId().value());</span>
-<span class="fc" id="L136">        mongoUserRepository.delete(userMapper.toEntity(user));</span>
-<span class="fc" id="L137">    }</span>
+<span class="fc" id="L130">        mongoJobRepository.deleteByUserId(user.getId().value());</span>
+<span class="fc" id="L131">        mongoRefreshTokenRepository.deleteByUserId(user.getId().value());</span>
+<span class="fc" id="L132">        mongoUserRepository.delete(userMapper.toEntity(user));</span>
+<span class="fc" id="L133">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

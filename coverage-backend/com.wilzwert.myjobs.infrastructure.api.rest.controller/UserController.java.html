@@ -2,6 +2,7 @@
 
 
 import com.wilzwert.myjobs.core.domain.command.ChangePasswordCommand;
+import com.wilzwert.myjobs.core.domain.command.UpdateUserLangCommand;
 import com.wilzwert.myjobs.core.domain.command.ValidateEmailCommand;
 import com.wilzwert.myjobs.core.domain.exception.UserNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.user.User;
@@ -23,8 +24,8 @@ import org.springframework.web.bind.annotation.*;
  * TODO : add rate limiting on public endpoints
  */
 @RestController
-<span class="fc" id="L26">@Slf4j</span>
-@RequestMapping(&quot;/api/user&quot;)
+<span class="fc" id="L27">@Slf4j</span>
+@RequestMapping(&quot;/api/user/me&quot;)
 public class UserController {
     private final ValidateEmailUseCase validateEmailUseCase;
 
@@ -34,6 +35,8 @@ public class UserController {
 
     private final UpdateUserUseCase updateUserUseCase;
 
+    private final UpdateUserLangUseCase updateUserLangUseCase;
+
     private final DeleteAccountUseCase deleteAccountUseCase;
 
     private final UserMapper userMapper;
@@ -42,54 +45,62 @@ public class UserController {
 
 
 
-<span class="fc" id="L45">    public UserController(ValidateEmailUseCase validateEmailUseCase, ChangePasswordUseCase changePasswordUseCase, SendVerificationEmailUseCase sendVerificationEmailUseCase, UpdateUserUseCase updateUserUseCase, DeleteAccountUseCase deleteAccountUseCase, UserMapper userMapper, UserService userService) {</span>
-<span class="fc" id="L46">        this.validateEmailUseCase = validateEmailUseCase;</span>
-<span class="fc" id="L47">        this.changePasswordUseCase = changePasswordUseCase;</span>
-<span class="fc" id="L48">        this.sendVerificationEmailUseCase = sendVerificationEmailUseCase;</span>
-<span class="fc" id="L49">        this.updateUserUseCase = updateUserUseCase;</span>
-<span class="fc" id="L50">        this.deleteAccountUseCase = deleteAccountUseCase;</span>
-<span class="fc" id="L51">        this.userMapper = userMapper;</span>
-<span class="fc" id="L52">        this.userService = userService;</span>
-<span class="fc" id="L53">    }</span>
+<span class="fc" id="L48">    public UserController(ValidateEmailUseCase validateEmailUseCase, ChangePasswordUseCase changePasswordUseCase, SendVerificationEmailUseCase sendVerificationEmailUseCase, UpdateUserUseCase updateUserUseCase, UpdateUserLangUseCase updateUserLangUseCase, DeleteAccountUseCase deleteAccountUseCase, UserMapper userMapper, UserService userService) {</span>
+<span class="fc" id="L49">        this.validateEmailUseCase = validateEmailUseCase;</span>
+<span class="fc" id="L50">        this.changePasswordUseCase = changePasswordUseCase;</span>
+<span class="fc" id="L51">        this.sendVerificationEmailUseCase = sendVerificationEmailUseCase;</span>
+<span class="fc" id="L52">        this.updateUserUseCase = updateUserUseCase;</span>
+<span class="fc" id="L53">        this.updateUserLangUseCase = updateUserLangUseCase;</span>
+<span class="fc" id="L54">        this.deleteAccountUseCase = deleteAccountUseCase;</span>
+<span class="fc" id="L55">        this.userMapper = userMapper;</span>
+<span class="fc" id="L56">        this.userService = userService;</span>
+<span class="fc" id="L57">    }</span>
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAccount(Authentication authentication) {
-<span class="fc" id="L58">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
-<span class="fc" id="L59">        deleteAccountUseCase.deleteAccount(userDetails.getId());</span>
-<span class="fc" id="L60">    }</span>
+<span class="fc" id="L62">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L63">        deleteAccountUseCase.deleteAccount(userDetails.getId());</span>
+<span class="fc" id="L64">    }</span>
 
     @GetMapping()
     public UserResponse me(Authentication authentication) {
-<span class="fc" id="L64">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
-<span class="fc" id="L65">        User user = userService.findById(userDetails.getId()).orElseThrow(UserNotFoundException::new);</span>
-<span class="fc" id="L66">        return userMapper.toResponse(user);</span>
+<span class="fc" id="L68">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L69">        User user = userService.findById(userDetails.getId()).orElseThrow(UserNotFoundException::new);</span>
+<span class="fc" id="L70">        return userMapper.toResponse(user);</span>
     }
 
     @PatchMapping()
     public UserResponse update(@RequestBody @Valid UpdateUserRequest updateUserRequest, Authentication authentication) {
-<span class="fc" id="L71">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
-<span class="fc" id="L72">        return userMapper.toResponse(updateUserUseCase.updateUser(userMapper.toUpdateCommand(updateUserRequest, userDetails.getId())));</span>
+<span class="fc" id="L75">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L76">        return userMapper.toResponse(updateUserUseCase.updateUser(userMapper.toUpdateCommand(updateUserRequest, userDetails.getId())));</span>
     }
 
-    @PutMapping(&quot;/me/password&quot;)
+    @PutMapping(&quot;/lang&quot;)
+    @ResponseStatus(HttpStatus.OK)
+    public void changeLang(@RequestBody @Valid UpdateUserLangRequest updateUserLangRequest, Authentication authentication) {
+<span class="fc" id="L82">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L83">        updateUserLangUseCase.updateUserLang(new UpdateUserLangCommand(updateUserLangRequest.getLang(), userDetails.getId()));</span>
+<span class="fc" id="L84">    }</span>
+
+    @PutMapping(&quot;/password&quot;)
     @ResponseStatus(HttpStatus.OK)
     public void changePassword(@RequestBody @Valid ChangePasswordRequest changePasswordRequest, Authentication authentication) {
-<span class="fc" id="L78">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
-<span class="fc" id="L79">        changePasswordUseCase.changePassword(new ChangePasswordCommand(changePasswordRequest.getPassword(), changePasswordRequest.getOldPassword(), userDetails.getId()));</span>
-<span class="fc" id="L80">    }</span>
+<span class="fc" id="L89">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L90">        changePasswordUseCase.changePassword(new ChangePasswordCommand(changePasswordRequest.getPassword(), changePasswordRequest.getOldPassword(), userDetails.getId()));</span>
+<span class="fc" id="L91">    }</span>
 
     @PostMapping(&quot;/email/validation&quot;)
     @ResponseStatus(HttpStatus.OK)
     public void validateEmail(@RequestBody @Valid ValidateEmailRequest validateEmailRequest) {
-<span class="nc" id="L85">        validateEmailUseCase.validateEmail(new ValidateEmailCommand(validateEmailRequest.getCode()));</span>
-<span class="nc" id="L86">    }</span>
+<span class="nc" id="L96">        validateEmailUseCase.validateEmail(new ValidateEmailCommand(validateEmailRequest.getCode()));</span>
+<span class="nc" id="L97">    }</span>
 
     @PostMapping(&quot;/email/verification&quot;)
     @ResponseStatus(HttpStatus.OK)
     public void sendVerificationEmail(Authentication authentication) {
-<span class="nc" id="L91">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
-<span class="nc" id="L92">        sendVerificationEmailUseCase.sendVerificationEmail(userDetails.getId());</span>
-<span class="nc" id="L93">    }</span>
+<span class="nc" id="L102">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="nc" id="L103">        sendVerificationEmailUseCase.sendVerificationEmail(userDetails.getId());</span>
+<span class="nc" id="L104">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
