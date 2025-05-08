@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TranslatorService } from './translator.service';
-import { AbstractControl, FormGroup } from '@angular/forms';
+import { AbstractControl, FormGroup, ValidationErrors } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
 @Injectable({
@@ -26,7 +26,10 @@ export class FormErrorService  {
         const translatedErrors = errors.map((err:string) =>
           this.translatorService.translateError(err)
         );
-        control.setErrors({ backend: translatedErrors });
+
+        const controlErrors = control.errors ?? {} as ValidationErrors;
+        controlErrors['backend'] = translatedErrors;
+        control.setErrors(controlErrors);
         // unsub the previous subscription if it exists
         this.cleanupSubscriptions.get(control)?.unsubscribe();
 

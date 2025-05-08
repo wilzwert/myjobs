@@ -1,4 +1,4 @@
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormControl, FormGroup, ValidationErrors } from '@angular/forms';
 import { FormErrorService } from './form-error.service';
 
 describe('FormErrorService', () => {
@@ -40,6 +40,33 @@ describe('FormErrorService', () => {
     form.get('email')?.setValue('new@example.com');
 
     expect(form.get('email')?.errors).toBeNull();
+  });
+
+  it('should add backend errors and clean them on value change but keep other errors', () => {
+    const form = new FormGroup({
+      username: new FormControl('oldUser')
+    });
+
+    const errors = {
+      'username': ['Username is invalid']
+    };
+
+    form.get('username')!.setErrors({test: [{message: 'testerror'}]} as ValidationErrors);
+
+    console.log(form.get('username')?.errors);
+
+    service.setBackendErrors(form, errors);
+
+    console.log(form.get('username')?.errors);
+    expect(form.get('username')?.errors).toEqual({
+      backend: ['translated_Username is invalid'],
+      test: [{message: 'testerror'}]
+    });
+
+    // simulate user changing value
+    form.get('username')?.setValue('newuser');
+
+    expect(form.get('username')?.errors).toBeNull();
   });
 
   it('should unsubscribe all on cleanup', () => {
