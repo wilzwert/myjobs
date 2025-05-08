@@ -1,6 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.adapter;
 
 import com.wilzwert.myjobs.core.domain.model.user.EmailStatus;
+import com.wilzwert.myjobs.core.domain.model.user.Lang;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.infrastructure.mail.CustomMailMessage;
@@ -13,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Locale;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,10 +37,11 @@ public class AccountCreationMessageProviderAdapterTest {
 
     @Test
     public void testSendEmail() throws MessagingException, UnsupportedEncodingException {
-        CustomMailMessage mailMessage = new CustomMailMessage("mail/account_creation", "user@example.com", "John", "Account creation");
-        when(mailProvider.createMessage("mail/account_creation", "user@example.com", "John", "Account creation")).thenReturn(mailMessage);
-        when(mailProvider.createUrl("/me")).thenReturn("http://myjobs.com/me");
-        when(mailProvider.createUrl("/me/email/validation?code=validation-code")).thenReturn("http://myjobs.com/me/email/validation?code=validation-code")  ;
+        Locale locale = Locale.of(Lang.EN.name());
+        CustomMailMessage mailMessage = new CustomMailMessage("mail/account_creation", "user@example.com", "John", "email.account_creation.subject", "EN");
+        when(mailProvider.createMessage("mail/account_creation", "user@example.com", "John", "email.account_creation.subject", "EN")).thenReturn(mailMessage);
+        when(mailProvider.createMeUrl(locale)).thenReturn("http://myjobs.com/me");
+        when(mailProvider.createUrl("uri.email_validation", locale, "validation-code")).thenReturn("http://myjobs.com/me/email/validation?code=validation-code")  ;
 
         User user = User.builder()
                 .id(UserId.generate())
@@ -49,12 +52,13 @@ public class AccountCreationMessageProviderAdapterTest {
                 .firstName("John")
                 .lastName("Doe")
                 .role("USER")
+                .lang(Lang.EN)
                 .emailValidationCode("validation-code")
                 .build();
 
         assertDoesNotThrow(() -> underTest.send(user));
-        verify(mailProvider).createMessage("mail/account_creation", "user@example.com", "John", "Account creation");
-        verify(mailProvider).createUrl("/me");
+        verify(mailProvider).createMessage("mail/account_creation", "user@example.com", "John", "email.account_creation.subject", "EN");
+        verify(mailProvider).createMeUrl(locale);
         verify(mailProvider).send(mailMessage);
 
         assertThat(mailMessage.getVariables())

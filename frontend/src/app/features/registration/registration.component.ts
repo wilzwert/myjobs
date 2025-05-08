@@ -7,12 +7,13 @@ import { MatInputModule } from '@angular/material/input';
 import { AuthService } from '../../core/services/auth.service';
 import { RegistrationRequest } from '../../core/model/registration-request.interface';
 import { catchError, take, throwError } from 'rxjs';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { NotificationService } from '../../core/services/notification.service';
 import { ApiError } from '../../core/errors/api-error';
 import { AuthValidators } from '../../core/services/auth.validators';
 import { NgxCaptchaModule } from 'ngx-captcha';
 import { PasswordValidator } from '../../core/validators/password-validator';
+import { UserFormComponent } from "../user/user-form/user-form.component";
 
 @Component({
   selector: 'app-register',
@@ -23,16 +24,16 @@ import { PasswordValidator } from '../../core/validators/password-validator';
     MatIconModule,
     MatInputModule,
     ReactiveFormsModule,
-    RouterLink,
-    NgxCaptchaModule
-  ],
+    NgxCaptchaModule,
+    UserFormComponent
+],
   templateUrl: './registration.component.html',
   styleUrl: './registration.component.scss'
 })
 export class RegistrationComponent {
   public form: FormGroup;
   public isSubmitting = false;
-
+  
   constructor(
     private authService: AuthService,
     private authValidators: AuthValidators,
@@ -81,26 +82,6 @@ export class RegistrationComponent {
     });
   }
 
-  get email() {
-    return this.form.get('email');
-  }
-
-  get username() {
-    return this.form.get('username');
-  }
-
-  get password() {
-    return this.form.get('password');
-  }
-
-  get firstName() {
-    return this.form.get('firstName');
-  }
-
-  get lastName() {
-    return this.form.get('lastName');
-  }
-
   submit() :void {
     if(!this.isSubmitting && this.form.valid) {
       this.isSubmitting = true;
@@ -110,14 +91,12 @@ export class RegistrationComponent {
         catchError(
           (error: ApiError) => {
             this.isSubmitting = false;
-            return throwError(() => new Error(
-              'Registration failed. '+(error.httpStatus === 409 ? "Email or username already in use" : 'An error occured')
-            ));
+            return throwError(() => error);
           }
       ))
       .subscribe(() => {
           this.isSubmitting = false;
-          this.notificationService.confirmation("Registration completed successfully, you may now log in.");
+          this.notificationService.confirmation($localize `:@@message.registration.success:Registration completed successfully, you may now log in.`);
           this.router.navigate(["/login"])
       });
     }

@@ -5,7 +5,6 @@ import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validator
 import { EditorComponent, TINYMCE_SCRIPT_SRC } from '@tinymce/tinymce-angular'
 import { NotificationService } from '../../../core/services/notification.service';
 import { MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
-import { MatIcon } from '@angular/material/icon';
 import { UpdateJobRequest } from '../../../core/model/update-job-request.interface';
 import { CreateJobRequest } from '../../../core/model/create-job-request.interface';
 import { MatInput } from '@angular/material/input';
@@ -13,10 +12,11 @@ import { catchError, Observable, take, throwError } from 'rxjs';
 import { ApiError } from '../../../core/errors/api-error';
 import { MatButton } from '@angular/material/button';
 import { JobMetadata } from '../../../core/model/job-metadata.interface';
+import { StatusIconComponent } from "../../../layout/shared/status-icon/status-icon.component";
 
 @Component({
   selector: 'app-job-form',
-  imports: [ReactiveFormsModule, MatFormField, MatInput, MatLabel, MatHint, MatIcon, MatButton, EditorComponent],
+  imports: [ReactiveFormsModule, MatFormField, MatInput, MatLabel, MatHint, MatButton, EditorComponent, StatusIconComponent],
   providers: [
     { provide: TINYMCE_SCRIPT_SRC, useValue: 'tinymce/tinymce.min.js' }
   ],
@@ -83,10 +83,10 @@ export class JobFormComponent implements OnInit {
     this.error = null;
     this.loading = true;
     let observableResult: Observable<Job>;
-    let term = 'created';
+    let term = $localize `:@@info.job.created:created`;
     if(this.job !== null && this.job.id !== null) {
       observableResult = this.jobService.updateJob(this.job.id, this.form?.value as UpdateJobRequest);
-      term = 'updated';
+      term = $localize `:@@info.job.updated:updated`;
     }
     else {
       observableResult = this.jobService.createJob(this.form?.value as CreateJobRequest);
@@ -98,14 +98,16 @@ export class JobFormComponent implements OnInit {
         (error: ApiError) => {
           this.loading = false;
           // set an explicit error message
-          error.message = `Job could not be ${term}.${error.message}`
+          const errorMessage = $localize `:@@error.job.create_or_save:Job could not be ${term}.${error.message}`;
+          error.message = errorMessage;
+          this.error = errorMessage;
           return throwError(() => error);
         }
       )
     )
     .subscribe((job) => {
       this.loading = false;
-      this.notificationService.confirmation(`Job ${term} successfully`);
+      this.notificationService.confirmation($localize `:@@job.created_or_saved:Job ${term} successfully`);
       this.jobSaved.emit(job);
     });
   }
@@ -154,6 +156,5 @@ export class JobFormComponent implements OnInit {
         ]
       ]
     });
-  }
-  
+  }  
 }

@@ -9,10 +9,13 @@ spring:
     username: ${MAIL_USERNAME:}
     password: ${MAIL_PASSWORD:}
     properties:
+      mime:
+        charset: UTF-8
       mail:
         smtp:
           auth: ${MAIL_SMTP_AUTH:false}
-          starttls: ${MAIL_SMTP_STARTTLS:false}
+          starttls:
+            enable: ${MAIL_SMTP_STARTTLS:false}
   data:
     mongodb:
       host: ${MONGODB_HOST:localhost}
@@ -23,6 +26,9 @@ spring:
       auto-index-creation: true
       uuid-representation: standard
       replica-set-name: ${MONGODB_RS_NAME:rs0}
+  thymeleaf:
+    encoding: UTF-8
+
 
 # security
 security:
@@ -35,12 +41,15 @@ security:
     same-site: Strict
     domain: ${COOKIE_DOMAIN:localhost}
     path: /
+  cors:
+    allow-all: false
 
 logging:
   level:
     org:
       springframework:
         security: DEBUG
+        mail: DEBUG
         data:
           mongodb: DEBUG
 
@@ -63,3 +72,4 @@ application:
   mail:
     from: ${APPLICATION_MAIL_FROM:noreply@locahost}
     from-name: ${APPLICATION_MAIL_FROM_NAME:MyJobs}
+  default-language: EN

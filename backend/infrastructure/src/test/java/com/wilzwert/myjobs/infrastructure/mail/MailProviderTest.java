@@ -14,12 +14,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.MessageSource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,33 +42,41 @@ public class MailProviderTest {
     @Mock
     private TemplateEngine templateEngine;
 
+    @Mock
+    private MessageSource messageSource;
+
     @InjectMocks
     private MailProvider underTest;
 
     @BeforeEach
     public void setUp() {
-        underTest = new MailProvider(mailSender, templateEngine, "http://frontend", "test@myjobs", "MyJobs tests");
+        underTest = new MailProvider(mailSender, templateEngine, messageSource,"http://frontend", "test@myjobs", "MyJobs tests", "EN");
     }
 
     @Test
     public void shouldCreateCustomMail() {
-        CustomMailMessage message = underTest.createMessage("template", "recipient@myjobs", "MyJobs recipient", "Test subject");
+        CustomMailMessage message = underTest.createMessage("template", "recipient@myjobs", "MyJobs recipient", "Test subject", "EN");
         assertNotNull(message);
         assertEquals("template", message.getTemplate());
         assertEquals("recipient@myjobs", message.getRecipientMail());
         assertEquals("MyJobs recipient", message.getRecipientName());
         assertEquals("Test subject", message.getSubject());
+        assertEquals("EN", message.getLang());
+
     }
 
     @Test
     public void shouldSendMail() throws MessagingException, IOException {
         ArgumentCaptor<MimeMessage> argument = ArgumentCaptor.forClass(MimeMessage.class);
         JavaMailSender mockedMailSender = spy(new JavaMailSenderImpl());
-        underTest = new MailProvider(mockedMailSender, templateEngine, "http://frontend", "test@myjobs", "MyJobs tests");
-        doNothing().when(mockedMailSender).send(argument.capture());
-        when(templateEngine.process(anyString(), any(Context.class))).thenReturn("<html><body>Some html</body></html>");
 
-        CustomMailMessage message = underTest.createMessage("template", "recipient@myjobs", "MyJobs recipient", "Test subject");
+        underTest = new MailProvider(mockedMailSender, templateEngine, messageSource,"http://frontend", "test@myjobs", "MyJobs tests", "EN");
+        doNothing().when(mockedMailSender).send(argument.capture());
+
+        when(templateEngine.process(anyString(), any(Context.class))).thenReturn("<html><body>Some html</body></html>");
+        when(messageSource.getMessage(anyString(), any(), any(Locale.class))).thenReturn("Subject from message source");
+
+        CustomMailMessage message = underTest.createMessage("template", "recipient@myjobs", "MyJobs recipient", "Test subject", "EN");
         assertNotNull(message);
 
         assertDoesNotThrow(() -> underTest.send(message));
@@ -84,7 +94,7 @@ public class MailProviderTest {
         assertEquals("MyJobs recipient <recipient@myjobs>", recipients[0].toString());
 
         // check subject
-        assertEquals("Test subject", mimeMessage.getSubject());
+        assertEquals("Subject from message source", mimeMessage.getSubject());
 
         // check html body
         // Vérifier le contenu HTML du message

@@ -29,6 +29,7 @@ public class User extends DomainEntity<UserId> {
     private final String username;
     private final String firstName;
     private final String lastName;
+    private final Lang lang;
     private final String role;
     private final String resetPasswordToken;
     private final Instant resetPasswordExpiresAt;
@@ -51,6 +52,7 @@ public class User extends DomainEntity<UserId> {
         private String username;
         private String firstName;
         private String lastName;
+        private Lang lang;
         private String role;
         private String resetPasswordToken;
         private Instant resetPasswordExpiresAt;
@@ -106,6 +108,12 @@ public class User extends DomainEntity<UserId> {
             this.lastName = lastName;
             return this;
         }
+
+        public Builder lang(Lang lang) {
+            this.lang = lang;
+            return this;
+        }
+
         public Builder role(String role) {
             this.role = role;
             return this;
@@ -133,7 +141,7 @@ public class User extends DomainEntity<UserId> {
 
         public User build() {
             // build User
-            return new User(id, email, emailStatus, emailValidationCode, password, username, firstName, lastName, role, resetPasswordToken, resetPasswordExpiresAt, createdAt, updatedAt, jobs);
+            return new User(id, email, emailStatus, emailValidationCode, password, username, firstName, lastName, lang, role, resetPasswordToken, resetPasswordExpiresAt, createdAt, updatedAt, jobs);
         }
     }
 
@@ -157,7 +165,7 @@ public class User extends DomainEntity<UserId> {
                 .getErrors();
     }
 
-    private User(UserId id, String email, EmailStatus emailStatus, String emailValidationCode, String password, String username, String firstName, String lastName, String role, String resetPasswordToken, Instant resetPasswordExpiresAt, Instant createdAt, Instant updatedAt, List<Job> jobs) {
+    private User(UserId id, String email, EmailStatus emailStatus, String emailValidationCode, String password, String username, String firstName, String lastName, Lang lang, String role, String resetPasswordToken, Instant resetPasswordExpiresAt, Instant createdAt, Instant updatedAt, List<Job> jobs) {
         this.id = id != null ? id : UserId.generate();
         this.email = email;
         this.emailValidationCode = emailValidationCode != null ? emailValidationCode : UUID.randomUUID().toString();
@@ -166,6 +174,7 @@ public class User extends DomainEntity<UserId> {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.lang = lang != null ? lang : Lang.EN;
         this.role = role != null ? role : "USER";
         this.resetPasswordToken = resetPasswordToken;
         this.resetPasswordExpiresAt = resetPasswordExpiresAt;
@@ -181,7 +190,7 @@ public class User extends DomainEntity<UserId> {
         }
     }
 
-    public static User create(String email, String password, String username, String firstName, String lastName, String plainPassword) {
+    public static User create(String email, String password, String username, String firstName, String lastName, Lang lang, String plainPassword) {
         ValidationErrors errors = new ValidationErrors();
         User createdUser = null;
         try {
@@ -194,6 +203,7 @@ public class User extends DomainEntity<UserId> {
                     username,
                     firstName,
                     lastName,
+                    lang,
                     null,
                     null,
                     null,
@@ -236,6 +246,7 @@ public class User extends DomainEntity<UserId> {
                 username,
                 firstName,
                 lastName,
+                lang,
                 getRole(),
                 "",
                 null,
@@ -272,6 +283,7 @@ public class User extends DomainEntity<UserId> {
                 getUsername(),
                 getFirstName(),
                 getLastName(),
+                getLang(),
                 getRole(),
                 getResetPasswordToken(),
                 getResetPasswordExpiresAt(),
@@ -294,6 +306,7 @@ public class User extends DomainEntity<UserId> {
                     getUsername(),
                     getFirstName(),
                     getLastName(),
+                    getLang(),
                     getRole(),
                     null,
                     null,
@@ -330,6 +343,7 @@ public class User extends DomainEntity<UserId> {
                 getUsername(),
                 getFirstName(),
                 getLastName(),
+                getLang(),
                 getRole(),
                 // FIXME : maybe we should use a value object with a generator
                 UUID.randomUUID().toString(),
@@ -368,9 +382,30 @@ public class User extends DomainEntity<UserId> {
                 getUsername(),
                 getFirstName(),
                 getLastName(),
+                getLang(),
                 getRole(),
                 null,
                 null,
+                getCreatedAt(),
+                Instant.now(),
+                getJobs()
+        );
+    }
+
+    public User updateLang(Lang lang) {
+        return new User(
+                getId(),
+                getEmail(),
+                getEmailStatus(),
+                getEmailValidationCode(),
+                getPassword(),
+                getUsername(),
+                getFirstName(),
+                getLastName(),
+                lang,
+                getRole(),
+                getResetPasswordToken(),
+                getResetPasswordExpiresAt(),
                 getCreatedAt(),
                 Instant.now(),
                 getJobs()
@@ -407,6 +442,10 @@ public class User extends DomainEntity<UserId> {
 
     public String getLastName() {
         return lastName;
+    }
+
+    public Lang getLang() {
+        return lang;
     }
 
     public String getRole() {

@@ -7,6 +7,7 @@ logging:
   level:
     org:
       springframework:
-        security: WARNING
+        security: WARN
+        mail: WARN
         data:
-          mongodb: WARNING
+          mongodb: WARN

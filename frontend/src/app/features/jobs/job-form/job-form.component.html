@@ -5,91 +5,84 @@
             
         <p>
             <mat-form-field>
-                <mat-label>Url</mat-label>
-                <input matInput placeholder="Job url" formControlName="url" type="url">
+                <mat-label i18n="url|url input label@@input.url.label">Url</mat-label>
+                <input matInput formControlName="url" type="url" i18n-placeholder="url placeholder|url input placeholder@@input.url.placeholder" placeholder="Job url">
                 <mat-hint class="url-hint" align="end">
-                    @if(url?.invalid) {
-                        <mat-icon class="input-invalid" svgIcon="invalid">Invalid</mat-icon>
-                    } 
-                    @else {
-                        <mat-icon class="input-valid"  svgIcon="valid">Valid</mat-icon>
-                    }</mat-hint>
+                    <app-status-icon [isValid]="!url?.invalid"/>
+                </mat-hint>
             </mat-form-field>
         </p>
         <p>
             <mat-form-field>
-                <mat-label>Title</mat-label>
-                <input matInput placeholder="Job title" formControlName="title">
+                <mat-label i18n="job title|job title input label@@input.job.title.label">Title</mat-label>
+                <input matInput formControlName="title" i18n-placeholder="job title placeholder|job title input placeholder@@input.job.title.placeholder" placeholder="Job title" >
                 <mat-hint class="title-hint" align="end">
-                    @if(title?.invalid) {
-                        <mat-icon class="input-invalid" svgIcon="invalid">Invalid</mat-icon>
-                    } 
-                    @else {
-                        <mat-icon class="input-valid"  svgIcon="valid">Valid</mat-icon>
-                    }</mat-hint>
+                    <app-status-icon [isValid]="!title?.invalid"/>    
+                </mat-hint>
             </mat-form-field>
         </p>
 
         <p>
             <mat-form-field>
-                <mat-label>Company</mat-label>
-                <input matInput placeholder="Company" formControlName="company">
+                <mat-label i18n="job company|job company input label@@input.job.company.label">Company</mat-label>
+                <input matInput formControlName="company" i18n-placeholder="job company placeholder|job company input placeholder@@input.job.company.placeholder" placeholder="Company">
                 <mat-hint class="company-hint" align="end">
-                    @if(company?.invalid) {
-                        <mat-icon class="input-invalid" svgIcon="invalid">Invalid</mat-icon>
-                    } 
-                    @else {
-                        <mat-icon class="input-valid"  svgIcon="valid">Valid</mat-icon>
-                    }</mat-hint>
+                    <app-status-icon [isValid]="!company?.invalid"/>    
+                </mat-hint>
             </mat-form-field>
         </p>
 
         <p>
             <mat-form-field>
-                <mat-label>Description</mat-label>
-                <editor [init]="init" (onKeyDown)="updateRichText($event, 'description')"  (onChange)="updateRichText($event, 'description')" placeholder="Job description" [initialValue]="description?.value"></editor>
+                <mat-label i18n="job description|job description input label@@input.job.description.label">Description</mat-label>
+                <editor [init]="init" (onKeyDown)="updateRichText($event, 'description')"  (onChange)="updateRichText($event, 'description')" [initialValue]="description?.value"
+                    i18n-placeholder="job description placeholder|job description input placeholder@@input.job.description.placeholder"
+                    placeholder="Job description"
+                ></editor>
                 <mat-hint class="content-hint" align="end">
-                    @if(description?.invalid) {
-                        <mat-icon class="input-invalid" svgIcon="invalid">Invalid</mat-icon>
-                    } 
-                    @else {
-                        <mat-icon class="input-valid"  svgIcon="valid">Valid</mat-icon>
-                    }</mat-hint>
+                    <app-status-icon [isValid]="!description?.invalid"/>
+                </mat-hint>
                 <textarea matInput placeholder="Job description" formControlName="description" class=""></textarea>
             </mat-form-field>
         </p>
         <p>
             <mat-form-field>
-                <mat-label>Profile</mat-label>
-                <editor [init]="init" (onKeyDown)="updateRichText($event, 'profile')" (onChange)="updateRichText($event, 'profile')" placeholder="Job profile" [initialValue]="profile?.value"></editor>
+                <mat-label i18n="job profile|job profile input label@@input.job.profile.label">Profile</mat-label>
+                <editor [init]="init" (onKeyDown)="updateRichText($event, 'profile')" (onChange)="updateRichText($event, 'profile')" [initialValue]="profile?.value"
+                i18n-placeholder="job profile placeholder|job profile input placeholder@@input.job.profile.placeholder"
+                    placeholder="Job profile"
+                ></editor>
                 <mat-hint class="content-hint" align="end">
-                    @if(profile?.invalid) {
-                        <mat-icon class="input-invalid" svgIcon="invalid">Invalid</mat-icon>
-                    } 
-                    @else {
-                        <mat-icon class="input-valid"  svgIcon="valid">Valid</mat-icon>
-                    }</mat-hint>
+                    <app-status-icon [isValid]="!profile?.invalid"/>
+                </mat-hint>
                 <textarea matInput placeholder="Job profile" formControlName="profile" class=""></textarea>
             </mat-form-field>
         </p>
 
         <p>
             <mat-form-field>
-                <mat-label>Salary</mat-label>
-                <input matInput placeholder="Salary" formControlName="salary">
+                <mat-label i18n="job salary|job salary input label@@input.job.salary.label">Salary</mat-label>
+                <input matInput formControlName="salary" i18n-placeholder="job salary placeholder|job salary input placeholder@@input.job.salary.placeholder" placeholder="Salary">
                 <mat-hint class="salary-hint" align="end">
-                    @if(salary?.invalid) {
-                        <mat-icon class="input-invalid" svgIcon="invalid">Invalid</mat-icon>
-                    } 
-                    @else {
-                        <mat-icon class="input-valid"  svgIcon="valid">Valid</mat-icon>
-                    }</mat-hint>
+                    <app-status-icon [isValid]="!salary?.invalid"/>
+                </mat-hint>
             </mat-form-field>
         </p>
         
-        <button mat-raised-button type="submit" [disabled]="form.invalid || loading"> @if (loading) { Loading... } @else { @if(job?.id !== null) {Edit} @else {Create} job }</button>
+        <button mat-raised-button type="submit" [disabled]="form.invalid || loading"> 
+            @if (loading) { 
+                <span i18n="loading|inform the user loading occurs@@info.loading">Loading...</span>
+            } 
+            @else { 
+                @if(job?.id !== null) {
+                    <span i18n="save|Save action label@@action.save">Save</span>
+                } 
+                @else {
+                    <span i18n="create|Create action label@@action.create">Create</span>
+                } 
+            }</button>
         @if (error) {
-            <p class="error">An error occurred : {{error}}</p>
+            <p class="error"><span i18n="an error occurred|a label to inform user that an error occurred@@error.label">An error occurred</span> : {{error}}</p>
         }
     </form>
 }

@@ -51,7 +51,6 @@ Cypress.Commands.add('login', () => {
                 url:  '/api/auth/login'
             }, 
             req => {
-                console.log('salut');
                 req.reply({
                     email: 'user@example.com',
                     username: 'username',

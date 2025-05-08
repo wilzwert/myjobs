@@ -8,10 +8,10 @@
             {{ user.email }} 
             @switch(user.emailStatus) {
                 @case(EmailStatus.PENDING) {
-                    <mat-icon class="input-invalid" svgIcon="valid">Invalid</mat-icon><button mat-button (click)="sendVerificationEmail()">Validate</button>
+                    <mat-icon class="input-invalid" svgIcon="valid" i18n="invalid|invalid status label@@info.invalid">Invalid</mat-icon><button mat-button (click)="sendVerificationEmail()" i18n="validate|label of a validation link or button@@action.validate">Validate</button>
                 }
                 @case(EmailStatus.VALIDATED) {
-                    <mat-icon class="input-valid" svgIcon="valid">Valid</mat-icon><span>Verified</span>
+                    <mat-icon class="input-valid" svgIcon="valid" i18n="valid|valid status label@@info.valid">Valid</mat-icon><span i18n="verified|label indicating email is verified in user account@@info.verified">Verified</span>
                 }
 
             }
@@ -20,30 +20,29 @@
             {{ user.username }}
             </p>
             <p>
-                Registered {{ user.createdAt | date }}
+                <span i18n="registered|label preceding registration date in user account@@info.registered">Registered</span> {{ user.createdAt | date }}
             </p>
         </mat-card-content>
         <mat-card-actions>
-            <button mat-raised-button (click)="editUser(user)">Edit</button>"
+            <button mat-raised-button (click)="editUser(user)" i18n="edit|Edit action label@@action.edit">Edit</button>
         </mat-card-actions>
     </mat-card>
 
     <mat-card>
         <mat-card-content>
-            <button mat-button (click)="changePassword()">Change password</button>
+            <button mat-button (click)="changePassword()" i18n="change password|Change password action label@@action.change_password">Change password</button>
         </mat-card-content>
     </mat-card>
 
 }
 <mat-card>
     <mat-card-content>
-        <button mat-button class="logout" (click)="logout()">Log out</button>
+        <button mat-button class="logout" (click)="logout()" i18n="log out|Log out action label@@action.log_out">Log out</button>
     </mat-card-content>
 </mat-card>
 
 <mat-card>
     <mat-card-content>
-        <button mat-button class="delete-account" (click)="deleteAccount()">Delete my account</button>
+        <button mat-button class="delete-account" (click)="deleteAccount()" i18n="delete account|Delete account action label@@action.user.delete_account">Delete my account</button>
     </mat-card-content>
 </mat-card>
-

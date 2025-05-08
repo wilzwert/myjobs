@@ -17,32 +17,32 @@ import {
 
     const hasMinimumLength = value.length >= 8;
     if(!hasMinimumLength) {
-        errors.push('too short, (min 8 characters)')
+        errors.push($localize `:@@error.password.too_short:too short (min 8 characters)`)
     }
 
-    const hasMaximumLength = value.length <= 16;
-    if(!hasMinimumLength) {
-        errors.push('too long (max 16 characters)')
+    const hasMaximumLength = value.length <= 128;
+    if(!hasMaximumLength) {
+        errors.push($localize `:@@error.password.too_long:too long (max 128 characters)`)
     }
 
     const hasUpperCase = /[A-Z]+/.test(value);
     if(!hasUpperCase) {
-        errors.push('needs at least 1 uppercase character');
+        errors.push($localize `:@@error.password.uppercase:needs at least 1 uppercase character`);
     }
 
     const hasLowerCase = /[a-z]+/.test(value);
     if(!hasLowerCase) {
-        errors.push('needs at least 1 lowercase character');
+        errors.push($localize `:@@error.password.lowercase:needs at least 1 lowercase character`);
     }
 
     const hasNumeric = /[0-9]+/.test(value);
     if(!hasNumeric) {
-        errors.push('needs at least 1 digit');
+        errors.push($localize `:@@error.password.digit:needs at least 1 digit`);
     }
 
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(value);
     if(!hasSpecialChar) {
-        errors.push('needs at least 1 symbol (!@#$%^&*(),.?":{}|<>)');
+        errors.push($localize `:@@error.password.symbol:needs at least 1 symbol (!@#$%^&*(),.?":{}|<>)`);
     }
 
     const valid = hasMinimumLength && hasMaximumLength && hasUpperCase && hasLowerCase && hasNumeric && hasSpecialChar;
@@ -51,12 +51,12 @@ import {
         null :
         {
             passwordStrength: {
-                hasMinimumLength: !hasMinimumLength,
-                hasMaximumLength: !hasMaximumLength,
-                hasUpperCase: !hasUpperCase,
-                hasLowerCase: !hasLowerCase,
-                hasNumeric: !hasNumeric,
-                hasSpecialChar: !hasSpecialChar,
+                minimumLengthError: !hasMinimumLength,
+                maximumLengthError: !hasMaximumLength,
+                upperCaseError: !hasUpperCase,
+                lowerCaseError: !hasLowerCase,
+                numericError: !hasNumeric,
+                specialCharError: !hasSpecialChar,
                 message: messages.charAt(0).toUpperCase() + messages.slice(1)
             }
         }

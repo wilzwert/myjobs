@@ -17,13 +17,12 @@ public class EmailVerificationMessageProviderAdapter implements EmailVerificatio
     @Override
     public void send(User user) {
         try {
-            var message = mailProvider.createMessage("mail/email_verification", user.getEmail(), user.getFirstName(), "Email verification");
-            // generate URL
-            String url = mailProvider.createUrl("/me");
-            message.setVariable("url", url);
+            var message = mailProvider.createMessage("mail/email_verification", user.getEmail(), user.getFirstName(), "email.email_verification.subject", user.getLang().toString());
+
+            message.setVariable("url", mailProvider.createMeUrl(message.getLocale()));
             message.setVariable("firstName", user.getFirstName());
             message.setVariable("lastName", user.getLastName());
-            message.setVariable("validationUrl", mailProvider.createUrl("/me/email/validation?code="+user.getEmailValidationCode()));
+            message.setVariable("validationUrl", mailProvider.createUrl("uri.email_validation", message.getLocale(), user.getEmailValidationCode()));
             mailProvider.send(message);
         }
         // TODO : improve exception handling

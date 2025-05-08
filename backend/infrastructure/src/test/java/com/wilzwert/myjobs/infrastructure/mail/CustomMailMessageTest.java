@@ -15,7 +15,7 @@ public class CustomMailMessageTest {
 
     @Test
     public void shouldPushVariable() {
-        CustomMailMessage message = new CustomMailMessage("template", "recipiant@myjobs", "MyJobs", "Test subject");
+        CustomMailMessage message = new CustomMailMessage("template", "recipiant@myjobs", "MyJobs", "Test subject", "EN");
 
         assertEquals(0, message.getVariables().size());
 

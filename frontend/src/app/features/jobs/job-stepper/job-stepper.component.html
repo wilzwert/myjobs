@@ -1,14 +1,14 @@
 <h2 mat-dialog-title>Create a Job</h2>
 <mat-stepper linear #matStepper>
-  <mat-step editable="false" label="Job creation">
+  <mat-step editable="false" i18n-label="Job stepper job creation step label@@job.stepper.create.label" label="Job creation" >
     <app-job-form (submit)="loading = true" [jobMetadata]="jobMetadata" (jobSaved)="jobCreated($event)"></app-job-form>
   </mat-step>
-  <mat-step optional="true" editable="false" label="Attachments">
+  <mat-step optional="true" editable="false" i18n-label="Job stepper attachments step label@@job.stepper.attachments.label" label="Attachments">
     <app-job-attachments-form [job]="job!" (attachmentsSaved)="next()"></app-job-attachments-form>
-    <button mat-button matStepperNext >Skip</button>
+    <button mat-button matStepperNext i18n="Skip step@@job.stepper.action.skip">Skip</button>
   </mat-step>
-  <mat-step optional="true" label="Activities">
+  <mat-step optional="true" i18n-label="Job stepper activities step label@@job.stepper.activities.label" label="Activities">
     <app-job-activities-form [job]="job!" (activitiesSaved)="terminate()"></app-job-activities-form>
-    <button mat-button (click)="terminate()">Skip</button>
+    <button mat-button (click)="terminate()" i18n="Skip step@@job.stepper.action.skip">Skip</button>
   </mat-step>
 </mat-stepper>

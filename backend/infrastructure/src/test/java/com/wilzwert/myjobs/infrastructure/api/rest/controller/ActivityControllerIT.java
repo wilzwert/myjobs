@@ -103,7 +103,7 @@ public class ActivityControllerIT extends AbstractBaseIntegrationTest  {
         ErrorResponse errorResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ErrorResponse.class);
         assertThat(errorResponse).isNotNull();
         assertThat(errorResponse.getStatus()).isEqualTo("400");
-        assertThat(errorResponse.getMessage()).isEqualTo("Validation error");
+        assertThat(errorResponse.getMessage()).isEqualTo(ErrorCode.VALIDATION_FAILED.name());
         assertThat(errorResponse.getErrors()).hasSize(1);
         assertThat(errorResponse.getErrors().get("type")).containsExactly(ErrorCode.INVALID_VALUE.name());
     }

@@ -71,6 +71,7 @@ public class UserTest {
         assertEquals("username", user.getUsername());
         assertEquals("firstName", user.getFirstName());
         assertEquals("lastName", user.getLastName());
+        assertEquals(Lang.EN, user.getLang());
         assertNotNull(user.getEmailValidationCode());
         assertEquals(EmailStatus.PENDING, user.getEmailStatus());
         assertEquals("USER", user.getRole());
@@ -106,6 +107,7 @@ public class UserTest {
                 .firstName("firstName")
                 .lastName("lastName")
                 .role("SOME_ROLE")
+                .lang(Lang.FR)
                 .createdAt(now)
                 .updatedAt(now)
                 .emailStatus(EmailStatus.VALIDATED)
@@ -122,6 +124,7 @@ public class UserTest {
         assertEquals("username", user.getUsername());
         assertEquals("firstName", user.getFirstName());
         assertEquals("lastName", user.getLastName());
+        assertEquals(Lang.FR, user.getLang());
         assertEquals("SOME_ROLE", user.getRole());
         assertEquals(now, user.getCreatedAt());
         assertEquals(now, user.getUpdatedAt());
@@ -133,7 +136,7 @@ public class UserTest {
     @Test
     public void whenPasswordWeak_thenCreateUserShouldThrowValidationException() {
         ValidationException exception = assertThrows(ValidationException.class, () ->  {
-            User user = User.create("test@example.com",  "password", "username", "firstName", "lastName", "weakPassword");
+            User user = User.create("test@example.com",  "password", "username", "firstName", "lastName", null,"weakPassword");
         });
 
         assertNotNull(exception);
@@ -144,7 +147,7 @@ public class UserTest {
     @Test
     public void shouldCreateNewUser() {
         Instant before = Instant.now();
-        User user = User.create("test@example.com",  "password", "username", "firstName", "lastName", "Abcd1234!");
+        User user = User.create("test@example.com",  "password", "username", "firstName", "lastName", Lang.FR,"Abcd1234!");
         Instant after = Instant.now();
         assertNotNull(user);
         assertNotNull(user.getId());
@@ -153,6 +156,7 @@ public class UserTest {
         assertEquals("username", user.getUsername());
         assertEquals("firstName", user.getFirstName());
         assertEquals("lastName", user.getLastName());
+        assertEquals(Lang.FR, user.getLang());
         assertNotNull(user.getEmailValidationCode());
         assertEquals(EmailStatus.PENDING, user.getEmailStatus());
         assertEquals("USER", user.getRole());
@@ -188,9 +192,32 @@ public class UserTest {
         assertEquals("changedUsername", updatedUser.getUsername());
         assertEquals("John", updatedUser.getFirstName());
         assertEquals("Doe", updatedUser.getLastName());
+        assertEquals(Lang.EN, updatedUser.getLang());
         assertEquals("email@example.com", updatedUser.getEmail());
 
         Instant updatedAt = updatedUser.getUpdatedAt();
         assertTrue(updatedAt.equals(before) || updatedAt.equals(after) || updatedAt.isAfter(before) && updatedAt.isBefore(after));
+    }
+
+    @Test
+    public void shouldUpdateUserLang() {
+        UserId userId = UserId.generate();
+        User user = User.builder()
+                .id(userId)
+                .email("test@example.com")
+                .password("password")
+                .username("username")
+                .firstName("firstName")
+                .lastName("lastName")
+                .emailStatus(EmailStatus.VALIDATED)
+                .emailValidationCode("code")
+                .build();
+
+        assertEquals(Lang.EN, user.getLang());
+
+        User updatedUser = user.updateLang(Lang.FR);
+        assertEquals(Lang.FR, updatedUser.getLang());
+        assertNotSame(user, updatedUser);
+
     }
 }

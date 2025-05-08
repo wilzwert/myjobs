@@ -1,16 +1,24 @@
 <h2 mat-dialog-title>
     @switch (data.metadata!.type) {
         @case ('job') {
-            {{ (data.job?.id ? 'Edit' : 'Create') + ' job'}}
+            @if(data.job?.id !== null) {
+                <span i18n="edit job|edit job ui title@@job.edit">Edit job</span>
+            }
+            @else {
+                <span i18n="create job|create job ui title@@job.create">Create job</span>
+            }
         }
         @case ('attachments') {
-            Manage attachements
+            <span i18n="manage attachments|attachments management ui title@@job.attachments.manage">Manage attachements</span>
         }
         @case ('attachments-form') {
-            Add attachments
+            <span i18n="add attachments|attachments creation ui title@@job.attachments.add">Add attachments</span>
         }
-        @case ('activity') {
-            Add activities
+        @case ('activities') {
+            <span i18n="manage activities|activities management ui title@@job.activities.manage">Manage activities</span>
+        }
+        @case ('activities-form') {
+            <span i18n="add activities|activities creation ui title@@job.activities.add">Add activities</span>
         }
     }
   </h2>
@@ -25,8 +33,11 @@
         @case ('attachments-form') {
             <app-job-attachments-form [defaultAttachements]="data.metadata!.defaultAttachments" [job]="data.job!" (attachmentsSaved)="success()"></app-job-attachments-form>
         }
-        @case( 'activity') {
+        @case( 'activities') {
             <app-job-activities-form [job]="data.job!" (activitiesSaved)="success()"></app-job-activities-form>
+        }
+        @case ('activities-form') {
+            <app-job-activities-form [defaultActivities]="data.metadata!.defaultActivities" [job]="data.job!" (activitiesSaved)="success()"></app-job-activities-form>
         }
     }
 }

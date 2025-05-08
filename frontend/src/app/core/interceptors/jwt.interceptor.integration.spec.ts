@@ -82,7 +82,7 @@ describe('JwtInterceptor', () => {
     req.error(new  ProgressEvent('error'), { status: 401 });
 
     expect(req.request.headers.get('Authorization')).toBe(`${mockSessionInformation.type} ${mockSessionInformation.token}`);
-    const refreshRequest = httpTestingController.expectOne("api/auth/refreshToken");
+    const refreshRequest = httpTestingController.expectOne("/api/auth/refreshToken");
     expect(refreshRequest.request.body).toMatchObject({refreshToken: "refresh_token"} as RefreshTokenRequest);
 
     const refreshTokenResponse: RefreshTokenResponse = {token: "new_token", type: "Bearer", refreshToken: "refresh_token"} as RefreshTokenResponse;
@@ -110,7 +110,7 @@ describe('JwtInterceptor', () => {
     req.error(new  ProgressEvent('error'), { status: 401 });
     expect(req.request.headers.get('Authorization')).toBe(`${mockSessionInformation.type} ${mockSessionInformation.token}`);
 
-    const refreshRequest = httpTestingController.expectOne("api/auth/refreshToken");
+    const refreshRequest = httpTestingController.expectOne("/api/auth/refreshToken");
     expect(refreshRequest.request.body).toMatchObject({refreshToken: "refresh_token"} as RefreshTokenRequest);
     expect(refreshRequest.request.headers.get('Authorization')).toBe(`${mockSessionInformation.type} ${mockSessionInformation.token}`);
     refreshRequest.error(new ProgressEvent('error'), {status: 401});

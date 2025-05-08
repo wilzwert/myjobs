@@ -8,14 +8,14 @@ import { ChangePasswordRequest } from '../../../core/model/change-password-reque
 import { catchError, take, throwError } from 'rxjs';
 import { MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import { ApiError } from '../../../core/errors/api-error';
 import { BaseChildComponent } from '../../../core/component/base-child.component';
+import { StatusIconComponent } from "../../../layout/shared/status-icon/status-icon.component";
 
 @Component({
   selector: 'app-password-form',
-  imports: [ReactiveFormsModule, MatFormField, MatInput, MatButton, MatLabel, MatIcon, MatHint],
+  imports: [ReactiveFormsModule, MatFormField, MatInput, MatButton, MatLabel, MatHint, StatusIconComponent],
   templateUrl: './password-form.component.html',
   styleUrl: './password-form.component.scss'
 })

@@ -31,4 +31,8 @@ public class RegisterUserRequest {
 
     @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
     private String lastName;
+
+    private String lang;
+
+
 }

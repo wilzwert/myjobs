@@ -4,22 +4,22 @@ import { JobService } from '../../../core/services/job.service';
 import { catchError, Observable, Subject, take, takeUntil, tap, throwError } from 'rxjs';
 import { Job } from '../../../core/model/job.interface';
 import { Title } from '@angular/platform-browser';
-import { AsyncPipe } from '@angular/common';
-import { FileService } from '../../../core/services/file.service';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { ActivityType } from '../../../core/model/activity-type';
-import { ActivityLabelPipe } from '../../../core/pipe/activity-label.pipe';
 import { MatButton } from '@angular/material/button';
 import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
-import { MatCard, MatCardActions, MatCardContent, MatCardHeader, MatCardSubtitle, MatCardTitle } from '@angular/material/card';
+import { MatCard, MatCardContent, MatCardHeader, MatCardSubtitle, MatCardTitle } from '@angular/material/card';
 import { ModalService } from '../../../core/services/modal.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { ApiError } from '../../../core/errors/api-error';
 import { RatingComponent } from '../rating/rating.component';
 import { JobAttachmentsComponent } from '../job-attachments/job-attachments.component';
+import { JobActivitiesComponent } from "../job-activities/job-activities.component";
+import { StatusLabelPipe } from '../../../core/pipe/status-label.pipe';
 
 @Component({
   selector: 'app-job-detail',
-  imports: [AsyncPipe, ActivityLabelPipe, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatCardSubtitle, MatCardActions, MatButton, RatingComponent, JobAttachmentsComponent],
+  imports: [AsyncPipe, DatePipe, StatusLabelPipe, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatCardSubtitle, MatButton, RatingComponent, JobAttachmentsComponent, JobActivitiesComponent],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss'
 })
@@ -34,8 +34,7 @@ export class JobDetailComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private activatedRoute: ActivatedRoute, 
-    private jobService: JobService, 
-    private fileService: FileService,
+    private jobService: JobService,
     private confirmDialogService: ConfirmDialogService,
     private modalService: ModalService,
     private notificationService: NotificationService,
@@ -48,12 +47,13 @@ export class JobDetailComponent implements OnInit, OnDestroy {
       tap((job: Job) =>{this.title.setTitle(`Job - ${job.title}`)}),
       catchError((error: ApiError) => {
         this.router.navigate(["/jobs"]);
-        // set an explicit error message
-        error.message = 'Unable to load job';
         return throwError(() => error);
       })
     );
+  }
 
+  reloadJob(job: Job) {
+    this.loadJob(job.id);
   }
 
   ngOnDestroy(): void {
@@ -68,9 +68,6 @@ export class JobDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  addActivity(job: Job) :void {
-    this.modalService.openJobModal('activity', job, () => this.loadJob(job.id))
-  }
 
   editJob(job: Job) :void {
     this.modalService.openJobModal('job', job, () => this.loadJob(job.id))

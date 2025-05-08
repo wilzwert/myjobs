@@ -181,8 +181,6 @@ public class JobServiceAdapterIT extends AbstractBaseIntegrationTest {
 
         Job result = underTest.save(jobToSave);
 
-        System.out.println(result);
-
         assertEquals(jobId, result.getId());
         assertEquals("title", result.getTitle());
         assertEquals("https://www.example.com", result.getUrl());

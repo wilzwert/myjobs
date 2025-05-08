@@ -38,6 +38,8 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -104,60 +106,38 @@ jobs:
         if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
         # it may be interesting to prevent SonarQube from running if previous requirements have not been met
         # if: steps.run-tests.outcome == 'success'
-        uses: SonarSource/sonarqube-scan-action@v5
-        env:
-            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
-        with: 
-          projectBaseDir: backend
-          args: >
-           -X \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.organization=wilzwert \
-            -Dsonar.projectKey=MyJobs_backend \
-            -Dproject.settings=./sonar-project-backend.properties
+        run: |
+          mvn sonar:sonar \
+            -Dsonar.token=${{ secrets.SONAR_TOKEN_BACKEND }} \
+            -X
 
       # Run SonarQube analysis on pull request
       - name: SonarQube Scan on pull request
         if: ${{ github.event_name == 'pull_request' }}
         # it may be interesting to prevent SonarQube from running if previous requirements have not been met
         # if: steps.run-tests.outcome == 'success'
-        uses: SonarSource/sonarqube-scan-action@v5
-        env:
-            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
-        with: 
-          projectBaseDir: backend
-          args: >
-             -X \
-              -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.organization=wilzwert \
-              -Dsonar.projectKey=MyJobs_backend \
-              -Dproject.settings=./sonar-project-backend.properties \
-              -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
-              -Dsonar.pullrequest.branch=${{ github.head_ref }} \
-              -Dsonar.pullrequest.base=${{ github.base_ref }}
-
-
-      - name: Debug files and dirs
         run: |
-          echo "Current dir"
-          pwd
-
-          echo "in .scannerwork"
-          ls -al .scannerwork
+          mvn sonar:sonar \
+            -Dsonar.token=${{ secrets.SONAR_TOKEN_BACKEND }} \
+            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
+            -Dsonar.pullrequest.branch=${{ github.head_ref }} \
+            -Dsonar.pullrequest.base=${{ github.base_ref }} \
+            -X
 
       - name: SonarQube Quality Gate Check
         id: quality-gate
         uses: sonarsource/sonarqube-quality-gate-action@master
         with:
-          scanMetadataReportFile: backend/.scannerwork/report-task.txt
+          scanMetadataReportFile: backend/target/sonar/report-task.txt
         env:
-            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
         continue-on-error: true
+
 
       # fail job if coverage requirements not met
       # this allows to explicitly specify what went wrong, as we used continue-on-error previously
       - name: Check requirements
-        if: ${{ steps.run-backend-tests.outcome == 'failure' || steps.quality-gate.outcome == 'failure'}}
+        if: ${{ steps.run-backend-tests.outcome == 'failure' || steps.quality-gate.outcome == 'failure' }}
         run: |
           echo "Job failed :"
           if [ "${{ steps.run-backend-tests.outcome }}" == "failure" ]; then
@@ -167,6 +147,7 @@ jobs:
             echo "Code quality gate check failed. See step 'SonarQube Quality Gate Check'"
           fi
           exit 1
+
       - name: Notify completion
         if: ${{ success() }}
         run: |

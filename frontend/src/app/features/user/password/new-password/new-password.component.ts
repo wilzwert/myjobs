@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatIcon } from '@angular/material/icon';
 import { MatFormField, MatHint, MatInput, MatLabel } from '@angular/material/input';
 import { MatButton } from '@angular/material/button';
 import { catchError, take, throwError } from 'rxjs';
@@ -10,11 +9,12 @@ import { PasswordValidator } from '../../../../core/validators/password-validato
 import { ConfirmPasswordValidator } from '../../../../core/validators/confirm-password-validator';
 import { NewPasswordRequest } from '../../../../core/model/new-password-request.interface';
 import { UserService } from '../../../../core/services/user.service';
+import { StatusIconComponent } from "../../../../layout/shared/status-icon/status-icon.component";
 
 @Component({
   selector: 'app-new-password',
   standalone: true,
-  imports: [ReactiveFormsModule, MatIcon, MatInput, MatFormField, MatButton, MatLabel, MatHint],
+  imports: [ReactiveFormsModule, MatInput, MatFormField, MatButton, MatLabel, MatHint, StatusIconComponent],
   templateUrl: './new-password.component.html',
   styleUrl: './new-password.component.scss'
 })

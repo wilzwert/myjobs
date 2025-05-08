@@ -13,10 +13,17 @@
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
+      "i18n": {
+        "sourceLocale": "en",
+        "locales": {
+          "fr": "src/i18n/messages.fr.xlf"
+        }
+      },
       "architect": {
         "build": {
           "builder": "@angular-builders/custom-webpack:browser",
           "options": {
+            "localize": true,
             "outputPath": "dist/myjobs",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -72,6 +79,22 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.development.ts"
+                },
+                {
+                  "replace": "src/lang/lang.ts",
+                  "with": "src/lang/lang.dev.ts"
+                }
+              ]
+            },
+            "integration": {
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true,
+              "vendorChunk": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.integration.ts"
                 }
               ]
             },
@@ -83,10 +106,44 @@
               "customWebpackConfig": {
                 "path": "./cypress/custom-webpack.config.ts"
               },
+              "localize": ["en"],
+              "baseHref": "/en/",
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.integration.ts"
+                },
+                {
+                  "replace": "src/lang/lang.ts",
+                  "with": "src/lang/lang.integration.ts"
+                }
+              ]
+            },
+            "fr": {
+              "localize": ["fr"],
+              "baseHref": "/fr/",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.development.ts"
+                },
+                {
+                  "replace": "src/lang/lang.ts",
+                  "with": "src/lang/lang.dev.ts"
+                }
+              ]
+            },
+            "en": {
+              "localize": ["en"],
+              "baseHref": "/en/",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.development.ts"
+                },
+                {
+                  "replace": "src/lang/lang.ts",
+                  "with": "src/lang/lang.dev.ts"
                 }
               ]
             }
@@ -101,6 +158,17 @@
             },
             "development": {
               "buildTarget": "myjobs:build:development"
+            },
+            "integration": {
+              "buildTarget": "myjobs:build:integration"
+            },
+            "fr": {
+              "buildTarget": "myjobs:build:fr",
+              "proxyConfig": "proxy.conf.js"
+            },
+            "en": {
+              "buildTarget": "myjobs:build:en",
+              "proxyConfig": "proxy.conf.js"
             }
           },
           "defaultConfiguration": "development",
@@ -115,7 +183,15 @@
           }
         },
         "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n"
+          "builder": "ng-extract-i18n-merge:ng-extract-i18n-merge",
+          "options": {
+            "buildTarget": "myjobs:build",
+            "format": "xlf",
+            "outputPath": "src/i18n",
+            "targetFiles": [
+              "messages.fr.xlf"
+            ]
+          }
         },
         "test": {
           "builder": "@angular-builders/jest:run",

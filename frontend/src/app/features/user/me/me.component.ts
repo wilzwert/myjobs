@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
-import { BehaviorSubject, catchError, EMPTY, Observable, take, tap, throwError } from 'rxjs';
-import { SessionInformation } from '../../../core/model/session-information.interface';
-import { AsyncPipe, DatePipe, JsonPipe } from '@angular/common';
+import { catchError, EMPTY, Observable, take, throwError } from 'rxjs';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { User } from '../../../core/model/user.interface';
 import { UserService } from '../../../core/services/user.service';
@@ -38,7 +37,7 @@ export class MeComponent {
 
   private endDeleteAccount() :void {
     this.sessionService.logOut();
-    this.notificationService.confirmation("Your account has been deleted. Thank your for using MyJobs.");
+    this.notificationService.confirmation($localize `:@@info.account_deleted:Your account has been deleted. Thank your for using MyJobs.`);
     this.router.navigate([""]);
   }
 
@@ -47,7 +46,7 @@ export class MeComponent {
     this.userService.deleteUser().pipe(
       take(1),
       catchError((error: ApiError) => {
-        this.notificationService.error(`An error occurred while deleting your account. ${error.message}`, error);
+        // this.notificationService.error(`An error occurred while deleting your account. ${error.message}`, error);
         return throwError(() => error);
       })
     ).subscribe(() => {
@@ -55,35 +54,35 @@ export class MeComponent {
       this.sessionService.logOut(false);
       this.authService.logout().
         pipe(
-        catchError(() =>  {
-          this.endDeleteAccount();
-          return EMPTY;
-        })
+          catchError(() =>  {
+            this.endDeleteAccount();
+            return EMPTY;
+          })
       )
       .subscribe(this.endDeleteAccount.bind(this));
     });
   }
 
   public deleteAccount() :void {
-    this.dialogService.openConfirmDialog("Delete your accout ? All data will be definitely deleted !", this.confirmDeleteAccount.bind(this));
+    this.dialogService.openConfirmDialog($localize `:@@warning.user.account_delete:Delete your accout ? All data will be definitely deleted !`, this.confirmDeleteAccount.bind(this));
   }
 
   public confirmSendVerificationEmail() {
-    this.userService.sendVerificationMail()
-      .pipe(
-        catchError((error: ApiError) => {
-            return throwError(() => new Error("An error occurred."));
-        })
+    this.userService.sendVerificationMail().
+        pipe(
+          catchError((error) =>  {
+            return throwError(() => error);
+          })
       )
       .subscribe(
         () => {
-          this.notificationService.confirmation("The verification email has been sent ; please check your emails.");
+          this.notificationService.confirmation($localize `:@@info.user.validation_email_sent:The verification email has been sent ; please check your emails.`);
         }
       );
   }
 
   public sendVerificationEmail() :void {
-    this.dialogService.openConfirmDialog("Send validation email", this.confirmSendVerificationEmail.bind(this));
+    this.dialogService.openConfirmDialog($localize `:@@action.user.send_validation_email:Send validation email`, this.confirmSendVerificationEmail.bind(this));
   }
 
   public editUser(user: User) :void {
@@ -91,21 +90,17 @@ export class MeComponent {
   }
 
   public logout(): void {
-    this.authService.logout()
-            .pipe(
-              catchError(
-                () => {
-                  return throwError(() => new Error(
-                    'Logout failed.'
-                  ));
-                }
-              )
-            )
-            .subscribe(
-              () => {
-                this.sessionService.logOut();
-                this.router.navigate([''])
-              }
-            )
+    this.authService.logout().
+        pipe(
+          catchError((error) =>  {
+            return throwError(() => error);
+          })
+      )
+        .subscribe(
+          () => {
+            this.sessionService.logOut();
+            this.router.navigate([''])
+          }
+        )
   }
 }

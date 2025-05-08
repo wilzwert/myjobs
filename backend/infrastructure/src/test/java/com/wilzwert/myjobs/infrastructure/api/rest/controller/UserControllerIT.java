@@ -1,12 +1,14 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wilzwert.myjobs.core.domain.model.user.Lang;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.ports.driven.PasswordHasher;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.ChangePasswordRequest;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.UpdateUserLangRequest;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.UpdateUserRequest;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.UserResponse;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
@@ -32,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 public class UserControllerIT extends AbstractBaseIntegrationTest  {
-    private final static String USER_URL = "/api/user";
+    private final static String USER_URL = "/api/user/me";
 
     // id for the User to use for get /api/user tests
     private final static String USER_FOR_GET_TEST_ID = "abcd4321-4321-4321-4321-123456789012";
@@ -79,6 +81,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
             assertEquals("otherexistinguser", userResponse.getUsername());
             assertEquals("OtherExisting", userResponse.getFirstName());
             assertEquals("OtherUser", userResponse.getLastName());
+            assertEquals(Lang.EN, userResponse.getLang());
             assertEquals("2025-03-29T09:46:09.475Z", userResponse.getCreatedAt());
             assertEquals("PENDING", userResponse.getEmailStatus());
         }
@@ -210,6 +213,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
             assertEquals("otherexistinguserupdated", userResponse.getUsername());
             assertEquals("OtherExistingUpdated", userResponse.getFirstName());
             assertEquals("OtherUserUpdated", userResponse.getLastName());
+            assertEquals(Lang.EN, userResponse.getLang());
             assertEquals("2025-03-29T09:46:09.475Z", userResponse.getCreatedAt());
             assertEquals("PENDING", userResponse.getEmailStatus());
 
@@ -219,9 +223,36 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
     }
 
     @Nested
+    class UserControllerUpdateLangIT {
+        private final static String UPDATE_URL = USER_URL+"/lang";
+
+        @Test
+        public void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
+            mockMvc.perform(put(UPDATE_URL))
+                    .andExpect(status().isUnauthorized());
+        }
+
+        @Test
+        public void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
+            mockMvc.perform(put(UPDATE_URL).cookie(accessTokenCookie))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        public void shouldUpdateUserLang() throws Exception {
+            mockMvc.perform(put(UPDATE_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(new UpdateUserLangRequest(Lang.FR))))
+                    .andExpect(status().isOk());
+
+            User foundUser = userService.findById(new UserId(UUID.fromString(USER_FOR_GET_TEST_ID))).orElse(null);
+            assertThat(foundUser).isNotNull();
+            assertThat(foundUser.getLang()).isEqualTo(Lang.FR);
+        }
+    }
+
+    @Nested
     class UserControllerChangePasswordIT {
 
-        private static final String CHANGE_PASSWORD_URL = USER_URL + "/me/password";
+        private static final String CHANGE_PASSWORD_URL = USER_URL + "/password";
 
         private ChangePasswordRequest changePasswordRequest;
 
@@ -258,7 +289,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
             changePasswordRequest.setOldPassword("");
             mockMvc.perform(put(CHANGE_PASSWORD_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("message").value("Validation error"))
+                    .andExpect(jsonPath("message").value(ErrorCode.VALIDATION_FAILED.name()))
                     .andExpect(jsonPath("errors.oldPassword").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
         }
 
@@ -267,7 +298,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
             changePasswordRequest.setPassword("");
             mockMvc.perform(put(CHANGE_PASSWORD_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("message").value("Validation error"))
+                    .andExpect(jsonPath("message").value(ErrorCode.VALIDATION_FAILED.name()))
                     .andExpect(jsonPath("errors.password").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
         }
 
@@ -284,7 +315,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
             changePasswordRequest.setPassword("abcd1234!");
             mockMvc.perform(put(CHANGE_PASSWORD_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("message").value("Validation error"))
+                    .andExpect(jsonPath("message").value(ErrorCode.VALIDATION_FAILED.name()))
                     .andExpect(jsonPath("errors.password").value(ErrorCode.USER_WEAK_PASSWORD.name()));
         }
 

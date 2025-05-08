@@ -3,6 +3,7 @@ logging:
     org:
       springframework:
         security: WARN
+        mail: WARN
         data:
           mongodb: WARN
 

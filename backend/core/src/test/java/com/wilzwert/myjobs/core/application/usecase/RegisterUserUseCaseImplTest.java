@@ -4,6 +4,7 @@ package com.wilzwert.myjobs.core.application.usecase;
 import com.wilzwert.myjobs.core.domain.command.RegisterUserCommand;
 import com.wilzwert.myjobs.core.domain.exception.UserAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.model.user.EmailStatus;
+import com.wilzwert.myjobs.core.domain.model.user.Lang;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.ports.driven.AccountCreationMessageProvider;
 import com.wilzwert.myjobs.core.domain.ports.driven.PasswordHasher;
@@ -42,7 +43,7 @@ public class RegisterUserUseCaseImplTest {
     @Test
     public void whenUsernameOrEmailAlreadyExists_thenShouldThrowUserAlreadyExistsException() {
         User user = User.builder().email("test@example.com").username("username").firstName("firstName").lastName("lastName").password("Password1!").build();
-        RegisterUserCommand registerUserCommand = new RegisterUserCommand("test@example.com", "password", "username",  "firstName", "lastName");
+        RegisterUserCommand registerUserCommand = new RegisterUserCommand("test@example.com", "password", "username",  "firstName", "lastName", null);
         when(userService.findByEmailOrUsername("test@example.com", "username")).thenReturn(Optional.of(user));
 
         assertThrows(UserAlreadyExistsException.class, () -> underTest.registerUser(registerUserCommand));
@@ -50,7 +51,7 @@ public class RegisterUserUseCaseImplTest {
 
     @Test
     public void whenRegistrationSuccessful_thenShouldRegisterUserAndSendAccountCreationEmail() {
-        RegisterUserCommand registerUserCommand = new RegisterUserCommand("test@example.com", "Password1!", "username",  "firstName", "lastName");
+        RegisterUserCommand registerUserCommand = new RegisterUserCommand("test@example.com", "Password1!", "username",  "firstName", "lastName", Lang.FR);
         when(userService.findByEmailOrUsername(anyString(), anyString())).thenReturn(Optional.empty());
         when(passwordHasher.hashPassword("Password1!")).thenReturn("hashedPassword");
         when(userService.save(any(User.class))).thenAnswer(i -> i.getArguments()[0]);
@@ -62,6 +63,7 @@ public class RegisterUserUseCaseImplTest {
         assertEquals("username", registeredUser.getUsername());
         assertEquals("firstName", registeredUser.getFirstName());
         assertEquals("lastName", registeredUser.getLastName());
+        assertEquals(Lang.FR, registeredUser.getLang());
         assertEquals("hashedPassword", registeredUser.getPassword());
 
         verify(userService, times(1)).findByEmailOrUsername("test@example.com", "username");

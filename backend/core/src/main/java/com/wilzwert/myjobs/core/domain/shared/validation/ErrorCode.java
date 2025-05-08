@@ -21,6 +21,7 @@ public enum ErrorCode {
     PAGINATION_INVALID_PAGE,
     PAGINATION_INVALID_PAGE_SIZE,
     PAGINATION_OFFSET_TOO_BIG,
+    UNEXPECTED_ERROR,
 
     // fetch / extract parse jobs specific errors
     NO_HTML_FETCHER_FOUND,
@@ -30,7 +31,6 @@ public enum ErrorCode {
     // user specific errors
     USER_WEAK_PASSWORD,
     USER_ALREADY_EXISTS,
-    USER_USERNAME_ALREADY_TAKEN,
     USER_NOT_FOUND,
     USER_LOGIN_FAILED,
     USER_PASSWORD_MATCH_FAILED,

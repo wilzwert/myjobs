@@ -25,3 +25,11 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
+## Docker
+To build the app and run it locally in a Docker container with a basic nginx config : 
+- make sure you have the backend running on localhost:8080
+- make sure the backend allows all origins ; by default this is done for 'dev' profile and should be the only profile to do so (see backend/infrastructure/...application.yml)
+- run `ng build --localize --configuration=integration`, `cd docker` and then `docker-compose up --build`.  
+This will start a container that exposes your app on http://localhost:8081, consuming the API on http://localhost:8080
+NOTE : this is for testing / demo purposes only !

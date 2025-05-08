@@ -1,0 +1,3 @@
+security:
+  cors:
+    allow-all: true # WARNING : use with caution, in dev / integration environments only !

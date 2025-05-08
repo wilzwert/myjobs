@@ -2,6 +2,7 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 
 import com.wilzwert.myjobs.core.domain.command.ChangePasswordCommand;
+import com.wilzwert.myjobs.core.domain.command.UpdateUserLangCommand;
 import com.wilzwert.myjobs.core.domain.command.ValidateEmailCommand;
 import com.wilzwert.myjobs.core.domain.exception.UserNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.user.User;
@@ -24,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @Slf4j
-@RequestMapping("/api/user")
+@RequestMapping("/api/user/me")
 public class UserController {
     private final ValidateEmailUseCase validateEmailUseCase;
 
@@ -34,6 +35,8 @@ public class UserController {
 
     private final UpdateUserUseCase updateUserUseCase;
 
+    private final UpdateUserLangUseCase updateUserLangUseCase;
+
     private final DeleteAccountUseCase deleteAccountUseCase;
 
     private final UserMapper userMapper;
@@ -42,11 +45,12 @@ public class UserController {
 
 
 
-    public UserController(ValidateEmailUseCase validateEmailUseCase, ChangePasswordUseCase changePasswordUseCase, SendVerificationEmailUseCase sendVerificationEmailUseCase, UpdateUserUseCase updateUserUseCase, DeleteAccountUseCase deleteAccountUseCase, UserMapper userMapper, UserService userService) {
+    public UserController(ValidateEmailUseCase validateEmailUseCase, ChangePasswordUseCase changePasswordUseCase, SendVerificationEmailUseCase sendVerificationEmailUseCase, UpdateUserUseCase updateUserUseCase, UpdateUserLangUseCase updateUserLangUseCase, DeleteAccountUseCase deleteAccountUseCase, UserMapper userMapper, UserService userService) {
         this.validateEmailUseCase = validateEmailUseCase;
         this.changePasswordUseCase = changePasswordUseCase;
         this.sendVerificationEmailUseCase = sendVerificationEmailUseCase;
         this.updateUserUseCase = updateUserUseCase;
+        this.updateUserLangUseCase = updateUserLangUseCase;
         this.deleteAccountUseCase = deleteAccountUseCase;
         this.userMapper = userMapper;
         this.userService = userService;
@@ -72,7 +76,14 @@ public class UserController {
         return userMapper.toResponse(updateUserUseCase.updateUser(userMapper.toUpdateCommand(updateUserRequest, userDetails.getId())));
     }
 
-    @PutMapping("/me/password")
+    @PutMapping("/lang")
+    @ResponseStatus(HttpStatus.OK)
+    public void changeLang(@RequestBody @Valid UpdateUserLangRequest updateUserLangRequest, Authentication authentication) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        updateUserLangUseCase.updateUserLang(new UpdateUserLangCommand(updateUserLangRequest.getLang(), userDetails.getId()));
+    }
+
+    @PutMapping("/password")
     @ResponseStatus(HttpStatus.OK)
     public void changePassword(@RequestBody @Valid ChangePasswordRequest changePasswordRequest, Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();

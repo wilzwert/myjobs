@@ -1,0 +1,1 @@
+export const AVAILABLE_LANGS: String[] = ["fr", "en"];

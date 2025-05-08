@@ -240,7 +240,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             """;
             mockMvc.perform(post(JOBS_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(invalidJson)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("message").value("Validation error"))
+                    .andExpect(jsonPath("message").value(ErrorCode.VALIDATION_FAILED.name()))
             ;
         }
 
@@ -254,7 +254,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             """;
             mockMvc.perform(post(JOBS_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(invalidJson)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("message").value("Validation error"))
+                    .andExpect(jsonPath("message").value(ErrorCode.VALIDATION_FAILED.name()))
                     ;
         }
 
@@ -284,7 +284,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             ErrorResponse errorResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ErrorResponse.class);
             assertThat(errorResponse).isNotNull();
             assertThat(errorResponse.getStatus()).isEqualTo("400");
-            assertThat(errorResponse.getMessage()).isEqualTo("Validation error");
+            assertThat(errorResponse.getMessage()).isEqualTo(ErrorCode.VALIDATION_FAILED.name());
             assertThat(errorResponse.getErrors()).hasSize(3);
 
             String expectedError = ErrorCode.FIELD_CANNOT_BE_EMPTY.name();
@@ -388,7 +388,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             ErrorResponse errorResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ErrorResponse.class);
             assertThat(errorResponse).isNotNull();
             assertThat(errorResponse.getStatus()).isEqualTo("400");
-            assertThat(errorResponse.getMessage()).isEqualTo("Validation error");
+            assertThat(errorResponse.getMessage()).isEqualTo(ErrorCode.VALIDATION_FAILED.name());
             assertThat(errorResponse.getErrors()).hasSize(3);
 
             String expectedError = ErrorCode.FIELD_CANNOT_BE_EMPTY.name();
@@ -491,7 +491,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
 
             assertThat(errorResponse).isNotNull();
             assertThat(errorResponse.getStatus()).isEqualTo("400");
-            assertThat(errorResponse.getMessage()).isEqualTo("Validation error");
+            assertThat(errorResponse.getMessage()).isEqualTo(ErrorCode.VALIDATION_FAILED.name());
             assertThat(errorResponse.getErrors()).hasSize(1);
             assertThat(errorResponse.getErrors().get("status")).containsExactly(ErrorCode.INVALID_VALUE.name());
         }
@@ -578,7 +578,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
 
             assertThat(errorResponse).isNotNull();
             assertThat(errorResponse.getStatus()).isEqualTo("400");
-            assertThat(errorResponse.getMessage()).isEqualTo("Validation error");
+            assertThat(errorResponse.getMessage()).isEqualTo(ErrorCode.VALIDATION_FAILED.name());
             assertThat(errorResponse.getErrors()).hasSize(1);
             assertThat(errorResponse.getErrors().get("rating")).containsExactly(ErrorCode.INVALID_VALUE.name());
         }

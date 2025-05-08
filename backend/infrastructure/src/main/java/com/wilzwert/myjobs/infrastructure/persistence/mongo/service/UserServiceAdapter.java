@@ -56,7 +56,6 @@ public class UserServiceAdapter implements UserService {
 
     @Override
     public Optional<User> findByResetPasswordToken(String token) {
-        System.out.println("TOKEN "+token);
         return mongoUserRepository.findByResetPasswordToken(token).map(userMapper::toDomain).or(Optional::empty);
     }
 
@@ -67,7 +66,6 @@ public class UserServiceAdapter implements UserService {
 
     @Override
     public Optional<User> findByEmailOrUsername(String email, String username) {
-        System.out.println(mongoUserRepository.findByEmailOrUsername(email, username));
         return mongoUserRepository.findByEmailOrUsername(email, username).map(userMapper::toDomain).or(Optional::empty);
     }
 
@@ -110,14 +108,12 @@ public class UserServiceAdapter implements UserService {
     @Override
     @Cacheable(value = "emailExists", key = "#email")
     public boolean emailExists(String email) {
-        System.out.println("in emailExists "+email);
         return findByEmail(email).isPresent();
     }
 
     @Override
     @Cacheable(value = "usernameExists", key = "#username")
     public boolean usernameExists(String username) {
-        System.out.println("in usernameExists "+username);
         return findByUsername(username).isPresent();
     }
 

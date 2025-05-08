@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable, take, tap } from 'rxjs';
-import { AsyncPipe } from '@angular/common';
-import {MatPaginatorModule, PageEvent} from '@angular/material/paginator';
-import {MatCardModule} from '@angular/material/card';
+import { AsyncPipe, DatePipe } from '@angular/common';
+import { MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatCardModule } from '@angular/material/card';
 import { Page } from '../../../core/model/page.interface';
 import { Job, JobStatus } from '../../../core/model/job.interface';
 import { JobService } from '../../../core/services/job.service';
@@ -17,14 +17,16 @@ import { NotificationService } from '../../../core/services/notification.service
 import { RatingComponent } from '../rating/rating.component';
 import { UpdateJobRatingRequest } from '../../../core/model/update-job-rating-request.interface';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatIcon } from '@angular/material/icon';
 import { MatInput } from '@angular/material/input';
 import { JobMetadata } from '../../../core/model/job-metadata.interface';
+import { StatusIconComponent } from "../../../layout/shared/status-icon/status-icon.component";
+import { CustomPaginatorIntl } from '../../../core/services/custom-paginator-intl';
 
 
 @Component({
   selector: 'app-jobs',
-  imports: [AsyncPipe, MatCardModule, MatPaginatorModule, RatingComponent, RouterLink, StatusLabelPipe, MatFormField, MatInput, MatLabel, MatSelect, MatOption, MatButton, FormsModule, ReactiveFormsModule, MatHint, MatIcon],
+  imports: [AsyncPipe, DatePipe, MatCardModule, MatPaginatorModule, RatingComponent, RouterLink, StatusLabelPipe, MatFormField, MatInput, MatLabel, MatSelect, MatOption, MatButton, FormsModule, ReactiveFormsModule, MatHint, StatusIconComponent],
+  providers: [{ provide: MatPaginatorIntl, useClass: CustomPaginatorIntl }],
   templateUrl: './jobs.component.html',
   styleUrl: './jobs.component.scss'
 })
@@ -44,15 +46,15 @@ export class JobsComponent implements OnInit {
 
   constructor(private fb: FormBuilder, private jobService: JobService, private modalService: ModalService, private confirmDialogService: ConfirmDialogService, private notificationService: NotificationService) {
     this.currentPage = jobService.getCurrentPage();
-    if(this.currentPage == -1) {
+    if (this.currentPage == -1) {
       this.currentPage = 0;
     }
     this.currentPageSize = jobService.getItemsPerPage();
-    if(this.currentPageSize == -1) {
+    if (this.currentPageSize == -1) {
       this.currentPageSize = 10;
     }
 
-    this.statusKeys=Object.keys(JobStatus);
+    this.statusKeys = Object.keys(JobStatus);
   }
 
   get url() {
@@ -72,30 +74,30 @@ export class JobsComponent implements OnInit {
     });
   }
 
-  setStatus(event: MatSelectChange):void {
+  setStatus(event: MatSelectChange): void {
     this.currentStatus = event.value;
     this.reloadJobs();
   }
 
-  updateJobStatus(job: Job, event: MatSelectChange):void {
+  updateJobStatus(job: Job, event: MatSelectChange): void {
     // don't reload list as the edited job is replaced after update by the service
-    this.jobService.updateJobStatus(job.id, {status: event.value} as UpdateJobStatusRequest).subscribe(
+    this.jobService.updateJobStatus(job.id, { status: event.value } as UpdateJobStatusRequest).subscribe(
       (j) => {
-        this.notificationService.confirmation("Status updated successfully.");
+        this.notificationService.confirmation($localize`:@@info.job.status.updated:Status updated successfully.`);
       }
     );
   }
 
   updateJobRating(job: Job, event: number): void {
     // don't reload list as the edited job is replaced after update by the service
-    this.jobService.updateJobRating(job.id, {rating: event} as UpdateJobRatingRequest).subscribe(
+    this.jobService.updateJobRating(job.id, { rating: event } as UpdateJobRatingRequest).subscribe(
       (j) => {
-        this.notificationService.confirmation("Rating updated successfully.");
+        this.notificationService.confirmation($localize`:@@info.job.rating.updated:Rating updated successfully.`);
       }
     );
   }
 
-  changeSort():void {
+  changeSort(): void {
     this.reloadJobs();
   }
 
@@ -110,10 +112,10 @@ export class JobsComponent implements OnInit {
     this.jobs$ = this.jobService.getAllJobs(this.currentPage, this.currentPageSize, this.currentStatus, this.currentSort);
   }
 
-  createJobWithMetadata() :void {
-      this.jobService.getJobMetadata(this.url?.value).subscribe((metadata: JobMetadata) => {
-        this.modalService.openJobStepperModal(() => this.reloadJobs(), {jobMetadata: metadata});
-      });
+  createJobWithMetadata(): void {
+    this.jobService.getJobMetadata(this.url?.value).subscribe((metadata: JobMetadata) => {
+      this.modalService.openJobStepperModal(() => this.reloadJobs(), { jobMetadata: metadata });
+    });
   }
 
   createJob(): void {
@@ -122,27 +124,27 @@ export class JobsComponent implements OnInit {
 
   editJob(event: Event, job: Job): void {
     // don't reload list as the edited job is replaced after update by the service
-    this.modalService.openJobModal('job', job, () => {});
+    this.modalService.openJobModal('job', job, () => { });
   }
 
-  confirmDeleteJob(job: Job) :void {
-      this.jobService.deleteJob(job.id).pipe(
-        take(1),
-        tap(() => {
-          this.notificationService.confirmation("Job successfully deleted.");
-          this.reloadJobs();
-        })
-      ).subscribe();
-    }
+  confirmDeleteJob(job: Job): void {
+    this.jobService.deleteJob(job.id).pipe(
+      take(1),
+      tap(() => {
+        this.notificationService.confirmation($localize`:@@job.deleted:Job successfully deleted.`);
+        this.reloadJobs();
+      })
+    ).subscribe();
+  }
 
-  deleteJob(job: Job) :void {
-    this.confirmDialogService.openConfirmDialog(`Delete job "${job.title}" ?`, () => this.confirmDeleteJob(job));
+  deleteJob(job: Job): void {
+    this.confirmDialogService.openConfirmDialog($localize`:@@warning.job.delete:Delete job "${job.title}" ?`, () => this.confirmDeleteJob(job));
   }
 
   manageAttachments(event: Event, job: Job): void {
     // prevent routing to job detail 
     event.stopPropagation();
     // don't reload list; as the edited job is replaced after update directly by the service
-    this.modalService.openJobModal('attachments', job, () => {});
+    this.modalService.openJobModal('attachments', job, () => { });
   }
 }

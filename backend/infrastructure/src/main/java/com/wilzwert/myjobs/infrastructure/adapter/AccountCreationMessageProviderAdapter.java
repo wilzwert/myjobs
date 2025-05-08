@@ -20,14 +20,12 @@ public class AccountCreationMessageProviderAdapter implements AccountCreationMes
     @Override
     public void send(User user) {
         try {
-            var message = mailProvider.createMessage("mail/account_creation", user.getEmail(), user.getFirstName(), "Account creation");
-            // generate URL
-            String url = mailProvider.createUrl("/me");
-            System.out.println("Created URL "+url);
-            message.setVariable("url", url);
+            var message = mailProvider.createMessage("mail/account_creation", user.getEmail(), user.getFirstName(), "email.account_creation.subject", user.getLang().toString());
+
+            message.setVariable("url", mailProvider.createMeUrl(message.getLocale()));
             message.setVariable("firstName", user.getFirstName());
             message.setVariable("lastName", user.getLastName());
-            message.setVariable("validationUrl", mailProvider.createUrl("/me/email/validation?code="+user.getEmailValidationCode()));
+            message.setVariable("validationUrl", mailProvider.createUrl("uri.email_validation", message.getLocale(), user.getEmailValidationCode()));
             mailProvider.send(message);
         }
         // TODO : improve exception handling
