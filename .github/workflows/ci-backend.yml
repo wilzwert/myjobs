@@ -125,62 +125,19 @@ jobs:
             -X
 
       - name: SonarQube Quality Gate Check
-        if: ${{ github.event_name != 'pull_request' }}
         id: quality-gate
-        env:
-            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
-        run: |
-          echo "Waiting for SonarQube Quality Gate (branch)"
-          sleep 10 
-          STATUS=""
-          for i in {1..10}; do
-            STATUS=$(curl -s -u "${{ secrets.SONAR_TOKEN_BACKEND }}:" \
-              "https://sonarcloud.io/api/qualitygates/project_status?projectKey=MyJobs_backend" \
-              | jq -r '.projectStatus.status')
-
-            if [[ "$STATUS" != "NONE" ]]; then break; fi
-            echo "Waiting for status... ($i)"
-            sleep 5
-          done
-
-          echo "Quality Gate Status: $STATUS"
-          if [[ "$STATUS" != "OK" ]]; then
-            echo "❌ Quality Gate failed!"
-            exit 1
-          fi
-          echo "SonarQube Quality Gate passed."
-        continue-on-error: true
-
-
-      - name: SonarCloud PR check
-        id: pr-quality-gate
-        if: ${{ github.event_name == 'pull_request' }}
-        uses: actions/github-script@v7
+        uses: sonarsource/sonarqube-quality-gate-action@master
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const prNumber = context.payload.pull_request.number;
-            const { data: checks } = await github.rest.checks.listForRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: context.payload.pull_request.head.sha,
-            });
-            console.log('Found checks:', checks.check_runs.map(c => c.name));
-            const sonarCheck = checks.check_runs.find(check => check.name.includes('SonarCloud Code Analysis') && check.name.includes('[MyJobs]'));
-            if (!sonarCheck) {
-              core.setFailed('❌ SonarCloud check not found.');
-            } else if (sonarCheck.conclusion !== 'success') {
-              core.setFailed(`❌ SonarCloud Quality Gate failed: ${sonarCheck.conclusion}`);
-            } else {
-              console.log('✅ SonarCloud Quality Gate passed.');
-            }
+          scanMetadataReportFile: target/sonar/report-task.txt
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
         continue-on-error: true
 
 
       # fail job if coverage requirements not met
       # this allows to explicitly specify what went wrong, as we used continue-on-error previously
       - name: Check requirements
-        if: ${{ steps.run-backend-tests.outcome == 'failure' || steps.quality-gate.outcome == 'failure' ||steps.pr-quality-gate.outcome == 'failure' }}
+        if: ${{ steps.run-backend-tests.outcome == 'failure' || steps.quality-gate.outcome == 'failure' }}
         run: |
           echo "Job failed :"
           if [ "${{ steps.run-backend-tests.outcome }}" == "failure" ]; then
@@ -188,9 +145,6 @@ jobs:
           fi
           if [ "${{ steps.quality-gate.outcome }}" == "failure" ]; then
             echo "Code quality gate check failed. See step 'SonarQube Quality Gate Check'"
-          fi
-          if [ "${{ steps.pr-quality-gate.outcome }}" == "failure" ]; then
-            echo "Code quality gate check (PR) failed. See step 'SonarCloud PR check'"
           fi
           exit 1
 
