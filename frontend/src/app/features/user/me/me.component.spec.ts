@@ -7,11 +7,12 @@ import { ModalService } from '../../../core/services/modal.service';
 import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { Router } from '@angular/router';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { User } from '../../../core/model/user.interface';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { EmailStatus } from '../../../core/model/email-status';
 import { provideHttpClient } from '@angular/common/http';
+import { ApiError } from '../../../core/errors/api-error';
 
 describe('MeComponent', () => {
   let component: MeComponent;
@@ -50,7 +51,8 @@ describe('MeComponent', () => {
     } as unknown as jest.Mocked<ConfirmDialogService>;
 
     notificationServiceMock = {
-      confirmation: jest.fn()
+      confirmation: jest.fn(),
+      error: jest.fn()
     } as unknown as jest.Mocked<NotificationService>;
 
     routerMock = {
@@ -131,5 +133,44 @@ describe('MeComponent', () => {
     expect(authServiceMock.logout).toHaveBeenCalled();
     expect(sessionServiceMock.logOut).toHaveBeenCalled();
     expect(routerMock.navigate).toHaveBeenCalledWith(['']);
+  });
+
+  it('should do nothing when deleting account fails', () => {
+    const errorResponse = { status: 500, error: { message: 'Deletion error' }, headers: {} } as any as ApiError;
+    userServiceMock.deleteUser.mockReturnValue(throwError(() => errorResponse));
+    authServiceMock.logout.mockReturnValue(of({})); // Mock successful logout
+
+    component.confirmDeleteAccount();
+
+    fixture.detectChanges(); // Triggers ngOnInit
+
+    expect(userServiceMock.deleteUser).toHaveBeenCalled();
+    expect(sessionServiceMock.logOut).not.toHaveBeenCalled();
+    expect(authServiceMock.logout).not.toHaveBeenCalled();
+  });
+
+  it('should do nothing when sending verification email fails', () => {
+    const errorResponse = new ApiError({ status: 500, error: { message: 'Email send error' }, headers: {} } as any);
+    userServiceMock.sendVerificationMail.mockReturnValue(throwError(() => errorResponse));
+
+    component.confirmSendVerificationEmail();
+
+    fixture.detectChanges(); // Triggers ngOnInit
+
+    expect(userServiceMock.sendVerificationMail).toHaveBeenCalled();
+    expect(notificationServiceMock.confirmation).not.toHaveBeenCalled();
+  });
+
+  it('should do nothing when error during logout', () => {
+    const errorResponse = new ApiError({ status: 500, error: { message: 'Logout error' }, headers: {} } as any);
+    authServiceMock.logout.mockReturnValue(throwError(() => errorResponse));
+    sessionServiceMock.logOut.mockImplementation(() => {});
+
+    component.logout();
+
+    fixture.detectChanges(); // Triggers ngOnInit
+
+    expect(sessionServiceMock.logOut).not.toHaveBeenCalled();
+    expect(routerMock.navigate).not.toHaveBeenCalled();
   });
 });
