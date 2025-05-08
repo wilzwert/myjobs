@@ -104,38 +104,23 @@ jobs:
         if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
         # it may be interesting to prevent SonarQube from running if previous requirements have not been met
         # if: steps.run-tests.outcome == 'success'
-        uses: SonarSource/sonarqube-scan-action@v5
-        env:
-            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
-        with: 
-          projectBaseDir: backend
-          args: >
-           -X \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.organization=wilzwert \
-            -Dsonar.projectKey=MyJobs_backend \
-            -Dproject.settings=./sonar-project-backend.properties
+        run: |
+          mvn sonar:sonar \
+            -Dsonar.token=${{ secrets.SONAR_TOKEN_BACKEND }}
+            -X
 
       # Run SonarQube analysis on pull request
       - name: SonarQube Scan on pull request
         if: ${{ github.event_name == 'pull_request' }}
         # it may be interesting to prevent SonarQube from running if previous requirements have not been met
         # if: steps.run-tests.outcome == 'success'
-        uses: SonarSource/sonarqube-scan-action@v5
-        env:
-            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
-        with: 
-          projectBaseDir: backend
-          args: >
-             -X \
-              -Dsonar.host.url=https://sonarcloud.io \
-              -Dsonar.organization=wilzwert \
-              -Dsonar.projectKey=MyJobs_backend \
-              -Dproject.settings=./sonar-project-backend.properties \
-              -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
-              -Dsonar.pullrequest.branch=${{ github.head_ref }} \
-              -Dsonar.pullrequest.base=${{ github.base_ref }}
-
+        run: |
+          mvn sonar:sonar \
+            -Dsonar.token=${{ secrets.SONAR_TOKEN_BACKEND }}
+            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
+            -Dsonar.pullrequest.branch=${{ github.head_ref }} \
+            -Dsonar.pullrequest.base=${{ github.base_ref }}
+            -X
 
       - name: Debug files and dirs
         run: |
