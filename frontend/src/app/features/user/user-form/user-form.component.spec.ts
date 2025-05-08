@@ -44,6 +44,7 @@ describe('UserFormComponent', () => {
 
   it('should add lang control with current locale in uppercase', () => {
     expect(component.form.get('lang')?.value).toBe('FR');
+    expect(component.lang).toBeDefined();
   });
 
   it('should emit submitted event on submit()', () => {
@@ -59,4 +60,11 @@ describe('UserFormComponent', () => {
     const button = fixture.debugElement.query(By.css('button'));
     expect(button.nativeElement.textContent).toContain('Register');
   });
+
+  it('should add password control when showPassword is true', () {
+    component.showPassword = true;
+    fixture.detectChanges();
+    expect(component.form.get('password')).toBeTruthy();
+    expect(component.password).toBeDefined();
+  })
 });

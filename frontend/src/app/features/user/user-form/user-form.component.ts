@@ -1,11 +1,12 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { StatusIconComponent } from '../../../layout/shared/status-icon/status-icon.component';
 import { InputBackendErrorsComponent } from "../../../layout/shared/input-backend-errors/input-backend-errors.component";
 import { MatButton } from '@angular/material/button';
 import { LocaleService } from '../../../core/services/locale.service';
+import { PasswordValidator } from '../../../core/validators/password-validator';
 
 @Component({
   selector: 'app-user-form',
@@ -27,6 +28,12 @@ export class UserFormComponent implements OnInit {
   }
   ngOnInit(): void {
     this.form.addControl('lang', new FormControl(this.currentLang, []));
+    if(this.showPassword) {
+      this.form.addControl('password', new FormControl('', [
+        Validators.required,
+        PasswordValidator
+      ]));
+    }
   }
 
   get email() {
