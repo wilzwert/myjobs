@@ -124,20 +124,19 @@ jobs:
             -Dsonar.pullrequest.base=${{ github.base_ref }} \
             -X
 
-      - name: Debug files and dirs
-        run: |
-          echo "Current dir"
-          pwd
-
-          echo "in .scannerwork"
-          ls -al .scannerwork
-
       - name: SonarQube Quality Gate Check
         id: quality-gate
-        uses: sonarsource/sonarqube-quality-gate-action@master
-        with:
-          scanMetadataReportFile: backend/.scannerwork/report-task.txt
-        env:
+        run: |
+          echo "Waiting for SonarQube Quality Gate to be analyzed..."
+          curl -s -u ${{ secrets.SONAR_TOKEN_BACKEND }} \
+            "https://sonarqube.example.com/api/qualitygates/project_status?projectKey=MyJobs_backend" \
+            | jq -r '.projectStatus.status' | tee result.log
+          RESULT=$(cat result.log)
+          if [[ "$RESULT" != "OK" ]]; then
+            echo "SonarQube Quality Gate failed!"
+            exit 1
+          fi
+          echo "SonarQube Quality Gate passed."
             SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
         continue-on-error: true
 
