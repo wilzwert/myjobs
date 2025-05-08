@@ -98,7 +98,9 @@ export class JobFormComponent implements OnInit {
         (error: ApiError) => {
           this.loading = false;
           // set an explicit error message
-          error.message = $localize `:@@error.job.create_or_save:Job could not be ${term}.${error.message}`
+          const errorMessage = $localize `:@@error.job.create_or_save:Job could not be ${term}.${error.message}`;
+          error.message = errorMessage;
+          this.error = errorMessage;
           return throwError(() => error);
         }
       )

@@ -22,8 +22,8 @@ describe('UserFormComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, UserFormComponent],
       providers: [
-        { provide: LocaleService, useValue: localeServiceMock }
-        { provide: MatIconRegistry, useValue: matIconRegistryMock },
+        { provide: LocaleService, useValue: localeServiceMock },
+        { provide: MatIconRegistry, useValue: {addSvgIcon: () => matIconRegistryMock, getNamedSvgIcon: () => of('')} },
         { provide: DomSanitizer, useValue: { bypassSecurityTrustResourceUrl: (url: string) => url } },
       ]
     }).compileComponents();
