@@ -106,7 +106,7 @@ jobs:
         # if: steps.run-tests.outcome == 'success'
         run: |
           mvn sonar:sonar \
-            -Dsonar.token=${{ secrets.SONAR_TOKEN_BACKEND }}
+            -Dsonar.token=${{ secrets.SONAR_TOKEN_BACKEND }} \
             -X
 
       # Run SonarQube analysis on pull request
@@ -116,10 +116,10 @@ jobs:
         # if: steps.run-tests.outcome == 'success'
         run: |
           mvn sonar:sonar \
-            -Dsonar.token=${{ secrets.SONAR_TOKEN_BACKEND }}
+            -Dsonar.token=${{ secrets.SONAR_TOKEN_BACKEND }} \
             -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
             -Dsonar.pullrequest.branch=${{ github.head_ref }} \
-            -Dsonar.pullrequest.base=${{ github.base_ref }}
+            -Dsonar.pullrequest.base=${{ github.base_ref }} \
             -X
 
       - name: Debug files and dirs
