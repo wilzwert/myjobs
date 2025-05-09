@@ -315,10 +315,10 @@ export class JobDetailComponent implements OnInit, OnDestroy {
   private <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >loadJob(</span></span>jobId: string): void {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.job$ = this.jobService.getJobById(jobId).pipe(</span></span>
       // set page title once the job  is available
-      tap(<span class="fstat-no" title="function not covered" >(j</span>ob: Job) =&gt;{<span class="cstat-no" title="statement not covered" >this.title.setTitle(`Job - ${job.title}`)})</span>,
-      catchError(<span class="fstat-no" title="function not covered" >(e</span>rror: ApiError) =&gt; {
+      tap((<span class="fstat-no" title="function not covered" >job: Job)</span> =&gt;{<span class="cstat-no" title="statement not covered" >this.title.setTitle(`Job - ${job.title}`)})</span>,
+      catchError((<span class="fstat-no" title="function not covered" >error: ApiError)</span> =&gt; {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        this.router.navigate(["/jobs"]);</span></span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        return throwError(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >error)</span>;</span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        return throwError(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >e</span>rror)</span>;</span></span>
       })
     );
   }
@@ -341,13 +341,13 @@ export class JobDetailComponent implements OnInit, OnDestroy {
 &nbsp;
 &nbsp;
 <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  editJob(</span></span>job: Job) :void {
-<span class="cstat-no" title="statement not covered" >    this.modalService.openJobModal('job', job, <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >this.loadJob(job.id))</span></span>
+<span class="cstat-no" title="statement not covered" >    this.modalService.openJobModal('job', job, <span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >t</span>his.loadJob(job.id))</span></span>
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  confirmDeleteJob(</span></span>job: Job) :void {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.jobService.deleteJob(job.id).pipe(</span></span>
       take(1),
-      tap(<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+      tap(<span class="fstat-no" title="function not covered" >() =&gt; </span>{
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        this.notificationService.confirmation("Job deleted successfully.");</span></span>
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        this.router.navigate(["/jobs"]);</span></span>
       })
@@ -355,18 +355,18 @@ export class JobDetailComponent implements OnInit, OnDestroy {
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  deleteJob(</span></span>job: Job) :void {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.confirmDialogService.openConfirmDialog(`Delete job "${job.title}" ? ALL DATA WILL BE LOST`, <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >this.confirmDeleteJob(job))</span>;</span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.confirmDialogService.openConfirmDialog(`Delete job "${job.title}" ? ALL DATA WILL BE LOST`, <span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >t</span>his.confirmDeleteJob(job))</span>;</span></span>
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  updateJobRating(</span></span>job: Job, rating: number) :void {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.jobService.updateJobRating(job.id, {rating: rating}).pipe(</span></span>
       take(1),
-      catchError(<span class="fstat-no" title="function not covered" >(e</span>rror: ApiError) =&gt; {
+      catchError((<span class="fstat-no" title="function not covered" >error: ApiError)</span> =&gt; {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        this.notificationService.confirmation("Job rating update failed.");</span></span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        return throwError(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >error)</span>;</span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        return throwError(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >e</span>rror)</span>;</span></span>
 &nbsp;
       })
-    ).subscribe(<span class="fstat-no" title="function not covered" >() =</span>&gt; {
+    ).subscribe(<span class="fstat-no" title="function not covered" >() =&gt; </span>{
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >      this.notificationService.confirmation("Job rating updated successfully.");</span></span>
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >      this.loadJob(job.id);</span></span>
     });
@@ -379,7 +379,7 @@ export class JobDetailComponent implements OnInit, OnDestroy {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-08T14:16:34.916Z
+                at 2025-05-09T16:57:50.714Z
             </div>
         <script src="../../../../../prettify.js"></script>
         <script>
