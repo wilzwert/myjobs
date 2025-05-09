@@ -6,6 +6,7 @@ import com.wilzwert.myjobs.core.domain.ports.driven.PasswordHasher;
 import com.wilzwert.myjobs.infrastructure.adapter.DefaultPasswordHasher;
 import com.wilzwert.myjobs.infrastructure.security.jwt.JwtAuthenticationFilter;
 import com.wilzwert.myjobs.infrastructure.security.jwt.JwtAuthenticator;
+import com.wilzwert.myjobs.infrastructure.security.ratelimit.RateLimitingFilter;
 import com.wilzwert.myjobs.infrastructure.security.service.CookieService;
 import com.wilzwert.myjobs.infrastructure.security.service.CustomUserDetailsService;
 import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
@@ -43,15 +44,21 @@ public class SecurityConfiguration {
 
     private final JwtService jwtService;
 
+    private final RateLimitingFilter rateLimitingFilter;
+
     private final String frontendUrl;
 
     private final boolean corsAllowAll;
 
-    public SecurityConfiguration(CustomUserDetailsService userDetailsService, JwtService jwtService, @Value("${application.frontend.url}") String frontendUrl, @Value("${security.cors.allow-all}") boolean corsAllowAll) {
+
+
+    public SecurityConfiguration(CustomUserDetailsService userDetailsService, JwtService jwtService, RateLimitingFilter rateLimitingFilter, @Value("${application.frontend.url}") String frontendUrl, @Value("${security.cors.allow-all}") boolean corsAllowAll) {
         this.userDetailsService = userDetailsService;
         this.jwtService = jwtService;
+        this.rateLimitingFilter = rateLimitingFilter;
         this.frontendUrl = frontendUrl;
         this.corsAllowAll = corsAllowAll;
+
     }
 
     @Bean
@@ -119,6 +126,7 @@ public class SecurityConfiguration {
                 .exceptionHandling(exp -> exp.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 // insert our custom filter, which will authenticate user from token if provided in the request
                 .addFilterBefore(new JwtAuthenticationFilter(jwtService, userDetailsService(), cookieService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(rateLimitingFilter, JwtAuthenticationFilter.class)
                 .build();
     }
 
