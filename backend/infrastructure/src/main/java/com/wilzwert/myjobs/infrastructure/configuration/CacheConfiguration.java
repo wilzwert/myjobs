@@ -43,7 +43,19 @@ public class CacheConfiguration {
                         .build()
         );
 
-        cacheManager.setCaches(Arrays.asList(emailCache, usernameCache, urlMetadataCache));
+        CaffeineCache rulesCache = new CaffeineCache("rateLimitingRules",
+                Caffeine.newBuilder().expireAfterWrite(60, TimeUnit.MINUTES) // expires after 10 minutes
+                        .maximumSize(1000)
+                        .build()
+        );
+
+        CaffeineCache bucketCache = new CaffeineCache("rateLimitingBucket",
+                Caffeine.newBuilder().expireAfterWrite(60, TimeUnit.MINUTES) // expires after 10 minutes
+                        .maximumSize(1000)
+                        .build()
+        );
+
+        cacheManager.setCaches(Arrays.asList(emailCache, usernameCache, urlMetadataCache, rulesCache, bucketCache));
         return cacheManager;
     }
 }
