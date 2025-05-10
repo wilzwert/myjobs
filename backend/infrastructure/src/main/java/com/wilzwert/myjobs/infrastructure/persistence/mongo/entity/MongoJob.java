@@ -56,6 +56,9 @@ public class MongoJob {
     @Field(name = "updated_at")
     private Instant updatedAt;
 
+    @Field(name = "status_updated_at")
+    private Instant statusUpdatedAt;
+
     @Field(name = "user_id")
     private UUID userId;
 

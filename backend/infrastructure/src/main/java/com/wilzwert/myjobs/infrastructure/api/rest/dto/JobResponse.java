@@ -30,6 +30,7 @@ public class JobResponse {
     private JobRatingResponse rating;
     private Instant createdAt;
     private Instant updatedAt;
+    private Instant statusUpdatedAt;
     private List<ActivityResponse> activities;
     private List<AttachmentResponse> attachments;
 }

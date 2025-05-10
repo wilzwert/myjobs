@@ -8,6 +8,7 @@
   "rating": 2,
   "createdAt": "2025-04-26T15:25:31.160Z",
   "updatedAt": "2025-04-26T15:25:31.162Z",
+  "statusUpdatedAt": "2025-04-26T15:25:31.162Z",
   "userId": "abcd1234-1234-1234-1234-123456789012",
   "activities": [
     {
@@ -45,6 +46,7 @@
     "rating": 1,
     "createdAt": "2025-04-26T17:25:31.160Z",
     "updatedAt": "2025-04-26T17:25:31.162Z",
+    "statusUpdatedAt": "2025-04-26T19:25:31.160Z",
     "userId": "abcd1234-1234-1234-1234-123456789012",
     "activities": [
       {
@@ -74,6 +76,7 @@
     "rating": 3,
     "createdAt": "2025-04-26T18:25:31.160Z",
     "updatedAt": "2025-04-26T18:25:31.162Z",
+    "statusUpdatedAt": "2025-04-26T18:25:31.160Z",
     "userId": "abcd1234-1234-1234-1234-123456789012",
     "activities": [
       {
