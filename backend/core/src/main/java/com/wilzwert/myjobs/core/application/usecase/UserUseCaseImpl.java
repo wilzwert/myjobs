@@ -56,7 +56,7 @@ public class UserUseCaseImpl implements SendVerificationEmailUseCase, UpdateUser
 
         boolean shouldResendVerificationEmail = !user.getEmail().equals(command.email());
 
-        user = userService.save(user.update(command.email(), command.username(), command.firstName(), command.lastName()));
+        user = userService.save(user.update(command.email(), command.username(), command.firstName(), command.lastName(), 7));
 
         if(shouldResendVerificationEmail) {
             emailVerificationMessageProvider.send(user);

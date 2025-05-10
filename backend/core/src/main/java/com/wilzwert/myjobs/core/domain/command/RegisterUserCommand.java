@@ -9,5 +9,8 @@ import com.wilzwert.myjobs.core.domain.model.user.Lang;
  * Time:11:10
  */
 
-public record RegisterUserCommand(String email, String password, String username, String firstName, String lastName, Lang lang) {
+public record RegisterUserCommand(String email, String password, String username, String firstName, String lastName, Lang lang, Integer jobFollowUpReminderDays) {
+    public RegisterUserCommand(String email, String password, String username, String firstName, String lastName, Lang lang) {
+        this(email, password, username, firstName, lastName, lang, null);
+    }
 }

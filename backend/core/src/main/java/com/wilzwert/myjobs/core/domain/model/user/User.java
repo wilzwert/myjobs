@@ -21,6 +21,11 @@ import java.util.UUID;
  * TODO : use defensive copying on collections' getters to ensure immutability
  */
 public class User extends DomainEntity<UserId> {
+
+    private static final Integer defaultJobFollowUpReminderDays = 14;
+    private static final Lang defaultLang = Lang.EN;
+    private static final String defaultRole = "USER";
+
     private final UserId id;
     private final String email;
     private final EmailStatus emailStatus;
@@ -29,6 +34,15 @@ public class User extends DomainEntity<UserId> {
     private final String username;
     private final String firstName;
     private final String lastName;
+    /**
+     * Number of days after which a reminder should be triggered for jobs considered active
+     * that haven't received any user interaction (e.g. no updates, status changes, or comments).
+     * This helps ensure that jobs requiring attention are not forgotten.
+     * Example: if set to 7, a reminder will be issued 7 days after the last action on the job.
+     * Must be between 3 and 30, defaults to 14
+     */
+    private final Integer jobFollowUpReminderDays;
+
     private final Lang lang;
     private final String role;
     private final String resetPasswordToken;
@@ -52,6 +66,7 @@ public class User extends DomainEntity<UserId> {
         private String username;
         private String firstName;
         private String lastName;
+        private Integer jobFollowUpReminderDays;
         private Lang lang;
         private String role;
         private String resetPasswordToken;
@@ -109,6 +124,11 @@ public class User extends DomainEntity<UserId> {
             return this;
         }
 
+        public Builder jobFollowUpReminderDays(Integer jobFollowUpReminderDays) {
+            this.jobFollowUpReminderDays = jobFollowUpReminderDays;
+            return this;
+        }
+
         public Builder lang(Lang lang) {
             this.lang = lang;
             return this;
@@ -141,7 +161,7 @@ public class User extends DomainEntity<UserId> {
 
         public User build() {
             // build User
-            return new User(id, email, emailStatus, emailValidationCode, password, username, firstName, lastName, lang, role, resetPasswordToken, resetPasswordExpiresAt, createdAt, updatedAt, jobs);
+            return new User(id, email, emailStatus, emailValidationCode, password, username, firstName, lastName, jobFollowUpReminderDays, lang, role, resetPasswordToken, resetPasswordExpiresAt, createdAt, updatedAt, jobs);
         }
     }
 
@@ -160,12 +180,14 @@ public class User extends DomainEntity<UserId> {
                 .requireMaxLength("username", username, 30)
                 .requireNotEmpty("firstName", firstName)
                 .requireNotEmpty("lastName", lastName)
+                .requireMin("jobFollowUpReminderDays", jobFollowUpReminderDays, 3)
+                .requireMax("jobFollowUpReminderDays", jobFollowUpReminderDays, 30)
                 .requireNotEmpty("role", role)
                 .requireNotEmpty("password", password)
                 .getErrors();
     }
 
-    private User(UserId id, String email, EmailStatus emailStatus, String emailValidationCode, String password, String username, String firstName, String lastName, Lang lang, String role, String resetPasswordToken, Instant resetPasswordExpiresAt, Instant createdAt, Instant updatedAt, List<Job> jobs) {
+    private User(UserId id, String email, EmailStatus emailStatus, String emailValidationCode, String password, String username, String firstName, String lastName, Integer jobFollowUpReminderDays, Lang lang, String role, String resetPasswordToken, Instant resetPasswordExpiresAt, Instant createdAt, Instant updatedAt, List<Job> jobs) {
         this.id = id != null ? id : UserId.generate();
         this.email = email;
         this.emailValidationCode = emailValidationCode != null ? emailValidationCode : UUID.randomUUID().toString();
@@ -174,8 +196,9 @@ public class User extends DomainEntity<UserId> {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.lang = lang != null ? lang : Lang.EN;
-        this.role = role != null ? role : "USER";
+        this.jobFollowUpReminderDays = jobFollowUpReminderDays != null ? jobFollowUpReminderDays : defaultJobFollowUpReminderDays;
+        this.lang = lang != null ? lang : defaultLang;
+        this.role = role != null ? role : defaultRole;
         this.resetPasswordToken = resetPasswordToken;
         this.resetPasswordExpiresAt = resetPasswordExpiresAt;
         this.createdAt = createdAt != null ? createdAt : Instant.now();
@@ -190,7 +213,7 @@ public class User extends DomainEntity<UserId> {
         }
     }
 
-    public static User create(String email, String password, String username, String firstName, String lastName, Lang lang, String plainPassword) {
+    public static User create(String email, String password, String username, String firstName, String lastName, Integer jobFollowUpReminderDays, Lang lang, String plainPassword) {
         ValidationErrors errors = new ValidationErrors();
         User createdUser = null;
         try {
@@ -203,6 +226,7 @@ public class User extends DomainEntity<UserId> {
                     username,
                     firstName,
                     lastName,
+                    jobFollowUpReminderDays,
                     lang,
                     null,
                     null,
@@ -229,7 +253,7 @@ public class User extends DomainEntity<UserId> {
         return createdUser;
     }
 
-    public User update(String email, String username, String firstName, String lastName) {
+    public User update(String email, String username, String firstName, String lastName, Integer jobFollowUpReminderDays) {
 
         // if email changed we have to change its status
         EmailStatus newEmailStatus = getEmailStatus();
@@ -246,6 +270,7 @@ public class User extends DomainEntity<UserId> {
                 username,
                 firstName,
                 lastName,
+                jobFollowUpReminderDays,
                 lang,
                 getRole(),
                 "",
@@ -283,6 +308,7 @@ public class User extends DomainEntity<UserId> {
                 getUsername(),
                 getFirstName(),
                 getLastName(),
+                getJobFollowUpReminderDays(),
                 getLang(),
                 getRole(),
                 getResetPasswordToken(),
@@ -306,6 +332,7 @@ public class User extends DomainEntity<UserId> {
                     getUsername(),
                     getFirstName(),
                     getLastName(),
+                    getJobFollowUpReminderDays(),
                     getLang(),
                     getRole(),
                     null,
@@ -343,6 +370,7 @@ public class User extends DomainEntity<UserId> {
                 getUsername(),
                 getFirstName(),
                 getLastName(),
+                getJobFollowUpReminderDays(),
                 getLang(),
                 getRole(),
                 // FIXME : maybe we should use a value object with a generator
@@ -382,6 +410,7 @@ public class User extends DomainEntity<UserId> {
                 getUsername(),
                 getFirstName(),
                 getLastName(),
+                getJobFollowUpReminderDays(),
                 getLang(),
                 getRole(),
                 null,
@@ -402,6 +431,7 @@ public class User extends DomainEntity<UserId> {
                 getUsername(),
                 getFirstName(),
                 getLastName(),
+                getJobFollowUpReminderDays(),
                 lang,
                 getRole(),
                 getResetPasswordToken(),
@@ -444,9 +474,9 @@ public class User extends DomainEntity<UserId> {
         return lastName;
     }
 
-    public Lang getLang() {
-        return lang;
-    }
+    public Integer getJobFollowUpReminderDays() { return jobFollowUpReminderDays; }
+
+    public Lang getLang() { return lang; }
 
     public String getRole() {
         return role;

@@ -4,6 +4,7 @@ package com.wilzwert.myjobs.core.domain.shared.validation;
 import com.wilzwert.myjobs.core.domain.model.EntityId;
 
 import java.net.URI;
+import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.regex.Pattern;
 
@@ -25,17 +26,23 @@ public class Validator {
         return validationErrors;
     }
 
-    public Validator requireNotEmpty(String fieldName, String fieldValue) {
-        if(fieldValue == null || fieldValue.isEmpty()) {
+    private boolean notEmpty(String fieldName, Object fieldValue) {
+        if(fieldValue == null
+            || fieldValue instanceof String && ((String) fieldValue).isEmpty()
+            || fieldValue instanceof EntityId<?> entityId && entityId.value() == null) {
             validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_CANNOT_BE_EMPTY));
+            return false;
         }
+        return true;
+    }
+
+    public Validator requireNotEmpty(String fieldName, String fieldValue) {
+        notEmpty(fieldName, fieldValue);
         return this;
     }
 
     public Validator requireNotEmpty(String fieldName, EntityId<?> id) {
-        if(id == null || id.value() == null) {
-            validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_CANNOT_BE_EMPTY));
-        }
+        notEmpty(fieldName, id);
         return this;
     }
 
@@ -44,12 +51,10 @@ public class Validator {
         /*String pattern =  "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@" +
                 "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,7})$";*/
         String pattern = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
-
-        if(fieldValue == null || fieldValue.isEmpty()) {
-            validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_CANNOT_BE_EMPTY));
-        }
-        else if(!Pattern.compile(pattern).matcher(fieldValue).matches()) {
-            validationErrors.add(new ValidationError(fieldName, ErrorCode.INVALID_EMAIL));
+        if(notEmpty(fieldName, fieldValue)) {
+            if(!Pattern.compile(pattern).matcher(fieldValue).matches()) {
+                validationErrors.add(new ValidationError(fieldName, ErrorCode.INVALID_EMAIL));
+            }
         }
         return this;
     }
@@ -66,33 +71,38 @@ public class Validator {
 
     public Validator requireMinLength(String fieldName, String fieldValue, int minLength) {
         assert(minLength > 0);
-        if (fieldValue == null) {
-            validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_CANNOT_BE_EMPTY));
-        }
-        else if(fieldValue.length() < minLength) {
-            validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_TOO_SHORT));
+        if(notEmpty(fieldName, fieldValue)) {
+            if(fieldValue.length() < minLength) {
+                validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_TOO_SHORT));
+            }
         }
         return this;
     }
 
     public Validator requireMaxLength(String fieldName, String fieldValue, int maxLength) {
         assert(maxLength > 0);
-        if (fieldValue == null) {
-            validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_CANNOT_BE_EMPTY));
-        }
-        else if(fieldValue.length() > maxLength) {
-            validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_TOO_LONG));
+        if(notEmpty(fieldName, fieldValue)) {
+            if(fieldValue.length() > maxLength) {
+                validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_TOO_LONG));
+            }
         }
         return this;
     }
 
-    public Validator requireMinMaxLength(String fieldName, String fieldValue, int minLength, int maxLength) {
-        assert(minLength > 0 && maxLength > 0 && maxLength > minLength);
-        if (fieldValue == null) {
-            validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_CANNOT_BE_EMPTY));
+    public Validator requireMin(String fieldName, Integer fieldValue, int minValue) {
+        if(notEmpty(fieldName, fieldValue)) {
+            if(fieldValue < minValue) {
+                validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_VALUE_TOO_SMALL, Map.of("min", String.valueOf(minValue))));
+            }
         }
-        else if(fieldValue.length() < minLength || fieldValue.length() > maxLength) {
-            validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_MIN_MAX_LENGTH));
+        return this;
+    }
+
+    public Validator requireMax(String fieldName, Integer fieldValue, int maxValue) {
+        if(notEmpty(fieldName, fieldValue)) {
+            if(fieldValue > maxValue) {
+                validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_VALUE_TOO_BIG, Map.of("max", String.valueOf(maxValue))));
+            }
         }
         return this;
     }

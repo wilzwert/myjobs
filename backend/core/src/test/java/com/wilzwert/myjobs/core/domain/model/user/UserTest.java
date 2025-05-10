@@ -51,6 +51,21 @@ public class UserTest {
     }
 
     @Test
+    public void whenFieldErrors_thenUserBuildShouldThrowValidationException() {
+        ValidationException exception = assertThrows(ValidationException.class, () -> {
+            User user = User.builder().username("T").email("invalid").jobFollowUpReminderDays(45).build();
+        });
+        assertNotNull(exception);
+        assertEquals(6, exception.getErrors().getErrors().entrySet().size());
+        assertEquals(ErrorCode.INVALID_EMAIL, exception.getErrors().getErrors().get("email").getFirst().code());
+        assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY, exception.getErrors().getErrors().get("firstName").getFirst().code());
+        assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY, exception.getErrors().getErrors().get("lastName").getFirst().code());
+        assertEquals(ErrorCode.FIELD_TOO_SHORT, exception.getErrors().getErrors().get("username").getFirst().code());
+        assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY, exception.getErrors().getErrors().get("password").getFirst().code());
+        assertEquals(ErrorCode.FIELD_VALUE_TOO_BIG, exception.getErrors().getErrors().get("jobFollowUpReminderDays").getFirst().code());
+    }
+
+    @Test
     public void shouldCreateUserWithDefaultValues() {
         UserId userId = new UserId(UUID.randomUUID());
         Instant before = Instant.now();
@@ -75,6 +90,7 @@ public class UserTest {
         assertNotNull(user.getEmailValidationCode());
         assertEquals(EmailStatus.PENDING, user.getEmailStatus());
         assertEquals("USER", user.getRole());
+        assertEquals(14, user.getJobFollowUpReminderDays());
         assertNull(user.getResetPasswordToken());
         assertNull(user.getResetPasswordExpiresAt());
         Instant createdAt = user.getCreatedAt();
@@ -97,6 +113,7 @@ public class UserTest {
             .profile("Job profile")
             .salary("TBD")
             .userId(userId)
+
             .build()
         );
         User user = User.builder()
@@ -107,6 +124,7 @@ public class UserTest {
                 .firstName("firstName")
                 .lastName("lastName")
                 .role("SOME_ROLE")
+                .jobFollowUpReminderDays(7)
                 .lang(Lang.FR)
                 .createdAt(now)
                 .updatedAt(now)
@@ -124,19 +142,20 @@ public class UserTest {
         assertEquals("username", user.getUsername());
         assertEquals("firstName", user.getFirstName());
         assertEquals("lastName", user.getLastName());
+        assertEquals(7, user.getJobFollowUpReminderDays());
         assertEquals(Lang.FR, user.getLang());
         assertEquals("SOME_ROLE", user.getRole());
         assertEquals(now, user.getCreatedAt());
         assertEquals(now, user.getUpdatedAt());
         assertEquals("code", user.getEmailValidationCode());
         assertEquals(1, user.getJobs().size());
-        assertEquals("http://www.example.com", user.getJobs().get(0).getUrl());
+        assertEquals("http://www.example.com", user.getJobs().getFirst().getUrl());
     }
 
     @Test
     public void whenPasswordWeak_thenCreateUserShouldThrowValidationException() {
         ValidationException exception = assertThrows(ValidationException.class, () ->  {
-            User user = User.create("test@example.com",  "password", "username", "firstName", "lastName", null,"weakPassword");
+            User user = User.create("test@example.com",  "password", "username", "firstName", "lastName", 7,null,"weakPassword");
         });
 
         assertNotNull(exception);
@@ -147,7 +166,7 @@ public class UserTest {
     @Test
     public void shouldCreateNewUser() {
         Instant before = Instant.now();
-        User user = User.create("test@example.com",  "password", "username", "firstName", "lastName", Lang.FR,"Abcd1234!");
+        User user = User.create("test@example.com",  "password", "username", "firstName", "lastName", 7, Lang.FR, "Abcd1234!");
         Instant after = Instant.now();
         assertNotNull(user);
         assertNotNull(user.getId());
@@ -156,6 +175,7 @@ public class UserTest {
         assertEquals("username", user.getUsername());
         assertEquals("firstName", user.getFirstName());
         assertEquals("lastName", user.getLastName());
+        assertEquals(7, user.getJobFollowUpReminderDays());
         assertEquals(Lang.FR, user.getLang());
         assertNotNull(user.getEmailValidationCode());
         assertEquals(EmailStatus.PENDING, user.getEmailStatus());
@@ -181,10 +201,11 @@ public class UserTest {
                 .lastName("lastName")
                 .emailStatus(EmailStatus.VALIDATED)
                 .emailValidationCode("code")
+                .jobFollowUpReminderDays(6)
                 .build();
 
         Instant before = Instant.now();
-        User updatedUser = user.update("email@example.com", "changedUsername", "John", "Doe");
+        User updatedUser = user.update("email@example.com", "changedUsername", "John", "Doe", 8);
         Instant after = Instant.now();
 
         assertNotNull(updatedUser);
@@ -192,6 +213,7 @@ public class UserTest {
         assertEquals("changedUsername", updatedUser.getUsername());
         assertEquals("John", updatedUser.getFirstName());
         assertEquals("Doe", updatedUser.getLastName());
+        assertEquals(8, updatedUser.getJobFollowUpReminderDays());
         assertEquals(Lang.EN, updatedUser.getLang());
         assertEquals("email@example.com", updatedUser.getEmail());
 

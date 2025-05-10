@@ -50,6 +50,7 @@ public class RegisterUseCaseImpl implements RegisterUseCase, CheckUserAvailabili
                 registerUserCommand.username(),
                 registerUserCommand.firstName(),
                 registerUserCommand.lastName(),
+                registerUserCommand.jobFollowUpReminderDays(),
                 registerUserCommand.lang(),
                 registerUserCommand.password()
         ));
