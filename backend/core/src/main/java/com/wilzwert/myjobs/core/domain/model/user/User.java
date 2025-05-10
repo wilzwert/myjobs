@@ -76,15 +76,7 @@ public class User extends DomainEntity<UserId> {
 
         private List<Job> jobs;
 
-        public Builder() {
-            /*id = UserId.generate();
-            emailStatus = EmailStatus.PENDING;
-            emailValidationCode = UUID.randomUUID().toString();
-            role = "USER";
-            createdAt = Instant.now();
-            updatedAt = Instant.now();
-            jobs = new ArrayList<>();*/
-        }
+        public Builder() {}
 
         public Builder id(UserId userId) {
             this.id = userId;

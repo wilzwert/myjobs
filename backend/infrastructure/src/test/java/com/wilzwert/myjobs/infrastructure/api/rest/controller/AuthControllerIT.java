@@ -86,7 +86,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
             registerUserRequest.setEmail("test");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("errors.email").value(ErrorCode.INVALID_EMAIL.name()));
+                    .andExpect(jsonPath("errors.email[0].code").value(ErrorCode.INVALID_EMAIL.name()));
         }
 
         @Test
@@ -94,7 +94,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
             registerUserRequest.setFirstName("");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("errors.firstName").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
+                    .andExpect(jsonPath("errors.firstName[0].code").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
         }
 
         @Test
@@ -102,7 +102,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
             registerUserRequest.setLastName("");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("errors.lastName").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
+                    .andExpect(jsonPath("errors.lastName[0].code").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
         }
 
         @Test
@@ -110,7 +110,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
             registerUserRequest.setUsername("T");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("errors.username").value(ErrorCode.FIELD_TOO_SHORT.name()));
+                    .andExpect(jsonPath("errors.username[0].code").value(ErrorCode.FIELD_TOO_SHORT.name()));
         }
 
         @Test
@@ -118,7 +118,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
             registerUserRequest.setUsername("thisisafartoolongusernamethatshouldtriggeravalidationerror");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("errors.username").value(ErrorCode.FIELD_TOO_LONG.name()));
+                    .andExpect(jsonPath("errors.username[0].code").value(ErrorCode.FIELD_TOO_LONG.name()));
         }
 
         @Test
@@ -126,7 +126,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
             registerUserRequest.setPassword("");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("errors.password").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
+                    .andExpect(jsonPath("errors.password[0].code").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
         }
 
         @Test
@@ -134,7 +134,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
             registerUserRequest.setPassword("pass");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("errors.password").value(ErrorCode.USER_WEAK_PASSWORD.name()));
+                    .andExpect(jsonPath("errors.password[0].code").value(ErrorCode.USER_WEAK_PASSWORD.name()));
         }
 
         @Test

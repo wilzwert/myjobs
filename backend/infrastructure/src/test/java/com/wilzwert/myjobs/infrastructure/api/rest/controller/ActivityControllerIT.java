@@ -49,9 +49,6 @@ public class ActivityControllerIT extends AbstractBaseIntegrationTest  {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Autowired
-    private TestDataLoader testDataLoader;
-
     Cookie accessTokenCookie;
 
     @BeforeEach
@@ -105,7 +102,7 @@ public class ActivityControllerIT extends AbstractBaseIntegrationTest  {
         assertThat(errorResponse.getStatus()).isEqualTo("400");
         assertThat(errorResponse.getMessage()).isEqualTo(ErrorCode.VALIDATION_FAILED.name());
         assertThat(errorResponse.getErrors()).hasSize(1);
-        assertThat(errorResponse.getErrors().get("type")).containsExactly(ErrorCode.INVALID_VALUE.name());
+        assertThat(errorResponse.getErrors().get("type")).containsExactly(new ValidationErrorResponse(ErrorCode.INVALID_VALUE.name()));
     }
 
     @Test

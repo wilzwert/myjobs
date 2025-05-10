@@ -288,9 +288,9 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(errorResponse.getErrors()).hasSize(3);
 
             String expectedError = ErrorCode.FIELD_CANNOT_BE_EMPTY.name();
-            assertThat(errorResponse.getErrors().get("description")).containsExactly(expectedError);
-            assertThat(errorResponse.getErrors().get("title")).containsExactly(expectedError);
-            assertThat(errorResponse.getErrors().get("url")).containsExactly(ErrorCode.INVALID_URL.name());
+            assertThat(errorResponse.getErrors().get("description")).extracting(ValidationErrorResponse::getCode).containsExactly(expectedError);
+            assertThat(errorResponse.getErrors().get("title")).extracting(ValidationErrorResponse::getCode).containsExactly(expectedError);
+            assertThat(errorResponse.getErrors().get("url")).extracting(ValidationErrorResponse::getCode).containsExactly(ErrorCode.INVALID_URL.name());
         }
 
         @Test
@@ -392,9 +392,9 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(errorResponse.getErrors()).hasSize(3);
 
             String expectedError = ErrorCode.FIELD_CANNOT_BE_EMPTY.name();
-            assertThat(errorResponse.getErrors().get("description")).containsExactly(expectedError);
-            assertThat(errorResponse.getErrors().get("title")).containsExactly(expectedError);
-            assertThat(errorResponse.getErrors().get("url")).containsExactly(ErrorCode.INVALID_URL.name());
+            assertThat(errorResponse.getErrors().get("description")).extracting(ValidationErrorResponse::getCode).containsExactly(expectedError);
+            assertThat(errorResponse.getErrors().get("title")).extracting(ValidationErrorResponse::getCode).containsExactly(expectedError);
+            assertThat(errorResponse.getErrors().get("url")).extracting(ValidationErrorResponse::getCode).containsExactly(ErrorCode.INVALID_URL.name());
         }
 
         @Test
@@ -493,7 +493,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(errorResponse.getStatus()).isEqualTo("400");
             assertThat(errorResponse.getMessage()).isEqualTo(ErrorCode.VALIDATION_FAILED.name());
             assertThat(errorResponse.getErrors()).hasSize(1);
-            assertThat(errorResponse.getErrors().get("status")).containsExactly(ErrorCode.INVALID_VALUE.name());
+            assertThat(errorResponse.getErrors().get("status")).extracting(ValidationErrorResponse::getCode).containsExactly(ErrorCode.INVALID_VALUE.name());
         }
 
         @Test
@@ -580,7 +580,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(errorResponse.getStatus()).isEqualTo("400");
             assertThat(errorResponse.getMessage()).isEqualTo(ErrorCode.VALIDATION_FAILED.name());
             assertThat(errorResponse.getErrors()).hasSize(1);
-            assertThat(errorResponse.getErrors().get("rating")).containsExactly(ErrorCode.INVALID_VALUE.name());
+            assertThat(errorResponse.getErrors().get("rating")).extracting(ValidationErrorResponse::getCode).containsExactly(ErrorCode.INVALID_VALUE.name());
         }
 
         @Test

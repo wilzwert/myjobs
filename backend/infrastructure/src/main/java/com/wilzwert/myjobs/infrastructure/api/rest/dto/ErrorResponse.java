@@ -31,7 +31,7 @@ public class ErrorResponse {
 
     private String status;
     private String message;
-    private Map<String, List<String>> errors;
+    private Map<String, List<ValidationErrorResponse>> errors;
     private String time;
 
     public static <E extends EntityAlreadyExistsException>  ErrorResponse fromException(E ex) {
@@ -43,9 +43,9 @@ public class ErrorResponse {
     }
 
     public static ErrorResponse fromException(ValidationException ex) {
-        Map<String, List<String>> errors = new HashMap<>();
+        Map<String, List<ValidationErrorResponse>> errors = new HashMap<>();
         for (ValidationError error : ex.getFlatErrors()) {
-            errors.computeIfAbsent(error.field(), k -> new ArrayList<>()).add(error.code().name());
+            errors.computeIfAbsent(error.field(), k -> new ArrayList<>()).add(new ValidationErrorResponse(error.code().name(), error.details()));
         }
         return build(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_FAILED.name(), errors);
     }
@@ -61,10 +61,10 @@ public class ErrorResponse {
     public static ErrorResponse fromException(MethodArgumentNotValidException ex) {
         BindingResult bindingResult = ex.getBindingResult();
         List<FieldError> fieldErrors = bindingResult.getFieldErrors();
-        Map<String, List<String>> errors = new HashMap<>();
+        Map<String, List<ValidationErrorResponse>> errors = new HashMap<>();
 
         for(FieldError fieldError : fieldErrors){
-            errors.computeIfAbsent(fieldError.getField(), k -> new ArrayList<>()).add(fieldError.getDefaultMessage());
+            errors.computeIfAbsent(fieldError.getField(), k -> new ArrayList<>()).add(new ValidationErrorResponse(fieldError.getDefaultMessage()));
         }
         return build(ex.getStatusCode(), ErrorCode.VALIDATION_FAILED.name(), errors);
     }
@@ -97,8 +97,8 @@ public class ErrorResponse {
                 fieldName = formatEx.getPath().getFirst().getFieldName();
             }
             if(!fieldName.isEmpty()) {
-                Map<String, List<String>> errors = new HashMap<>();
-                errors.put(fieldName, List.of(ErrorCode.INVALID_VALUE.name()));
+                Map<String, List<ValidationErrorResponse>> errors = new HashMap<>();
+                errors.put(fieldName, List.of(new ValidationErrorResponse(ErrorCode.INVALID_VALUE.name())));
                 return build(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_FAILED.name(), errors);
             }
             return build(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_FAILED.name());
@@ -131,7 +131,7 @@ public class ErrorResponse {
         return new ErrorResponse(status, String.valueOf(status.value()), message, Collections.emptyMap(), new Date().toString());
     }
 
-    private static ErrorResponse build(HttpStatusCode status, String message, Map<String, List<String>> errors) {
+    private static ErrorResponse build(HttpStatusCode status, String message, Map<String, List<ValidationErrorResponse>> errors) {
         return new ErrorResponse(status, String.valueOf(status.value()), message, errors, new Date().toString());
     }
 

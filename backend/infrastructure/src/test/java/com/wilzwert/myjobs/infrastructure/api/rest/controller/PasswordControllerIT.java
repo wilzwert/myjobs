@@ -47,7 +47,7 @@ public class PasswordControllerIT extends AbstractBaseIntegrationTest {
             mockMvc.perform(post(RESET_PASSWORD_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(resetPasswordRequest)))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("message").value(ErrorCode.VALIDATION_FAILED.name()))
-                    .andExpect(jsonPath("errors.email").value(ErrorCode.INVALID_EMAIL.name()));
+                    .andExpect(jsonPath("errors.email[0].code").value(ErrorCode.INVALID_EMAIL.name()));
         }
 
         @Test
@@ -106,7 +106,7 @@ public class PasswordControllerIT extends AbstractBaseIntegrationTest {
             mockMvc.perform(post(CREATE_PASSWORD_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("message").value(ErrorCode.VALIDATION_FAILED.name()))
-                    .andExpect(jsonPath("errors.token").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
+                    .andExpect(jsonPath("errors.token[0].code").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
         }
 
         @Test
@@ -115,7 +115,7 @@ public class PasswordControllerIT extends AbstractBaseIntegrationTest {
             mockMvc.perform(post(CREATE_PASSWORD_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("message").value(ErrorCode.VALIDATION_FAILED.name()))
-                    .andExpect(jsonPath("errors.password").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
+                    .andExpect(jsonPath("errors.password[0].code").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
         }
 
         @Test
@@ -124,7 +124,7 @@ public class PasswordControllerIT extends AbstractBaseIntegrationTest {
             mockMvc.perform(post(CREATE_PASSWORD_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("message").value(ErrorCode.VALIDATION_FAILED.name()))
-                    .andExpect(jsonPath("errors.password").value(ErrorCode.USER_WEAK_PASSWORD.name()));
+                    .andExpect(jsonPath("errors.password[0].code").value(ErrorCode.USER_WEAK_PASSWORD.name()));
         }
 
         @Test

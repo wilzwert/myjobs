@@ -116,7 +116,7 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(errorResponse.getMessage()).isEqualTo(ErrorCode.VALIDATION_FAILED.name());
             assertThat(errorResponse.getErrors()).hasSize(3);
 
-            String expectedError = ErrorCode.FIELD_CANNOT_BE_EMPTY.name();
+            ValidationErrorResponse expectedError = new ValidationErrorResponse(ErrorCode.FIELD_CANNOT_BE_EMPTY.name());
             assertThat(errorResponse.getErrors().get("name")).containsExactly(expectedError);
             assertThat(errorResponse.getErrors().get("filename")).containsExactly(expectedError);
             assertThat(errorResponse.getErrors().get("content")).containsExactly(expectedError);

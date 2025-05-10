@@ -114,7 +114,7 @@ public class ErrorResponseTest {
             assertEquals("400", response.getStatus());
             assertEquals(ErrorCode.VALIDATION_FAILED.name(), response.getMessage());
             assertEquals(1, response.getErrors().size());
-            assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY.name(), response.getErrors().get("id").getFirst());
+            assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY.name(), response.getErrors().get("id").getFirst().getCode());
             assertEquals(new Date().toString(), response.getTime());
         }
         catch (NoSuchMethodException ex) {
@@ -212,7 +212,7 @@ public class ErrorResponseTest {
         assertEquals(ErrorCode.VALIDATION_FAILED.name(), response.getMessage());
         assertEquals(1, response.getErrors().size());
         assertEquals(1, response.getErrors().get("param").size());
-        assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY.name(), response.getErrors().get("param").getFirst());
+        assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY.name(), response.getErrors().get("param").getFirst().getCode());
         assertEquals(new Date().toString(), response.getTime());
     }
 }
