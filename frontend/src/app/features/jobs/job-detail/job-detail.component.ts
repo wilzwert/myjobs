@@ -84,7 +84,7 @@ export class JobDetailComponent implements OnInit, OnDestroy {
   }
 
   deleteJob(job: Job) :void {
-    this.confirmDialogService.openConfirmDialog(`Delete job "${job.title}" ? ALL DATA WILL BE LOST`, () => this.confirmDeleteJob(job));
+    this.confirmDialogService.openConfirmDialog($localize `:@@warning.job.delete:Delete job "${job.title}" ? All data will be lost.`, () => this.confirmDeleteJob(job));
   }
 
   updateJobRating(job: Job, rating: number) :void {
@@ -95,7 +95,7 @@ export class JobDetailComponent implements OnInit, OnDestroy {
 
       })
     ).subscribe(() => {
-      this.notificationService.confirmation($localize `:@@info.job.rating.updated:Job rating updated successfully.`);
+      this.notificationService.confirmation($localize `:@@info.job.rating.updated:Rating updated successfully.`);
       this.loadJob(job.id);
     });
   }

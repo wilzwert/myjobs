@@ -138,7 +138,7 @@ export class JobsComponent implements OnInit {
   }
 
   deleteJob(job: Job): void {
-    this.confirmDialogService.openConfirmDialog($localize`:@@warning.job.delete:Delete job "${job.title}" ?`, () => this.confirmDeleteJob(job));
+    this.confirmDialogService.openConfirmDialog($localize`:@@warning.job.delete:Delete job "${job.title}" ? All data will be lost.`, () => this.confirmDeleteJob(job));
   }
 
   manageAttachments(event: Event, job: Job): void {

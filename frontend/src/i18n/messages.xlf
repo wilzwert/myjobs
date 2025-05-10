@@ -457,7 +457,7 @@
         <source>Optional</source>
       </trans-unit>
       <trans-unit id="warning.job.delete" datatype="html">
-        <source>Delete job &quot;<x id="PH" equiv-text="job.title"/>&quot; ?</source>
+        <source>Delete job &quot;<x id="PH" equiv-text="job.title"/>&quot; ? All data will be lost.</source>
       </trans-unit>
       <trans-unit id="action.user.delete_account" datatype="html">
         <source>Delete my account</source>
@@ -521,7 +521,7 @@
         <source>Delete your accout ? All data will be definitely deleted !</source>
       </trans-unit>
       <trans-unit id="info.job.rating.updated" datatype="html">
-        <source>Job rating updated successfully.</source>
+        <source>Rating updated successfully.</source>
       </trans-unit>
       <trans-unit id="info.job.status.updated" datatype="html">
         <source>Status updated successfully.</source>

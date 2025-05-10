@@ -649,15 +649,15 @@
         <target state="translated">Job supprimé.</target>
       </trans-unit>
       <trans-unit id="warning.job.delete" datatype="html">
-        <source>Delete job "<x id="PH" equiv-text="job.title"/>" ?</source>
-        <target state="translated">Supprimer "<x id="PH" equiv-text="job.title"/>" ?</target>
+        <source>Delete job "<x id="PH" equiv-text="job.title"/>" ? All data will be lost.</source>
+        <target state="translated">Supprimer "<x id="PH" equiv-text="job.title"/>" ? Toutes les données seront perdues.</target>
       </trans-unit>
       <trans-unit id="info.job.status.updated" datatype="html">
         <source>Status updated successfully.</source>
         <target state="translated">Le statut a bien été modifié.</target>
       </trans-unit>
       <trans-unit id="info.job.rating.updated" datatype="html">
-        <source>Job rating updated successfully.</source>
+        <source>Rating updated successfully.</source>
         <target state="new">La note a bien été modifiée.</target>
       </trans-unit>
       <trans-unit id="info.job.created" datatype="html">

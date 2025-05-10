@@ -17,6 +17,7 @@ export interface Job {
     rating: JobRating,
     createdAt: string
     updatedAt: string,
+    statusUpdatedAt: string,
     activities: Activity[],
     attachments: Attachment[]
 }
