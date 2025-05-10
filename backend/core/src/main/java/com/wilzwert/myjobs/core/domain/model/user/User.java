@@ -22,9 +22,9 @@ import java.util.UUID;
  */
 public class User extends DomainEntity<UserId> {
 
-    private static final Integer defaultJobFollowUpReminderDays = 14;
-    private static final Lang defaultLang = Lang.EN;
-    private static final String defaultRole = "USER";
+    public static final Integer defaultJobFollowUpReminderDays = 14;
+    public static final Lang defaultLang = Lang.EN;
+    public static final String defaultRole = "USER";
 
     private final UserId id;
     private final String email;

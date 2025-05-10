@@ -168,6 +168,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
                     .andExpect(jsonPath("lastName").value("lastName"))
                     .andExpect(jsonPath("email").value("test@example.com"))
                     .andExpect(jsonPath("lang").value("FR"))
+                    .andExpect(jsonPath("jobFollowUpReminderDays").value(User.defaultJobFollowUpReminderDays))
                     .andExpect(jsonPath("emailStatus").value(EmailStatus.PENDING.name()))
                     .andExpect(jsonPath("createdAt").isNotEmpty())
                     .andReturn();

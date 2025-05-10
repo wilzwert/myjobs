@@ -9,5 +9,5 @@ import com.wilzwert.myjobs.core.domain.model.user.UserId;
  * Time:11:10
  */
 
-public record UpdateUserCommand(String email, String username, String firstName, String lastName, UserId userId) {
+public record UpdateUserCommand(String email, String username, String firstName, String lastName, Integer jobFollowUpReminderDays, UserId userId) {
 }

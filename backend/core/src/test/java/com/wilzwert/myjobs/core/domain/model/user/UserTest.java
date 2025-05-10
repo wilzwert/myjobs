@@ -86,11 +86,11 @@ public class UserTest {
         assertEquals("username", user.getUsername());
         assertEquals("firstName", user.getFirstName());
         assertEquals("lastName", user.getLastName());
-        assertEquals(Lang.EN, user.getLang());
+        assertEquals(User.defaultLang, user.getLang());
         assertNotNull(user.getEmailValidationCode());
         assertEquals(EmailStatus.PENDING, user.getEmailStatus());
-        assertEquals("USER", user.getRole());
-        assertEquals(14, user.getJobFollowUpReminderDays());
+        assertEquals(User.defaultRole, user.getRole());
+        assertEquals(User.defaultJobFollowUpReminderDays, user.getJobFollowUpReminderDays());
         assertNull(user.getResetPasswordToken());
         assertNull(user.getResetPasswordExpiresAt());
         Instant createdAt = user.getCreatedAt();
@@ -214,7 +214,7 @@ public class UserTest {
         assertEquals("John", updatedUser.getFirstName());
         assertEquals("Doe", updatedUser.getLastName());
         assertEquals(8, updatedUser.getJobFollowUpReminderDays());
-        assertEquals(Lang.EN, updatedUser.getLang());
+        assertEquals(User.defaultLang, updatedUser.getLang());
         assertEquals("email@example.com", updatedUser.getEmail());
 
         Instant updatedAt = updatedUser.getUpdatedAt();
@@ -235,7 +235,7 @@ public class UserTest {
                 .emailValidationCode("code")
                 .build();
 
-        assertEquals(Lang.EN, user.getLang());
+        assertEquals(User.defaultLang, user.getLang());
 
         User updatedUser = user.updateLang(Lang.FR);
         assertEquals(Lang.FR, updatedUser.getLang());

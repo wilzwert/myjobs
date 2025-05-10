@@ -121,6 +121,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
             updateUserRequest.setUsername("otherexistinguserupdated");
             updateUserRequest.setFirstName("OtherExistingUpdated");
             updateUserRequest.setLastName("OtherUserUpdated");
+            updateUserRequest.setJobFollowUpReminderDays(12);
         }
 
         @Test
@@ -213,6 +214,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
             assertEquals("otherexistinguserupdated", userResponse.getUsername());
             assertEquals("OtherExistingUpdated", userResponse.getFirstName());
             assertEquals("OtherUserUpdated", userResponse.getLastName());
+            assertEquals(12, userResponse.getJobFollowUpReminderDays());
             assertEquals(Lang.EN, userResponse.getLang());
             assertEquals("2025-03-29T09:46:09.475Z", userResponse.getCreatedAt());
             assertEquals("PENDING", userResponse.getEmailStatus());
