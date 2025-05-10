@@ -37,4 +37,9 @@ describe('TranslatorService', () => {
   it('when activity type is known then should return its translation', () => {
     expect(service.translateActivityType("COMPANY_REFUSAL")).toEqual("Refusal (by company)");
   })
+
+  it('when a parameterized error message is translated with params then substitution should be done', () => {
+    // we know that the FIELD_VALUE_TOO_SMALL is parameterized with ${'min'}
+    expect(service.translateError("FIELD_VALUE_TOO_SMALL", {min: "12"})).toEqual("Value must be at least 12");
+  })
 });

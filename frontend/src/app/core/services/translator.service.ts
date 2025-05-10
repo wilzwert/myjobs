@@ -15,6 +15,11 @@ export class TranslatorService {
     INVALID_URL: $localize`:@@error.invalid_url:Invalid url`,
     FIELD_TOO_SHORT: $localize`:@@error.field_too_short:Field too short`,
     FIELD_TOO_LONG: $localize`:@@error.field_too_long:Field too long`,
+    // we have to use "custome" placeholder like {{min}} that will be handled manually in the translateError method, 
+    // because it cannot be handled by angular i18n, as the min value comes from a backend error at runtime
+    // and these translations being outside any method, they cannot access any variables
+    FIELD_VALUE_TOO_SMALL: $localize `:@@error.field_value_too_small:Value must be at least {{min}}`,
+    FIELD_VALUE_TOO_BIG: $localize `:@@error.field_value_too_big:Value must be at most {{max}}`,
     FIELD_MIN_MAX_LENGTH: $localize`:@@error.field_min_max_length:Invalid field size`,
     PAGINATION_INVALID_PAGE: $localize`:@@error.pagination_invalid_page:Invalid page`,
     PAGINATION_INVALID_PAGE_SIZE: $localize`:@@error.pagination_invalid_page_size:Invalid page size`,
@@ -61,9 +66,17 @@ export class TranslatorService {
     RATING : $localize `:@@job.activity.rating:Rating`
   }
 
-  translateError(code: string, params: Record<string, any> = {}): string {
+  translateError(code: string, details: Record<string, string> | null = {}): string {
     const errorMessage = this.errorMessages[code.toUpperCase()];
-    return errorMessage ??  $localize`:@@error.unknown:An unknown error occurred ${code}`;
+    if(!errorMessage) {
+      return $localize`:@@error.unknown:An unknown error occurred ${code}`;
+    }
+
+    if (details !== null) {
+      return errorMessage.replace(/{{(\w+)}}/g, (_, key) => details[key] ?? '');
+    }
+  
+    return errorMessage;
   }
   
   translateJobStatus(jobStatus: string) :string {

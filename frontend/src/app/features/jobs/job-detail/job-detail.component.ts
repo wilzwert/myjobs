@@ -91,12 +91,11 @@ export class JobDetailComponent implements OnInit, OnDestroy {
     this.jobService.updateJobRating(job.id, {rating: rating}).pipe(
       take(1),
       catchError((error: ApiError) => {
-        this.notificationService.confirmation("Job rating update failed.");
         return throwError(() => error);
 
       })
     ).subscribe(() => {
-      this.notificationService.confirmation("Job rating updated successfully.");
+      this.notificationService.confirmation($localize `:@@info.job.rating.updated:Job rating updated successfully.`);
       this.loadJob(job.id);
     });
   }

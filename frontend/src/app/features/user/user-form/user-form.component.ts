@@ -7,6 +7,7 @@ import { InputBackendErrorsComponent } from "../../../layout/shared/input-backen
 import { MatButton } from '@angular/material/button';
 import { LocaleService } from '../../../core/services/locale.service';
 import { PasswordValidator } from '../../../core/validators/password-validator';
+import { User } from '../../../core/model/user.interface';
 
 @Component({
   selector: 'app-user-form',
@@ -16,8 +17,10 @@ import { PasswordValidator } from '../../../core/validators/password-validator';
 })
 export class UserFormComponent implements OnInit {
   @Input() form!: FormGroup;
+  @Input() user: User | null = null;
   @Input() isSubmitting = false;
   @Input() showPassword = false;
+  @Input() showJobFollowUpReminderDays = false;
   @Input() submitLabel: 'Register' | 'Save' = 'Save';
   @Output() submitted = new EventEmitter<void>();
 
@@ -32,6 +35,11 @@ export class UserFormComponent implements OnInit {
       this.form.addControl('password', new FormControl('', [
         Validators.required,
         PasswordValidator
+      ]));
+    }
+    if(this.showJobFollowUpReminderDays) {
+      this.form.addControl('jobFollowUpReminderDays', new FormControl((this.user ? this.user.jobFollowUpReminderDays : 7), [
+        Validators.required
       ]));
     }
   }
@@ -54,6 +62,10 @@ export class UserFormComponent implements OnInit {
 
   get password() {
     return this.form.get('password');
+  }
+
+  get jobFollowUpReminderDays() {
+    return this.form.get('jobFollowUpReminderDays');
   }
 
   get lang() {

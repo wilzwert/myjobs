@@ -98,7 +98,7 @@ export class UserEditComponent extends BaseChildComponent implements OnInit, OnD
             ))
             .subscribe(() => {
                 this.isSubmitting = false;
-                this.notificationService.confirmation("Your information has been updated."+(emailChanged ? " Your new email address needs verification ; please check your emails." : ''));
+                this.notificationService.confirmation($localize `:@@info.user.edit.success:Your information has been updated.` + (emailChanged ? ' '+$localize `:@@info.email.verification.needed:Your new email address needs verification ; please check your emails.` : ''));
                 this.success();
             });
       }

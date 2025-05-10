@@ -34,7 +34,6 @@ describe('UserFormComponent', () => {
     component.form = new FormGroup({
       email: new FormControl('test@example.com'),
       username: new FormControl('testuser'),
-      password: new FormControl('secret'),
       firstName: new FormControl('John'),
       lastName: new FormControl('Doe'),
     });
@@ -61,10 +60,19 @@ describe('UserFormComponent', () => {
     expect(button.nativeElement.textContent).toContain('Register');
   });
 
-  it('should add password control when showPassword is true', () {
+  it('should add password control when showPassword is true', () => {
     component.showPassword = true;
+    component.ngOnInit(); 
     fixture.detectChanges();
     expect(component.form.get('password')).toBeTruthy();
     expect(component.password).toBeDefined();
+  })
+
+  it('should add jobFollowUpReminderDays control when showJobFollowUpReminderDays is true', () => {
+    component.showJobFollowUpReminderDays = true;
+    component.ngOnInit(); 
+    fixture.detectChanges();
+    expect(component.form.get('jobFollowUpReminderDays')).toBeTruthy();
+    expect(component.jobFollowUpReminderDays).toBeDefined();
   })
 });

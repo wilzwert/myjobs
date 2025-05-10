@@ -72,7 +72,7 @@
         <source>Job not found</source>
       </trans-unit>
       <trans-unit id="error.unknown" datatype="html">
-        <source>An unknown error occurred</source>
+        <source>An unknown error occurred <x id="PH" equiv-text="code"/></source>
       </trans-unit>
       <trans-unit id="info.invalid" datatype="html">
         <source>Invalid</source>
@@ -521,7 +521,7 @@
         <source>Delete your accout ? All data will be definitely deleted !</source>
       </trans-unit>
       <trans-unit id="info.job.rating.updated" datatype="html">
-        <source>Rating updated successfully.</source>
+        <source>Job rating updated successfully.</source>
       </trans-unit>
       <trans-unit id="info.job.status.updated" datatype="html">
         <source>Status updated successfully.</source>
@@ -658,6 +658,34 @@
       </trans-unit>
       <trans-unit id="info.login.verify" datatype="html">
         <source>Please verify your email or password</source>
+      </trans-unit>
+      <trans-unit id="error.field_value_too_small" datatype="html">
+        <source>Value must be at least {{min}}</source>
+      </trans-unit>
+      <trans-unit id="input.jobFollowUpReminderDays.label" datatype="html">
+        <source>Job reminder delay (days)</source>
+      </trans-unit>
+      <trans-unit id="input.jobFollowUpReminderDays.placeholder" datatype="html">
+        <source>Job reminder delay (days)</source>
+        <note priority="1" from="description">jobFollowUpReminderDays placeholder</note>
+      </trans-unit>
+      <trans-unit id="error.field_value_too_big" datatype="html">
+        <source>Value must be at most {{max}}</source>
+      </trans-unit>
+      <trans-unit id="error.password.creation" datatype="html">
+        <source>Password creation failed</source>
+      </trans-unit>
+      <trans-unit id="info.email.verification.needed" datatype="html">
+        <source>Your new email address needs verification ; please check your emails.</source>
+      </trans-unit>
+      <trans-unit id="info.login.possible" datatype="html">
+        <source>You may now log in.</source>
+      </trans-unit>
+      <trans-unit id="info.password.updated" datatype="html">
+        <source>Your password has been updated.</source>
+      </trans-unit>
+      <trans-unit id="info.user.edit.success" datatype="html">
+        <source>Your information has been updated.</source>
       </trans-unit>
     </body>
   </file>
