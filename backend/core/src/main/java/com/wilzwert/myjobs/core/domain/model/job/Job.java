@@ -40,6 +40,8 @@ public class Job extends DomainEntity<JobId> {
 
     private final Instant updatedAt;
 
+    private final Instant statusUpdatedAt;
+
     private final UserId userId;
 
     private final List<Activity> activities;
@@ -79,6 +81,8 @@ public class Job extends DomainEntity<JobId> {
         private Instant createdAt;
 
         private Instant updatedAt;
+
+        private Instant statusUpdatedAt;
 
         private UserId userId;
 
@@ -144,6 +148,11 @@ public class Job extends DomainEntity<JobId> {
             return this;
         }
 
+        public Builder statusUpdatedAt(Instant updatedAt) {
+            this.statusUpdatedAt = updatedAt;
+            return this;
+        }
+
         public Builder userId(UserId userId) {
             this.userId = userId;
             return this;
@@ -172,6 +181,7 @@ public class Job extends DomainEntity<JobId> {
                     rating,
                     createdAt,
                     updatedAt,
+                    statusUpdatedAt,
                     userId,
                     activities,
                     attachments
@@ -189,7 +199,7 @@ public class Job extends DomainEntity<JobId> {
                 .getErrors();
     }
 
-    private Job(JobId id, String url, JobStatus status, String title, String company, String description, String profile, String salary, JobRating rating, Instant createdAt, Instant updatedAt, UserId userId, List<Activity> activities, List<Attachment> attachments) {
+    private Job(JobId id, String url, JobStatus status, String title, String company, String description, String profile, String salary, JobRating rating, Instant createdAt, Instant updatedAt, Instant statusUpdatedAt, UserId userId, List<Activity> activities, List<Attachment> attachments) {
         this.id = id != null ? id : JobId.generate();
         this.url = url;
         this.status = status != null ? status : JobStatus.CREATED;
@@ -201,6 +211,7 @@ public class Job extends DomainEntity<JobId> {
         this.rating = rating != null ? rating : JobRating.of(0);
         this.createdAt = createdAt != null ? createdAt : Instant.now();
         this.updatedAt = updatedAt != null ? updatedAt : Instant.now();
+        this.statusUpdatedAt = statusUpdatedAt != null ? statusUpdatedAt : Instant.now();
         this.userId = userId;
 
         // ensure immutability
@@ -215,6 +226,12 @@ public class Job extends DomainEntity<JobId> {
     }
 
     private Job copy(List<Attachment> attachments, List<Activity> activities, JobStatus status, Instant updatedAt) {
+        Instant statusUpdatedAt = getStatusUpdatedAt();
+        if( status != null && !status.equals(getStatus())) {
+            // set statusUpdatedAt
+            statusUpdatedAt = Instant.now();
+        }
+
         return new Job(
             getId(),
             getUrl(),
@@ -227,6 +244,7 @@ public class Job extends DomainEntity<JobId> {
             getRating(),
             getCreatedAt(),
             (updatedAt != null ? updatedAt : getUpdatedAt()),
+            statusUpdatedAt,
             getUserId(),
             (activities != null ? activities : getActivities()),
             (attachments != null ? attachments : getAttachments())
@@ -253,6 +271,7 @@ public class Job extends DomainEntity<JobId> {
                 getRating(),
                 getCreatedAt(),
                 Instant.now(),
+                getStatusUpdatedAt(),
                 getUserId(),
                 getActivities(),
                 getAttachments()
@@ -309,6 +328,7 @@ public class Job extends DomainEntity<JobId> {
                 newJobRating,
                 getCreatedAt(),
                 Instant.now(),
+                getStatusUpdatedAt(),
                 getUserId(),
                 getActivities(),
                 getAttachments()
@@ -357,6 +377,10 @@ public class Job extends DomainEntity<JobId> {
 
     public Instant getUpdatedAt() {
         return updatedAt;
+    }
+
+    public Instant getStatusUpdatedAt() {
+        return statusUpdatedAt;
     }
 
     public UserId getUserId() {
