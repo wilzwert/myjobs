@@ -28,4 +28,7 @@ public class UpdateUserRequest {
 
     @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
     private String lastName;
+
+    @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
+    private Integer jobFollowUpReminderDays;
 }

@@ -49,6 +49,9 @@ public class MongoUser  {
     @Field(name = "last_name")
     private String lastName;
 
+    @Field(name = "job_follow_up_reminder_days")
+    private Integer jobFollowUpReminderDays;
+
     private Lang lang;
 
     private String role;

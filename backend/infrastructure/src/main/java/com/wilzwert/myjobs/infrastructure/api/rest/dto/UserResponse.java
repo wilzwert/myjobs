@@ -30,5 +30,7 @@ public class UserResponse {
 
     private String emailStatus;
 
+    private Integer jobFollowUpReminderDays;
+
     private Lang lang;
 }
