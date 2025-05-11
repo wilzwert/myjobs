@@ -5,11 +5,12 @@ import com.wilzwert.myjobs.core.domain.command.CreateJobCommand;
 import com.wilzwert.myjobs.core.domain.command.UpdateJobCommand;
 import com.wilzwert.myjobs.core.domain.command.UpdateJobRatingCommand;
 import com.wilzwert.myjobs.core.domain.command.UpdateJobStatusCommand;
+import com.wilzwert.myjobs.core.domain.model.job.EnrichedJob;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
-import com.wilzwert.myjobs.infrastructure.mapper.EntityMapper;
+import com.wilzwert.myjobs.infrastructure.mapper.EnrichedEntityMapper;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoJob;
 import org.mapstruct.Mapper;
 
@@ -19,7 +20,7 @@ import org.mapstruct.Mapper;
  * Time:15:48
  */
 @Mapper(componentModel = "spring", uses = {IdMapper.class, ActivityMapper.class, JobRatingMapper.class})
-public interface JobMapper extends EntityMapper<Job, MongoJob, CreateJobRequest, CreateJobCommand, UpdateJobRequest, UpdateJobCommand, JobResponse> {
+public interface JobMapper extends EnrichedEntityMapper<Job, MongoJob, CreateJobRequest, CreateJobCommand, UpdateJobRequest, UpdateJobCommand, JobResponse, EnrichedJob> {
 
     CreateJobCommand toCommand(CreateJobRequest createJobRequest, UserId userId);
 
@@ -28,4 +29,11 @@ public interface JobMapper extends EntityMapper<Job, MongoJob, CreateJobRequest,
     UpdateJobStatusCommand toCommand(UpdateJobStatusRequest updateJobStatusRequest, UserId userId, JobId jobId);
 
     UpdateJobRatingCommand toCommand(UpdateJobRatingRequest updateJobStatusRequest, UserId userId, JobId jobId);
+
+    @Override
+    default JobResponse toEnrichedResponse(EnrichedJob extended) {
+        JobResponse jobResponse = toResponse(extended.job());
+        jobResponse.setFollowUpLate(extended.isFollowUpLate());
+        return jobResponse;
+    }
 }

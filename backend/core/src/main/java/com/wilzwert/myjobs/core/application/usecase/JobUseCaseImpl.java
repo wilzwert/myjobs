@@ -8,6 +8,7 @@ import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.attachment.AttachmentId;
+import com.wilzwert.myjobs.core.domain.model.job.EnrichedJob;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
@@ -19,6 +20,7 @@ import com.wilzwert.myjobs.core.domain.ports.driven.HtmlSanitizer;
 import com.wilzwert.myjobs.core.domain.ports.driven.JobService;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.ports.driving.*;
+import com.wilzwert.myjobs.core.domain.service.job.JobEnricher;
 import com.wilzwert.myjobs.core.domain.shared.criteria.DomainCriteria;
 
 import java.lang.reflect.Method;
@@ -41,6 +43,8 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
     private final FileStorage fileStorage;
 
     private final HtmlSanitizer htmlSanitizer;
+
+    private final JobEnricher jobEnricher = new JobEnricher();
 
     public JobUseCaseImpl(JobService jobService, UserService userService, FileStorage fileStorage, HtmlSanitizer htmlSanitizer) {
         this.jobService = jobService;
@@ -102,14 +106,14 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
     }
 
     @Override
-    public DomainPage<Job> getUserJobs(UserId userId, int page, int size, JobStatus status, boolean filterLate, String sort) {
+    public DomainPage<EnrichedJob> getUserJobs(UserId userId, int page, int size, JobStatus status, boolean filterLate, String sort) {
         Optional<User> foundUser = userService.findById(userId);
         if(foundUser.isEmpty()) {
             throw new UserNotFoundException();
         }
 
         User user = foundUser.get();
-
+        DomainPage<Job> jobs;
         if(filterLate) {
             // threshold instant : jobs not updated since that instant are considered late
             Instant nowMinusReminderDays = Instant.now().minus(user.getJobFollowUpReminderDays(), ChronoUnit.DAYS);
@@ -117,9 +121,13 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
                 new DomainCriteria.In<>("status", JobStatus.activeStatuses()),
                 new DomainCriteria.Lt<>("status_updated_at", nowMinusReminderDays)
             );
-            return jobService.findByUserWithCriteriaPaginated(user, criteriaList, page, size, sort);
+
+            jobs = jobService.findByUserWithCriteriaPaginated(user, criteriaList, page, size, sort);
         }
-        return jobService.findAllByUserIdPaginated(user.getId(), page, size, status, sort);
+        else {
+            jobs = jobService.findAllByUserIdPaginated(user.getId(), page, size, status, sort);
+        }
+        return jobEnricher.enrich(jobs, user);
     }
 
     @Override

@@ -1,8 +1,8 @@
 package com.wilzwert.myjobs.core.domain.ports.driving;
 
 
+import com.wilzwert.myjobs.core.domain.model.job.EnrichedJob;
 import com.wilzwert.myjobs.core.domain.model.pagination.DomainPage;
-import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 
@@ -12,5 +12,5 @@ import com.wilzwert.myjobs.core.domain.model.user.UserId;
  * Time:15:25
  */
 public interface GetUserJobsUseCase {
-    DomainPage<Job> getUserJobs(UserId userId, int page, int size, JobStatus status, boolean filterLate, String sort);
+    DomainPage<EnrichedJob> getUserJobs(UserId userId, int page, int size, JobStatus status, boolean filterLate, String sort);
 }

@@ -14,11 +14,10 @@ import com.wilzwert.myjobs.core.domain.ports.driving.DeleteAccountUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.ExtractJobMetadataUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.LoginUseCase;
 import com.wilzwert.myjobs.core.domain.ports.driving.RegisterUseCase;
-import com.wilzwert.myjobs.core.domain.service.metadata.JobMetadataService;
+import com.wilzwert.myjobs.core.domain.service.job.JobMetadataService;
 import com.wilzwert.myjobs.infrastructure.adapter.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * @author Wilhelm Zwertvaegher

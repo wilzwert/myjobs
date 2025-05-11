@@ -59,6 +59,14 @@ public class DomainPage<T> {
         return MINIMAL_PAGE_COUNT;
     }
 
+    public static <T> DomainPageBuilder<T> builder(DomainPage<?> page, List<T> content) {
+        return new DomainPageBuilder<>(content)
+                .currentPage(page.currentPage)
+                .pageSize(page.pageSize)
+                .totalElementsCount(page.totalElementsCount)
+                ;
+    }
+
     public static <T> DomainPageBuilder<T> builder(List<T> content) {
         return new DomainPageBuilder<>(content);
     }

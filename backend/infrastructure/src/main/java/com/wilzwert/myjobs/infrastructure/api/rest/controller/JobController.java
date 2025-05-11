@@ -111,6 +111,6 @@ public class JobController {
         if(status != null) {
             jobStatus = JobStatus.valueOf(status);
         }
-        return jobMapper.toResponse(getUserJobsUseCase.getUserJobs(userDetails.getId(), page, itemsPerPage, jobStatus, filterLate, sort));
+        return jobMapper.toEnrichedResponse(getUserJobsUseCase.getUserJobs(userDetails.getId(), page, itemsPerPage, jobStatus, filterLate, sort));
     }
 }

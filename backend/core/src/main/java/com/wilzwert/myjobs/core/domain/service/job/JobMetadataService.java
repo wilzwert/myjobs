@@ -1,4 +1,4 @@
-package com.wilzwert.myjobs.core.domain.service.metadata;
+package com.wilzwert.myjobs.core.domain.service.job;
 
 
 import com.wilzwert.myjobs.core.domain.exception.MalformedUrlException;

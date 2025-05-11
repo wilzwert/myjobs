@@ -5,6 +5,7 @@ import com.wilzwert.myjobs.core.domain.exception.MalformedUrlException;
 import com.wilzwert.myjobs.core.domain.model.job.JobMetadata;
 import com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.JobMetadataExtractorService;
 import com.wilzwert.myjobs.core.domain.ports.driven.metadata.fetcher.HtmlFetcherService;
+import com.wilzwert.myjobs.core.domain.service.job.JobMetadataService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
