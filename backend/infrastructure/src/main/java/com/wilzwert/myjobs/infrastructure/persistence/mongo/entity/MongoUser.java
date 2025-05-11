@@ -69,6 +69,11 @@ public class MongoUser  {
     @Field(name = "updated_at")
     @LastModifiedDate
     private Instant updatedAt;
+
+    @Field(name = "job_follow_up_reminder_sent_at")
+    @LastModifiedDate
+    private Instant jobFollowUpReminderSentAt;
+
     /* TODO ? refresh tokens
     @ReadOnlyProperty
     @DocumentReference(lookup="{'userId':?#{#self._id} }")
