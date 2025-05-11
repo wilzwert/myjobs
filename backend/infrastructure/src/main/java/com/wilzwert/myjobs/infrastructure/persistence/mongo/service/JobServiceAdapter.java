@@ -18,10 +18,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Component;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 /**
@@ -89,12 +87,13 @@ public class JobServiceAdapter implements JobService {
         return this.jobMapper.toDomain(mongoJobRepository.findByUserId(userId.value(), PageRequest.of(page, size, sort)));
     }
 
-
-    @Override
-    // FIXME: this should be refactored to make JobServiceAdapter agnostic of business rules
-    // i.e. : the  AggregationOperation passed to the aggregation should come from a conversion of domain criteria
-    // and domain fields (which does not exist at the time)
-    // as a side note : this method is not used yet so it can wait
+    /*
+    // this could be used to load late follow up Jobs e.g. in the context of a batch to send reminders
+    // although in the context of this app it would break the DDD because only the domain should know
+    // what a late job is
+    // For now and for simplicity the domain use case handling these reminders will handle the loading
+    // through regular operations (load a user list, iterate through it and load each user's late jobs to send reminders)
+    // this method is commented out at the time to keep a trace of the aggregation that could be used
     public List<Job> findLateFollowUp(String sortString) {
         Sort sort = getSort(sortString);
         Instant now = Instant.now();
@@ -127,7 +126,7 @@ public class JobServiceAdapter implements JobService {
 
         AggregationResults<Job> results = mongoTemplate.aggregate(aggregation, "job", Job.class);
         return results.getMappedResults();
-    }
+    }*/
 
     private List<MongoJob> aggregate(Aggregation aggregation) {
         AggregationResults<MongoJob> results = mongoTemplate.aggregate(aggregation, "jobs", MongoJob.class);

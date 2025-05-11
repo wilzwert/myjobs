@@ -26,8 +26,6 @@ public interface JobService {
 
     Optional<Job> findByIdAndUserId(JobId jobId, UserId userId);
 
-    List<Job> findLateFollowUp(String sortString);
-
     DomainPage<Job> findAllByUserIdPaginated(UserId userId, int page, int size, JobStatus status, String sort);
 
     DomainPage<Job> findByUserWithCriteriaPaginated(User user, List<DomainCriteria> domainCriteriaList, int page, int size, String sort);

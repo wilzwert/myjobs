@@ -2,6 +2,7 @@ package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.shared.criteria.DomainCriteria;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.exception.UnsupportedDomainCriteriaException;
 import org.bson.Document;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -38,6 +39,12 @@ public class AggregationService {
         return aggregation;
     }
 
+    /**
+     *
+     * @param aggregation the Aggregation we want the count for
+     * @param collectionName the MongoDB collection name
+     * @return the count as long
+     */
     public long getAggregationCount(Aggregation aggregation, String collectionName) {
         List<AggregationOperation> stages = aggregation.getPipeline().getOperations().stream()
                 .filter(MatchOperation.class::isInstance)
@@ -48,20 +55,25 @@ public class AggregationService {
         return resultDoc != null ? ((Number) resultDoc.get("total")).longValue() : 0L;
     }
 
+    /**
+     *
+     * @param domainCriteria a criteria received from the domain
+     * @return a MatchOperation that will be used to build an Aggregation
+     */
     private MatchOperation domainCriteriaToMatchOperation(DomainCriteria domainCriteria) {
-        if(domainCriteria instanceof DomainCriteria.Eq<?>) {
-            return Aggregation.match(Criteria.where(domainCriteria.getField()).is(((DomainCriteria.Eq<?>) domainCriteria).getValue()));
+        if(domainCriteria instanceof DomainCriteria.Eq<?> c) {
+            return Aggregation.match(Criteria.where(c.getField()).is(c.getValue()));
         }
 
-        if(domainCriteria instanceof DomainCriteria.In<?>) {
-            return Aggregation.match(Criteria.where(domainCriteria.getField()).in(((DomainCriteria.In<?>) domainCriteria).getValues()));
+        if(domainCriteria instanceof DomainCriteria.In<?> c) {
+            return Aggregation.match(Criteria.where(c.getField()).in(c.getValues()));
         }
 
-        if(domainCriteria instanceof DomainCriteria.Lt<?>) {
-            return Aggregation.match(Criteria.where(domainCriteria.getField()).lt(((DomainCriteria.Lt<?>) domainCriteria).getValue()));
+        if(domainCriteria instanceof DomainCriteria.Lt<?> c) {
+            return Aggregation.match(Criteria.where(c.getField()).lt(c.getValue()));
         }
 
-        throw new UnsupportedOperationException(domainCriteria.getClass().getName());
+        throw new UnsupportedDomainCriteriaException(domainCriteria.getClass().getName());
 
     }
 
