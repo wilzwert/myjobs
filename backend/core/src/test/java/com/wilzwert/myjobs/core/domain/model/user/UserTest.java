@@ -243,4 +243,21 @@ public class UserTest {
         assertNotSame(user, updatedUser);
 
     }
+    @Test
+    void shouldSaveJobFollowUpReminderSentAt() {
+        UserId userId = UserId.generate();
+        User user = User.builder()
+                .id(userId)
+                .email("test@example.com")
+                .password("password")
+                .username("username")
+                .firstName("firstName")
+                .lastName("lastName")
+                .emailStatus(EmailStatus.VALIDATED)
+                .emailValidationCode("code")
+                .build();
+        assertNull(user.getJobFollowUpReminderSentAt());
+        User updatedUser = user.saveJobFollowUpReminderSentAt();
+        assertEquals(Instant.now().getEpochSecond(), updatedUser.getJobFollowUpReminderSentAt().getEpochSecond());
+    }
 }
