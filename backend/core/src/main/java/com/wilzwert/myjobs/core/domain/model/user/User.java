@@ -42,18 +42,21 @@ public class User extends DomainEntity<UserId> {
      * Must be between 3 and 30, defaults to 14
      */
     private final Integer jobFollowUpReminderDays;
-
     private final Lang lang;
     private final String role;
     private final String resetPasswordToken;
     private final Instant resetPasswordExpiresAt;
     private final Instant createdAt;
     private final Instant updatedAt;
-
+    private final Instant jobFollowUpReminderSentAt;
     private final List<Job> jobs;
 
     public static Builder builder() {
         return new Builder();
+    }
+
+    private static Builder from(User user) {
+        return new Builder(user);
     }
 
     // Only for persistence mapping and tests. Do not use for new User creation!
@@ -73,10 +76,31 @@ public class User extends DomainEntity<UserId> {
         private Instant resetPasswordExpiresAt;
         private Instant createdAt;
         private Instant updatedAt;
+        private Instant jobFollowUpReminderSentAt;
 
         private List<Job> jobs;
 
         public Builder() {}
+
+        private Builder(User user) {
+            id = user.getId();
+            email = user.getEmail();
+            emailStatus = user.getEmailStatus();
+            emailValidationCode = user.getEmailValidationCode();
+            password = user.getPassword();
+            username = user.getUsername();
+            firstName = user.getFirstName();
+            lastName = user.getLastName();
+            jobFollowUpReminderDays = user.getJobFollowUpReminderDays();
+            lang = user.getLang();
+            role = user.getRole();
+            resetPasswordToken = user.getResetPasswordToken();
+            resetPasswordExpiresAt = user.getResetPasswordExpiresAt();
+            createdAt = user.getCreatedAt();
+            updatedAt = user.getUpdatedAt();
+            jobFollowUpReminderSentAt = user.getJobFollowUpReminderSentAt();
+            jobs = user.getJobs();
+        }
 
         public Builder id(UserId userId) {
             this.id = userId;
@@ -146,6 +170,12 @@ public class User extends DomainEntity<UserId> {
             this.updatedAt = updatedAt;
             return this;
         }
+
+        public Builder jobFollowUpReminderSentAt(Instant jobFollowUpReminderSentAt) {
+            this.jobFollowUpReminderSentAt = jobFollowUpReminderSentAt;
+            return this;
+        }
+
         public Builder jobs(List<Job> jobs) {
             this.jobs = jobs;
             return this;
@@ -195,6 +225,7 @@ public class User extends DomainEntity<UserId> {
         this.resetPasswordExpiresAt = builder.resetPasswordExpiresAt;
         this.createdAt = builder.createdAt != null ? builder.createdAt : Instant.now();
         this.updatedAt = builder.updatedAt != null ? builder.updatedAt : Instant.now();
+        this.jobFollowUpReminderSentAt = builder.jobFollowUpReminderSentAt;
         this.jobs = builder.jobs != null ? builder.jobs : new ArrayList<>();
 
         // validate the User state
@@ -236,19 +267,14 @@ public class User extends DomainEntity<UserId> {
         }
 
         return new User(
-                builder().id(getId())
+                from(this)
                         .email(email)
                         .emailStatus(newEmailStatus)
-                        .emailValidationCode(getEmailValidationCode())
-                        .password(getPassword())
                         .username(username)
                         .firstName(firstName)
                         .lastName(lastName)
                         .jobFollowUpReminderDays(jobFollowUpReminderDays)
-                        .lang(lang)
-                        .role(getRole())
-                        .createdAt(getCreatedAt())
-                        .jobs(getJobs())
+                        .updatedAt(Instant.now())
         );
     }
 
@@ -271,22 +297,7 @@ public class User extends DomainEntity<UserId> {
 
     public User withJobs(List<Job> jobs) {
         return new User(
-            builder()
-                .id(getId())
-                .email(getEmail())
-                .emailStatus(getEmailStatus())
-                .emailValidationCode(getEmailValidationCode())
-                .password(getPassword())
-                .username(getUsername())
-                .firstName(getFirstName())
-                .lastName(getLastName())
-                .jobFollowUpReminderDays(getJobFollowUpReminderDays())
-                .lang(getLang())
-                .role(getRole())
-                .resetPasswordToken(getResetPasswordToken())
-                .resetPasswordExpiresAt(getResetPasswordExpiresAt())
-                .createdAt(getCreatedAt())
-                .updatedAt(getUpdatedAt())
+            from(this)
                 .jobs(jobs)
         );
     }
@@ -296,20 +307,8 @@ public class User extends DomainEntity<UserId> {
         User updatedUser = null;
         try {
             updatedUser = new User(
-                builder()
-                    .id(getId())
-                    .email(getEmail())
-                    .emailStatus(getEmailStatus())
-                    .emailValidationCode(getEmailValidationCode())
+                from(this)
                     .password(newPassword)
-                    .username(getUsername())
-                    .firstName(getFirstName())
-                    .lastName(getLastName())
-                    .jobFollowUpReminderDays(getJobFollowUpReminderDays())
-                    .lang(getLang())
-                    .role(getRole())
-                    .createdAt(getCreatedAt())
-                    .jobs(getJobs())
             );
         }
         catch(ValidationException e) {
@@ -332,26 +331,12 @@ public class User extends DomainEntity<UserId> {
     public User resetPassword() {
         // a reset password request just overrides all previous ones
         return new User(
-                builder()
-                    .id(getId())
-                    .email(getEmail())
-                    .emailStatus(getEmailStatus())
-                    .emailValidationCode(getEmailValidationCode())
-                    .password(getPassword())
-                    .username(getUsername())
-                    .firstName(getFirstName())
-                    .lastName(getLastName())
-                    .jobFollowUpReminderDays(getJobFollowUpReminderDays())
-                    .lang(getLang())
-                    .role(getRole())
+                from(this)
                     // FIXME : maybe we should use a value object with a generator
                     .resetPasswordToken(UUID.randomUUID().toString())
                     // FIXME : duration should not be hard coded this way
                     // it should be handled by domain anyway
                     .resetPasswordExpiresAt(Instant.now().plus(30, ChronoUnit.MINUTES))
-                    .createdAt(getCreatedAt())
-                    .updatedAt(getUpdatedAt())
-                    .jobs(getJobs())
         );
     }
 
@@ -373,41 +358,22 @@ public class User extends DomainEntity<UserId> {
         }
 
         return new User(
-            builder()
-                .id(getId())
-                .email(getEmail())
+            from(this)
                 .emailStatus(getEmailStatus().equals(EmailStatus.PENDING) ? EmailStatus.VALIDATED : getEmailStatus())
-                .emailValidationCode(getEmailValidationCode())
-                .password(getPassword())
-                .username(getUsername())
-                .firstName(getFirstName())
-                .lastName(getLastName())
-                .jobFollowUpReminderDays(getJobFollowUpReminderDays())
-                .lang(getLang())
-                .role(getRole())
-                .createdAt(getCreatedAt())
-                .jobs(getJobs())
         );
     }
 
     public User updateLang(Lang lang) {
         return new User(
-            builder()
-                .id(getId())
-                .email(getEmail())
-                .emailStatus(getEmailStatus())
-                .emailValidationCode(getEmailValidationCode())
-                .password(getPassword())
-                .username(getUsername())
-                .firstName(getFirstName())
-                .lastName(getLastName())
-                .jobFollowUpReminderDays(getJobFollowUpReminderDays())
+            from(this)
                 .lang(lang)
-                .role(getRole())
-                .resetPasswordToken(getResetPasswordToken())
-                .resetPasswordExpiresAt(getResetPasswordExpiresAt())
-                .createdAt(getCreatedAt())
-                .jobs(getJobs())
+        );
+    }
+
+    public User saveJobFollowUpReminderSentAt() {
+        return new User(
+            from(this)
+                .jobFollowUpReminderSentAt(Instant.now())
         );
     }
 
@@ -462,6 +428,8 @@ public class User extends DomainEntity<UserId> {
     public Instant getUpdatedAt() {
         return updatedAt;
     }
+
+    public Instant getJobFollowUpReminderSentAt() {return jobFollowUpReminderSentAt;}
 
     public List<Job> getJobs() {
         return jobs;
