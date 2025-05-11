@@ -1,4 +1,4 @@
-package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
+    package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 
 
 import com.wilzwert.myjobs.core.domain.model.activity.Activity;
@@ -7,16 +7,23 @@ import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.model.pagination.DomainPage;
+import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.ports.driven.JobService;
+import com.wilzwert.myjobs.core.domain.shared.criteria.DomainCriteria;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoJob;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoJobRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.*;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
-
 /**
  * @author Wilhelm Zwertvaegher
  * Date:14/03/2025
@@ -26,10 +33,14 @@ import java.util.Optional;
 public class JobServiceAdapter implements JobService {
     private final MongoJobRepository mongoJobRepository;
     private final JobMapper jobMapper;
+    private final MongoTemplate mongoTemplate;
+    private final AggregationService aggregationService;
 
-    public JobServiceAdapter(MongoJobRepository mongoJobRepository, JobMapper jobMapper) {
+    public JobServiceAdapter(MongoJobRepository mongoJobRepository, JobMapper jobMapper, MongoTemplate mongoTemplate, AggregationService aggregationService) {
         this.mongoJobRepository = mongoJobRepository;
         this.jobMapper = jobMapper;
+        this.mongoTemplate = mongoTemplate;
+        this.aggregationService = aggregationService;
     }
 
     @Override
@@ -47,26 +58,93 @@ public class JobServiceAdapter implements JobService {
         return mongoJobRepository.findByIdAndUserId(jobId.value(), userId.value()).map(jobMapper::toDomain).or(Optional::empty);
     }
 
-    @Override
-    public DomainPage<Job> findAllByUserId(UserId userId, int page, int size, JobStatus status, String sortString) {
+    /**
+     *
+     * @param sortString the sort string e.g. "createdAt,desc"
+     * @return a sort to be used in a PageRequest
+     */
+    private Sort getSort(String sortString) {
         if(sortString == null || sortString.isEmpty()) {
-            sortString = "createdAt,desc";
+            return Sort.by(Sort.Direction.DESC, "createdAt");
         }
 
         var sortOrder = sortString.split(",");
-
         Sort sort = Sort.by(sortOrder[0]);
-        if(sortOrder[1].equals("desc")) {
+        if(sortOrder[1].equalsIgnoreCase("desc")) {
             sort = sort.descending();
         }
         else {
             sort = sort.ascending();
         }
+        return sort;
+    }
+
+    @Override
+    public DomainPage<Job> findAllByUserIdPaginated(UserId userId, int page, int size, JobStatus status, String sortString) {
+        Sort sort = getSort(sortString);
 
         if(status != null) {
             return this.jobMapper.toDomain(mongoJobRepository.findByUserIdAndStatus(userId.value(), status, PageRequest.of(page, size, sort)));
         }
         return this.jobMapper.toDomain(mongoJobRepository.findByUserId(userId.value(), PageRequest.of(page, size, sort)));
+    }
+
+
+    @Override
+    // FIXME: this should be refactored to make JobServiceAdapter agnostic of business rules
+    // i.e. : the  AggregationOperation passed to the aggregation should come from a conversion of domain criteria
+    // and domain fields (which does not exist at the time)
+    // as a side note : this method is not used yet so it can wait
+    public List<Job> findLateFollowUp(String sortString) {
+        Sort sort = getSort(sortString);
+        Instant now = Instant.now();
+
+        Aggregation aggregation = Aggregation.newAggregation(
+                // join "user" collection
+                Aggregation.lookup("user", "userId", "_id", "user"),
+
+                // exclude users with null jobFollowUpReminderDays
+                Aggregation.match(Criteria.where("user.jobFollowUpReminderDays").ne(null)),
+
+                // get only active jobs
+                Aggregation.match(Criteria.where("status").in(JobStatus.activeStatuses())),
+
+                // unwind "user" field (array => unique object)
+                Aggregation.unwind("user"),
+                // add a thresholdDate field = now - user.jobFollowUpReminderDays
+                Aggregation.addFields()
+                        .addFieldWithValue(
+                        "thresholdDate",
+                            ArithmeticOperators.Subtract.valueOf(now.toEpochMilli()).subtract(
+                                    ArithmeticOperators.Multiply.valueOf("user.jobFollowUpReminderDays")
+                                            .multiplyBy(86400000)
+                            )
+                        ).build(),
+                // filter jobs where statusUpdatedAt < thresholdDate
+                Aggregation.match(Criteria.where("statusUpdatedAt").lt("thresholdDate")),
+                aggregationService.getSortOperation(sortString)
+        );
+
+        AggregationResults<Job> results = mongoTemplate.aggregate(aggregation, "job", Job.class);
+        return results.getMappedResults();
+    }
+
+    private List<MongoJob> aggregate(Aggregation aggregation) {
+        AggregationResults<MongoJob> results = mongoTemplate.aggregate(aggregation, "jobs", MongoJob.class);
+        return results.getMappedResults();
+    }
+
+    @Override
+    public DomainPage<Job> findByUserWithCriteriaPaginated(User user, List<DomainCriteria> criteriaList, int page, int size, String sortString) {
+        Aggregation aggregation = aggregationService.createAggregationPaginated(user, criteriaList, sortString, page, size);
+        List<MongoJob> jobs = aggregate(aggregationService.createAggregationPaginated(user, criteriaList, sortString, page, size));
+
+        if(jobs.isEmpty()) {
+            return DomainPage.builder(this.jobMapper.toDomain(jobs)).totalElementsCount(0L).build();
+        }
+
+        long total = aggregationService.getAggregationCount(aggregation);
+        return DomainPage.builder(this.jobMapper.toDomain(jobs)).totalElementsCount(total).build();
     }
 
     @Override

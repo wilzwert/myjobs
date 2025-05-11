@@ -19,8 +19,11 @@ import com.wilzwert.myjobs.core.domain.ports.driven.HtmlSanitizer;
 import com.wilzwert.myjobs.core.domain.ports.driven.JobService;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.ports.driving.*;
+import com.wilzwert.myjobs.core.domain.shared.criteria.DomainCriteria;
 
 import java.lang.reflect.Method;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 /**
@@ -99,12 +102,24 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
     }
 
     @Override
-    public DomainPage<Job> getUserJobs(UserId userId, int page, int size, JobStatus status, String sort) {
-        Optional<User> user = userService.findById(userId);
-        if(user.isEmpty()) {
+    public DomainPage<Job> getUserJobs(UserId userId, int page, int size, JobStatus status, boolean filterLate, String sort) {
+        Optional<User> foundUser = userService.findById(userId);
+        if(foundUser.isEmpty()) {
             throw new UserNotFoundException();
         }
-        return jobService.findAllByUserId(user.get().getId(), page, size, status, sort);
+
+        User user = foundUser.get();
+
+        if(filterLate) {
+            // threshold instant : jobs not updated since that instant are considered late
+            Instant nowMinusReminderDays = Instant.now().minus(user.getJobFollowUpReminderDays(), ChronoUnit.DAYS);
+            List<DomainCriteria> criteriaList = List.of(
+                new DomainCriteria.In<>("status", JobStatus.activeStatuses()),
+                new DomainCriteria.Lt<>("status_updated_at", nowMinusReminderDays)
+            );
+            return jobService.findByUserWithCriteriaPaginated(user, criteriaList, page, size, sort);
+        }
+        return jobService.findAllByUserIdPaginated(user.getId(), page, size, status, sort);
     }
 
     @Override

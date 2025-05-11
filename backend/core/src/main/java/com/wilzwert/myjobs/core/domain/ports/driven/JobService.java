@@ -7,8 +7,11 @@ import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.model.pagination.DomainPage;
+import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
+import com.wilzwert.myjobs.core.domain.shared.criteria.DomainCriteria;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -23,7 +26,11 @@ public interface JobService {
 
     Optional<Job> findByIdAndUserId(JobId jobId, UserId userId);
 
-    DomainPage<Job> findAllByUserId(UserId userId, int page, int size, JobStatus status, String sort);
+    List<Job> findLateFollowUp(String sortString);
+
+    DomainPage<Job> findAllByUserIdPaginated(UserId userId, int page, int size, JobStatus status, String sort);
+
+    DomainPage<Job> findByUserWithCriteriaPaginated(User user, List<DomainCriteria> domainCriteriaList, int page, int size, String sort);
 
     Job save(Job job);
 

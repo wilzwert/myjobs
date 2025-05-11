@@ -98,7 +98,7 @@ public class JobController {
     }
 
     @GetMapping()
-    public RestPage<JobResponse> getUserJobs(Authentication authentication, @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer itemsPerPage, @RequestParam(required = false) String status, @RequestParam(required = false) String sort) {
+    public RestPage<JobResponse> getUserJobs(Authentication authentication, @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer itemsPerPage, @RequestParam(required = false) String status, @RequestParam(required = false) boolean filterLate, @RequestParam(required = false) String sort) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         if(page == null) {
             page = 0;
@@ -111,6 +111,6 @@ public class JobController {
         if(status != null) {
             jobStatus = JobStatus.valueOf(status);
         }
-        return jobMapper.toResponse(getUserJobsUseCase.getUserJobs(userDetails.getId(), page, itemsPerPage, jobStatus, sort));
+        return jobMapper.toResponse(getUserJobsUseCase.getUserJobs(userDetails.getId(), page, itemsPerPage, jobStatus, filterLate, sort));
     }
 }

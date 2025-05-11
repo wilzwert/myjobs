@@ -12,5 +12,5 @@ import com.wilzwert.myjobs.core.domain.model.user.UserId;
  * Time:15:25
  */
 public interface GetUserJobsUseCase {
-    DomainPage<Job> getUserJobs(UserId userId, int page, int size, JobStatus status, String sort);
+    DomainPage<Job> getUserJobs(UserId userId, int page, int size, JobStatus status, boolean filterLate, String sort);
 }

@@ -168,7 +168,7 @@ public class JobServiceAdapterTest {
         when(mongoJobRepository.findByUserId(any(UUID.class), argument.capture())).thenReturn(page);
         when(jobMapper.toDomain(page)).thenReturn(DomainPage.builder(jobList).build());
 
-        DomainPage<Job> result = underTest.findAllByUserId(userId, 1, 10, null, null);
+        DomainPage<Job> result = underTest.findAllByUserIdPaginated(userId, 1, 10, null, null);
 
         assertEquals(0, result.getContent().size());
         verify(mongoJobRepository, times(1)).findByUserId(any(UUID.class), argument.capture());
@@ -201,7 +201,7 @@ public class JobServiceAdapterTest {
         when(mongoJobRepository.findByUserIdAndStatus(any(UUID.class), any(JobStatus.class), argument.capture())).thenReturn(page);
         when(jobMapper.toDomain(page)).thenReturn(DomainPage.builder(jobs).build());
 
-        DomainPage<Job> result = underTest.findAllByUserId(userId, 1, 10, JobStatus.CREATED, "rating,asc");
+        DomainPage<Job> result = underTest.findAllByUserIdPaginated(userId, 1, 10, JobStatus.CREATED, "rating,asc");
 
         assertEquals(2, result.getContent().size());
         verify(mongoJobRepository, times(1)).findByUserIdAndStatus(any(UUID.class), any(JobStatus.class), argument.capture());
