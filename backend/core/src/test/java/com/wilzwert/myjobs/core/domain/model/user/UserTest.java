@@ -156,7 +156,7 @@ public class UserTest {
     @Test
     public void whenPasswordWeak_thenCreateUserShouldThrowValidationException() {
         ValidationException exception = assertThrows(ValidationException.class, () ->  {
-            User user = User.create("test@example.com",  "password", "username", "firstName", "lastName", 7,null,"weakPassword");
+            User user = User.create(User.builder().email("test@example.com").password("password").username("username").firstName("firstName").lastName("lastName").jobFollowUpReminderDays(7),"weakPassword");
         });
 
         assertNotNull(exception);
@@ -167,7 +167,7 @@ public class UserTest {
     @Test
     public void shouldCreateNewUser() {
         Instant before = Instant.now();
-        User user = User.create("test@example.com",  "password", "username", "firstName", "lastName", 7, Lang.FR, "Abcd1234!");
+        User user = User.create(User.builder().email("test@example.com").password("password").username("username").firstName("firstName").lastName("lastName").jobFollowUpReminderDays(7).lang(Lang.FR), "Abcd1234!");
         Instant after = Instant.now();
         assertNotNull(user);
         assertNotNull(user.getId());

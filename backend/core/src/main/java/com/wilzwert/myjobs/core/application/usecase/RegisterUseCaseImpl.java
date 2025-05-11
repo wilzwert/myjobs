@@ -45,13 +45,14 @@ public class RegisterUseCaseImpl implements RegisterUseCase, CheckUserAvailabili
         }
 
         User user = userService.save(User.create(
-                registerUserCommand.email(),
-                passwordHasher.hashPassword(registerUserCommand.password()),
-                registerUserCommand.username(),
-                registerUserCommand.firstName(),
-                registerUserCommand.lastName(),
-                registerUserCommand.jobFollowUpReminderDays(),
-                registerUserCommand.lang(),
+                User.builder()
+                    .email(registerUserCommand.email())
+                    .password(passwordHasher.hashPassword(registerUserCommand.password()))
+                    .username(registerUserCommand.username())
+                    .firstName(registerUserCommand.firstName())
+                    .lastName(registerUserCommand.lastName())
+                    .jobFollowUpReminderDays(registerUserCommand.jobFollowUpReminderDays())
+                    .lang(registerUserCommand.lang()),
                 registerUserCommand.password()
         ));
 
