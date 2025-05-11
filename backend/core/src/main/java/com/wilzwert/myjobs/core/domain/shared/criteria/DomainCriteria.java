@@ -15,15 +15,17 @@ import java.util.List;
  */
 public abstract class DomainCriteria {
 
-    private final String field;
-    private DomainCriteria(String field) {
-        this.field = field;
-    }
-    public String getField() {
-        return field;
+    private static abstract class FieldCriteria extends DomainCriteria {
+        private final String field;
+        private FieldCriteria(String field) {
+            this.field = field;
+        }
+        public String getField() {
+            return field;
+        }
     }
 
-    public static final class In<T> extends DomainCriteria {
+    public static final class In<T> extends FieldCriteria {
 
         private final  List<T> values;
 
@@ -37,7 +39,7 @@ public abstract class DomainCriteria {
         }
     }
 
-    public static final class Eq<T> extends DomainCriteria {
+    public static final class Eq<T> extends FieldCriteria {
         private final T value;
         public Eq(String field, T value) {
             super(field);
@@ -49,7 +51,7 @@ public abstract class DomainCriteria {
         }
     }
 
-    public static final class Lt<T> extends DomainCriteria {
+    public static final class Lt<T> extends FieldCriteria {
         private final T value;
         public Lt(String field, T value) {
             super(field);
