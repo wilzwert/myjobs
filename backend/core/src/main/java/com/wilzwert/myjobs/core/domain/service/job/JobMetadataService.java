@@ -6,8 +6,8 @@ import com.wilzwert.myjobs.core.domain.model.job.JobMetadata;
 import com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.JobMetadataExtractorService;
 import com.wilzwert.myjobs.core.domain.ports.driven.metadata.fetcher.HtmlFetcherService;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.net.URI;
+import java.net.URL;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -16,10 +16,6 @@ import java.util.regex.Pattern;
  */
 
 public class JobMetadataService {
-    Pattern DOMAIN_PATTERN = Pattern.compile(
-            "(?<scheme>https?://)(?<subdomain>\\S*?)(?<domainword>[^.\\s]+)(?<tld>\\.[a-z]{2,6}|\\.[a-z]{2}\\.[a-z]{2,6})(?=/|$)",
-            Pattern.CASE_INSENSITIVE
-    );
 
     private final HtmlFetcherService htmlFetcherService;
 
@@ -31,11 +27,15 @@ public class JobMetadataService {
     }
 
     public String getUrlDomain(String url) throws MalformedUrlException {
-        Matcher matcher = DOMAIN_PATTERN.matcher(url);
-        if (matcher.find()) {
-            return matcher.group(3)+matcher.group(4);
+        try {
+            URL urlObject = new URI(url).toURL();
+            if(!urlObject.toString().startsWith("http")) {
+                throw new MalformedUrlException();
+            }
+            return urlObject.getHost();
+        } catch (Exception e) {
+            throw new MalformedUrlException();
         }
-        throw new MalformedUrlException();
     }
 
     public JobMetadata extractMetadata(String url) throws MalformedUrlException {

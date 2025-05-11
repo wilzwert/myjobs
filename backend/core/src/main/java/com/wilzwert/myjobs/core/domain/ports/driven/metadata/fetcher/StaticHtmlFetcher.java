@@ -11,10 +11,11 @@ import java.util.List;
 
 public interface StaticHtmlFetcher extends HtmlFetcher  {
 
-    List<String> NOT_COMPATIBLE_DOMAINS = List.of("indeed.com", "indeed.fr");
+    // not compatible domains as regular expressions
+    List<String> NOT_COMPATIBLE_DOMAINS = List.of(".*indeed.com", ".*indeed.fr");
 
     @Override
     default boolean isCompatible(String domain) {
-        return !NOT_COMPATIBLE_DOMAINS.contains(domain);
+        return NOT_COMPATIBLE_DOMAINS.stream().noneMatch(domain::matches);
     }
 }

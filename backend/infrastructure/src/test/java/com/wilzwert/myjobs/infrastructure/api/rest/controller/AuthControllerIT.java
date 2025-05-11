@@ -53,7 +53,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
 
     @Nested
     class AuthControllerRegisterIT {
-        private final static String REGISTER_URL = "/api/auth/register";
+        private static final String REGISTER_URL = "/api/auth/register";
 
         private RegisterUserRequest registerUserRequest;
 
@@ -168,7 +168,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
                     .andExpect(jsonPath("lastName").value("lastName"))
                     .andExpect(jsonPath("email").value("test@example.com"))
                     .andExpect(jsonPath("lang").value("FR"))
-                    .andExpect(jsonPath("jobFollowUpReminderDays").value(User.defaultJobFollowUpReminderDays))
+                    .andExpect(jsonPath("jobFollowUpReminderDays").value(User.DEFAULT_JOB_FOLLOW_UP_REMINDER_DAYS))
                     .andExpect(jsonPath("emailStatus").value(EmailStatus.PENDING.name()))
                     .andExpect(jsonPath("createdAt").isNotEmpty())
                     .andReturn();
@@ -195,7 +195,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
 
     @Nested
     class AuthControllerLoginIT {
-        private final static String LOGIN_URL = "/api/auth/login";
+        private static final String LOGIN_URL = "/api/auth/login";
 
         @Test
         public void whenLoginFailed_thenShouldReturnUnauthorized() throws Exception {
@@ -274,7 +274,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
 
     @Nested
     class AuthControllerRefreshTokenIT {
-        private final static String REFRESH_TOKEN_URL = "/api/auth/refresh-token";
+        private static final String REFRESH_TOKEN_URL = "/api/auth/refresh-token";
 
         @Autowired
         private RefreshTokenService refreshTokenService;

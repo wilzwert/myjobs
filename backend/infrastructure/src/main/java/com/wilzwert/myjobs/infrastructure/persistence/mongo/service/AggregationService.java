@@ -38,12 +38,12 @@ public class AggregationService {
         return aggregation;
     }
 
-    public long getAggregationCount(Aggregation aggregation) {
+    public long getAggregationCount(Aggregation aggregation, String collectionName) {
         List<AggregationOperation> stages = aggregation.getPipeline().getOperations().stream()
-                .filter(o -> o instanceof MatchOperation)
+                .filter(MatchOperation.class::isInstance)
                 .collect(Collectors.toList());
         stages.add(Aggregation.count().as("total"));
-        AggregationResults<Document> countResults = mongoTemplate.aggregate(Aggregation.newAggregation(stages), "jobs", Document.class);
+        AggregationResults<Document> countResults = mongoTemplate.aggregate(Aggregation.newAggregation(stages), collectionName, Document.class);
         Document resultDoc = countResults.getUniqueMappedResult();
         return resultDoc != null ? ((Number) resultDoc.get("total")).longValue() : 0L;
     }

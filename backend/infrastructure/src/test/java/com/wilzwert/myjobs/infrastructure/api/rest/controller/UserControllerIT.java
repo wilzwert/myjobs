@@ -34,14 +34,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 public class UserControllerIT extends AbstractBaseIntegrationTest  {
-    private final static String USER_URL = "/api/user/me";
+    private static final String USER_URL = "/api/user/me";
 
     // id for the User to use for get /api/user tests
-    private final static String USER_FOR_GET_TEST_ID = "abcd4321-4321-4321-4321-123456789012";
+    private static final String USER_FOR_GET_TEST_ID = "abcd4321-4321-4321-4321-123456789012";
     // id of the User to use for password changes tests
-    private final static String USER_FOR_CHANGE_PASSWORD_TEST_ID = "abcd6543-6543-6543-6543-123456789012";
+    private static final String USER_FOR_CHANGE_PASSWORD_TEST_ID = "abcd6543-6543-6543-6543-123456789012";
     // id of the User to user for deletion tests
-    private final static String USER_FOR_DELETE_TEST_ID = "abcd9876-9876-9876-9876-123456789012";
+    private static final String USER_FOR_DELETE_TEST_ID = "abcd9876-9876-9876-9876-123456789012";
 
     @Autowired
     private MockMvc mockMvc;
@@ -109,7 +109,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
 
     @Nested
     class UserControllerUpdateIT {
-        private final static String UPDATE_URL = USER_URL;
+        private static final String UPDATE_URL = USER_URL;
 
         private UpdateUserRequest updateUserRequest;
 
@@ -226,7 +226,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
 
     @Nested
     class UserControllerUpdateLangIT {
-        private final static String UPDATE_URL = USER_URL+"/lang";
+        private static final String UPDATE_URL = USER_URL+"/lang";
 
         @Test
         public void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {

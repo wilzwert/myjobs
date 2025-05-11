@@ -48,7 +48,7 @@ public class Job extends DomainEntity<JobId> {
 
     private final List<Attachment> attachments;
 
-    private final static Map<ActivityType, JobStatus> activityToStatus = Map.of(
+    private static final Map<ActivityType, JobStatus> activityToStatus = Map.of(
         ActivityType.APPLICATION, JobStatus.PENDING,
         ActivityType.APPLICANT_REFUSAL, JobStatus.APPLICANT_REFUSED,
         ActivityType.COMPANY_REFUSAL, JobStatus.COMPANY_REFUSED,
@@ -226,10 +226,10 @@ public class Job extends DomainEntity<JobId> {
     }
 
     private Job copy(List<Attachment> attachments, List<Activity> activities, JobStatus status, Instant updatedAt) {
-        Instant statusUpdatedAt = getStatusUpdatedAt();
+        Instant newStatusUpdatedAt = getStatusUpdatedAt();
         if( status != null && !status.equals(getStatus())) {
             // set statusUpdatedAt
-            statusUpdatedAt = Instant.now();
+            newStatusUpdatedAt = Instant.now();
         }
 
         return new Job(
@@ -244,7 +244,7 @@ public class Job extends DomainEntity<JobId> {
             getRating(),
             getCreatedAt(),
             (updatedAt != null ? updatedAt : getUpdatedAt()),
-            statusUpdatedAt,
+            newStatusUpdatedAt,
             getUserId(),
             (activities != null ? activities : getActivities()),
             (attachments != null ? attachments : getAttachments())

@@ -59,17 +59,17 @@ public class JobMetadataServiceTest {
 
     @Test
     public void testGetUrlDomainWithOneSubdomain() {
-        assertEquals("example.com", jobMetadataService.getUrlDomain("https://www.example.com/uri"));
+        assertEquals("www.example.com", jobMetadataService.getUrlDomain("https://www.example.com/uri"));
     }
 
     @Test
     public void testGetUrlDomainWithMultipleSubdomain() {
-        assertEquals("example.com", jobMetadataService.getUrlDomain("https://w3.www.fr.example.com/uri"));
+        assertEquals("w3.www.fr.example.com", jobMetadataService.getUrlDomain("https://w3.www.fr.example.com/uri"));
     }
 
     @Test
     public void testGetUrlDomainWithSubdomain() {
-        assertEquals("fhf.fr", jobMetadataService.getUrlDomain("https://emploi.fhf.fr/emploi/414440"));
+        assertEquals("emploi.fhf.fr", jobMetadataService.getUrlDomain("https://emploi.fhf.fr/emploi/414440"));
     }
 
     @Test

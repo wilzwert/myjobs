@@ -35,7 +35,7 @@ public class ActivityControllerIT extends AbstractBaseIntegrationTest  {
     private static final String TEST_URL = "/api/jobs/"+JOB_FOR_TEST_ID+"/activities";
 
     // id for the User to use for get tests
-    private final static String USER_FOR_JOBS_TEST_ID = "abcd1234-1234-1234-1234-123456789012";
+    private static final String USER_FOR_JOBS_TEST_ID = "abcd1234-1234-1234-1234-123456789012";
 
     @Autowired
     private MockMvc mockMvc;

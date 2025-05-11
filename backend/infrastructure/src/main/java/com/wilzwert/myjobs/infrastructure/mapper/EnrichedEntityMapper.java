@@ -14,7 +14,7 @@ import java.util.List;
 public interface EnrichedEntityMapper<D, E, R, C, UR, U, S, X> extends EntityMapper<D, E, R, C, UR, U, S> {
 
     default S toEnrichedResponse(X extended) {
-        throw new RuntimeException("enriched entity mapping must be implemented in actual mapper before use");
+        throw new MapperMissingImplementation("enriched entity mapping must be implemented in actual mapper before use");
     }
 
     default  List<S> toEnrichedResponse(List<X> extended) {

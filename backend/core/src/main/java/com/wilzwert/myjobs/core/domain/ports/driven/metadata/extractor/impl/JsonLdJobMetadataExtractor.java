@@ -68,6 +68,6 @@ public class JsonLdJobMetadataExtractor implements JobMetadataExtractor {
 
     @Override
     public boolean isCompatible(String domain) {
-        return !NOT_COMPATIBLE_DOMAINS.contains(domain);
+        return NOT_COMPATIBLE_DOMAINS.stream().noneMatch(domain::matches);
     }
 }

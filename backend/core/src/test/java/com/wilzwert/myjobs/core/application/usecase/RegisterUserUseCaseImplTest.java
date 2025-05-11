@@ -64,7 +64,7 @@ public class RegisterUserUseCaseImplTest {
         assertEquals("firstName", registeredUser.getFirstName());
         assertEquals("lastName", registeredUser.getLastName());
         assertEquals("lastName", registeredUser.getLastName());
-        assertEquals(User.defaultJobFollowUpReminderDays, registeredUser.getJobFollowUpReminderDays());
+        assertEquals(User.DEFAULT_JOB_FOLLOW_UP_REMINDER_DAYS, registeredUser.getJobFollowUpReminderDays());
         assertEquals(Lang.FR, registeredUser.getLang());
         assertEquals("hashedPassword", registeredUser.getPassword());
 

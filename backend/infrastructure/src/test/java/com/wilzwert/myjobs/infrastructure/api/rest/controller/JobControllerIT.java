@@ -35,13 +35,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 public class JobControllerIT extends AbstractBaseIntegrationTest  {
-    private final static String JOBS_URL = "/api/jobs";
+    private static final String JOBS_URL = "/api/jobs";
 
     private static final String JOB_FOR_TEST_ID =  "77777777-7777-7777-7777-123456789012";
     private static final String JOB_FOR_TEST_URL = JOBS_URL+"/"+JOB_FOR_TEST_ID;
 
     // id for the User to use for get /api/jobs tests
-    private final static String USER_FOR_JOBS_TEST_ID = "abcd1234-1234-1234-1234-123456789012";
+    private static final String USER_FOR_JOBS_TEST_ID = "abcd1234-1234-1234-1234-123456789012";
 
     @Autowired
     private MockMvc mockMvc;
@@ -444,7 +444,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
     @Nested
     class JobControllerUpdateStatusIt {
 
-        private final static String JOB_STATUS_UPDATE_URL = JOB_FOR_TEST_URL+"/status";
+        private static final String JOB_STATUS_UPDATE_URL = JOB_FOR_TEST_URL+"/status";
 
         @Test
         public void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
@@ -530,7 +530,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
     @Nested
     class JobControllerUpdateRatingIT {
 
-        private final static String JOB_RATING_UPDATE_URL = JOB_FOR_TEST_URL+"/rating";
+        private static final String JOB_RATING_UPDATE_URL = JOB_FOR_TEST_URL+"/rating";
 
         @Test
         public void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {

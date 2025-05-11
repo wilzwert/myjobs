@@ -5,9 +5,7 @@ import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.ConsumptionProbe;
-import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -48,7 +46,7 @@ public class RateLimitingServiceTest {
     @InjectMocks
     private RateLimitingService underTest;
 
-    private final static List<RateLimitingProperties.RateLimitConfig> rules = List.of(
+    private static final List<RateLimitingProperties.RateLimitConfig> rules = List.of(
         new RateLimitingProperties.RateLimitConfig("/api", null, 10, Duration.ofSeconds(60)),
         new RateLimitingProperties.RateLimitConfig("/api", "authenticated", 50, Duration.ofSeconds(30)),
         new RateLimitingProperties.RateLimitConfig("/api/jobs", "authenticated", 30, Duration.ofSeconds(30)),

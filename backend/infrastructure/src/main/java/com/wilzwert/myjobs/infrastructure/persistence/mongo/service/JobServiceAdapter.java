@@ -143,7 +143,7 @@ public class JobServiceAdapter implements JobService {
             return DomainPage.builder(this.jobMapper.toDomain(jobs)).totalElementsCount(0L).build();
         }
 
-        long total = aggregationService.getAggregationCount(aggregation);
+        long total = aggregationService.getAggregationCount(aggregation, "jobs");
         return DomainPage.builder(this.jobMapper.toDomain(jobs)).totalElementsCount(total).build();
     }
 

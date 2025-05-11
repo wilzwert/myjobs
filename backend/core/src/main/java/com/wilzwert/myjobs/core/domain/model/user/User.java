@@ -22,9 +22,9 @@ import java.util.UUID;
  */
 public class User extends DomainEntity<UserId> {
 
-    public static final Integer defaultJobFollowUpReminderDays = 14;
-    public static final Lang defaultLang = Lang.EN;
-    public static final String defaultRole = "USER";
+    public static final Integer DEFAULT_JOB_FOLLOW_UP_REMINDER_DAYS = 14;
+    public static final Lang DEFAULT_LANG = Lang.EN;
+    public static final String DEFAULT_ROLE = "USER";
 
     private final UserId id;
     private final String email;
@@ -188,9 +188,9 @@ public class User extends DomainEntity<UserId> {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.jobFollowUpReminderDays = jobFollowUpReminderDays != null ? jobFollowUpReminderDays : defaultJobFollowUpReminderDays;
-        this.lang = lang != null ? lang : defaultLang;
-        this.role = role != null ? role : defaultRole;
+        this.jobFollowUpReminderDays = jobFollowUpReminderDays != null ? jobFollowUpReminderDays : DEFAULT_JOB_FOLLOW_UP_REMINDER_DAYS;
+        this.lang = lang != null ? lang : DEFAULT_LANG;
+        this.role = role != null ? role : DEFAULT_ROLE;
         this.resetPasswordToken = resetPasswordToken;
         this.resetPasswordExpiresAt = resetPasswordExpiresAt;
         this.createdAt = createdAt != null ? createdAt : Instant.now();
@@ -200,7 +200,6 @@ public class User extends DomainEntity<UserId> {
         // validate the User state
         ValidationErrors validationErrors = validate();
         if(validationErrors.hasErrors()) {
-            System.out.println(validationErrors);
             throw new ValidationException(validationErrors);
         }
     }

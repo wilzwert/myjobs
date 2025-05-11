@@ -11,10 +11,11 @@ import java.util.List;
 
 public interface JsHtmlFetcher extends HtmlFetcher {
 
-    List<String> COMPATIBLE_DOMAINS = List.of("compatible-site.com");
+    // compatible domains as regular expressions
+    List<String> COMPATIBLE_DOMAINS = List.of(".*compatible-site.com");
 
     @Override
     default boolean isCompatible(String domain) {
-        return COMPATIBLE_DOMAINS.contains(domain);
+        return COMPATIBLE_DOMAINS.stream().anyMatch(domain::matches);
     }
 }

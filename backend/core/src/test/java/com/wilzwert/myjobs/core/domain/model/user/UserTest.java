@@ -52,8 +52,9 @@ public class UserTest {
 
     @Test
     public void whenFieldErrors_thenUserBuildShouldThrowValidationException() {
+        User.Builder builder = User.builder().username("T").email("invalid").jobFollowUpReminderDays(45);
         ValidationException exception = assertThrows(ValidationException.class, () -> {
-            User user = User.builder().username("T").email("invalid").jobFollowUpReminderDays(45).build();
+            User user = builder.build();
         });
         assertNotNull(exception);
         assertEquals(6, exception.getErrors().getErrors().entrySet().size());
@@ -86,11 +87,11 @@ public class UserTest {
         assertEquals("username", user.getUsername());
         assertEquals("firstName", user.getFirstName());
         assertEquals("lastName", user.getLastName());
-        assertEquals(User.defaultLang, user.getLang());
+        assertEquals(User.DEFAULT_LANG, user.getLang());
         assertNotNull(user.getEmailValidationCode());
         assertEquals(EmailStatus.PENDING, user.getEmailStatus());
-        assertEquals(User.defaultRole, user.getRole());
-        assertEquals(User.defaultJobFollowUpReminderDays, user.getJobFollowUpReminderDays());
+        assertEquals(User.DEFAULT_ROLE, user.getRole());
+        assertEquals(User.DEFAULT_JOB_FOLLOW_UP_REMINDER_DAYS, user.getJobFollowUpReminderDays());
         assertNull(user.getResetPasswordToken());
         assertNull(user.getResetPasswordExpiresAt());
         Instant createdAt = user.getCreatedAt();
@@ -214,7 +215,7 @@ public class UserTest {
         assertEquals("John", updatedUser.getFirstName());
         assertEquals("Doe", updatedUser.getLastName());
         assertEquals(8, updatedUser.getJobFollowUpReminderDays());
-        assertEquals(User.defaultLang, updatedUser.getLang());
+        assertEquals(User.DEFAULT_LANG, updatedUser.getLang());
         assertEquals("email@example.com", updatedUser.getEmail());
 
         Instant updatedAt = updatedUser.getUpdatedAt();
@@ -235,7 +236,7 @@ public class UserTest {
                 .emailValidationCode("code")
                 .build();
 
-        assertEquals(User.defaultLang, user.getLang());
+        assertEquals(User.DEFAULT_LANG, user.getLang());
 
         User updatedUser = user.updateLang(Lang.FR);
         assertEquals(Lang.FR, updatedUser.getLang());
