@@ -24,9 +24,7 @@ public class UserTest {
 
     @Test
     public void whenInvalid_thenUserBuildShouldThrowValidationException() {
-        ValidationException exception = assertThrows(ValidationException.class, () -> {
-            User user = User.builder().build();
-        });
+        ValidationException exception = assertThrows(ValidationException.class, () -> User.builder().build());
         assertNotNull(exception);
         assertEquals(5, exception.getErrors().getErrors().entrySet().size());
         assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY, exception.getErrors().getErrors().get("email").getFirst().code());
@@ -39,7 +37,7 @@ public class UserTest {
     @Test
     public void whenEmailAndUsernameInvalid_thenUserBuildShouldThrowValidationException() {
         ValidationException exception = assertThrows(ValidationException.class, () -> {
-            User user = User.builder().username("T").email("invalid").build();
+            User.builder().username("T").email("invalid").build();
         });
         assertNotNull(exception);
         assertEquals(5, exception.getErrors().getErrors().entrySet().size());
@@ -53,9 +51,7 @@ public class UserTest {
     @Test
     public void whenFieldErrors_thenUserBuildShouldThrowValidationException() {
         User.Builder builder = User.builder().username("T").email("invalid").jobFollowUpReminderDays(45);
-        ValidationException exception = assertThrows(ValidationException.class, () -> {
-            User user = builder.build();
-        });
+        ValidationException exception = assertThrows(ValidationException.class, builder::build);
         assertNotNull(exception);
         assertEquals(6, exception.getErrors().getErrors().entrySet().size());
         assertEquals(ErrorCode.INVALID_EMAIL, exception.getErrors().getErrors().get("email").getFirst().code());
@@ -156,7 +152,8 @@ public class UserTest {
     @Test
     public void whenPasswordWeak_thenCreateUserShouldThrowValidationException() {
         ValidationException exception = assertThrows(ValidationException.class, () ->  {
-            User user = User.create(User.builder().email("test@example.com").password("password").username("username").firstName("firstName").lastName("lastName").jobFollowUpReminderDays(7),"weakPassword");
+            User.Builder builder = User.builder().email("test@example.com").password("password").username("username").firstName("firstName").lastName("lastName").jobFollowUpReminderDays(7);
+            User.create(builder,"weakPassword");
         });
 
         assertNotNull(exception);

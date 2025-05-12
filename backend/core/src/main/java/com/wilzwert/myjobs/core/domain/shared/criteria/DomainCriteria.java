@@ -14,8 +14,9 @@ import java.util.List;
  *
  */
 public abstract class DomainCriteria {
+    protected DomainCriteria() {}
 
-    private static abstract class FieldCriteria extends DomainCriteria {
+    private abstract static class FieldCriteria extends DomainCriteria {
         private final String field;
         private FieldCriteria(String field) {
             this.field = field;

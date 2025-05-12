@@ -11,7 +11,7 @@ import java.util.List;
  * Time:22:46
  X for the extended domain class
  */
-public interface EnrichedEntityMapper<D, E, R, C, UR, U, S, X> extends EntityMapper<D, E, R, C, UR, U, S> {
+public interface EnrichedEntityMapper<D, E, R, C, A, U, S, X> extends EntityMapper<D, E, R, C, A, U, S> {
 
     default S toEnrichedResponse(X extended) {
         throw new MapperMissingImplementation("enriched entity mapping must be implemented in actual mapper before use");

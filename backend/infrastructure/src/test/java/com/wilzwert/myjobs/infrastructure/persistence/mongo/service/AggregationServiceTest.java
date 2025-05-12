@@ -121,13 +121,17 @@ class AggregationServiceTest {
 
     @Test
     void whenDomainCriteriaNotSupported_thenShouldThrowException() {
+        class UnsupportedCriteria extends DomainCriteria {
+            UnsupportedCriteria() {
+                super();
+            }
+        }
+
+        var unsupported = new UnsupportedCriteria();
+
         assertThrows(
             UnsupportedDomainCriteriaException.class,
-            () -> service.domainCriteriaToMatchOperation(new DomainCriteria() {
-                @Override
-                public int hashCode() {
-                    return super.hashCode();
-                }
-            }));
+            () -> service.domainCriteriaToMatchOperation(unsupported)
+        );
     }
 }

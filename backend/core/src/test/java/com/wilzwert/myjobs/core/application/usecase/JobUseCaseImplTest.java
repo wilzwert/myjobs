@@ -47,7 +47,6 @@ class JobUseCaseImplTest {
 
     @BeforeEach
     void setUp() {
-        // Création d'un utilisateur de test
         testUser = User.builder()
                 .id(UserId.generate())
                 .email("user@example.com")
@@ -55,7 +54,7 @@ class JobUseCaseImplTest {
                 .lastName("Doe")
                 .password("password")
                 .username("johndoe")
-                .jobFollowUpReminderDays(30).build(); // suppose que le constructeur User accepte ces paramètres
+                .jobFollowUpReminderDays(30).build();
         testJob = Job.builder()
                 .id(JobId.generate())
                 .userId(testUser.getId())
@@ -64,7 +63,7 @@ class JobUseCaseImplTest {
                 .profile("job profile")
                 .status(JobStatus.PENDING)
                 .url("http://www.example.com")
-                .statusUpdatedAt(Instant.now().minusSeconds(3600)).build(); // modk job
+                .statusUpdatedAt(Instant.now().minusSeconds(3600)).build();
         testFollowUpLateJob = Job.builder()
                 .id(JobId.generate())
                 .userId(testUser.getId())
@@ -73,7 +72,7 @@ class JobUseCaseImplTest {
                 .profile("job profile")
                 .status(JobStatus.PENDING)
                 .url("http://www.example.com")
-                .statusUpdatedAt(Instant.now().minusSeconds(86400*31)).build(); // modk job
+                .statusUpdatedAt(Instant.now().minusSeconds(86400*31)).build();
 
         // Mock de l'UserService
         when(userService.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
@@ -86,9 +85,9 @@ class JobUseCaseImplTest {
         reset(userService);
         when(userService.findById(any(UserId.class))).thenReturn(Optional.empty());
 
-        assertThrows(UserNotFoundException.class, () -> {
-            underTest.getUserJobs(new UserId(UUID.randomUUID()), 0, 10, JobStatus.PENDING, false, "date,desc");
-        });
+        UserId userId = new UserId(UUID.randomUUID());
+
+        assertThrows(UserNotFoundException.class, () -> underTest.getUserJobs(userId, 0, 10, JobStatus.PENDING, false, "date,desc"));
     }
 
     @Test
@@ -96,18 +95,15 @@ class JobUseCaseImplTest {
         DomainPage<Job> mockJobPage = DomainPage.builder(List.of(testFollowUpLateJob)).pageSize(1).currentPage(0).totalElementsCount(1).build();
         
         when(jobService.findByUserWithCriteriaPaginated(eq(testUser), anyList(), eq(0), eq(10), eq("date,desc"))).thenReturn(mockJobPage);
-        
-        // Appel à la méthode testée
+
         DomainPage<EnrichedJob> result = underTest.getUserJobs(testUser.getId(), 0, 10, JobStatus.PENDING, true, "date,desc");
 
-        // Vérifier que les critères corrects ont été passés au jobService
-        verify(jobService).findByUserWithCriteriaPaginated(eq(testUser), argThat(criteria -> {
-            return criteria.size() == 2 &&
-                   criteria.get(0) instanceof DomainCriteria.In && 
-                   criteria.get(1) instanceof DomainCriteria.Lt;
-        }), eq(0), eq(10), eq("date,desc"));
+        // check criteria passed to the jobService
+        verify(jobService).findByUserWithCriteriaPaginated(eq(testUser), argThat(criteria -> criteria.size() == 2 &&
+               criteria.getFirst() instanceof DomainCriteria.In &&
+               criteria.get(1) instanceof DomainCriteria.Lt), eq(0), eq(10), eq("date,desc"));
 
-        // Vérifier que la page de résultats est enrichie
+        // check results page is enriched
         assertNotNull(result);
         assertEquals(1, result.getTotalElementsCount());
         assertTrue(result.getContent().getFirst().isFollowUpLate());
@@ -115,18 +111,16 @@ class JobUseCaseImplTest {
 
     @Test
     void whenFilterLateFalse_thenShouldGetUserJobs() {
-        // Simuler un job retourné par le service sans le filtre 'late'
         DomainPage<Job> mockJobPage = DomainPage.builder(List.of(testJob)).pageSize(1).currentPage(0).totalElementsCount(1).build();
         
-        when(jobService.findAllByUserIdPaginated(eq(testUser.getId()), eq(0), eq(10), eq(JobStatus.PENDING), eq("date"))).thenReturn(mockJobPage);
+        when(jobService.findAllByUserIdPaginated(testUser.getId(), 0, 10, JobStatus.PENDING, "date")).thenReturn(mockJobPage);
 
-        // Appel à la méthode testée
         DomainPage<EnrichedJob> result = underTest.getUserJobs(testUser.getId(), 0, 10, JobStatus.PENDING, false, "date");
 
         // Vérifier que le service est appelé sans critères de filtrage
-        verify(jobService).findAllByUserIdPaginated(eq(testUser.getId()), eq(0), eq(10), eq(JobStatus.PENDING), eq("date"));
+        verify(jobService).findAllByUserIdPaginated(testUser.getId(), 0, 10, JobStatus.PENDING, "date");
 
-        // Vérifier que la page de résultats est enrichie
+        // check results page is enriched
         assertNotNull(result);
         assertEquals(1, result.getTotalElementsCount());
     }
@@ -135,12 +129,12 @@ class JobUseCaseImplTest {
     void testEnrichJobs() {
         DomainPage<Job> mockJobPage = DomainPage.builder(List.of(testJob)).pageSize(1).currentPage(0).totalElementsCount(1).build();
 
-        when(jobService.findAllByUserIdPaginated(eq(testUser.getId()), eq(0), eq(10), eq(JobStatus.PENDING), eq("date"))).thenReturn(mockJobPage);
+        when(jobService.findAllByUserIdPaginated(testUser.getId(), 0, 10, JobStatus.PENDING, "date")).thenReturn(mockJobPage);
 
-        // Appel à la méthode testée
+        // call test method
         DomainPage<EnrichedJob> result = underTest.getUserJobs(testUser.getId(), 0, 10, JobStatus.PENDING, false, "date");
 
-        // Vérifier que le résultat est bien enrichi
+        // check result is enriched
         assertNotNull(result);
         assertEquals(1, result.getTotalElementsCount());
         assertInstanceOf(EnrichedJob.class, result.getContent().getFirst());

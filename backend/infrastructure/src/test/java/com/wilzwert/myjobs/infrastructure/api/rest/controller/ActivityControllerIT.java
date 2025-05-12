@@ -10,7 +10,6 @@ import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
 import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
-import com.wilzwert.myjobs.infrastructure.utility.TestDataLoader;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
