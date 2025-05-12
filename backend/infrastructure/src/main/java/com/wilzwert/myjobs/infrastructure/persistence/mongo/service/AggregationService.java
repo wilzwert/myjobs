@@ -60,7 +60,7 @@ public class AggregationService {
      * @param domainCriteria a criteria received from the domain
      * @return a MatchOperation that will be used to build an Aggregation
      */
-    private MatchOperation domainCriteriaToMatchOperation(DomainCriteria domainCriteria) {
+    public MatchOperation domainCriteriaToMatchOperation(DomainCriteria domainCriteria) {
         if(domainCriteria instanceof DomainCriteria.Eq<?> c) {
             return Aggregation.match(Criteria.where(c.getField()).is(c.getValue()));
         }

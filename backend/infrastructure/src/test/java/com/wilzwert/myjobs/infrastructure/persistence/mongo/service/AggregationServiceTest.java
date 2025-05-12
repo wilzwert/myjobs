@@ -3,6 +3,7 @@ package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.shared.criteria.DomainCriteria;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.exception.UnsupportedDomainCriteriaException;
 import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import java.time.Instant;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -115,5 +117,17 @@ class AggregationServiceTest {
         long count = service.getAggregationCount(agg, "jobs");
 
         assertThat(count).isEqualTo(42L);
+    }
+
+    @Test
+    void whenDomainCriteriaNotSupported_thenShouldThrowException() {
+        assertThrows(
+            UnsupportedDomainCriteriaException.class,
+            () -> service.domainCriteriaToMatchOperation(new DomainCriteria() {
+                @Override
+                public int hashCode() {
+                    return super.hashCode();
+                }
+            }));
     }
 }
