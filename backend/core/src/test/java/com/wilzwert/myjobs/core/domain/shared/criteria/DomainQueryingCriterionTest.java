@@ -1,17 +1,18 @@
 package com.wilzwert.myjobs.core.domain.shared.criteria;
 
+import com.wilzwert.myjobs.core.domain.shared.querying.criteria.DomainQueryingCriterion;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DomainCriteriaTest {
+class DomainQueryingCriterionTest {
 
     @Test
     void testInCriteria() {
         List<String> values = List.of("status1", "status2", "status3");
-        DomainCriteria.In<String> inCriteria = new DomainCriteria.In<>("status", values);
+        DomainQueryingCriterion.In<String> inCriteria = new DomainQueryingCriterion.In<>("status", values);
 
         // check the field is initialized
         assertEquals("status", inCriteria.getField());
@@ -27,7 +28,7 @@ class DomainCriteriaTest {
     @Test
     void testEqCriteria() {
         String value = "active";
-        DomainCriteria.Eq<String> eqCriteria = new DomainCriteria.Eq<>("status", value);
+        DomainQueryingCriterion.Eq<String> eqCriteria = new DomainQueryingCriterion.Eq<>("status", value);
 
         // check field
         assertEquals("status", eqCriteria.getField());
@@ -39,7 +40,7 @@ class DomainCriteriaTest {
     @Test
     void testLtCriteria() {
         Integer value = 30;
-        DomainCriteria.Lt<Integer> ltCriteria = new DomainCriteria.Lt<>("age", value);
+        DomainQueryingCriterion.Lt<Integer> ltCriteria = new DomainQueryingCriterion.Lt<>("age", value);
 
         // check field
         assertEquals("age", ltCriteria.getField());

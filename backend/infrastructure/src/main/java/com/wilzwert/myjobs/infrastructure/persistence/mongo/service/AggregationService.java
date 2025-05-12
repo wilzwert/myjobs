@@ -1,8 +1,8 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 
+import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.user.User;
-import com.wilzwert.myjobs.core.domain.shared.criteria.DomainCriteria;
-import com.wilzwert.myjobs.infrastructure.persistence.mongo.exception.UnsupportedDomainCriteriaException;
+import com.wilzwert.myjobs.core.domain.shared.querying.DomainQueryingOperation;
 import org.bson.Document;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -13,30 +13,65 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 @Service
 public class AggregationService {
     private final MongoTemplate mongoTemplate;
 
-    public AggregationService(MongoTemplate mongoTemplate) {
+    private final DomainQueryingConverter converter;
+
+    public AggregationService(MongoTemplate mongoTemplate, DomainQueryingConverter converter) {
         this.mongoTemplate = mongoTemplate;
+        this.converter = converter;
     }
 
-    private Aggregation createAggregation(User user, List<DomainCriteria> criteriaList, String sortString) {
-        Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("user_id").is(user.getId().value())));
+    private Aggregation createAndConfigureAggregationWithOperations(List<AggregationOperation> operationList, String sortString) {
+        Aggregation aggregation =  Aggregation.newAggregation(operationList);
+        aggregation.getPipeline().add(getSortOperation(sortString));
+        return aggregation;
+    }
 
-        List<MatchOperation> operations = criteriaList.stream().map(this::domainCriteriaToMatchOperation).toList();
-        for(MatchOperation operation : operations) {
+    private Aggregation configureAggregation(Aggregation aggregation, List<AggregationOperation> operationList, String sortString) {
+        for(AggregationOperation operation : operationList) {
             aggregation.getPipeline().add(operation);
         }
         aggregation.getPipeline().add(getSortOperation(sortString));
         return aggregation;
     }
 
-    public Aggregation createAggregationPaginated(User user, List<DomainCriteria> criteriaList, String sortString, int page, int size) {
-        Aggregation aggregation = createAggregation(user, criteriaList, sortString);
+    private Aggregation createAggregationWithOperations(List<AggregationOperation> operationList, String sortString) {
+        return createAndConfigureAggregationWithOperations(operationList, sortString);
+    }
+
+    private List<AggregationOperation> domainToOperations(List<DomainQueryingOperation> operations) {
+        return converter.convert(operations);
+    }
+
+
+    public Aggregation createAggregation(List<DomainQueryingOperation> operations, String sortString) {
+        return createAggregationWithOperations(domainToOperations(operations), sortString);
+    }
+
+    public Aggregation createAggregation(Job job, List<DomainQueryingOperation> operations, String sortString) {
+        Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("job_id").is(job.getId().value())));
+        return configureAggregation(aggregation, domainToOperations(operations), sortString);
+    }
+
+    public Aggregation createAggregation(User user, List<DomainQueryingOperation> operations, String sortString) {
+        Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("user_id").is(user.getId().value())));
+        return configureAggregation(aggregation, domainToOperations(operations), sortString);
+    }
+
+    public Aggregation createAggregationPaginated(User user, List<DomainQueryingOperation> operations, String sortString, int page, int size) {
+        Aggregation aggregation = createAggregation(user, operations, sortString);
         aggregation.getPipeline().add(Aggregation.skip((long) page * size));
         aggregation.getPipeline().add(Aggregation.limit(size));
         return aggregation;
+    }
+
+    public <T> List<T> aggregate(Aggregation aggregation, String collectionName, Class<T> outputClass) {
+        AggregationResults<T> results = mongoTemplate.aggregate(aggregation, collectionName, outputClass);
+        return results.getMappedResults();
     }
 
     /**
@@ -53,28 +88,6 @@ public class AggregationService {
         AggregationResults<Document> countResults = mongoTemplate.aggregate(Aggregation.newAggregation(stages), collectionName, Document.class);
         Document resultDoc = countResults.getUniqueMappedResult();
         return resultDoc != null ? ((Number) resultDoc.get("total")).longValue() : 0L;
-    }
-
-    /**
-     *
-     * @param domainCriteria a criteria received from the domain
-     * @return a MatchOperation that will be used to build an Aggregation
-     */
-    public MatchOperation domainCriteriaToMatchOperation(DomainCriteria domainCriteria) {
-        if(domainCriteria instanceof DomainCriteria.Eq<?> c) {
-            return Aggregation.match(Criteria.where(c.getField()).is(c.getValue()));
-        }
-
-        if(domainCriteria instanceof DomainCriteria.In<?> c) {
-            return Aggregation.match(Criteria.where(c.getField()).in(c.getValues()));
-        }
-
-        if(domainCriteria instanceof DomainCriteria.Lt<?> c) {
-            return Aggregation.match(Criteria.where(c.getField()).lt(c.getValue()));
-        }
-
-        throw new UnsupportedDomainCriteriaException(domainCriteria.getClass().getName());
-
     }
 
     /**

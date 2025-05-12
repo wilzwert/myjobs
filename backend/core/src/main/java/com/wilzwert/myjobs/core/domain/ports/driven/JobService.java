@@ -9,7 +9,7 @@ import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.model.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
-import com.wilzwert.myjobs.core.domain.shared.criteria.DomainCriteria;
+import com.wilzwert.myjobs.core.domain.shared.querying.DomainQueryingOperation;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +28,7 @@ public interface JobService {
 
     DomainPage<Job> findAllByUserIdPaginated(UserId userId, int page, int size, JobStatus status, String sort);
 
-    DomainPage<Job> findByUserWithCriteriaPaginated(User user, List<DomainCriteria> domainCriteriaList, int page, int size, String sort);
+    DomainPage<Job> findByUserPaginated(User user, List<DomainQueryingOperation> queryingOperations, int page, int size, String sort);
 
     Job save(Job job);
 

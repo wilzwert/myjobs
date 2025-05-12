@@ -5,6 +5,8 @@ import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.shared.querying.DomainQueryingOperation;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoUser;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.UserMapper;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoJobRepository;
@@ -13,9 +15,11 @@ import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoUser
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -27,16 +31,24 @@ import java.util.Optional;
 public class UserServiceAdapter implements UserService {
     private final MongoUserRepository mongoUserRepository;
     private final MongoJobRepository mongoJobRepository;
+    private final AggregationService aggregationService;
     private final UserMapper userMapper;
     private final JobMapper jobMapper;
     private final MongoRefreshTokenRepository mongoRefreshTokenRepository;
 
-    public UserServiceAdapter(final MongoUserRepository mongoUserRepository, final MongoJobRepository mongoJobRepository, final UserMapper userMapper, JobMapper jobMapper, MongoRefreshTokenRepository mongoRefreshTokenRepository) {
+    public UserServiceAdapter(final MongoUserRepository mongoUserRepository, final MongoJobRepository mongoJobRepository, final AggregationService aggregationService, final UserMapper userMapper, JobMapper jobMapper, MongoRefreshTokenRepository mongoRefreshTokenRepository) {
         this.mongoUserRepository = mongoUserRepository;
         this.mongoJobRepository = mongoJobRepository;
+        this.aggregationService = aggregationService;
         this.userMapper = userMapper;
         this.jobMapper = jobMapper;
         this.mongoRefreshTokenRepository = mongoRefreshTokenRepository;
+    }
+
+    @Override
+    public List<User> find(List<DomainQueryingOperation> domainQueryingOperations) {
+        Aggregation aggregation = aggregationService.createAggregation(domainQueryingOperations, "user_id");
+        return this.userMapper.toDomain(aggregationService.aggregate(aggregation, "users", MongoUser.class));
     }
 
     @Override

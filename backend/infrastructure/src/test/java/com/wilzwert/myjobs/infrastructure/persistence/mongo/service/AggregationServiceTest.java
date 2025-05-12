@@ -2,8 +2,8 @@ package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
-import com.wilzwert.myjobs.core.domain.shared.criteria.DomainCriteria;
-import com.wilzwert.myjobs.infrastructure.persistence.mongo.exception.UnsupportedDomainCriteriaException;
+import com.wilzwert.myjobs.core.domain.shared.querying.DomainQueryingOperation;
+import com.wilzwert.myjobs.core.domain.shared.querying.criteria.DomainQueryingCriterion;
 import org.bson.Document;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,6 @@ import java.time.Instant;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,6 +25,8 @@ class AggregationServiceTest {
 
     @Mock
     private MongoTemplate mongoTemplate;
+
+    private DomainQueryingConverter domainQueryingConverter;
 
     private AggregationService service;
     private final User testUser = User.builder()
@@ -39,15 +40,16 @@ class AggregationServiceTest {
 
     @BeforeEach
     void setup() {
+        domainQueryingConverter = new DomainQueryingConverter();
         mongoTemplate = mock(MongoTemplate.class);
-        service = new AggregationService(mongoTemplate);
+        service = new AggregationService(mongoTemplate, domainQueryingConverter);
     }
 
     @Test
     void shouldBuildPipelineWithMatchSortSkipLimit() {
-        List<DomainCriteria> criteria = List.of(
-                new DomainCriteria.In<>("status", List.of("ACTIVE", "INTERVIEW")),
-                new DomainCriteria.Lt<>("status_updated_at", Instant.parse("2023-01-01T00:00:00Z"))
+        List<DomainQueryingOperation> criteria = List.of(
+                new DomainQueryingCriterion.In<>("status", List.of("ACTIVE", "INTERVIEW")),
+                new DomainQueryingCriterion.Lt<>("status_updated_at", Instant.parse("2023-01-01T00:00:00Z"))
         );
         Aggregation aggregation = service.createAggregationPaginated(testUser, criteria, "status,asc", 1, 20);
 
@@ -117,21 +119,5 @@ class AggregationServiceTest {
         long count = service.getAggregationCount(agg, "jobs");
 
         assertThat(count).isEqualTo(42L);
-    }
-
-    @Test
-    void whenDomainCriteriaNotSupported_thenShouldThrowException() {
-        class UnsupportedCriteria extends DomainCriteria {
-            UnsupportedCriteria() {
-                super();
-            }
-        }
-
-        var unsupported = new UnsupportedCriteria();
-
-        assertThrows(
-            UnsupportedDomainCriteriaException.class,
-            () -> service.domainCriteriaToMatchOperation(unsupported)
-        );
     }
 }

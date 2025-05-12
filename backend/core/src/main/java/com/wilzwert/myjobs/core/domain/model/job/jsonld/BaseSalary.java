@@ -12,7 +12,7 @@ public record BaseSalary(String currency, BaseSalaryValue value) {
 public class BaseSalary {
     private String currency;
     private BaseSalaryValue value;
-private String numberValue;
+    private String numberValue;
 
     public BaseSalary() {
         this.currency = null;

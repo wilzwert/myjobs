@@ -8,11 +8,8 @@ import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.model.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
-import com.wilzwert.myjobs.core.domain.ports.driven.FileStorage;
-import com.wilzwert.myjobs.core.domain.ports.driven.HtmlSanitizer;
-import com.wilzwert.myjobs.core.domain.ports.driven.JobService;
-import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
-import com.wilzwert.myjobs.core.domain.shared.criteria.DomainCriteria;
+import com.wilzwert.myjobs.core.domain.ports.driven.*;
+import com.wilzwert.myjobs.core.domain.shared.querying.criteria.DomainQueryingCriterion;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -94,14 +91,14 @@ class JobUseCaseImplTest {
     void whenFilterLateTrue_thenShouldGetLateUserJobs() {
         DomainPage<Job> mockJobPage = DomainPage.builder(List.of(testFollowUpLateJob)).pageSize(1).currentPage(0).totalElementsCount(1).build();
         
-        when(jobService.findByUserWithCriteriaPaginated(eq(testUser), anyList(), eq(0), eq(10), eq("date,desc"))).thenReturn(mockJobPage);
+        when(jobService.findByUserPaginated(eq(testUser), anyList(), eq(0), eq(10), eq("date,desc"))).thenReturn(mockJobPage);
 
         DomainPage<EnrichedJob> result = underTest.getUserJobs(testUser.getId(), 0, 10, JobStatus.PENDING, true, "date,desc");
 
         // check criteria passed to the jobService
-        verify(jobService).findByUserWithCriteriaPaginated(eq(testUser), argThat(criteria -> criteria.size() == 2 &&
-               criteria.getFirst() instanceof DomainCriteria.In &&
-               criteria.get(1) instanceof DomainCriteria.Lt), eq(0), eq(10), eq("date,desc"));
+        verify(jobService).findByUserPaginated(eq(testUser), argThat(criteria -> criteria.size() == 2 &&
+               criteria.getFirst() instanceof DomainQueryingCriterion.In &&
+               criteria.get(1) instanceof DomainQueryingCriterion.Lt), eq(0), eq(10), eq("date,desc"));
 
         // check results page is enriched
         assertNotNull(result);

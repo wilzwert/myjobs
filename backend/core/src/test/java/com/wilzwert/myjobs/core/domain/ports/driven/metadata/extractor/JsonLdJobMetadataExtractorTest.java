@@ -69,6 +69,15 @@ public class JsonLdJobMetadataExtractorTest {
     }
 
     @Test
+    public void whenPartialAddress_thenShouldHavePartialAddress() throws IOException {
+        String html  = TestFileLoader.loadFileAsString("jobposting.jsonld.partialaddress.html");
+        extractor.extractJobMetadata(html).ifPresentOrElse(
+                extractedMetadata -> assertEquals("Responsable contrôle interne et qualité H/F", extractedMetadata.title()),
+                () -> fail("Metadata should not be empty")
+        );
+    }
+
+    @Test
     public void whenMonetaryAmountSalary_thenShouldHaveSalary() throws IOException {
         String html  = TestFileLoader.loadFileAsString("jobposting.jsonld.salary.monetaryamount.html");
 

@@ -10,13 +10,12 @@ import com.wilzwert.myjobs.core.domain.model.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.ports.driven.JobService;
-import com.wilzwert.myjobs.core.domain.shared.criteria.DomainCriteria;
+import com.wilzwert.myjobs.core.domain.shared.querying.DomainQueryingOperation;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoJob;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoJobRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.stereotype.Component;
 
@@ -31,13 +30,12 @@ import java.util.Optional;
 public class JobServiceAdapter implements JobService {
     private final MongoJobRepository mongoJobRepository;
     private final JobMapper jobMapper;
-    private final MongoTemplate mongoTemplate;
     private final AggregationService aggregationService;
 
-    public JobServiceAdapter(MongoJobRepository mongoJobRepository, JobMapper jobMapper, MongoTemplate mongoTemplate, AggregationService aggregationService) {
+
+    public JobServiceAdapter(MongoJobRepository mongoJobRepository, JobMapper jobMapper, AggregationService aggregationService) {
         this.mongoJobRepository = mongoJobRepository;
         this.jobMapper = jobMapper;
-        this.mongoTemplate = mongoTemplate;
         this.aggregationService = aggregationService;
     }
 
@@ -87,13 +85,14 @@ public class JobServiceAdapter implements JobService {
         return this.jobMapper.toDomain(mongoJobRepository.findByUserId(userId.value(), PageRequest.of(page, size, sort)));
     }
 
-    /*
+
     // this could be used to load late follow up Jobs e.g. in the context of a batch to send reminders
     // although in the context of this app it would break the DDD because only the domain should know
     // what a late job is
     // For now and for simplicity the domain use case handling these reminders will handle the loading
     // through regular operations (load a user list, iterate through it and load each user's late jobs to send reminders)
     // this method is commented out at the time to keep a trace of the aggregation that could be used
+    /*
     public List<Job> findLateFollowUp(String sortString) {
         Sort sort = getSort(sortString);
         Instant now = Instant.now();
@@ -128,15 +127,10 @@ public class JobServiceAdapter implements JobService {
         return results.getMappedResults();
     }*/
 
-    private List<MongoJob> aggregate(Aggregation aggregation) {
-        AggregationResults<MongoJob> results = mongoTemplate.aggregate(aggregation, "jobs", MongoJob.class);
-        return results.getMappedResults();
-    }
-
     @Override
-    public DomainPage<Job> findByUserWithCriteriaPaginated(User user, List<DomainCriteria> criteriaList, int page, int size, String sortString) {
-        Aggregation aggregation = aggregationService.createAggregationPaginated(user, criteriaList, sortString, page, size);
-        List<MongoJob> jobs = aggregate(aggregationService.createAggregationPaginated(user, criteriaList, sortString, page, size));
+    public DomainPage<Job> findByUserPaginated(User user, List<DomainQueryingOperation> queryingOperations, int page, int size, String sortString) {
+        Aggregation aggregation = aggregationService.createAggregationPaginated(user, queryingOperations, sortString, page, size);
+        List<MongoJob> jobs = aggregationService.aggregate(aggregation, "jobs", MongoJob.class);
 
         if(jobs.isEmpty()) {
             return DomainPage.builder(this.jobMapper.toDomain(jobs)).totalElementsCount(0L).build();

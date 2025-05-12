@@ -4,7 +4,9 @@ package com.wilzwert.myjobs.core.domain.ports.driven;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
+import com.wilzwert.myjobs.core.domain.shared.querying.DomainQueryingOperation;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -13,6 +15,9 @@ import java.util.Optional;
  * Time:15:29
  */
 public interface UserService {
+
+    List<User> find(List<DomainQueryingOperation> domainQueryingOperations);
+
     boolean isEmailAndUsernameAvailable(String email, String username);
 
     Optional<User> findByEmail(String email);

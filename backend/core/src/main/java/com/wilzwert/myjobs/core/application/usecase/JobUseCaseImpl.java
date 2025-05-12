@@ -15,13 +15,10 @@ import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.model.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
-import com.wilzwert.myjobs.core.domain.ports.driven.FileStorage;
-import com.wilzwert.myjobs.core.domain.ports.driven.HtmlSanitizer;
-import com.wilzwert.myjobs.core.domain.ports.driven.JobService;
-import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.ports.driven.*;
 import com.wilzwert.myjobs.core.domain.ports.driving.*;
 import com.wilzwert.myjobs.core.domain.service.job.JobEnricher;
-import com.wilzwert.myjobs.core.domain.shared.criteria.DomainCriteria;
+import com.wilzwert.myjobs.core.domain.shared.querying.criteria.DomainQueryingCriterion;
 
 import java.lang.reflect.Method;
 import java.time.Instant;
@@ -117,12 +114,16 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         if(filterLate) {
             // threshold instant : jobs not updated since that instant are considered late
             Instant nowMinusReminderDays = Instant.now().minus(user.getJobFollowUpReminderDays(), ChronoUnit.DAYS);
-            List<DomainCriteria> criteriaList = List.of(
-                new DomainCriteria.In<>("status", JobStatus.activeStatuses()),
-                new DomainCriteria.Lt<>("status_updated_at", nowMinusReminderDays)
+            jobs = jobService.findByUserPaginated(
+                    user,
+                    List.of(
+                        new DomainQueryingCriterion.In<>("status", JobStatus.activeStatuses()),
+                        new DomainQueryingCriterion.Lt<>("status_updated_at", nowMinusReminderDays)
+                    ),
+                    page,
+                    size,
+                    sort
             );
-
-            jobs = jobService.findByUserWithCriteriaPaginated(user, criteriaList, page, size, sort);
         }
         else {
             jobs = jobService.findAllByUserIdPaginated(user.getId(), page, size, status, sort);
