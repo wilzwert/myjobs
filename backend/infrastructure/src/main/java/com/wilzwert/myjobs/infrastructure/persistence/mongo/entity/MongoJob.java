@@ -59,6 +59,9 @@ public class MongoJob {
     @Field(name = "status_updated_at")
     private Instant statusUpdatedAt;
 
+    @Field(name = "follow_up_reminder_sent_at")
+    private Instant followUpReminderSentAt;
+
     @Field(name = "user_id")
     private UUID userId;
 

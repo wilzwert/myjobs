@@ -42,6 +42,8 @@ public class Job extends DomainEntity<JobId> {
 
     private final Instant statusUpdatedAt;
 
+    private final Instant followUpReminderSentAt;
+
     private final UserId userId;
 
     private final List<Activity> activities;
@@ -57,6 +59,10 @@ public class Job extends DomainEntity<JobId> {
 
     public static Builder builder() {
         return new Builder();
+    }
+
+    private static Builder from(Job job) {
+        return new Builder(job);
     }
 
     public static class Builder {
@@ -84,6 +90,8 @@ public class Job extends DomainEntity<JobId> {
 
         private Instant statusUpdatedAt;
 
+        private Instant followUpReminderSentAt;
+
         private UserId userId;
 
         private List<Activity> activities;
@@ -91,6 +99,25 @@ public class Job extends DomainEntity<JobId> {
         private List<Attachment> attachments;
 
         public Builder() {
+        }
+
+        public Builder(Job job) {
+            this.id = job.getId();
+            this.url = job.getUrl();
+            this.status = job.getStatus();
+            this.title = job.getTitle();
+            this.company = job.getCompany();
+            this.description = job.getDescription();
+            this.profile = job.getProfile();
+            this.salary = job.getSalary();
+            this.rating = job.getRating();
+            this.createdAt = job.getCreatedAt();
+            this.updatedAt = job.getUpdatedAt();
+            this.statusUpdatedAt = job.getStatusUpdatedAt();
+            this.followUpReminderSentAt = job.getFollowUpReminderSentAt();
+            this.userId = job.getUserId();
+            this.activities = job.getActivities();
+            this.attachments = job.getAttachments();
         }
 
         public Builder id(JobId id) {
@@ -153,6 +180,11 @@ public class Job extends DomainEntity<JobId> {
             return this;
         }
 
+        public Builder followUpReminderSentAt(Instant followUpReminderSentAt) {
+            this.followUpReminderSentAt = followUpReminderSentAt;
+            return this;
+        }
+
         public Builder userId(UserId userId) {
             this.userId = userId;
             return this;
@@ -169,23 +201,7 @@ public class Job extends DomainEntity<JobId> {
         }
 
         public Job build() {
-            return new Job(
-                    id,
-                    url,
-                    status,
-                    title,
-                    company,
-                    description,
-                    profile,
-                    salary,
-                    rating,
-                    createdAt,
-                    updatedAt,
-                    statusUpdatedAt,
-                    userId,
-                    activities,
-                    attachments
-            );
+            return new Job(this);
         }
     }
 
@@ -199,25 +215,26 @@ public class Job extends DomainEntity<JobId> {
                 .getErrors();
     }
 
-    private Job(JobId id, String url, JobStatus status, String title, String company, String description, String profile, String salary, JobRating rating, Instant createdAt, Instant updatedAt, Instant statusUpdatedAt, UserId userId, List<Activity> activities, List<Attachment> attachments) {
-        this.id = id != null ? id : JobId.generate();
-        this.url = url;
-        this.status = status != null ? status : JobStatus.CREATED;
-        this.title = title;
-        this.company = company;
-        this.description = description;
-        this.profile = profile;
-        this.salary = salary;
-        this.rating = rating != null ? rating : JobRating.of(0);
-        this.createdAt = createdAt != null ? createdAt : Instant.now();
-        this.updatedAt = updatedAt != null ? updatedAt : Instant.now();
-        this.statusUpdatedAt = statusUpdatedAt != null ? statusUpdatedAt : Instant.now();
-        this.userId = userId;
+    private Job(Builder builder) {
+        this.id = builder.id != null ? builder.id : JobId.generate();
+        this.url = builder.url;
+        this.status = builder.status != null ? builder.status : JobStatus.CREATED;
+        this.title = builder.title;
+        this.company = builder.company;
+        this.description = builder.description;
+        this.profile = builder.profile;
+        this.salary = builder.salary;
+        this.rating = builder.rating != null ? builder.rating : JobRating.of(0);
+        this.createdAt = builder.createdAt != null ? builder.createdAt : Instant.now();
+        this.updatedAt = builder.updatedAt != null ? builder.updatedAt : Instant.now();
+        this.statusUpdatedAt = builder.statusUpdatedAt != null ? builder.statusUpdatedAt : Instant.now();
+        this.followUpReminderSentAt = builder.followUpReminderSentAt;
+        this.userId = builder.userId;
 
         // ensure immutability
-        this.activities = activities != null ? List.copyOf(activities) : new ArrayList<>();
+        this.activities = builder.activities != null ? List.copyOf(builder.activities) : new ArrayList<>();
         // ensure immutability
-        this.attachments = attachments != null ? List.copyOf(attachments) : new ArrayList<>();
+        this.attachments = builder.attachments != null ? List.copyOf(builder.attachments) : new ArrayList<>();
 
         ValidationErrors validationErrors = validate();
         if(validationErrors.hasErrors()) {
@@ -233,21 +250,12 @@ public class Job extends DomainEntity<JobId> {
         }
 
         return new Job(
-            getId(),
-            getUrl(),
-            (status != null ? status : getStatus()),
-            getTitle(),
-            getCompany(),
-            getDescription(),
-            getProfile(),
-            getSalary(),
-            getRating(),
-            getCreatedAt(),
-            (updatedAt != null ? updatedAt : getUpdatedAt()),
-            newStatusUpdatedAt,
-            getUserId(),
-            (activities != null ? activities : getActivities()),
-            (attachments != null ? attachments : getAttachments())
+            from(this)
+                .status(status != null ? status : getStatus())
+                .updatedAt(updatedAt != null ? updatedAt : getUpdatedAt())
+                .statusUpdatedAt(newStatusUpdatedAt)
+                .activities(activities != null ? activities : getActivities())
+                .attachments(attachments != null ? attachments : getAttachments())
         );
     }
     public Job addActivity(Activity activity) {
@@ -260,21 +268,14 @@ public class Job extends DomainEntity<JobId> {
 
     public Job updateJob(String url, String title, String company, String description, String profile, String salary) {
         return new Job(
-                getId(),
-                url,
-                getStatus(),
-                title,
-                company,
-                description,
-                profile,
-                salary,
-                getRating(),
-                getCreatedAt(),
-                Instant.now(),
-                getStatusUpdatedAt(),
-                getUserId(),
-                getActivities(),
-                getAttachments()
+            from(this)
+                .url(url)
+                .title(title)
+                .company(company)
+                .description(description)
+                .profile(profile)
+                .salary(salary)
+                .updatedAt(Instant.now())
         );
     }
 
@@ -317,24 +318,19 @@ public class Job extends DomainEntity<JobId> {
         if(newJobRating.equals(getRating())) return this;
 
         Job result = new Job(
-                getId(),
-                getUrl(),
-                getStatus(),
-                getTitle(),
-                getCompany(),
-                getDescription(),
-                getProfile(),
-                getSalary(),
-                newJobRating,
-                getCreatedAt(),
-                Instant.now(),
-                getStatusUpdatedAt(),
-                getUserId(),
-                getActivities(),
-                getAttachments()
+            from(this)
+                .rating(newJobRating)
+                .updatedAt(Instant.now())
         );
         Activity newActivity = Activity.builder().type(ActivityType.RATING).comment(""+newJobRating.getValue()).build();
         return result.addActivity(newActivity);
+    }
+
+    public Job saveFollowUpReminderSentAt() {
+        return new Job(
+            from(this)
+                .followUpReminderSentAt(Instant.now())
+        );
     }
 
     public JobId getId() {
@@ -371,9 +367,7 @@ public class Job extends DomainEntity<JobId> {
         return rating;
     }
 
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
+    public Instant getCreatedAt() {return createdAt;}
 
     public Instant getUpdatedAt() {
         return updatedAt;
@@ -382,6 +376,8 @@ public class Job extends DomainEntity<JobId> {
     public Instant getStatusUpdatedAt() {
         return statusUpdatedAt;
     }
+
+    public Instant getFollowUpReminderSentAt() { return followUpReminderSentAt; }
 
     public UserId getUserId() {
         return userId;

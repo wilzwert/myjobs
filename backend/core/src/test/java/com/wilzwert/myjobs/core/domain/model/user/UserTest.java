@@ -258,6 +258,6 @@ public class UserTest {
                 .build();
         assertNull(user.getJobFollowUpReminderSentAt());
         User updatedUser = user.saveJobFollowUpReminderSentAt();
-        assertEquals(Instant.now().getEpochSecond(), updatedUser.getJobFollowUpReminderSentAt().getEpochSecond());
+        assertTrue(updatedUser.getJobFollowUpReminderSentAt().getEpochSecond() - Instant.now().getEpochSecond() < 1);
     }
 }

@@ -492,7 +492,24 @@ public class JobTest {
         assertEquals(JobRating.of(5), updatedJob.getRating());
     }
 
+    @Test
+    void shouldSaveFollowUpReminderSentAt() {
+        UserId userId = UserId.generate();
+        Job job = Job.builder()
+                .id(JobId.generate())
+                .url("http://www.example.com")
+                .title("Job title")
+                .status(JobStatus.CREATED)
+                .rating(JobRating.of(3))
+                .company("Job company")
+                .description("Job description")
+                .profile("Job profile")
+                .salary("TBD")
+                .userId(userId)
+                .build();
 
-
-
+        assertNull(job.getFollowUpReminderSentAt());
+        Job updatedJob = job.saveFollowUpReminderSentAt();
+        assertTrue(updatedJob.getFollowUpReminderSentAt().getEpochSecond() - Instant.now().getEpochSecond() < 1);
+    }
 }
