@@ -134,7 +134,7 @@ public class JobServiceAdapterTest {
         UserId userId = UserId.generate();
         when(mongoJobRepository.findByIdAndUserId(jobId.value(), userId.value())).thenReturn(Optional.empty());
 
-        assert(underTest.findByIdAndUserId(jobId, userId).isEmpty());
+        assertThat(underTest.findByIdAndUserId(jobId, userId)).isEmpty();
     }
 
     @Test

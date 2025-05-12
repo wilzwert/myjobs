@@ -24,7 +24,8 @@ public class UserTest {
 
     @Test
     public void whenInvalid_thenUserBuildShouldThrowValidationException() {
-        ValidationException exception = assertThrows(ValidationException.class, () -> User.builder().build());
+        User.Builder builder = User.builder();
+        ValidationException exception = assertThrows(ValidationException.class, builder::build);
         assertNotNull(exception);
         assertEquals(5, exception.getErrors().getErrors().entrySet().size());
         assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY, exception.getErrors().getErrors().get("email").getFirst().code());
@@ -36,9 +37,8 @@ public class UserTest {
 
     @Test
     public void whenEmailAndUsernameInvalid_thenUserBuildShouldThrowValidationException() {
-        ValidationException exception = assertThrows(ValidationException.class, () -> {
-            User.builder().username("T").email("invalid").build();
-        });
+        User.Builder builder = User.builder().username("T").email("invalid");
+        ValidationException exception = assertThrows(ValidationException.class, builder::build);
         assertNotNull(exception);
         assertEquals(5, exception.getErrors().getErrors().entrySet().size());
         assertEquals(ErrorCode.INVALID_EMAIL, exception.getErrors().getErrors().get("email").getFirst().code());
