@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -91,7 +92,7 @@ public class JobServiceAdapterTest {
         JobId jobId = JobId.generate();
         when(mongoJobRepository.findById(jobId.value())).thenReturn(Optional.empty());
 
-        assert(underTest.findById(jobId).isEmpty());
+        assertThat(underTest.findById(jobId)).isEmpty();
     }
 
     @Test
@@ -99,7 +100,7 @@ public class JobServiceAdapterTest {
         UserId userId = UserId.generate();
         when(mongoJobRepository.findByUrlAndUserId("url", userId.value())).thenReturn(Optional.empty());
 
-        assert(underTest.findByUrlAndUserId("url", userId).isEmpty());
+        assertThat(underTest.findByUrlAndUserId("url", userId)).isEmpty();
     }
 
     @Test
@@ -114,10 +115,11 @@ public class JobServiceAdapterTest {
 
         var foundJob = underTest.findByUrlAndUserId("https://www.example.com", userId);
 
-        assert(foundJob.isPresent());
+        assertThat(foundJob).isPresent();
         verify(mongoJobRepository, times(1)).findByUrlAndUserId("https://www.example.com", userId.value());
         verify(jobMapper, times(1)).toDomain(mongoJob);
 
+        assertThat(foundJob).isPresent();
         Job result = foundJob.get();
         assertEquals(jobId, result.getId());
         assertEquals(userId, result.getUserId());
