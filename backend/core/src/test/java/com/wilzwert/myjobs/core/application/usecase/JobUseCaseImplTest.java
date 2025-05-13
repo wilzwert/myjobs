@@ -1,18 +1,22 @@
 package com.wilzwert.myjobs.core.application.usecase;
 
-import com.wilzwert.myjobs.core.domain.exception.UserNotFoundException;
+import com.wilzwert.myjobs.core.domain.model.user.exception.UserNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.job.EnrichedJob;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
 import com.wilzwert.myjobs.core.domain.model.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
-import com.wilzwert.myjobs.core.domain.ports.driven.*;
-import com.wilzwert.myjobs.core.domain.shared.querying.criteria.DomainQueryingCriterion;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.HtmlSanitizer;
+import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -91,14 +95,17 @@ class JobUseCaseImplTest {
     void whenFilterLateTrue_thenShouldGetLateUserJobs() {
         DomainPage<Job> mockJobPage = DomainPage.builder(List.of(testFollowUpLateJob)).pageSize(1).currentPage(0).totalElementsCount(1).build();
         
-        when(jobService.findByUserPaginated(eq(testUser), anyList(), eq(0), eq(10), eq("date,desc"))).thenReturn(mockJobPage);
+        when(jobService.findByUserIdPaginated(eq(testUser.getId()), ArgumentMatchers.<DomainSpecification.And<Job>>any(), eq(0), eq(10), eq("date,desc"))).thenReturn(mockJobPage);
 
         DomainPage<EnrichedJob> result = underTest.getUserJobs(testUser.getId(), 0, 10, JobStatus.PENDING, true, "date,desc");
 
-        // check criteria passed to the jobService
-        verify(jobService).findByUserPaginated(eq(testUser), argThat(criteria -> criteria.size() == 2 &&
-               criteria.getFirst() instanceof DomainQueryingCriterion.In &&
-               criteria.get(1) instanceof DomainQueryingCriterion.Lt), eq(0), eq(10), eq("date,desc"));
+        // check specification passed to the jobService
+        verify(jobService).findByUserIdPaginated(eq(testUser.getId()),
+            argThat(specification -> {
+                DomainSpecification.And<Job> spec = (DomainSpecification.And<Job>) specification;
+                return  spec.getSpecifications().size() == 2 &&
+                        spec.getSpecifications().getFirst() instanceof DomainSpecification.In;
+            }), eq(0), eq(10), eq("date,desc"));
 
         // check results page is enriched
         assertNotNull(result);

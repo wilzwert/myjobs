@@ -1,6 +1,7 @@
 package com.wilzwert.myjobs.core.domain.ports.driven;
 
 
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.HtmlSanitizer;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

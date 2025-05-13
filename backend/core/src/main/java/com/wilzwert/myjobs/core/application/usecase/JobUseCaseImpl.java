@@ -1,24 +1,37 @@
 package com.wilzwert.myjobs.core.application.usecase;
 
 
-import com.wilzwert.myjobs.core.domain.command.*;
-import com.wilzwert.myjobs.core.domain.exception.*;
 import com.wilzwert.myjobs.core.domain.model.*;
 import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
+import com.wilzwert.myjobs.core.domain.model.activity.command.CreateActivityCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.attachment.AttachmentId;
+import com.wilzwert.myjobs.core.domain.model.attachment.command.CreateAttachmentCommand;
+import com.wilzwert.myjobs.core.domain.model.attachment.command.DeleteAttachmentCommand;
+import com.wilzwert.myjobs.core.domain.model.attachment.command.DownloadAttachmentCommand;
+import com.wilzwert.myjobs.core.domain.model.attachment.exception.AttachmentNotFoundException;
+import com.wilzwert.myjobs.core.domain.model.attachment.ports.driving.DownloadAttachmentUseCase;
 import com.wilzwert.myjobs.core.domain.model.job.EnrichedJob;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
+import com.wilzwert.myjobs.core.domain.model.job.command.*;
+import com.wilzwert.myjobs.core.domain.model.job.exception.JobAlreadyExistsException;
+import com.wilzwert.myjobs.core.domain.model.job.exception.JobNotFoundException;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driving.*;
 import com.wilzwert.myjobs.core.domain.model.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
-import com.wilzwert.myjobs.core.domain.ports.driven.*;
-import com.wilzwert.myjobs.core.domain.ports.driving.*;
-import com.wilzwert.myjobs.core.domain.service.job.JobEnricher;
-import com.wilzwert.myjobs.core.domain.shared.querying.criteria.DomainQueryingCriterion;
+import com.wilzwert.myjobs.core.domain.model.user.exception.UserNotFoundException;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.GetUserJobUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.GetUserJobsUseCase;
+import com.wilzwert.myjobs.core.domain.model.job.service.JobEnricher;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.HtmlSanitizer;
+import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 
 import java.lang.reflect.Method;
 import java.time.Instant;
@@ -52,7 +65,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
     @Override
     public Job createJob(CreateJobCommand command) {
-        Optional<User> user = userService.findByIdWithJobs(command.userId());
+        Optional<User> user = userService.findById(command.userId());
         if(user.isEmpty()) {
             throw new UserNotFoundException();
         }
@@ -72,7 +85,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
     @Override
     public void deleteJob(DeleteJobCommand command) {
-        Optional<User> foundUser = userService.findByIdWithJobs(command.userId());
+        Optional<User> foundUser = userService.findById(command.userId());
         if(foundUser.isEmpty()) {
             throw new UserNotFoundException();
         }
@@ -114,12 +127,12 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         if(filterLate) {
             // threshold instant : jobs not updated since that instant are considered late
             Instant nowMinusReminderDays = Instant.now().minus(user.getJobFollowUpReminderDays(), ChronoUnit.DAYS);
-            jobs = jobService.findByUserPaginated(
-                    user,
-                    List.of(
-                        new DomainQueryingCriterion.In<>("status", JobStatus.activeStatuses()),
-                        new DomainQueryingCriterion.Lt<>("status_updated_at", nowMinusReminderDays)
-                    ),
+            jobs = jobService.findByUserIdPaginated(
+                    user.getId(),
+                    DomainSpecification.And(List.of(
+                        DomainSpecification.In("status", JobStatus.activeStatuses()),
+                        DomainSpecification.Lt("status_updated_at", nowMinusReminderDays)
+                    )),
                     page,
                     size,
                     sort
@@ -285,14 +298,14 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
         // FIXME
         // this is an ugly workaround to force the infra (persistence in particular) to save all data
-        // as I understand DDD, only the aggregate should be explicitly persisted
+        // as I understand DDD, only the root aggregate should be explicitly persisted
         // but I just don't how to do it cleanly for now
         jobService.deleteAttachment(job, attachment, activity);
         try {
             fileStorage.delete(attachment.getFileId());
         }
         catch (Exception e) {
-            // TODO log incoherence
+            // TODO do something
         }
     }
 

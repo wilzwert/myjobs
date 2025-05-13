@@ -1,8 +1,8 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper;
 
 
-import com.wilzwert.myjobs.core.domain.command.CreateActivityCommand;
-import com.wilzwert.myjobs.core.domain.command.UpdateActivityCommand;
+import com.wilzwert.myjobs.core.domain.model.activity.command.CreateActivityCommand;
+import com.wilzwert.myjobs.core.domain.model.activity.command.UpdateActivityCommand;
 import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
@@ -22,6 +22,4 @@ import org.mapstruct.Mapping;
 public interface ActivityMapper extends EntityMapper<Activity, MongoActivity, CreateActivityRequest, CreateActivityCommand, UpdateActivityRequest, UpdateActivityCommand, ActivityResponse> {
     @Mapping(source = "createActivityRequest.type", target = "activityType")
     CreateActivityCommand toCommand(CreateActivityRequest createActivityRequest, UserId userId, JobId jobId);
-
-
 }

@@ -1,8 +1,8 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 
-import com.wilzwert.myjobs.core.domain.model.job.Job;
-import com.wilzwert.myjobs.core.domain.model.user.User;
-import com.wilzwert.myjobs.core.domain.shared.querying.DomainQueryingOperation;
+import com.wilzwert.myjobs.core.domain.model.job.JobId;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
+import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 import org.bson.Document;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,52 +19,45 @@ import java.util.stream.Collectors;
 public class AggregationService {
     private final MongoTemplate mongoTemplate;
 
-    private final DomainQueryingConverter converter;
+    private final DomainSpecificationConverter converter;
 
-    public AggregationService(MongoTemplate mongoTemplate, DomainQueryingConverter converter) {
+    public AggregationService(MongoTemplate mongoTemplate, DomainSpecificationConverter converter) {
         this.mongoTemplate = mongoTemplate;
         this.converter = converter;
     }
 
-    private Aggregation createAndConfigureAggregationWithOperations(List<AggregationOperation> operationList, String sortString) {
+    private Aggregation createAggregation(List<AggregationOperation> operationList, String sortString) {
+        if(operationList.isEmpty()) {
+            return Aggregation.newAggregation(getSortOperation(sortString));
+        }
         Aggregation aggregation =  Aggregation.newAggregation(operationList);
         aggregation.getPipeline().add(getSortOperation(sortString));
         return aggregation;
     }
 
-    private Aggregation configureAggregation(Aggregation aggregation, List<AggregationOperation> operationList, String sortString) {
-        for(AggregationOperation operation : operationList) {
-            aggregation.getPipeline().add(operation);
-        }
-        aggregation.getPipeline().add(getSortOperation(sortString));
-        return aggregation;
+    private <T> List<AggregationOperation> domainToOperations(DomainSpecification<T> specifications) {
+        return converter.convert(specifications);
     }
 
-    private Aggregation createAggregationWithOperations(List<AggregationOperation> operationList, String sortString) {
-        return createAndConfigureAggregationWithOperations(operationList, sortString);
+    public <T> Aggregation createAggregation(DomainSpecification<T> specifications, String sortString) {
+        return createAggregation(domainToOperations(specifications), sortString);
     }
 
-    private List<AggregationOperation> domainToOperations(List<DomainQueryingOperation> operations) {
-        return converter.convert(operations);
+    public <T> Aggregation createAggregation(JobId jobId, DomainSpecification<T> specifications, String sortString) {
+        List<AggregationOperation> operations = new ArrayList<>(List.of(Aggregation.match(Criteria.where("job_id").is(jobId.value()))));
+        operations.addAll(domainToOperations(specifications));
+        return createAggregation(operations, sortString);
     }
 
-
-    public Aggregation createAggregation(List<DomainQueryingOperation> operations, String sortString) {
-        return createAggregationWithOperations(domainToOperations(operations), sortString);
+    public <T> Aggregation createAggregation(UserId userId, DomainSpecification<T> specifications, String sortString) {
+        System.out.println("adding user_id operation");
+        List<AggregationOperation> operations = new ArrayList<>(List.of(Aggregation.match(Criteria.where("user_id").is(userId.value()))));
+        operations.addAll(domainToOperations(specifications));
+        return createAggregation(operations, sortString);
     }
 
-    public Aggregation createAggregation(Job job, List<DomainQueryingOperation> operations, String sortString) {
-        Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("job_id").is(job.getId().value())));
-        return configureAggregation(aggregation, domainToOperations(operations), sortString);
-    }
-
-    public Aggregation createAggregation(User user, List<DomainQueryingOperation> operations, String sortString) {
-        Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(Criteria.where("user_id").is(user.getId().value())));
-        return configureAggregation(aggregation, domainToOperations(operations), sortString);
-    }
-
-    public Aggregation createAggregationPaginated(User user, List<DomainQueryingOperation> operations, String sortString, int page, int size) {
-        Aggregation aggregation = createAggregation(user, operations, sortString);
+    public <T> Aggregation createAggregationPaginated(UserId userId, DomainSpecification<T> specifications, String sortString, int page, int size) {
+        Aggregation aggregation = createAggregation(userId, specifications, sortString);
         aggregation.getPipeline().add(Aggregation.skip((long) page * size));
         aggregation.getPipeline().add(Aggregation.limit(size));
         return aggregation;

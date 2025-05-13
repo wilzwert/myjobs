@@ -1,13 +1,13 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 
-import com.wilzwert.myjobs.core.domain.command.RegisterUserCommand;
-import com.wilzwert.myjobs.core.domain.exception.UserAlreadyExistsException;
+import com.wilzwert.myjobs.core.domain.model.user.command.RegisterUserCommand;
+import com.wilzwert.myjobs.core.domain.model.user.exception.UserAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.model.user.*;
-import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
-import com.wilzwert.myjobs.core.domain.ports.driving.CheckUserAvailabilityUseCase;
-import com.wilzwert.myjobs.core.domain.ports.driving.LoginUseCase;
-import com.wilzwert.myjobs.core.domain.ports.driving.RegisterUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.CheckUserAvailabilityUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.LoginUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.RegisterUseCase;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.AuthResponse;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.LoginRequest;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.RegisterUserRequest;

@@ -2,7 +2,11 @@ package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.wilzwert.myjobs.core.domain.exception.*;
+import com.wilzwert.myjobs.core.domain.model.user.exception.LoginException;
+import com.wilzwert.myjobs.core.domain.shared.exception.DomainException;
+import com.wilzwert.myjobs.core.domain.shared.exception.EntityAlreadyExistsException;
+import com.wilzwert.myjobs.core.domain.shared.exception.EntityNotFoundException;
+import com.wilzwert.myjobs.core.domain.shared.exception.ValidationException;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.core.domain.shared.validation.ValidationError;
 import lombok.AllArgsConstructor;

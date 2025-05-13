@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.adapter;
 
 
-import com.wilzwert.myjobs.core.domain.ports.driven.metadata.fetcher.StaticHtmlFetcher;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.fetcher.StaticHtmlFetcher;
 import org.springframework.stereotype.Component;
 import org.jsoup.Jsoup;
 import org.jsoup.Connection;

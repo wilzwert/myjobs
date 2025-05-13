@@ -1,8 +1,8 @@
 package com.wilzwert.myjobs.infrastructure.security.configuration;
 
 
-import com.wilzwert.myjobs.core.domain.ports.driven.Authenticator;
-import com.wilzwert.myjobs.core.domain.ports.driven.PasswordHasher;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.Authenticator;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.PasswordHasher;
 import com.wilzwert.myjobs.infrastructure.adapter.DefaultPasswordHasher;
 import com.wilzwert.myjobs.infrastructure.security.jwt.JwtAuthenticationFilter;
 import com.wilzwert.myjobs.infrastructure.security.jwt.JwtAuthenticator;
@@ -15,8 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -137,19 +135,5 @@ public class SecurityConfiguration {
     @Bean
     public UserDetailsService userDetailsService() {
         return userDetailsService;
-    }
-
-    /**
-     * Configure the app's AuthenticationProvide with our custom elements
-     * @return AuthenticationProvider
-     */
-    @Bean
-    AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-
-        authProvider.setUserDetailsService(userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
-
-        return authProvider;
     }
 }

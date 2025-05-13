@@ -290,7 +290,7 @@ public class JobServiceAdapterTest {
         MongoJob mongoJob = new MongoJob().setId(jobId.value()).setTitle("title").setUrl("https://www.example.com");
 
         when(jobMapper.toEntity(jobToDelete)).thenReturn(mongoJob);
-        doNothing().when(mongoJobRepository).delete(any());
+        doNothing().when(mongoJobRepository).delete(any(MongoJob.class));
 
         underTest.delete(jobToDelete);
 

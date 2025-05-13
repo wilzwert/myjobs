@@ -1,6 +1,10 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
-import com.wilzwert.myjobs.core.domain.exception.*;
+import com.wilzwert.myjobs.core.domain.model.user.exception.LoginException;
+import com.wilzwert.myjobs.core.domain.model.user.exception.PasswordMatchException;
+import com.wilzwert.myjobs.core.domain.model.user.exception.UserAlreadyExistsException;
+import com.wilzwert.myjobs.core.domain.model.user.exception.UserNotFoundException;
+import com.wilzwert.myjobs.core.domain.shared.exception.ValidationException;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.core.domain.shared.validation.ValidationError;
 import com.wilzwert.myjobs.core.domain.shared.validation.ValidationErrors;

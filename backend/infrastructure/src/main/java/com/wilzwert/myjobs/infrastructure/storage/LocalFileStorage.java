@@ -1,9 +1,9 @@
 package com.wilzwert.myjobs.infrastructure.storage;
 
 
-import com.wilzwert.myjobs.core.domain.exception.AttachmentFileNotReadableException;
+import com.wilzwert.myjobs.core.domain.model.attachment.exception.AttachmentFileNotReadableException;
 import com.wilzwert.myjobs.core.domain.model.DownloadableFile;
-import com.wilzwert.myjobs.core.domain.ports.driven.FileStorage;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;

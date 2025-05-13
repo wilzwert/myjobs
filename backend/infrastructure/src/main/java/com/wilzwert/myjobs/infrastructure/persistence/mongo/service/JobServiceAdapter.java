@@ -7,10 +7,9 @@ import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.model.pagination.DomainPage;
-import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
-import com.wilzwert.myjobs.core.domain.ports.driven.JobService;
-import com.wilzwert.myjobs.core.domain.shared.querying.DomainQueryingOperation;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
+import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoJob;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoJobRepository;
@@ -128,8 +127,8 @@ public class JobServiceAdapter implements JobService {
     }*/
 
     @Override
-    public DomainPage<Job> findByUserPaginated(User user, List<DomainQueryingOperation> queryingOperations, int page, int size, String sortString) {
-        Aggregation aggregation = aggregationService.createAggregationPaginated(user, queryingOperations, sortString, page, size);
+    public DomainPage<Job> findByUserIdPaginated(UserId userId, DomainSpecification<Job> specifications, int page, int size, String sortString) {
+        Aggregation aggregation = aggregationService.createAggregationPaginated(userId, specifications, sortString, page, size);
         List<MongoJob> jobs = aggregationService.aggregate(aggregation, "jobs", MongoJob.class);
 
         if(jobs.isEmpty()) {

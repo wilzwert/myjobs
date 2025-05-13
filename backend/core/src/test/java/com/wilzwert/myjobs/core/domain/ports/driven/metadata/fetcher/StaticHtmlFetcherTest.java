@@ -1,6 +1,7 @@
 package com.wilzwert.myjobs.core.domain.ports.driven.metadata.fetcher;
 
 
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.fetcher.StaticHtmlFetcher;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;

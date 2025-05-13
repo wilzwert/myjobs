@@ -1,14 +1,14 @@
 package com.wilzwert.myjobs.core.application.usecase;
 
 
-import com.wilzwert.myjobs.core.domain.command.RegisterUserCommand;
-import com.wilzwert.myjobs.core.domain.exception.UserAlreadyExistsException;
+import com.wilzwert.myjobs.core.domain.model.user.command.RegisterUserCommand;
+import com.wilzwert.myjobs.core.domain.model.user.exception.UserAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.model.user.EmailStatus;
 import com.wilzwert.myjobs.core.domain.model.user.Lang;
 import com.wilzwert.myjobs.core.domain.model.user.User;
-import com.wilzwert.myjobs.core.domain.ports.driven.AccountCreationMessageProvider;
-import com.wilzwert.myjobs.core.domain.ports.driven.PasswordHasher;
-import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.AccountCreationMessageProvider;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.PasswordHasher;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

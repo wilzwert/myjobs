@@ -6,7 +6,7 @@ import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.JobRating;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
-import com.wilzwert.myjobs.core.domain.ports.driven.JobService;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
@@ -76,7 +76,8 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
                     .andExpect(status().isOk())
                     .andReturn();
 
-            RestPage<JobResponse> jobResponseRestPage = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<RestPage<JobResponse>>() {});
+            RestPage<JobResponse> jobResponseRestPage = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<>() {
+            });
             assertThat(jobResponseRestPage).isNotNull();
             assertThat(jobResponseRestPage.getContent()).isNotNull();
             assertThat(jobResponseRestPage.getContent()).hasSize(3);

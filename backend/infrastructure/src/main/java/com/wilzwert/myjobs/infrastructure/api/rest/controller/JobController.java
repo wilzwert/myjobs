@@ -1,10 +1,12 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 
-import com.wilzwert.myjobs.core.domain.command.*;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
-import com.wilzwert.myjobs.core.domain.ports.driving.*;
+import com.wilzwert.myjobs.core.domain.model.job.command.*;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driving.*;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.GetUserJobUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.GetUserJobsUseCase;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;

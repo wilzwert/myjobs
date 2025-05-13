@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.adapter;
 
 import com.wilzwert.myjobs.core.domain.model.user.User;
-import com.wilzwert.myjobs.core.domain.ports.driven.EmailVerificationMessageProvider;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.EmailVerificationMessageProvider;
 import com.wilzwert.myjobs.infrastructure.mail.MailProvider;
 import org.springframework.stereotype.Component;
 

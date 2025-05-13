@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.adapter;
 
 
-import com.wilzwert.myjobs.core.domain.ports.driven.HtmlSanitizer;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.HtmlSanitizer;
 import org.owasp.html.HtmlPolicyBuilder;
 import org.owasp.html.PolicyFactory;
 import org.springframework.stereotype.Component;

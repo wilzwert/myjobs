@@ -1,11 +1,13 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 
-import com.wilzwert.myjobs.core.domain.command.RegisterUserCommand;
+import com.wilzwert.myjobs.core.domain.model.user.command.RegisterUserCommand;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
-import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
-import com.wilzwert.myjobs.core.domain.ports.driving.*;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.CheckUserAvailabilityUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.LoginUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.RegisterUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.UserMapper;
 import com.wilzwert.myjobs.infrastructure.security.captcha.RequiresCaptcha;

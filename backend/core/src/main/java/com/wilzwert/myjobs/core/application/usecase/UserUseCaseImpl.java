@@ -1,17 +1,17 @@
 package com.wilzwert.myjobs.core.application.usecase;
 
 
-import com.wilzwert.myjobs.core.domain.command.UpdateUserCommand;
-import com.wilzwert.myjobs.core.domain.command.UpdateUserLangCommand;
-import com.wilzwert.myjobs.core.domain.exception.UserAlreadyExistsException;
-import com.wilzwert.myjobs.core.domain.exception.UserNotFoundException;
+import com.wilzwert.myjobs.core.domain.model.user.command.UpdateUserCommand;
+import com.wilzwert.myjobs.core.domain.model.user.command.UpdateUserLangCommand;
+import com.wilzwert.myjobs.core.domain.model.user.exception.UserAlreadyExistsException;
+import com.wilzwert.myjobs.core.domain.model.user.exception.UserNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
-import com.wilzwert.myjobs.core.domain.ports.driven.EmailVerificationMessageProvider;
-import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
-import com.wilzwert.myjobs.core.domain.ports.driving.SendVerificationEmailUseCase;
-import com.wilzwert.myjobs.core.domain.ports.driving.UpdateUserLangUseCase;
-import com.wilzwert.myjobs.core.domain.ports.driving.UpdateUserUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.EmailVerificationMessageProvider;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.SendVerificationEmailUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.UpdateUserLangUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.UpdateUserUseCase;
 
 /**
  * @author Wilhelm Zwertvaegher

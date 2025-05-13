@@ -4,7 +4,7 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wilzwert.myjobs.core.domain.model.user.EmailStatus;
 import com.wilzwert.myjobs.core.domain.model.user.User;
-import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.AuthResponse;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.LoginRequest;

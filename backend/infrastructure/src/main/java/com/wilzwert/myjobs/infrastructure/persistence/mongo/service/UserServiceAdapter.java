@@ -4,8 +4,9 @@ package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
-import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
-import com.wilzwert.myjobs.core.domain.shared.querying.DomainQueryingOperation;
+import com.wilzwert.myjobs.core.domain.model.user.UserView;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoUser;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.UserMapper;
@@ -46,49 +47,53 @@ public class UserServiceAdapter implements UserService {
     }
 
     @Override
-    public List<User> find(List<DomainQueryingOperation> domainQueryingOperations) {
-        Aggregation aggregation = aggregationService.createAggregation(domainQueryingOperations, "user_id");
-        return this.userMapper.toDomain(aggregationService.aggregate(aggregation, "users", MongoUser.class));
+    public List<UserView> findView(DomainSpecification<User> specifications) {
+        Aggregation aggregation = aggregationService.createAggregation(specifications, "user_id");
+        return this.userMapper.toDomainView(aggregationService.aggregate(aggregation, "users", MongoUser.class));
     }
 
     @Override
-    public boolean isEmailAndUsernameAvailable(String email, String username) {
-        return findByEmailOrUsername(email, username).isEmpty();
+    public Optional<UserView> findViewByEmail(String email) {
+        return mongoUserRepository.findByEmail(email).map(userMapper::toDomainView).or(Optional::empty);
     }
 
     @Override
     public Optional<User> findByEmail(String email) {
-        return mongoUserRepository.findByEmail(email).map(userMapper::toDomain).or(Optional::empty);
+        return getFullUser(mongoUserRepository.findByEmail(email));
     }
 
     @Override
     public Optional<User> findByEmailValidationCode(String code) {
-        return mongoUserRepository.findByEmailValidationCode(code).map(userMapper::toDomain).or(Optional::empty);
+        return getFullUser(mongoUserRepository.findByEmailValidationCode(code));
     }
 
     @Override
     public Optional<User> findByResetPasswordToken(String token) {
-        return mongoUserRepository.findByResetPasswordToken(token).map(userMapper::toDomain).or(Optional::empty);
+        return getFullUser(mongoUserRepository.findByResetPasswordToken(token));
     }
 
     @Override
     public Optional<User> findByUsername(String username) {
-        return mongoUserRepository.findByUsername(username).map(userMapper::toDomain).or(Optional::empty);
+        return getFullUser(mongoUserRepository.findByUsername(username));
     }
 
     @Override
     public Optional<User> findByEmailOrUsername(String email, String username) {
-        return mongoUserRepository.findByEmailOrUsername(email, username).map(userMapper::toDomain).or(Optional::empty);
+        return getFullUser(mongoUserRepository.findByEmailOrUsername(email, username));
+    }
+
+    @Override
+    public Optional<UserView> findViewById(UserId id) {
+        return mongoUserRepository.findById(id.value()).map(userMapper::toDomainView).or(Optional::empty);
+    }
+
+    private Optional<User> getFullUser(Optional<MongoUser> user) {
+        return user.map(u -> userMapper.toDomain(u).withJobs(jobMapper.toDomain(mongoJobRepository.findByUserId(u.getId(), null).getContent())));
     }
 
     @Override
     public Optional<User> findById(UserId id) {
-        return mongoUserRepository.findById(id.value()).map(userMapper::toDomain).or(Optional::empty);
-    }
-
-    @Override
-    public Optional<User> findByIdWithJobs(UserId id) {
-        return findById(id).map(u -> u.withJobs(jobMapper.toDomain(mongoJobRepository.findByUserId(u.getId().value(), null).getContent())));
+        return getFullUser(mongoUserRepository.findById(id.value()));
     }
 
     @Override

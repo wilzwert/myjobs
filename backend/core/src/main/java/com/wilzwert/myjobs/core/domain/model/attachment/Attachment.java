@@ -1,6 +1,6 @@
 package com.wilzwert.myjobs.core.domain.model.attachment;
 
-import com.wilzwert.myjobs.core.domain.exception.ValidationException;
+import com.wilzwert.myjobs.core.domain.shared.exception.ValidationException;
 import com.wilzwert.myjobs.core.domain.model.DomainEntity;
 import com.wilzwert.myjobs.core.domain.shared.validation.ValidationErrors;
 import com.wilzwert.myjobs.core.domain.shared.validation.Validator;

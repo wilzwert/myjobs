@@ -1,16 +1,16 @@
 package com.wilzwert.myjobs.core.application.usecase;
 
-import com.wilzwert.myjobs.core.domain.command.CreatePasswordCommand;
-import com.wilzwert.myjobs.core.domain.command.ChangePasswordCommand;
-import com.wilzwert.myjobs.core.domain.exception.PasswordMatchException;
-import com.wilzwert.myjobs.core.domain.exception.UserNotFoundException;
+import com.wilzwert.myjobs.core.domain.model.user.command.CreatePasswordCommand;
+import com.wilzwert.myjobs.core.domain.model.user.command.ChangePasswordCommand;
+import com.wilzwert.myjobs.core.domain.model.user.exception.PasswordMatchException;
+import com.wilzwert.myjobs.core.domain.model.user.exception.UserNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.user.User;
-import com.wilzwert.myjobs.core.domain.ports.driven.PasswordHasher;
-import com.wilzwert.myjobs.core.domain.ports.driven.PasswordResetMessageProvider;
-import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
-import com.wilzwert.myjobs.core.domain.ports.driving.CreateNewPasswordUseCase;
-import com.wilzwert.myjobs.core.domain.ports.driving.ResetPasswordUseCase;
-import com.wilzwert.myjobs.core.domain.ports.driving.ChangePasswordUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.PasswordHasher;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.PasswordResetMessageProvider;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.CreateNewPasswordUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.ResetPasswordUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.ChangePasswordUseCase;
 
 public class PasswordUseCaseImpl implements ResetPasswordUseCase, CreateNewPasswordUseCase, ChangePasswordUseCase {
 

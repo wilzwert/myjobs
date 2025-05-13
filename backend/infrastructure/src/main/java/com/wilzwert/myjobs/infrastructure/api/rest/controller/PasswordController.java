@@ -1,8 +1,9 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 
-import com.wilzwert.myjobs.core.domain.command.CreatePasswordCommand;
-import com.wilzwert.myjobs.core.domain.ports.driving.*;
+import com.wilzwert.myjobs.core.domain.model.user.command.CreatePasswordCommand;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.CreateNewPasswordUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.ResetPasswordUseCase;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;

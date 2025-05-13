@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.core.domain.model.user;
 
 
-import com.wilzwert.myjobs.core.domain.exception.ValidationException;
+import com.wilzwert.myjobs.core.domain.shared.exception.ValidationException;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;

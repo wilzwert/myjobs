@@ -1,13 +1,13 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 
-import com.wilzwert.myjobs.core.domain.command.ChangePasswordCommand;
-import com.wilzwert.myjobs.core.domain.command.UpdateUserLangCommand;
-import com.wilzwert.myjobs.core.domain.command.ValidateEmailCommand;
-import com.wilzwert.myjobs.core.domain.exception.UserNotFoundException;
+import com.wilzwert.myjobs.core.domain.model.user.command.ChangePasswordCommand;
+import com.wilzwert.myjobs.core.domain.model.user.command.UpdateUserLangCommand;
+import com.wilzwert.myjobs.core.domain.model.user.command.ValidateEmailCommand;
+import com.wilzwert.myjobs.core.domain.model.user.exception.UserNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.user.User;
-import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
-import com.wilzwert.myjobs.core.domain.ports.driving.*;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.*;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.UserMapper;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;

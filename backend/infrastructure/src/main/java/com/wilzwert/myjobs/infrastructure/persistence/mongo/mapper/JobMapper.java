@@ -1,10 +1,10 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper;
 
 
-import com.wilzwert.myjobs.core.domain.command.CreateJobCommand;
-import com.wilzwert.myjobs.core.domain.command.UpdateJobCommand;
-import com.wilzwert.myjobs.core.domain.command.UpdateJobRatingCommand;
-import com.wilzwert.myjobs.core.domain.command.UpdateJobStatusCommand;
+import com.wilzwert.myjobs.core.domain.model.job.command.CreateJobCommand;
+import com.wilzwert.myjobs.core.domain.model.job.command.UpdateJobCommand;
+import com.wilzwert.myjobs.core.domain.model.job.command.UpdateJobRatingCommand;
+import com.wilzwert.myjobs.core.domain.model.job.command.UpdateJobStatusCommand;
 import com.wilzwert.myjobs.core.domain.model.job.EnrichedJob;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;

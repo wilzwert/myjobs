@@ -2,7 +2,7 @@ package com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor;
 
 
 import com.wilzwert.myjobs.core.domain.model.job.JobMetadata;
-import com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.impl.JsonLdJobMetadataExtractor;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.extractor.impl.JsonLdJobMetadataExtractor;
 import org.junit.jupiter.api.Test;
 import utils.TestFileLoader;
 import java.io.IOException;

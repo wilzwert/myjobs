@@ -1,6 +1,10 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.exception;
 
-import com.wilzwert.myjobs.core.domain.exception.*;
+import com.wilzwert.myjobs.core.domain.model.user.exception.LoginException;
+import com.wilzwert.myjobs.core.domain.shared.exception.DomainException;
+import com.wilzwert.myjobs.core.domain.shared.exception.EntityAlreadyExistsException;
+import com.wilzwert.myjobs.core.domain.shared.exception.EntityNotFoundException;
+import com.wilzwert.myjobs.core.domain.shared.exception.ValidationException;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.ErrorResponse;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;

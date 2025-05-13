@@ -2,8 +2,8 @@ package com.wilzwert.myjobs.core.application.usecase;
 
 
 import com.wilzwert.myjobs.core.domain.model.job.JobMetadata;
-import com.wilzwert.myjobs.core.domain.ports.driving.ExtractJobMetadataUseCase;
-import com.wilzwert.myjobs.core.domain.service.job.JobMetadataService;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driving.ExtractJobMetadataUseCase;
+import com.wilzwert.myjobs.core.domain.model.job.service.JobMetadataService;
 
 /**
  * @author Wilhelm Zwertvaegher

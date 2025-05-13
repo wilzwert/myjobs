@@ -3,7 +3,7 @@ package com.wilzwert.myjobs.infrastructure.security.service;
 
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
-import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
 import io.jsonwebtoken.lang.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

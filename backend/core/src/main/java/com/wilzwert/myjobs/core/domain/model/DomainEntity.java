@@ -6,7 +6,7 @@ package com.wilzwert.myjobs.core.domain.model;
  * Time:13:17
  */
 
-public abstract class DomainEntity<ID> {
+public abstract class DomainEntity<I> {
 
     @Override
     public boolean equals(Object o) {
@@ -16,5 +16,5 @@ public abstract class DomainEntity<ID> {
         return this.getId().equals(that.getId());
     }
 
-    public abstract ID getId();
+    public abstract I getId();
 }

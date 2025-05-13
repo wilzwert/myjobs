@@ -1,11 +1,15 @@
 package com.wilzwert.myjobs.core.domain.model.user;
 
 
-import com.wilzwert.myjobs.core.domain.exception.*;
 import com.wilzwert.myjobs.core.domain.model.*;
 import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
+import com.wilzwert.myjobs.core.domain.model.job.exception.JobAlreadyExistsException;
+import com.wilzwert.myjobs.core.domain.model.job.exception.JobNotFoundException;
+import com.wilzwert.myjobs.core.domain.model.user.exception.ResetPasswordExpiredException;
+import com.wilzwert.myjobs.core.domain.model.user.exception.UserNotFoundException;
+import com.wilzwert.myjobs.core.domain.shared.exception.ValidationException;
 import com.wilzwert.myjobs.core.domain.shared.validation.*;
 
 import java.time.Instant;
