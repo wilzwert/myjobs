@@ -17,7 +17,7 @@ import { Lang } from '../model/lang';
 })
 export class UserService {
 
-  private apiPath = 'user/me';
+  private apiPath = 'user';
 
   constructor(private dataService: DataService, private captchaService: CaptchaService) { }
 
@@ -38,17 +38,17 @@ export class UserService {
   }
 
   public changePassword(changePasswordRequest: ChangePasswordRequest): Observable<void> {
-    return this.dataService.put<void>(`${this.apiPath}/password`, changePasswordRequest);
+    return this.dataService.put<void>(`${this.apiPath}/me/password`, changePasswordRequest);
   }
 
   public sendVerificationMail(): Observable<void> {
-    return this.dataService.post<void>(`${this.apiPath}/email/verification`, null);
+    return this.dataService.post<void>(`${this.apiPath}/me/email/verification`, null);
   }
 
   public validateEmail(validateEmailRequest: ValidateEmailRequest): Observable<void> {
     /*return this.captchaService.getCaptchaToken().pipe(
       switchMap(() => {*/
-        return this.dataService.post<void>(`${this.apiPath}/email/validation`, validateEmailRequest);
+        return this.dataService.post<void>(`${this.apiPath}/me/email/validation`, validateEmailRequest);
       /*})
     );*/
   }
