@@ -84,7 +84,7 @@ export class PasswordFormComponent extends BaseChildComponent implements OnInit 
                 ))
                 .subscribe(() => {
                     this.isSubmitting = false;
-                    this.notificationService.confirmation("Your password has been updated.");
+                    this.notificationService.confirmation($localize `:@@info.password.updated:Your password has been updated.`);
                     this.success();
                 });
     }
