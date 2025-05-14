@@ -56,21 +56,21 @@ export class UserService {
   public getUser(): Observable<User> {
     /*return this.captchaService.getCaptchaToken().pipe(
       switchMap(() => {*/
-        return this.dataService.get<User>(`${this.apiPath}`);
+        return this.dataService.get<User>(`${this.apiPath}/me`);
         return this.dataService.get<User>(`${this.apiPath}`).pipe(map((user: User) => {user.emailStatus = user.emailStatus as EmailStatus; return user;}));
       /*})
     );*/
   }
 
   public deleteUser() :Observable<void> {
-    return this.dataService.delete<void>(`${this.apiPath}`);
+    return this.dataService.delete<void>(`${this.apiPath}/me`);
   }
 
   public editUser(editUserRequest: EditUserRequest) :Observable<User> {
-    return this.dataService.patch<User>(`${this.apiPath}`, editUserRequest);
+    return this.dataService.patch<User>(`${this.apiPath}/me`, editUserRequest);
   }
 
   public saveUserLang(newLang: string) :Observable<void> {
-    return this.dataService.put<void>(`${this.apiPath}/lang`, {lang: newLang.toUpperCase()} as EditUserLangRequest);
+    return this.dataService.put<void>(`${this.apiPath}/me/lang`, {lang: newLang.toUpperCase()} as EditUserLangRequest);
   }
 }
