@@ -8,10 +8,11 @@ import { MatButton } from '@angular/material/button';
 import { LocaleService } from '../../../core/services/locale.service';
 import { PasswordValidator } from '../../../core/validators/password-validator';
 import { User } from '../../../core/model/user.interface';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-user-form',
-  imports: [ReactiveFormsModule, MatButton, MatFormField, MatInput, MatLabel, MatHint, StatusIconComponent, InputBackendErrorsComponent],
+  imports: [ReactiveFormsModule, MatButton, MatFormField, MatInput, MatLabel, MatHint, StatusIconComponent, InputBackendErrorsComponent, RouterLink],
   templateUrl: './user-form.component.html',
   styleUrl: './user-form.component.scss'
 })

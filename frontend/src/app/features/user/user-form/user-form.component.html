@@ -3,7 +3,7 @@
         <mat-label i18n="email|email input label@@input.email.label">Email</mat-label>                
         <input matInput formControlName="email" i18n-placeholder="email placeholder|email input placeholder@@input.email.placeholder" placeholder="Enter your email">
         @if(email?.hasError('emailExists')) {
-            <mat-hint><span i18n="email exists|inform the user the email already exists@@info.email_exists">Email already exists</span> <a routerLink="/login">Log in</a></mat-hint>
+            <mat-hint><span i18n="email exists|inform the user the email already exists@@info.email_exists">Email already exists</span>. <a routerLink="/login" i18n="@@action.login">Login</a></mat-hint>
         }
         <app-input-backend-errors [control]="email" />
         <mat-hint class="email-hint" align="end">
@@ -15,7 +15,7 @@
     <mat-label i18n="username|username input label@@input.username.label">Username</mat-label>
     <input matInput minlength="5" formControlName="username" i18n-placeholder="username placeholder|username input placeholder@@input.username.placeholder" placeholder="Type your username">
         @if(username?.hasError('usernameExists')) {
-            <mat-hint><span i18n="username exists|inform the user the username already exists@@info.username_exists">Username already taken</span> <a routerLink="/login">Log in</a></mat-hint>
+            <mat-hint><span i18n="username exists|inform the user the username already exists@@info.username_exists">Username already taken</span>. <a routerLink="/login" i18n="@@action.login">Log in</a></mat-hint>
         }
         <app-input-backend-errors [control]="username" />
         <mat-hint class="username-hint" align="end">
