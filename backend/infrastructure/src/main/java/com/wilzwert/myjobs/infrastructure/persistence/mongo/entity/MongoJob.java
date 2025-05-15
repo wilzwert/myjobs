@@ -8,6 +8,7 @@ import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -36,6 +37,7 @@ public class MongoJob {
 
     private String url;
 
+    @Indexed
     private JobStatus status;
 
     private String title;
@@ -53,6 +55,7 @@ public class MongoJob {
     @Field(name = "created_at")
     private Instant createdAt;
 
+    @Indexed
     @Field(name = "updated_at")
     private Instant updatedAt;
 
