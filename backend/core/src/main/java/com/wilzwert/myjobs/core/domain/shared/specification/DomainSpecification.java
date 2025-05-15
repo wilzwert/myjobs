@@ -4,6 +4,7 @@ import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.shared.exception.DomainSpecificationException;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -54,6 +55,35 @@ public abstract class DomainSpecification<T> {
      */
     public boolean contains(Class<?> classToFind) {
         return classToFind.equals(getClass());
+    }
+
+
+
+
+    public enum SortDirection {
+        ASC, DESC
+    }
+
+    public static <T> Sort<T> Sort(String fieldName, SortDirection sortDirection) {
+        return new Sort<>(fieldName, sortDirection);
+    }
+
+    public static class Sort<T> extends DomainSpecification<T> {
+        private final String fieldName;
+        private final SortDirection sortDirection;
+
+        Sort(String fieldName, SortDirection sortDirection) {
+            this.fieldName = fieldName;
+            this.sortDirection = sortDirection;
+        }
+
+        public String getFieldName() {
+            return fieldName;
+        }
+
+        public SortDirection getSortDirection() {
+            return sortDirection;
+        }
     }
 
     private abstract static class FieldSpecification<T> extends DomainSpecification<T> {
@@ -156,7 +186,21 @@ public abstract class DomainSpecification<T> {
         }
     }
 
-    public abstract static class FullSpecification<T> extends DomainSpecification<T> {}
+    public abstract static class FullSpecification<T> extends DomainSpecification<T> {
+        private final List<DomainSpecification<T>> nested;
+
+        public FullSpecification(List<DomainSpecification<T>> nested) {
+            this.nested = nested;
+        }
+
+        public FullSpecification() {
+            this.nested = Collections.emptyList();
+        }
+
+        public List<DomainSpecification<T>> getNested() {
+            return nested;
+        }
+    }
 
 
     /**
@@ -195,6 +239,7 @@ public abstract class DomainSpecification<T> {
         private final Instant referenceInstant;
 
         public JobFollowUpToRemind(Instant referenceInstant) {
+            super(List.of(Sort("userId", SortDirection.ASC)));
             this.referenceInstant = referenceInstant;
         }
 

@@ -72,6 +72,7 @@ class DomainSpecificationTest {
                 DomainSpecification.Eq("title", "bobby"),
                 DomainSpecification.Lt("createdAt", Instant.now()));
 
+        // DomainSpecification.JobFollowUpToRemind being a FullSpecification, it cannot be composed
         assertThrows(DomainSpecificationException.class, () -> {
             DomainSpecification<Job> jobSpec = DomainSpecification.And(
                 List.of(

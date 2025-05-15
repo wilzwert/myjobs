@@ -3,11 +3,13 @@ package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.exception.UnsupportedDomainCriterionException;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -73,6 +75,11 @@ public class DomainSpecificationConverter {
      */
     public <T> List<AggregationOperation> domainSpecificationToAggregationOperation(DomainSpecification<T> domainSpecification) {
         System.out.println("adding "+domainSpecification.getClass().getName());
+
+        if(domainSpecification instanceof DomainSpecification.Sort<T> sort) {
+        return List.of(Aggregation.sort(sort.getSortDirection().equals(DomainSpecification.SortDirection.ASC) ? Sort.Direction.ASC : Sort.Direction.DESC, sort.getFieldName()));
+        }
+
         if(domainSpecification instanceof DomainSpecification.FullSpecification<T> fullSpecification) {
             return domainSpecificationToAggregationOperation(fullSpecification);
         }
@@ -81,16 +88,21 @@ public class DomainSpecificationConverter {
     }
 
     private <T> List<AggregationOperation> domainSpecificationToAggregationOperation(DomainSpecification.FullSpecification<T> fullDomainSpecification) {
+        List<AggregationOperation> operations = null;
         if(fullDomainSpecification instanceof DomainSpecification.UserJobFollowUpReminderThreshold<T> userJobFollowUpReminderThreshold) {
-            return domainSpecificationToAggregationOperation(userJobFollowUpReminderThreshold);
+            operations = domainSpecificationToAggregationOperation(userJobFollowUpReminderThreshold);
         }
 
         if(fullDomainSpecification instanceof DomainSpecification.JobFollowUpToRemind jobFollowUpToRemind ) {
-            return domainSpecificationToAggregationOperation(jobFollowUpToRemind);
+            operations = domainSpecificationToAggregationOperation(jobFollowUpToRemind);
         }
 
-        throw new UnsupportedDomainCriterionException(fullDomainSpecification.getClass().getName());
+        if(operations == null) {
+            throw new UnsupportedDomainCriterionException(fullDomainSpecification.getClass().getName());
+        }
 
+        operations.addAll(fullDomainSpecification.getNested().stream().map(this::domainSpecificationToAggregationOperation).flatMap(Collection::stream).toList());
+        return operations;
 
     }
 
@@ -124,33 +136,42 @@ public class DomainSpecificationConverter {
      */
     public List<AggregationOperation> domainSpecificationToAggregationOperation(DomainSpecification.JobFollowUpToRemind domainSpecification) {
         List<AggregationOperation> aggregationOperations = new ArrayList<>();
+
+        aggregationOperations.add(Aggregation.match(Criteria.where("status").in(JobStatus.activeStatuses())));
+
         // lookup users collection
-        aggregationOperations.add(Aggregation.lookup().from("users").localField("userId").foreignField("_id").as("user"));
+        aggregationOperations.add(Aggregation.lookup().from("users").localField("user_id").foreignField("_id").as("user"));
         // unwind users
         aggregationOperations.add(Aggregation.unwind("user"));
+        // filter users with no job_follow_up_reminder_days
+        aggregationOperations.add(Aggregation.match(Criteria.where("user.job_follow_up_reminder_days").exists(true).ne(null)));
 
         // compute 'thresholdDate' based on provided instant and user.jobFollowUpReminderDelay
         aggregationOperations.add( Aggregation.addFields()
-        .addFieldWithValue(
-            "jobFollowUpReminderThreshold",
-                ArithmeticOperators.Subtract.valueOf(domainSpecification.getReferenceInstant().toEpochMilli()).subtract(
-                    ArithmeticOperators.Multiply.valueOf(
-                        ConditionalOperators.ifNull("user.jobFollowUpReminderDays").then(0)
-                    )
-                    .multiplyBy(86400000)
-                )
-            ).build());
+                .addFieldWithValue(
+                        "job_follow_up_reminder_threshold",
+                        ArithmeticOperators.Subtract.valueOf(domainSpecification.getReferenceInstant().toEpochMilli()).subtract(
+                                ArithmeticOperators.Multiply.valueOf("user.job_follow_up_reminder_days")
+                                        .multiplyBy(86400000)
+                        )
+                ).build());
         // filter by status
-        aggregationOperations.add(Aggregation.match(Criteria.where("status").in(JobStatus.activeStatuses())));
+
+        aggregationOperations.add(Aggregation.addFields()
+                .addFieldWithValue("updated_at_millis", ConvertOperators.ToLong.toLong("$updated_at")).build());
+
         // filter by updatedAt (or statusUpdatedAt ?) < thresholdDate
-        aggregationOperations.add(Aggregation.match(Criteria.where("updatedAt").lt("jobFollowUpReminderThreshold")));
-        // filter lastReminderSentAt null or < thresholdDate
         aggregationOperations.add(Aggregation.match(
-                new Criteria().orOperator(
-                    Criteria.where("followUpReminderSentAt").isNull(),
-                    Criteria.where("followUpReminderSentAt").lt("jobFollowUpReminderThreshold")
-                )
+                Criteria.expr(
+                    ComparisonOperators.Lte.valueOf("updated_at_millis").lessThanEqualTo("job_follow_up_reminder_threshold"))
         ));
+        // filter lastReminderSentAt null or < thresholdDate
+        /*aggregationOperations.add(Aggregation.match(
+                new Criteria().orOperator(
+                    Criteria.where("follow_up_reminder_sent_at").isNull(),
+                    Criteria.where("follow_up_reminder_sent_at").lte("job_follow_up_reminder_threshold")
+                )
+        ));*/
         return aggregationOperations;
     }
 }
