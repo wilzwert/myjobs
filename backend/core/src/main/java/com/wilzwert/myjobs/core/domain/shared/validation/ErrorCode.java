@@ -10,6 +10,7 @@ package com.wilzwert.myjobs.core.domain.shared.validation;
  */
 public enum ErrorCode {
     // common errors
+    INCOMPLETE_AGGREGATE,
     VALIDATION_FAILED,
     FIELD_CANNOT_BE_EMPTY,
     INVALID_VALUE,

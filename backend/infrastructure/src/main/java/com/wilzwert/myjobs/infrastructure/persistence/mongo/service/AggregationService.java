@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 @Service
@@ -31,33 +32,34 @@ public class AggregationService {
             return Aggregation.newAggregation(getSortOperation(sortString));
         }
         Aggregation aggregation =  Aggregation.newAggregation(operationList);
-        aggregation.getPipeline().add(getSortOperation(sortString));
+        if(sortString != null) {
+            aggregation.getPipeline().add(getSortOperation(sortString));
+        }
         return aggregation;
     }
 
-    private <T> List<AggregationOperation> domainToOperations(DomainSpecification<T> specifications) {
-        return converter.convert(specifications);
+    private <T> List<AggregationOperation> domainToOperations(DomainSpecification<T> specification) {
+        return converter.convert(specification);
     }
 
-    public <T> Aggregation createAggregation(DomainSpecification<T> specifications, String sortString) {
-        return createAggregation(domainToOperations(specifications), sortString);
+    public <T> Aggregation createAggregation(DomainSpecification<T> specification, String sortString) {
+        return createAggregation(domainToOperations(specification), sortString);
     }
 
-    public <T> Aggregation createAggregation(JobId jobId, DomainSpecification<T> specifications, String sortString) {
+    public <T> Aggregation createAggregation(JobId jobId, DomainSpecification<T> specification, String sortString) {
         List<AggregationOperation> operations = new ArrayList<>(List.of(Aggregation.match(Criteria.where("job_id").is(jobId.value()))));
-        operations.addAll(domainToOperations(specifications));
+        operations.addAll(domainToOperations(specification));
         return createAggregation(operations, sortString);
     }
 
-    public <T> Aggregation createAggregation(UserId userId, DomainSpecification<T> specifications, String sortString) {
-        System.out.println("adding user_id operation");
+    public <T> Aggregation createAggregation(UserId userId, DomainSpecification<T> specification, String sortString) {
         List<AggregationOperation> operations = new ArrayList<>(List.of(Aggregation.match(Criteria.where("user_id").is(userId.value()))));
-        operations.addAll(domainToOperations(specifications));
+        operations.addAll(domainToOperations(specification));
         return createAggregation(operations, sortString);
     }
 
-    public <T> Aggregation createAggregationPaginated(UserId userId, DomainSpecification<T> specifications, String sortString, int page, int size) {
-        Aggregation aggregation = createAggregation(userId, specifications, sortString);
+    public <T> Aggregation createAggregationPaginated(UserId userId, DomainSpecification<T> specification, String sortString, int page, int size) {
+        Aggregation aggregation = createAggregation(userId, specification, sortString);
         aggregation.getPipeline().add(Aggregation.skip((long) page * size));
         aggregation.getPipeline().add(Aggregation.limit(size));
         return aggregation;
@@ -66,6 +68,10 @@ public class AggregationService {
     public <T> List<T> aggregate(Aggregation aggregation, String collectionName, Class<T> outputClass) {
         AggregationResults<T> results = mongoTemplate.aggregate(aggregation, collectionName, outputClass);
         return results.getMappedResults();
+    }
+
+    public <T> Stream<T> stream(Aggregation aggregation, String collectionName, Class<T> outputClass) {
+        return mongoTemplate.aggregateStream(aggregation, collectionName, outputClass);
     }
 
     /**
@@ -85,7 +91,8 @@ public class AggregationService {
     }
 
     /**
-     *
+     * Creates a SortOperation based on the sortString passed
+     * In our case we know  all fields in mongodb are snake_case =/= camelCase
      * @param sortString the sort string e.g. "createdAt,desc"
      * @return a sort operation to be used for an Aggregation
      */
@@ -93,7 +100,6 @@ public class AggregationService {
         if (sortString == null || sortString.isEmpty()) {
             return Aggregation.sort(Sort.Direction.DESC, "created_at"); // default
         }
-
         String[] parts = sortString.split(",");
         String field = parts[0].replaceAll("([a-z])([A-Z]+)", "$1_$2").toLowerCase();
         Sort.Direction direction = parts.length > 1 && parts[1].equalsIgnoreCase("asc")

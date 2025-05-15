@@ -5,10 +5,13 @@ import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.user.UserView;
+import com.wilzwert.myjobs.core.domain.shared.bulk.BulkServiceSaveResult;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -18,6 +21,8 @@ import java.util.Optional;
 public interface UserService {
 
     List<UserView> findView(DomainSpecification<User> specifications);
+
+    Map<UserId, User> findMinimal(DomainSpecification<User> specifications);
 
     Optional<User> findByEmail(String email);
 
@@ -35,6 +40,8 @@ public interface UserService {
 
     Optional<User> findById(UserId id);
 
+    Optional<User> findByIdMinimal(UserId id);
+
     User save(User user);
 
     User saveUserAndJob(User user, Job job);
@@ -46,4 +53,6 @@ public interface UserService {
     boolean usernameExists(String username);
 
     void deleteUser(User user);
+
+    BulkServiceSaveResult saveAll(Set<User> users);
 }

@@ -6,7 +6,9 @@ import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.user.UserView;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.shared.bulk.BulkServiceSaveResult;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoJob;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoUser;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.UserMapper;
@@ -21,7 +23,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -48,8 +53,16 @@ public class UserServiceAdapter implements UserService {
 
     @Override
     public List<UserView> findView(DomainSpecification<User> specifications) {
-        Aggregation aggregation = aggregationService.createAggregation(specifications, "user_id");
+        Aggregation aggregation = aggregationService.createAggregation(specifications, "id");
         return this.userMapper.toDomainView(aggregationService.aggregate(aggregation, "users", MongoUser.class));
+    }
+
+    @Override
+    public Map<UserId, User> findMinimal(DomainSpecification<User> specifications) {
+        Aggregation aggregation = aggregationService.createAggregation(specifications, "id");
+        return this.userMapper.toDomain(aggregationService.aggregate(aggregation, "users", MongoUser.class))
+                .stream()
+                .collect(Collectors.toMap(User::getId, user -> user));
     }
 
     @Override
@@ -88,7 +101,8 @@ public class UserServiceAdapter implements UserService {
     }
 
     private Optional<User> getFullUser(Optional<MongoUser> user) {
-        return user.map(u -> userMapper.toDomain(u).withJobs(jobMapper.toDomain(mongoJobRepository.findByUserId(u.getId(), null).getContent())));
+        List<MongoJob> mongoJobs = mongoJobRepository.findByUserId(user.get().getId());
+        return user.map(u -> userMapper.toDomain(u).completeWith(jobMapper.toDomain(mongoJobs)));
     }
 
     @Override
@@ -96,6 +110,17 @@ public class UserServiceAdapter implements UserService {
         return getFullUser(mongoUserRepository.findById(id.value()));
     }
 
+    @Override
+    public Optional<User> findByIdMinimal(UserId id) {
+        return (mongoUserRepository.findById(id.value()).map(userMapper::toDomain));
+    }
+
+
+    /**
+     * Saves a User, and updates their username and email in the lookup cache
+     * @param user the User to save
+     * @return the saved User
+     */
     @Override
     @Caching(
         evict = {
@@ -134,6 +159,11 @@ public class UserServiceAdapter implements UserService {
         return findByUsername(username).isPresent();
     }
 
+
+    /**
+     * Deletes a user, and deletes their username and email from the lookup cache
+     * @param user the User to delete
+     */
     @Override
     @Caching(
         evict = {
@@ -147,5 +177,11 @@ public class UserServiceAdapter implements UserService {
         mongoJobRepository.deleteByUserId(user.getId().value());
         mongoRefreshTokenRepository.deleteByUserId(user.getId().value());
         mongoUserRepository.delete(userMapper.toEntity(user));
+    }
+
+    @Override
+    public BulkServiceSaveResult saveAll(Set<User> users) {
+
+        return new BulkServiceSaveResult(0, 0, 0);
     }
 }

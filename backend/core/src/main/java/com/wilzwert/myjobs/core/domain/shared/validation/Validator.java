@@ -87,8 +87,28 @@ public class Validator {
         return this;
     }
 
+    public Validator requireMinIfNotNull(String fieldName, Integer fieldValue, int minValue) {
+        if(fieldValue == null) {
+            return this;
+        }
+        if(fieldValue < minValue) {
+            validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_VALUE_TOO_SMALL, Map.of("min", String.valueOf(minValue))));
+        }
+        return this;
+    }
+
     public Validator requireMax(String fieldName, Integer fieldValue, int maxValue) {
         if(notEmpty(fieldName, fieldValue) && fieldValue > maxValue) {
+            validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_VALUE_TOO_BIG, Map.of("max", String.valueOf(maxValue))));
+        }
+        return this;
+    }
+
+    public Validator requireMaxIfNotNull(String fieldName, Integer fieldValue, int maxValue) {
+        if(fieldValue == null) {
+            return this;
+        }
+        if(fieldValue > maxValue) {
             validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_VALUE_TOO_BIG, Map.of("max", String.valueOf(maxValue))));
         }
         return this;

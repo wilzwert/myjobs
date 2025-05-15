@@ -1,6 +1,7 @@
 package com.wilzwert.myjobs.core.application.usecase;
 
 
+import com.wilzwert.myjobs.core.domain.model.user.UserView;
 import com.wilzwert.myjobs.core.domain.model.user.command.UpdateUserCommand;
 import com.wilzwert.myjobs.core.domain.model.user.command.UpdateUserLangCommand;
 import com.wilzwert.myjobs.core.domain.model.user.exception.UserAlreadyExistsException;
@@ -9,6 +10,7 @@ import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.EmailVerificationMessageProvider;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.GetUserViewUseCase;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.SendVerificationEmailUseCase;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.UpdateUserLangUseCase;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.UpdateUserUseCase;
@@ -19,7 +21,7 @@ import com.wilzwert.myjobs.core.domain.model.user.ports.driving.UpdateUserUseCas
  * Time:16:55
  */
 
-public class UserUseCaseImpl implements SendVerificationEmailUseCase, UpdateUserUseCase, UpdateUserLangUseCase {
+public class UserUseCaseImpl implements SendVerificationEmailUseCase, GetUserViewUseCase, UpdateUserUseCase, UpdateUserLangUseCase {
 
     private final UserService userService;
 
@@ -71,5 +73,10 @@ public class UserUseCaseImpl implements SendVerificationEmailUseCase, UpdateUser
             return user;
         }
         return userService.save(user.updateLang(command.lang()));
+    }
+
+    @Override
+    public UserView getUser(UserId userId) {
+        return userService.findViewById(userId).orElseThrow(UserNotFoundException::new);
     }
 }

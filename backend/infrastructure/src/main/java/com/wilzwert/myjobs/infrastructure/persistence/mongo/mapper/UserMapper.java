@@ -18,7 +18,7 @@ import org.mapstruct.Mapper;
  * Date:12/03/2025
  * Time:15:48
  */
-@Mapper(componentModel = "spring", uses = IdMapper.class)
+@Mapper(componentModel = "spring", uses = {IdMapper.class, JobMapper.class})
 public interface UserMapper extends EntityMapper<User, MongoUser, RegisterUserRequest, RegisterUserCommand, UpdateUserRequest, UpdateUserCommand, UserResponse>, EntityViewMapper<UserView, MongoUser, UserResponse> {
     UpdateUserCommand toUpdateCommand(UpdateUserRequest updateUserRequest, UserId userId);
 }

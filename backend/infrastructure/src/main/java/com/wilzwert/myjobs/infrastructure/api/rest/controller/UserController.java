@@ -4,8 +4,6 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 import com.wilzwert.myjobs.core.domain.model.user.command.ChangePasswordCommand;
 import com.wilzwert.myjobs.core.domain.model.user.command.UpdateUserLangCommand;
 import com.wilzwert.myjobs.core.domain.model.user.command.ValidateEmailCommand;
-import com.wilzwert.myjobs.core.domain.model.user.exception.UserNotFoundException;
-import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.*;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
@@ -33,6 +31,8 @@ public class UserController {
 
     private final SendVerificationEmailUseCase sendVerificationEmailUseCase;
 
+    private final GetUserViewUseCase getUserViewUseCase;
+
     private final UpdateUserUseCase updateUserUseCase;
 
     private final UpdateUserLangUseCase updateUserLangUseCase;
@@ -45,10 +45,11 @@ public class UserController {
 
 
 
-    public UserController(ValidateEmailUseCase validateEmailUseCase, ChangePasswordUseCase changePasswordUseCase, SendVerificationEmailUseCase sendVerificationEmailUseCase, UpdateUserUseCase updateUserUseCase, UpdateUserLangUseCase updateUserLangUseCase, DeleteAccountUseCase deleteAccountUseCase, UserMapper userMapper, UserService userService) {
+    public UserController(ValidateEmailUseCase validateEmailUseCase, ChangePasswordUseCase changePasswordUseCase, SendVerificationEmailUseCase sendVerificationEmailUseCase, GetUserViewUseCase getUserViewUseCase, UpdateUserUseCase updateUserUseCase, UpdateUserLangUseCase updateUserLangUseCase, DeleteAccountUseCase deleteAccountUseCase, UserMapper userMapper, UserService userService) {
         this.validateEmailUseCase = validateEmailUseCase;
         this.changePasswordUseCase = changePasswordUseCase;
         this.sendVerificationEmailUseCase = sendVerificationEmailUseCase;
+        this.getUserViewUseCase = getUserViewUseCase;
         this.updateUserUseCase = updateUserUseCase;
         this.updateUserLangUseCase = updateUserLangUseCase;
         this.deleteAccountUseCase = deleteAccountUseCase;
@@ -66,8 +67,7 @@ public class UserController {
     @GetMapping()
     public UserResponse me(Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        User user = userService.findById(userDetails.getId()).orElseThrow(UserNotFoundException::new);
-        return userMapper.toResponse(user);
+        return userMapper.toResponseFromView(getUserViewUseCase.getUser(userDetails.getId()));
     }
 
     @PatchMapping()

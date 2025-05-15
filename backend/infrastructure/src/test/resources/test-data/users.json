@@ -10,9 +10,9 @@
   "role": "USER",
   "resetPasswordToken": "bd5b5ed5-dc88-4f1d-a51a-a04dec479920",
   "resetPasswordExpiresAt": "2029-03-29T13:44:37.817Z",
+  "jobFollowUpReminderDays": 7,
   "createdAt": "2025-03-29T09:46:09.475Z",
-  "updatedAt": "2025-03-29T12:43:16.332Z",
-  "jobs": []
+  "updatedAt": "2025-03-29T12:43:16.332Z"
 },
   {
     "id": "abcd4321-4321-4321-4321-123456789012",
@@ -27,8 +27,7 @@
     "resetPasswordToken": "50c8858f-c372-4c93-9439-860d4254b7f7",
     "resetPasswordExpiresAt": "2029-03-29T13:44:37.817Z",
     "createdAt": "2025-03-29T09:46:09.475Z",
-    "updatedAt": "2025-03-29T12:43:16.332Z",
-    "jobs": []
+    "updatedAt": "2025-03-29T12:43:16.332Z"
 },
   {
     "id": "abcd9876-9876-9876-9876-123456789012",
@@ -43,8 +42,7 @@
     "resetPasswordToken": "09907f19-ba4f-4953-8137-8fe77dc4f37c",
     "resetPasswordExpiresAt": "2029-03-29T13:44:37.817Z",
     "createdAt": "2025-03-29T09:46:09.475Z",
-    "updatedAt": "2025-03-29T12:43:16.332Z",
-    "jobs": []
+    "updatedAt": "2025-03-29T12:43:16.332Z"
 },
 {
   "id": "abcd6543-6543-6543-6543-123456789012",
@@ -56,8 +54,7 @@
   "lastName": "Password",
   "role": "USER",
   "createdAt": "2025-03-29T09:46:09.475Z",
-  "updatedAt": "2025-03-29T12:43:16.332Z",
-  "jobs": []
+  "updatedAt": "2025-03-29T12:43:16.332Z"
 },
 {
   "id": "abcd9876-9876-9876-9876-123456789012",
@@ -71,8 +68,7 @@
   "resetPasswordToken": "d61c8146-0e7c-4894-b0da-9903d69a7211",
   "resetPasswordExpiresAt": "2045-03-29T13:44:37.817Z",
   "createdAt": "2025-03-29T09:46:09.475Z",
-  "updatedAt": "2025-03-29T12:43:16.332Z",
-  "jobs": []
+  "updatedAt": "2025-03-29T12:43:16.332Z"
 },
 {
   "id": "dcba9876-9876-9876-9876-123456789012",
@@ -86,7 +82,6 @@
   "resetPasswordToken": "44a41127-a212-45e5-8170-3c57d2dc0caf",
   "resetPasswordExpiresAt": "2025-03-29T13:44:37.817Z",
   "createdAt": "2025-03-29T09:46:09.475Z",
-  "updatedAt": "2025-03-29T12:43:16.332Z",
-  "jobs": []
+  "updatedAt": "2025-03-29T12:43:16.332Z"
 }
 ]
