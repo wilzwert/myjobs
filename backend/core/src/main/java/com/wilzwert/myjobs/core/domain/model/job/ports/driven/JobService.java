@@ -10,7 +10,9 @@ import com.wilzwert.myjobs.core.domain.model.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -18,6 +20,7 @@ import java.util.Optional;
  * Time:15:29
  */
 public interface JobService {
+
     Optional<Job> findById(JobId id);
 
     Optional<Job> findByUrlAndUserId(String url, UserId userId);
@@ -27,6 +30,10 @@ public interface JobService {
     DomainPage<Job> findAllByUserIdPaginated(UserId userId, int page, int size, JobStatus status, String sort);
 
     DomainPage<Job> findByUserIdPaginated(UserId userId, DomainSpecification<Job> specification, int page, int size, String sort);
+
+    List<Job> find(DomainSpecification<Job> specification, String sortString);
+
+    Stream<Job> stream(DomainSpecification<Job> specification);
 
     Job save(Job job);
 

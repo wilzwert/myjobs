@@ -20,7 +20,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
-/**
+import java.util.stream.Stream;
+
+    /**
  * @author Wilhelm Zwertvaegher
  * Date:14/03/2025
  * Time:16:28
@@ -140,6 +142,20 @@ public class JobServiceAdapter implements JobService {
     }
 
     @Override
+    public List<Job> find(DomainSpecification<Job> specification, String sortString) {
+        Aggregation aggregation = aggregationService.createAggregation(specification, sortString == null ? "id,asc" : sortString);
+        List<MongoJob> jobs = aggregationService.aggregate(aggregation, "jobs", MongoJob.class);
+        return jobMapper.toDomain(jobs);
+    }
+
+    @Override
+    public Stream<Job> stream(DomainSpecification<Job> specification) {
+        Aggregation aggregation = aggregationService.createAggregation(specification, null);
+        Stream<MongoJob> stream = aggregationService.stream(aggregation, "jobs", MongoJob.class);
+        return stream.map(jobMapper::toDomain).onClose(stream::close);
+    }
+
+        @Override
     public Job save(Job job) {
         return this.jobMapper.toDomain(mongoJobRepository.save(this.jobMapper.toEntity(job)));
     }

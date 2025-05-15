@@ -390,4 +390,9 @@ public class Job extends DomainEntity<JobId> {
         return attachments;
     }
 
+    @Override
+    public String toString() {
+        return getId().toString()+ " [userId="+getUserId().toString()+",title="+getTitle() + "]";
+    }
+
 }

@@ -1,6 +1,5 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.entity;
 
-import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.user.Lang;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,11 +9,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.DocumentReference;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.Instant;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -73,13 +70,5 @@ public class MongoUser  {
     @Field(name = "job_follow_up_reminder_sent_at")
     @LastModifiedDate
     private Instant jobFollowUpReminderSentAt;
-
-    /* TODO ? refresh tokens
-    @ReadOnlyProperty
-    @DocumentReference(lookup="{'userId':?#{#self._id} }")
-    private List<MongoRefreshToken> refreshTokens;
-    */
-    @DocumentReference(lazy = true)
-    private List<Job> jobs;
 }
 

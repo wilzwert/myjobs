@@ -4,12 +4,17 @@ package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
+import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.Instant;
+import java.util.List;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -23,6 +28,8 @@ public class JobServiceAdapterIT extends AbstractBaseIntegrationTest {
 
     @Autowired
     private JobServiceAdapter underTest;
+
+    // public void shouldReturn
 
     @Test
     public void shouldReturnMappedJob_whenJobFound() {
@@ -165,7 +172,6 @@ public class JobServiceAdapterIT extends AbstractBaseIntegrationTest {
 
     @Test
     public void shouldCreateJob_andRetrieveCreatedJob() {
-
         JobId jobId = JobId.generate();
         UserId userId = UserId.generate();
         Job jobToSave = Job.builder()
@@ -192,6 +198,13 @@ public class JobServiceAdapterIT extends AbstractBaseIntegrationTest {
             assertEquals("https://www.example.com", result.getUrl());
         },
         () -> fail("Job should be retrievable after saving"));
+    }
+
+    @Test
+    public void shouldRetrieveJobToBeReminded() {
+        List<Job> jobs = underTest.find(DomainSpecification.JobFollowUpToRemind(Instant.now()), "updatedAt");
+        assertNotNull(jobs);
+        assertThat(jobs.size()).isEqualTo(3);
     }
     /*
     @Test
