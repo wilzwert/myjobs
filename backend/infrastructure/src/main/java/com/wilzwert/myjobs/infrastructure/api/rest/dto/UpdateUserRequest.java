@@ -3,7 +3,6 @@ package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
@@ -30,6 +29,5 @@ public class UpdateUserRequest {
     @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
     private String lastName;
 
-    @NotNull(message = "FIELD_CANNOT_BE_EMPTY")
     private Integer jobFollowUpReminderDays;
 }
