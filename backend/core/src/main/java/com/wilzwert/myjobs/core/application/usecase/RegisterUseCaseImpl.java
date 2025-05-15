@@ -13,6 +13,7 @@ import com.wilzwert.myjobs.core.domain.model.user.ports.driving.CheckUserAvailab
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.RegisterUseCase;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.ValidateEmailUseCase;
 
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -52,7 +53,8 @@ public class RegisterUseCaseImpl implements RegisterUseCase, CheckUserAvailabili
                     .firstName(registerUserCommand.firstName())
                     .lastName(registerUserCommand.lastName())
                     .jobFollowUpReminderDays(registerUserCommand.jobFollowUpReminderDays())
-                    .lang(registerUserCommand.lang()),
+                    .lang(registerUserCommand.lang())
+                    .jobs(Collections.emptyList()),
                 registerUserCommand.password()
         ));
 
