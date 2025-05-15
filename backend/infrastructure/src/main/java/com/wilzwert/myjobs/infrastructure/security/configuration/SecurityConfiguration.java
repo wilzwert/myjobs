@@ -110,7 +110,7 @@ public class SecurityConfiguration {
                                         "/api/auth/email-check",
                                         "/api/auth/username-check",
                                         "/api/user/password/**",
-                                        "/api/user/email/validation",
+                                        "/api/user/me/email/validation",
                                         /*"/"+storageProperties.getUploadDir()+"/**",
                                         apiDocProperties.getApiDocsPath()+"/**",
                                         apiDocProperties.getSwaggerPath()+"/**",*/
