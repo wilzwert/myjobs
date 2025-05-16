@@ -10,12 +10,12 @@
     <p th:style="${paragraphStyle}" th:text="#{email.jobs_reminder.intro(${user.jobFollowUpReminderDays})}"></p>
 
     <p th:style="${paragraphStyle}" th:each="job: ${jobs}">
-        <span th:text="${job.title}"></span><br>
+        <span th:style="${titleStyle}" th:text="${job.title}"></span><br>
+        <span th:text="${job.company}"></span> -
         <span th:text="#{${'job.status.'+job.status}}"></span><br>
-        <a th:href="${jobsUrls.get(job.id)}" th:text="#{email.jobs_reminder.action.job}"></a>
+        <a th:style="${linkStyle}" th:href="${jobsUrls.get(job.id)}" th:text="#{email.jobs_reminder.action.job}"></a>
         <hr>
     </p>
-
 
     <p th:style="${paragraphStyle}">
         <a th:style="${buttonStyle}" th:href="${url}" th:text="#{email.common.action.go_to_account}" ></a>
