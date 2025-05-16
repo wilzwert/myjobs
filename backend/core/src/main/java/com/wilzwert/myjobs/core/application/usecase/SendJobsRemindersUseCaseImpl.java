@@ -4,17 +4,16 @@ package com.wilzwert.myjobs.core.application.usecase;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
 import com.wilzwert.myjobs.core.domain.model.user.User;
+import com.wilzwert.myjobs.core.domain.model.user.batch.UsersJobsRemindersBatchResult;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.JobReminderMessageProvider;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.SendJobsRemindersUseCase;
-import com.wilzwert.myjobs.core.domain.shared.batch.UsersJobsBatchResult;
 import com.wilzwert.myjobs.core.domain.shared.bulk.BulkServiceSaveResult;
 import com.wilzwert.myjobs.core.domain.shared.collector.UsersJobsBatchCollector;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 
 import java.time.Instant;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -38,29 +37,33 @@ public class SendJobsRemindersUseCaseImpl implements SendJobsRemindersUseCase {
         this.jobReminderMessageProvider = jobReminderMessageProvider;
     }
 
-    private UsersJobsBatchResult doSend(Map<User, Set<Job>> usersToJobs) {
-        System.out.println("should send to "+usersToJobs.size()+" users");
-        usersToJobs.forEach((u, j) -> System.out.println("Should send "+j.size()+" jobs to user "+u.getId()));
-
+    private UsersJobsRemindersBatchResult doSend(Map<User, Set<Job>> usersToJobs) {
+        List<String> errors = new ArrayList<>();
         Set<User> usersToSave = new HashSet<>();
         for(Map.Entry<User, Set<Job>> entry : usersToJobs.entrySet()) {
-            jobReminderMessageProvider.send(entry.getKey(), entry.getValue());
-            usersToSave.add(entry.getKey());
+
+            try {
+                jobReminderMessageProvider.send(entry.getKey(), entry.getValue());
+                usersToSave.add(entry.getKey());
+            }
+            catch (Exception e) {
+                errors.add("An error occurred while sending reminders to "+entry.getKey()+": "+e.getMessage());
+            }
         }
         usersToSave.forEach(User::saveJobFollowUpReminderSentAt);
         BulkServiceSaveResult serviceResult = userService.saveAll(usersToSave);
 
-        return new UsersJobsBatchResult(usersToJobs.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size())), serviceResult);
+        return new UsersJobsRemindersBatchResult(0, 0, errors, errors.size(), serviceResult.totalCount()-serviceResult.updatedCount());
     }
 
     @Override
-    public List<UsersJobsBatchResult> sendJobsReminders(int batchSize) {
+    public List<UsersJobsRemindersBatchResult> sendJobsReminders(int batchSize) {
         // load jobs to remind...important : as UsersJobsBatchCollector expects Jobs to be pre-sorted by userId
         // the sort is configured in the DomainSpecification.JobFollowUpToRemind spec
         Stream<Job> jobsToRemind = jobService.stream(DomainSpecification.JobFollowUpToRemind(Instant.now()));
 
         return jobsToRemind.collect(
-                new UsersJobsBatchCollector(
+                new UsersJobsBatchCollector<>(
                         userIds -> userService.findMinimal(DomainSpecification.In("id", userIds)),
                         this::doSend,
                         batchSize

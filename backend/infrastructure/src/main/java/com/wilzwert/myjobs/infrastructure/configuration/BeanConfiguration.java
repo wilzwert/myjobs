@@ -3,11 +3,13 @@ package com.wilzwert.myjobs.infrastructure.configuration;
 
 import com.wilzwert.myjobs.core.application.usecase.*;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
+import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.*;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.extractor.JobMetadataExtractorService;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.extractor.impl.DefaultJobMetadataExtractorService;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.extractor.impl.HtmlJobMetadataExtractor;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.extractor.impl.JsonLdJobMetadataExtractor;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.SendJobsRemindersUseCase;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.HtmlSanitizer;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.fetcher.HtmlFetcherService;
@@ -86,5 +88,10 @@ public class BeanConfiguration {
     @Bean
     ExtractJobMetadataUseCase extractJobMetadataUseCase(JobMetadataService jobMetadataService) {
         return new ExtractJobMetadataUseCaseImpl(jobMetadataService);
+    }
+
+    @Bean
+    SendJobsRemindersUseCase sendJobsRemindersUseCase(JobService jobService, UserService userService, JobReminderMessageProvider messageProvider) {
+        return new SendJobsRemindersUseCaseImpl(jobService, userService, messageProvider);
     }
 }

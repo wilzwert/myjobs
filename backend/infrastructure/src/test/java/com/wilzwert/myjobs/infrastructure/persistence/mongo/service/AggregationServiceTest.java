@@ -127,7 +127,7 @@ class AggregationServiceTest {
 
         List<AggregationOperation> operations = aggregation.getPipeline().getOperations();
         System.out.println(operations);
-        assertThat(operations).hasSize(10);
+        assertThat(operations).hasSize(12);
         // service is expected to auto-add a lot of AggregationOperation
         // TODO
         /*assertThat(operations.get(0)).isInstanceOf(MatchOperation.class); // match user_id

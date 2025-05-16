@@ -29,9 +29,13 @@ public class AggregationService {
 
     private Aggregation createAggregation(List<AggregationOperation> operationList, String sortString) {
         if(operationList.isEmpty()) {
+            // in case we have no operation, we create an aggregation with either the sortString
+            // which will default to default sort if sortString is null
             return Aggregation.newAggregation(getSortOperation(sortString));
         }
         Aggregation aggregation =  Aggregation.newAggregation(operationList);
+        // in case we have operations, we only sort if a sortString is explicitly passed, as operationList
+        // could already hold a sort operation
         if(sortString != null) {
             aggregation.getPipeline().add(getSortOperation(sortString));
         }

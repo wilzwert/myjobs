@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  * Time:08:36
  */
 
-public class UsersJobsBatchCollector implements Collector<Job, Map<UserId, SortedSet<Job>>, List<UsersJobsBatchResult>> {
+public class UsersJobsBatchCollector<T> implements Collector<Job, Map<UserId, SortedSet<Job>>, List<T>> {
 
 
     /**
@@ -37,7 +37,7 @@ public class UsersJobsBatchCollector implements Collector<Job, Map<UserId, Sorte
     /**
      * The function used to do the batch processing
      */
-    private final Function<Map<User, Set<Job>>, UsersJobsBatchResult> batchProcessing;
+    private final Function<Map<User, Set<Job>>, T> batchProcessing;
 
     /**
      * Use for state keeping while accumulating
@@ -52,9 +52,9 @@ public class UsersJobsBatchCollector implements Collector<Job, Map<UserId, Sorte
     /**
      * The results of the batch processing
      */
-    private final List<UsersJobsBatchResult> results = new ArrayList<>();
+    private final List<T> results = new ArrayList<>();
 
-    public UsersJobsBatchCollector(Function<List<UserId>, Map<UserId, User>> findUsersFunction, Function<Map<User, Set<Job>>, UsersJobsBatchResult> batchProcessing, int batchSize) {
+    public UsersJobsBatchCollector(Function<List<UserId>, Map<UserId, User>> findUsersFunction, Function<Map<User, Set<Job>>, T> batchProcessing, int batchSize) {
         this.findUsersFunction = findUsersFunction;
         this.batchProcessing = batchProcessing;
         this.batchSize = batchSize;
@@ -100,7 +100,7 @@ public class UsersJobsBatchCollector implements Collector<Job, Map<UserId, Sorte
     }
 
     @Override
-    public Function<Map<UserId, SortedSet<Job>>, List<UsersJobsBatchResult>> finisher() {
+    public Function<Map<UserId, SortedSet<Job>>, List<T>> finisher() {
         return userIdsToJobs -> {
             if(!userIdsToJobs.isEmpty()) {
                 results.add(batchProcessing.apply(load(userIdsToJobs)));

@@ -53,8 +53,8 @@ public class JobsReminderMessageProviderAdapterIT extends AbstractBaseIntegratio
 
     @ParameterizedTest
     @CsvSource({
-            "'EN', 'Late follow-up jobs', 'Some jobs require your attention, as they had no activity in the past {0} days'",
-            "'FR', 'Jobs à mettre à jour', 'Certains jobs demandent votre attention : il n\\'ont eu aucune activité depuis 7 jours ou plus.'"
+            "'EN', 'Late follow-up jobs', 'Some jobs require your attention, as they had no activity in the past 7 days'",
+            "'FR', 'Jobs à mettre à jour', 'Certains jobs demandent votre attention : il n&#39;ont eu aucune activité depuis 7 jours ou plus.'"
     })
     public void shouldSendMail(String lang, String expectedSubject, String expectedHtml) throws Exception {
         UserId userId = UserId.generate();
@@ -64,6 +64,7 @@ public class JobsReminderMessageProviderAdapterIT extends AbstractBaseIntegratio
                 .url("http://www.example.com/1")
                 .status(JobStatus.PENDING)
                 .title("Job 1")
+                .company("Company")
                 .description("Job 1 description")
                 .build()
         ));
@@ -90,6 +91,7 @@ public class JobsReminderMessageProviderAdapterIT extends AbstractBaseIntegratio
 
         assertThat(message.getSubject()).isEqualTo(expectedSubject);
         String htmlBody = EmailUtility.extractHtmlContent(message);
+        System.out.println(htmlBody);
         assertThat(htmlBody.indexOf(expectedHtml)).isGreaterThan(-1);
         assertThat(message.getAllRecipients()[0].toString()).isEqualTo("John <user@example.com>");
     }

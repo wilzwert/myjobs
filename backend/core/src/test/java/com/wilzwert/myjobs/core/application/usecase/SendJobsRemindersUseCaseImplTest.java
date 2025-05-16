@@ -6,9 +6,10 @@ import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
+import com.wilzwert.myjobs.core.domain.model.user.batch.UsersJobsRemindersBatchResult;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.JobReminderMessageProvider;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
-import com.wilzwert.myjobs.core.domain.shared.batch.UsersJobsBatchResult;
+import com.wilzwert.myjobs.core.domain.shared.bulk.BulkServiceSaveResult;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -106,10 +107,13 @@ class SendJobsRemindersUseCaseImplTest {
                     Map.of(testUsers.getFirst().getId(), testUsers.getFirst())
             );
 
-        List<UsersJobsBatchResult> result = underTest.sendJobsReminders(1);
+        when(userService.saveAll(any())).thenReturn(new BulkServiceSaveResult(2, 2, 0, 0));
+
+        List<UsersJobsRemindersBatchResult> result = underTest.sendJobsReminders(1);
         assertNotNull(result);
         System.out.println(result);
         verify(userService, times(2)).findMinimal(any());
+        verify(userService, times(2)).saveAll(any());
         verify(jobReminderMessageProvider, times(2)).send(any(User.class), any());
     }
 }

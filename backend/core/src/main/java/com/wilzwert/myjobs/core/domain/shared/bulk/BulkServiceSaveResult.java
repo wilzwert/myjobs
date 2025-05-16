@@ -7,4 +7,4 @@ package com.wilzwert.myjobs.core.domain.shared.bulk;
  * Time:12:03
  */
 
-public record BulkServiceSaveResult(int updatedCount, int createdCount, int deletedCount) {}
+public record BulkServiceSaveResult(int totalCount, int updatedCount, int createdCount, int deletedCount) {}

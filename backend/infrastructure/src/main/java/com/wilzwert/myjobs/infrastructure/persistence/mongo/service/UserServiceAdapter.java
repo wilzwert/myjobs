@@ -1,6 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 
 
+import com.mongodb.bulk.BulkWriteResult;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
@@ -18,7 +19,12 @@ import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoUser
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.mongodb.core.BulkOperations;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,26 +47,28 @@ public class UserServiceAdapter implements UserService {
     private final UserMapper userMapper;
     private final JobMapper jobMapper;
     private final MongoRefreshTokenRepository mongoRefreshTokenRepository;
+    private final MongoTemplate mongoTemplate;
 
-    public UserServiceAdapter(final MongoUserRepository mongoUserRepository, final MongoJobRepository mongoJobRepository, final AggregationService aggregationService, final UserMapper userMapper, JobMapper jobMapper, MongoRefreshTokenRepository mongoRefreshTokenRepository) {
+    public UserServiceAdapter(final MongoUserRepository mongoUserRepository, final MongoJobRepository mongoJobRepository, final AggregationService aggregationService, final UserMapper userMapper, JobMapper jobMapper, MongoRefreshTokenRepository mongoRefreshTokenRepository, MongoTemplate mongoTemplate) {
         this.mongoUserRepository = mongoUserRepository;
         this.mongoJobRepository = mongoJobRepository;
         this.aggregationService = aggregationService;
         this.userMapper = userMapper;
         this.jobMapper = jobMapper;
         this.mongoRefreshTokenRepository = mongoRefreshTokenRepository;
+        this.mongoTemplate = mongoTemplate;
     }
 
     @Override
     public List<UserView> findView(DomainSpecification<User> specifications) {
         Aggregation aggregation = aggregationService.createAggregation(specifications, "id");
-        return this.userMapper.toDomainView(aggregationService.aggregate(aggregation, "users", MongoUser.class));
+        return userMapper.toDomainView(aggregationService.aggregate(aggregation, "users", MongoUser.class));
     }
 
     @Override
     public Map<UserId, User> findMinimal(DomainSpecification<User> specifications) {
         Aggregation aggregation = aggregationService.createAggregation(specifications, "id");
-        return this.userMapper.toDomain(aggregationService.aggregate(aggregation, "users", MongoUser.class))
+        return userMapper.toDomain(aggregationService.aggregate(aggregation, "users", MongoUser.class))
                 .stream()
                 .collect(Collectors.toMap(User::getId, user -> user));
     }
@@ -101,8 +109,7 @@ public class UserServiceAdapter implements UserService {
     }
 
     private Optional<User> getFullUser(Optional<MongoUser> user) {
-        List<MongoJob> mongoJobs = mongoJobRepository.findByUserId(user.get().getId());
-        return user.map(u -> userMapper.toDomain(u).completeWith(jobMapper.toDomain(mongoJobs)));
+        return user.map(u -> userMapper.toDomain(u).completeWith(jobMapper.toDomain(mongoJobRepository.findByUserId(u.getId()))));
     }
 
     @Override
@@ -129,22 +136,22 @@ public class UserServiceAdapter implements UserService {
         }
     )
     public User save(User user) {
-        return this.userMapper.toDomain(mongoUserRepository.save(this.userMapper.toEntity(user)));
+        return userMapper.toDomain(mongoUserRepository.save(this.userMapper.toEntity(user)));
     }
 
 
     @Override
     @Transactional
     public User saveUserAndJob(User user, Job job) {
-        this.mongoJobRepository.save(this.jobMapper.toEntity(job));
-        return this.save(user);
+        mongoJobRepository.save(this.jobMapper.toEntity(job));
+        return save(user);
     }
 
     @Override
     @Transactional
     public User deleteJobAndSaveUser(User user, Job job) {
-        this.mongoJobRepository.delete(this.jobMapper.toEntity(job));
-        return this.userMapper.toDomain(this.mongoUserRepository.save(this.userMapper.toEntity(user)));
+        mongoJobRepository.delete(this.jobMapper.toEntity(job));
+        return userMapper.toDomain(this.mongoUserRepository.save(this.userMapper.toEntity(user)));
     }
 
     @Override
@@ -181,7 +188,17 @@ public class UserServiceAdapter implements UserService {
 
     @Override
     public BulkServiceSaveResult saveAll(Set<User> users) {
+        BulkOperations bulkOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.ORDERED, MongoUser.class);
 
-        return new BulkServiceSaveResult(0, 0, 0);
+        List<MongoUser> mongoUsers = userMapper.toEntity(users.stream().toList());
+
+        for(MongoUser user : mongoUsers) {
+            Update update = new Update();
+            update.set("jobFollowUpReminderSentAt", user.getJobFollowUpReminderSentAt());
+            bulkOps.updateOne(Query.query(Criteria.where("_id").is(user.getId())), update);
+        }
+
+        BulkWriteResult result = bulkOps.execute();
+        return new BulkServiceSaveResult(users.size(), result.getModifiedCount(), result.getInsertedCount(), result.getDeletedCount());
     }
 }
