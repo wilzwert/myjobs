@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -43,6 +44,7 @@ public class UserUseCaseImplTest {
                 .password("password")
                 .firstName("firstName")
                 .lastName("lastName")
+                .jobs(Collections.emptyList())
                 .build();
     }
 

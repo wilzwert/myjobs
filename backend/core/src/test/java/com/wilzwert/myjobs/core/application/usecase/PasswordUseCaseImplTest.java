@@ -18,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -67,6 +68,7 @@ public class PasswordUseCaseImplTest {
                 .lastName("lastName")
                 .password("OldPassword1!")
                 .resetPasswordExpiresAt(Instant.now().plusSeconds(600))
+                .jobs(Collections.emptyList())
                 .build();
         ArgumentCaptor<User> argument = ArgumentCaptor.forClass(User.class);
         when(userService.findByResetPasswordToken("passwordResetToken")).thenReturn(Optional.of(user));
@@ -117,6 +119,7 @@ public class PasswordUseCaseImplTest {
                 .lastName("lastName")
                 .password("OldPassword1!")
                 .resetPasswordExpiresAt(Instant.MIN)
+                .jobs(Collections.emptyList())
                 .build();
         ArgumentCaptor<User> argument = ArgumentCaptor.forClass(User.class);
         when(userService.findByEmail("test@example.com")).thenReturn(Optional.of(user));
@@ -166,6 +169,7 @@ public class PasswordUseCaseImplTest {
                 .lastName("lastName")
                 .password("OldPassword1!")
                 .resetPasswordExpiresAt(Instant.MIN)
+                .jobs(Collections.emptyList())
                 .build();
         ArgumentCaptor<User> argument = ArgumentCaptor.forClass(User.class);
 

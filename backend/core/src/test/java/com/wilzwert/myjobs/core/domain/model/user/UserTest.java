@@ -73,6 +73,7 @@ public class UserTest {
                 .username("username")
                 .firstName("firstName")
                 .lastName("lastName")
+                .jobs(Collections.emptyList())
                 .build();
         Instant after = Instant.now();
 
@@ -164,7 +165,18 @@ public class UserTest {
     @Test
     public void shouldCreateNewUser() {
         Instant before = Instant.now();
-        User user = User.create(User.builder().email("test@example.com").password("password").username("username").firstName("firstName").lastName("lastName").jobFollowUpReminderDays(7).lang(Lang.FR), "Abcd1234!");
+        User user = User.create(
+                User.builder()
+                    .email("test@example.com")
+                    .password("password")
+                    .username("username")
+                    .firstName("firstName")
+                    .lastName("lastName")
+                    .jobFollowUpReminderDays(7)
+                    .lang(Lang.FR)
+                    .jobs(Collections.emptyList()),
+        "Abcd1234!"
+        );
         Instant after = Instant.now();
         assertNotNull(user);
         assertNotNull(user.getId());
@@ -200,6 +212,7 @@ public class UserTest {
                 .emailStatus(EmailStatus.VALIDATED)
                 .emailValidationCode("code")
                 .jobFollowUpReminderDays(6)
+                .jobs(Collections.emptyList())
                 .build();
 
         Instant before = Instant.now();
