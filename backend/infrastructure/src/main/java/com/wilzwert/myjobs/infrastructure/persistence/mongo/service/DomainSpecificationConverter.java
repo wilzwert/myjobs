@@ -136,7 +136,7 @@ public class DomainSpecificationConverter {
      */
     public List<AggregationOperation> domainSpecificationToAggregationOperation(DomainSpecification.JobFollowUpToRemind domainSpecification) {
         List<AggregationOperation> aggregationOperations = new ArrayList<>();
-
+        // filter by status
         aggregationOperations.add(Aggregation.match(Criteria.where("status").in(JobStatus.activeStatuses())));
 
         // lookup users collection
@@ -155,7 +155,7 @@ public class DomainSpecificationConverter {
                                         .multiplyBy(86400000)
                         )
                 ).build());
-        // filter by status
+
 
         aggregationOperations.add(Aggregation.addFields()
                 .addFieldWithValue("updated_at_millis", ConvertOperators.ToLong.toLong("$updated_at")).build());
