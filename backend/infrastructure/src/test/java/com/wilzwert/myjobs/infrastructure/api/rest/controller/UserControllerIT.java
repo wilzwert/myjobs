@@ -82,7 +82,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
             assertEquals("OtherExisting", userResponse.getFirstName());
             assertEquals("OtherUser", userResponse.getLastName());
             assertEquals(Lang.EN, userResponse.getLang());
-            assertEquals("2025-03-29T09:46:09.475Z", userResponse.getCreatedAt());
+            assertEquals("2025-03-29T09:46:09.475Z", userResponse.getCreatedAt().toString());
             assertEquals("PENDING", userResponse.getEmailStatus());
         }
     }
@@ -216,7 +216,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
             assertEquals("OtherUserUpdated", userResponse.getLastName());
             assertEquals(12, userResponse.getJobFollowUpReminderDays());
             assertEquals(Lang.EN, userResponse.getLang());
-            assertEquals("2025-03-29T09:46:09.475Z", userResponse.getCreatedAt());
+            assertEquals("2025-03-29T09:46:09.475Z", userResponse.getCreatedAt().toString());
             assertEquals("PENDING", userResponse.getEmailStatus());
 
             User foundUser = userService.findByEmail("otherexisting-updated@example.com").orElse(null);
