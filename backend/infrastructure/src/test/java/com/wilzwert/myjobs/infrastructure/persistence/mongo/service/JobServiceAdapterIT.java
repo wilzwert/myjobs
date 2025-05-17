@@ -202,8 +202,9 @@ public class JobServiceAdapterIT extends AbstractBaseIntegrationTest {
 
     @Test
     public void shouldRetrieveJobToBeReminded() {
-        List<Job> jobs = underTest.find(DomainSpecification.JobFollowUpToRemind(Instant.now()), "updatedAt");
+        List<Job> jobs = underTest.find(DomainSpecification.JobFollowUpToRemind(Instant.now()));
         assertNotNull(jobs);
+        System.out.println(jobs);
         assertThat(jobs.size()).isEqualTo(3);
     }
     /*

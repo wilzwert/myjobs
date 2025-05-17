@@ -20,6 +20,12 @@ public class BaseSalary {
         this.numberValue = null;
     }
 
+    public BaseSalary(String stringValue) {
+        this.currency = null;
+        this.value = null;
+        this.numberValue = stringValue;
+    }
+
     public BaseSalary(String currency, BaseSalaryValue value) {
         this.currency = currency;
         this.value = value;

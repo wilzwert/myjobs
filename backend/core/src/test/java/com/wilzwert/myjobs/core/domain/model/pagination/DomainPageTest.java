@@ -3,6 +3,8 @@ package com.wilzwert.myjobs.core.domain.model.pagination;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -53,7 +55,7 @@ class DomainPageTest {
                 .pageSize(5)
                 .totalElementsCount(0)
                 .build();
-
+        System.out.println(page.getContent());
         assertNotNull(page.getContent());
         assertTrue(page.getContent().isEmpty());
         assertEquals(5, page.getPageSize());
@@ -63,21 +65,54 @@ class DomainPageTest {
     }
 
     @Test
-    void shouldCalculatePageSizeWhenDefault() {
-        List<String> content = List.of("A", "B");
-
-        DomainPage<String> page = DomainPage.<String>builder(content)
+    void shouldComputePagesCount() {
+        DomainPage<String> page = DomainPage.<String>builder(null)
                 .currentPage(0)
+                .pageSize(5)
+                .totalElementsCount(52)
                 .build();
 
-        assertEquals(2, page.getPageSize()); // Default: size of content
-        assertEquals(2, page.getTotalElementsCount());
-        assertEquals(1, page.getPageCount());
+        assertNotNull(page.getContent());
+        assertEquals(11, page.getPageCount());
+        assertTrue(page.isNotLast());
     }
 
     @Test
-    void shouldRespectUnmodifiableContent() {
+    void whenPageSizeNotSet_thenShouldThrowException() {
         List<String> content = List.of("A", "B");
+
+        assertThrows(IllegalStateException.class, () -> DomainPage.builder(content)
+                .currentPage(0)
+                .totalElementsCount(10)
+                .build()
+        );
+    }
+
+    @Test
+    void whenTotalElementsCountNotSet_thenShouldThrowException() {
+        List<String> content = List.of("A", "B");
+
+        assertThrows(IllegalStateException.class, () -> DomainPage.builder(content)
+                .currentPage(0)
+                .pageSize(10)
+                .build()
+        );
+    }
+    @Test
+    void whenCurrentPageNotSet_thenShouldThrowException() {
+        List<String> content = List.of("A", "B");
+
+        assertThrows(IllegalStateException.class, () -> DomainPage.builder(content)
+                .totalElementsCount(20)
+                .pageSize(10)
+                .build()
+        );
+    }
+
+
+    @Test
+    void shouldRespectUnmodifiableContent() {
+        List<String> content = new ArrayList<>(List.of("A", "B"));
 
         DomainPage<String> page = DomainPage.singlePage(content);
 

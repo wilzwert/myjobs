@@ -12,9 +12,9 @@ import java.util.List;
  */
 
 public class UsersJobsRemindersBatchResult extends UsersJobsBatchResult {
-    private int sendErrorsCount;
+    private final int sendErrorsCount;
 
-    private int saveErrorsCount;
+    private final int saveErrorsCount;
 
     public UsersJobsRemindersBatchResult(int usersCount, int jobsCount, List<String> errors, int sendErrorsCount, int saveErrorsCount) {
         super(usersCount, jobsCount, errors);

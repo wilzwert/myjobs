@@ -20,9 +20,9 @@ import java.util.Set;
  */
 public interface UserService {
 
-    List<UserView> findView(DomainSpecification<User> specifications);
+    List<UserView> findView(DomainSpecification specifications);
 
-    Map<UserId, User> findMinimal(DomainSpecification<User> specifications);
+    Map<UserId, User> findMinimal(DomainSpecification specifications);
 
     Optional<User> findByEmail(String email);
 

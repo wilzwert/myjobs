@@ -1,6 +1,8 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 
+import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.exception.UnsupportedDomainCriterionException;
 import org.springframework.data.domain.Sort;
@@ -8,10 +10,8 @@ import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -23,11 +23,45 @@ import java.util.List;
 @Service
 public class DomainSpecificationConverter {
 
-    public <T> List<AggregationOperation> convert(DomainSpecification<T> specifications) {
+    private final static Map<Class<?>, Function<DomainSpecification.FieldSpecificationWithValuesList<?>, List<?>>> valuesClassMap = Map.of(
+        UserId.class, spec -> spec.getValues().stream().map(u -> ((UserId) u).value()).toList(),
+        JobId.class, spec -> spec.getValues().stream().map(u -> ((JobId) u).value()).toList()
+    );
+
+    private final static Map<Class<?>, Function<DomainSpecification.FieldSpecificationWithSingleValue<?>, ?>> valueClassMap = Map.of(
+            UserId.class, spec -> ((UserId) spec.getValue()).value(),
+            JobId.class, spec -> ((JobId) spec.getValue()).value()
+    );
+
+    public List<AggregationOperation> convert(DomainSpecification specifications) {
         if (specifications == null) {
             return Collections.emptyList();
         }
         return domainSpecificationToAggregationOperation(specifications);
+    }
+
+    public String convertField(String field) {
+        if("id".equals(field)) {
+            return "_id";
+        }
+        return field.replaceAll("([a-z])([A-Z]+)", "$1_$2").toLowerCase();
+    }
+
+    private <S extends DomainSpecification.FieldSpecificationWithSingleValue<V>, V> Object convertValue(S spec) {
+        Function<DomainSpecification.FieldSpecificationWithSingleValue<?>, ?> function = valueClassMap.get(spec.getValueClass());
+        if(function == null) {
+            return spec.getValue();
+        }
+        return function.apply(spec);
+
+    }
+
+    private <S extends DomainSpecification.FieldSpecificationWithValuesList<V>, V> List<?> convertValues(S spec) {
+        Function<DomainSpecification.FieldSpecificationWithValuesList<?>, List<?>> function = valuesClassMap.get(spec.getValueClass());
+        if(function == null) {
+            return spec.getValues();
+        }
+        return function.apply(spec);
     }
 
     /**
@@ -35,74 +69,74 @@ public class DomainSpecificationConverter {
      * @param domainSpecification a query criterion received from the domain
      * @return a MongoDb Criteria
      */
-    public <T> Criteria domainCriterionToCriteria(DomainSpecification<T> domainSpecification) {
+    public Criteria domainCriterionToCriteria(DomainSpecification domainSpecification) {
         switch (domainSpecification) {
             case null -> {
                 System.out.println("criteria is null because domainSpecification is null");
                 return null;
             }
-            case DomainSpecification.Eq<T, ?> c -> {
+            case DomainSpecification.Eq<?> c -> {
                 System.out.println("criteria is EQ for " + c.getField());
-                return Criteria.where(c.getField()).is(c.getValue());
+                return Criteria.where(convertField(c.getField())).is(convertValue(c));
             }
-            case DomainSpecification.In<T, ?> c -> {
+            case DomainSpecification.In<?> c -> {
                 System.out.println("criteria is In for " + c.getField());
-                return Criteria.where(c.getField()).in(c.getValues());
+                System.out.println(c.getValues());
+                return Criteria.where(convertField(c.getField())).in(convertValues(c));
             }
-            case DomainSpecification.Lt<T, ?> c -> {
+            case DomainSpecification.Lt<?> c -> {
                 System.out.println("criteria is Lt for " + c.getField());
-                return Criteria.where(c.getField()).lt(c.getValue());
+                return Criteria.where(convertField(c.getField())).lt(convertValue(c));
             }
-            case DomainSpecification.Or<T> c -> {
+            case DomainSpecification.Or c -> {
                 System.out.println("criteria is Or");
                 return new Criteria().orOperator(c.getSpecifications().stream().map(this::domainCriterionToCriteria).toList());
             }
-            case DomainSpecification.And<T> c -> {
+            case DomainSpecification.And c -> {
                 System.out.println("criteria is And");
                 return new Criteria().andOperator(c.getSpecifications().stream().map(this::domainCriterionToCriteria).toList());
             }
-            default -> {
-            }
+            default -> throw new UnsupportedDomainCriterionException(domainSpecification.getClass().getName());
         }
+    }
 
-        throw new UnsupportedDomainCriterionException(domainSpecification.getClass().getName());
+    private AggregationOperation domainSpecificationSortToAggregationOperation(DomainSpecification.Sort sort) {
+        System.out.println("converting sort");
+        return Aggregation.sort(sort.getSortDirection().equals(DomainSpecification.SortDirection.ASC) ? Sort.Direction.ASC : Sort.Direction.DESC, convertField(sort.getFieldName()));
     }
 
     /**
      *
-     * @param domainSpecification a criterion received from the domain
-     * @return a List or AggregationOperation (MatchOperation) to be used in an Aggregation pipeline
+     * @param domainSpecification a spec received from the domain
+     * @return a List or AggregationOperation (match, lookup, sort...) to be used in an Aggregation pipeline
      */
-    public <T> List<AggregationOperation> domainSpecificationToAggregationOperation(DomainSpecification<T> domainSpecification) {
-        System.out.println("adding "+domainSpecification.getClass().getName());
-
-        if(domainSpecification instanceof DomainSpecification.Sort<T> sort) {
-        return List.of(Aggregation.sort(sort.getSortDirection().equals(DomainSpecification.SortDirection.ASC) ? Sort.Direction.ASC : Sort.Direction.DESC, sort.getFieldName()));
+    public  List<AggregationOperation> domainSpecificationToAggregationOperation(DomainSpecification domainSpecification) {
+        if(domainSpecification instanceof DomainSpecification.Sort sort) {
+            return List.of(domainSpecificationSortToAggregationOperation(sort));
         }
 
-        if(domainSpecification instanceof DomainSpecification.FullSpecification<T> fullSpecification) {
-            return domainSpecificationToAggregationOperation(fullSpecification);
+        List<AggregationOperation> result;
+        if(domainSpecification instanceof DomainSpecification.FullSpecification fullSpecification) {
+            result = domainSpecificationToAggregationOperation(fullSpecification);
+        }
+        else {
+            result = new ArrayList<>(List.of(Aggregation.match(domainCriterionToCriteria(domainSpecification))));
         }
 
-        return List.of(Aggregation.match(domainCriterionToCriteria(domainSpecification)));
+        result.addAll(domainSpecification.getSort().stream().map(this::domainSpecificationSortToAggregationOperation).toList());
+        return result;
     }
 
-    private <T> List<AggregationOperation> domainSpecificationToAggregationOperation(DomainSpecification.FullSpecification<T> fullDomainSpecification) {
-        List<AggregationOperation> operations = null;
-        if(fullDomainSpecification instanceof DomainSpecification.UserJobFollowUpReminderThreshold<T> userJobFollowUpReminderThreshold) {
-            operations = domainSpecificationToAggregationOperation(userJobFollowUpReminderThreshold);
+    private List<AggregationOperation> domainSpecificationToAggregationOperation(DomainSpecification.FullSpecification fullDomainSpecification) {
+        if(fullDomainSpecification instanceof DomainSpecification.UserJobFollowUpReminderThreshold userJobFollowUpReminderThreshold) {
+            return domainSpecificationToAggregationOperation(userJobFollowUpReminderThreshold);
         }
 
         if(fullDomainSpecification instanceof DomainSpecification.JobFollowUpToRemind jobFollowUpToRemind ) {
-            operations = domainSpecificationToAggregationOperation(jobFollowUpToRemind);
+            return domainSpecificationToAggregationOperation(jobFollowUpToRemind);
         }
 
-        if(operations == null) {
-            throw new UnsupportedDomainCriterionException(fullDomainSpecification.getClass().getName());
-        }
-
-        operations.addAll(fullDomainSpecification.getNested().stream().map(this::domainSpecificationToAggregationOperation).flatMap(Collection::stream).toList());
-        return operations;
+        throw new UnsupportedDomainCriterionException(fullDomainSpecification.getClass().getName());
 
     }
 
@@ -112,8 +146,8 @@ public class DomainSpecificationConverter {
      * @param domainSpecification the Specification received from the domain
      * @return a List or AggregationOperation to be used in an Aggregation pipeline
      */
-    public <T> List<AggregationOperation> domainSpecificationToAggregationOperation(DomainSpecification.UserJobFollowUpReminderThreshold<T> domainSpecification) {
-        return List.of(
+    public List<AggregationOperation> domainSpecificationToAggregationOperation(DomainSpecification.UserJobFollowUpReminderThreshold domainSpecification) {
+    return new ArrayList<>(List.of(
                 Aggregation.addFields()
                     .addFieldWithValue(
                             "jobFollowUpReminderThreshold",
@@ -125,7 +159,7 @@ public class DomainSpecificationConverter {
                             )
                     ).build(),
                 Aggregation.match(Criteria.where("jobFollowUpReminderSentAt").lt("jobFollowUpReminderThreshold"))
-        );
+        ));
     }
 
     /**
@@ -156,22 +190,33 @@ public class DomainSpecificationConverter {
                         )
                 ).build());
 
-
+        // convert job's updatedAt Instant to a long (in millis)
         aggregationOperations.add(Aggregation.addFields()
                 .addFieldWithValue("updated_at_millis", ConvertOperators.ToLong.toLong("$updated_at")).build());
 
-        // filter by updatedAt (or statusUpdatedAt ?) < thresholdDate
+        // filter by updatedAt (or statusUpdatedAt ?) < threshold
         aggregationOperations.add(Aggregation.match(
                 Criteria.expr(
                     ComparisonOperators.Lte.valueOf("updated_at_millis").lessThanEqualTo("job_follow_up_reminder_threshold"))
         ));
-        // filter lastReminderSentAt null or < thresholdDate
-        /*aggregationOperations.add(Aggregation.match(
-                new Criteria().orOperator(
-                    Criteria.where("follow_up_reminder_sent_at").isNull(),
-                    Criteria.where("follow_up_reminder_sent_at").lte("job_follow_up_reminder_threshold")
-                )
-        ));*/
+
+        // convert job's followUpReminderSentAt Instant to a long (in millis)
+        aggregationOperations.add(
+            Aggregation.addFields()
+                .addFieldWithValue(
+                    "job_follow_up_reminder_sent_at_millis",
+                        ConvertOperators.ToLong.toLong(
+                            ConditionalOperators.ifNull("follow_up_reminder_sent_at").then(0)
+                        )
+            ).build()
+        );
+
+        // filter lastReminderSentAt < threshold to avoid multiple reminders
+        aggregationOperations.add(Aggregation.match(
+                Criteria.expr(
+                        ComparisonOperators.Lte.valueOf("job_follow_up_reminder_sent_at_millis").lessThanEqualTo("job_follow_up_reminder_threshold"))
+        ));
+
         return aggregationOperations;
     }
 }

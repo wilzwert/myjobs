@@ -1,7 +1,5 @@
 package com.wilzwert.myjobs.core.domain.shared.specification;
 
-import com.wilzwert.myjobs.core.domain.model.job.Job;
-import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.shared.exception.DomainSpecificationException;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +13,7 @@ class DomainSpecificationTest {
     @Test
     void testInCriteria() {
         List<String> values = List.of("status1", "status2", "status3");
-        DomainSpecification.In<Job, String> inCriteria = DomainSpecification.In("status", values);
+        DomainSpecification.In<String> inCriteria = DomainSpecification.In("status", values);
 
         // check the field is initialized
         assertEquals("status", inCriteria.getField());
@@ -31,7 +29,7 @@ class DomainSpecificationTest {
     @Test
     void testEqCriteria() {
         String value = "active";
-        DomainSpecification.Eq<Job, String> eqCriteria = DomainSpecification.Eq("status", value);
+        DomainSpecification.Eq<String> eqCriteria = DomainSpecification.Eq("status", value);
 
         // check field
         assertEquals("status", eqCriteria.getField());
@@ -43,7 +41,7 @@ class DomainSpecificationTest {
     @Test
     void testLtCriteria() {
         Integer value = 30;
-        DomainSpecification.Lt<User, Integer> ltCriteria = DomainSpecification.Lt("age", value);
+        DomainSpecification.Lt<Integer> ltCriteria = DomainSpecification.Lt("age", value);
 
         // check field
         assertEquals("age", ltCriteria.getField());
@@ -54,10 +52,10 @@ class DomainSpecificationTest {
 
     @Test
     void testContains() {
-        List<DomainSpecification<User>> specs = List.of(DomainSpecification.Eq("lastname", "bobby"),
+        List<DomainSpecification> specs = List.of(DomainSpecification.Eq("lastname", "bobby"),
                 DomainSpecification.Lt("createdAt", Instant.now()));
 
-        DomainSpecification<User> userSpec = DomainSpecification.Or(
+        DomainSpecification userSpec = DomainSpecification.Or(
             specs
         );
 
@@ -68,13 +66,13 @@ class DomainSpecificationTest {
 
     @Test
     void whenTryingToNestFullSpecification_thenShouldThrowException() {
-        List<DomainSpecification<Job>> specs = List.of(
+        List<DomainSpecification> specs = List.of(
                 DomainSpecification.Eq("title", "bobby"),
                 DomainSpecification.Lt("createdAt", Instant.now()));
 
         // DomainSpecification.JobFollowUpToRemind being a FullSpecification, it cannot be composed
         assertThrows(DomainSpecificationException.class, () -> {
-            DomainSpecification<Job> jobSpec = DomainSpecification.And(
+            DomainSpecification.And(
                 List.of(
                     DomainSpecification.Or(specs),
                     DomainSpecification.JobFollowUpToRemind(Instant.now())

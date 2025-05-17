@@ -18,6 +18,8 @@ public record CreateJobCommand(String title, String company, String url, String 
         private String salary;
         private UserId userId;
 
+        public Builder() {}
+
         public Builder(CreateJobCommand command) {
             this.title = command.title();
             this.company = command.company();

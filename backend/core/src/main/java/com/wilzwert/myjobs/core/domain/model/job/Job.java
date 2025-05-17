@@ -211,6 +211,7 @@ public class Job extends DomainEntity<JobId> {
                 .requireNotEmpty("userId", userId)
                 .requireNotEmpty("title", title)
                 .requireNotEmpty("description", description)
+                .requireNotEmpty("company", company)
                 .requireValidUrl("url", url)
                 .getErrors();
     }
@@ -238,6 +239,7 @@ public class Job extends DomainEntity<JobId> {
 
         ValidationErrors validationErrors = validate();
         if(validationErrors.hasErrors()) {
+            validationErrors.getErrors().entrySet().stream().forEach(entry -> System.out.println(entry.getKey() + ": " + entry.getValue()));
             throw new ValidationException(validationErrors);
         }
     }

@@ -43,6 +43,18 @@ services:
       - ./smtp4dev-data:/smtp4dev
     networks:
       - myjobs-network
+  postgres:
+    image: postgres:17.5
+    container_name: myjobs-postgres
+    environment:
+      POSTGRES_USER: myjobs
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: myjobs
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./pg-data:/var/lib/postgresql/data
+    restart: unless-stopped
 
 networks:
   myjobs-network:

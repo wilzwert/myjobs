@@ -9,26 +9,22 @@ import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.model.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
+import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoJob;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoJobRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
 /**
@@ -44,6 +40,9 @@ public class JobServiceAdapterTest {
     @Mock
     private JobMapper jobMapper;
 
+    @Mock
+    private AggregationService aggregationService;
+
     @InjectMocks
     private JobServiceAdapter underTest;
 
@@ -58,6 +57,7 @@ public class JobServiceAdapterTest {
                 .id(jobId)
                 .userId(userId)
                 .title("title")
+                .company("company")
                 .description("description")
                 .url("https://www.example.com")
                 .build();
@@ -163,54 +163,57 @@ public class JobServiceAdapterTest {
     @Test
     public void whenUserHasNoJob_thenShouldReturnDomainPageWithoutContent_withDefaultArgs() {
         UserId userId = UserId.generate();
-        ArgumentCaptor<Pageable> argument = ArgumentCaptor.forClass(Pageable.class);
         Page<MongoJob> page = Page.empty();
+        List<MongoJob> mongoJobs = new ArrayList<>();
         List<Job> jobList = Collections.emptyList();
+        Aggregation aggregation = mock(Aggregation.class);
 
-        when(mongoJobRepository.findByUserId(any(UUID.class), argument.capture())).thenReturn(page);
-        when(jobMapper.toDomain(page)).thenReturn(DomainPage.builder(jobList).build());
+        var spec = DomainSpecification.Eq("userId", userId);
 
-        DomainPage<Job> result = underTest.findAllByUserIdPaginated(userId, 1, 10, null, null);
+        when(aggregationService.createAggregationPaginated(eq(spec), eq(1), eq(10))).thenReturn(aggregation);
+        when(aggregationService.aggregate(aggregation, "jobs", MongoJob.class)).thenReturn(mongoJobs);
+        when(jobMapper.toDomain(anyList())).thenReturn(jobList);
+
+        DomainPage<Job> result = underTest.findPaginated(spec, 1, 10);
 
         assertEquals(0, result.getContent().size());
-        verify(mongoJobRepository, times(1)).findByUserId(any(UUID.class), argument.capture());
-        verify(jobMapper, times(1)).toDomain(page);
-        assertNotNull(argument.getValue().getSort().getOrderFor("createdAt"));
-        assertEquals(Sort.Direction.DESC, argument.getValue().getSort().getOrderFor("createdAt").getDirection());
+        verify(aggregationService, times(1)).createAggregationPaginated(eq(spec), eq(1), eq(10));
+        verify(aggregationService, times(1)).aggregate(aggregation, "jobs", MongoJob.class);
+        verify(jobMapper, times(1)).toDomain(mongoJobs);
     }
 
     @Test
     public void whenUserHasJobs_thenShouldReturnDomainPageWithContent_withArgs() {
         UserId userId = UserId.generate();
-        ArgumentCaptor<Pageable> argument = ArgumentCaptor.forClass(Pageable.class);
         List<MongoJob> mongoJobs = List.of(
                 new MongoJob().setTitle("title"),
                 new MongoJob().setTitle("title2")
         );
-        Page<MongoJob> page = new PageImpl<>(mongoJobs);
 
         Job job1 = getValidTestJob(userId, JobId.generate());
         Job job2 = Job.builder()
                 .id(JobId.generate())
                 .userId(userId)
                 .title("title 2")
+                .company("company 2")
                 .description("description 2")
                 .url("https://www.example.com/2")
                 .build();
 
         List<Job> jobs = List.of(job1, job2);
+        Aggregation aggregation = mock(Aggregation.class);
+        when(aggregationService.createAggregationPaginated(any(), eq(1), eq(10))).thenReturn(aggregation);
+        when(aggregationService.aggregate(aggregation, "jobs", MongoJob.class)).thenReturn(mongoJobs);
+        when(jobMapper.toDomain(eq(mongoJobs))).thenReturn(jobs);
 
-        when(mongoJobRepository.findByUserIdAndStatus(any(UUID.class), any(JobStatus.class), argument.capture())).thenReturn(page);
-        when(jobMapper.toDomain(page)).thenReturn(DomainPage.builder(jobs).build());
-
-        DomainPage<Job> result = underTest.findAllByUserIdPaginated(userId, 1, 10, JobStatus.CREATED, "rating,asc");
+        DomainPage<Job> result = underTest.findPaginated(
+            DomainSpecification.And(List.of(
+                DomainSpecification.Eq("userId", userId, UserId.class),
+                DomainSpecification.Eq("status", JobStatus.CREATED, JobStatus.class))
+            ), 1, 10);
 
         assertEquals(2, result.getContent().size());
-        verify(mongoJobRepository, times(1)).findByUserIdAndStatus(any(UUID.class), any(JobStatus.class), argument.capture());
-        verify(jobMapper, times(1)).toDomain(page);
-        assertNull(argument.getValue().getSort().getOrderFor("createdAt"));
-        assertNotNull(argument.getValue().getSort().getOrderFor("rating"));
-        assertEquals(Sort.Direction.ASC, argument.getValue().getSort().getOrderFor("rating").getDirection());
+        verify(jobMapper, times(1)).toDomain(mongoJobs);
     }
 
     @Test

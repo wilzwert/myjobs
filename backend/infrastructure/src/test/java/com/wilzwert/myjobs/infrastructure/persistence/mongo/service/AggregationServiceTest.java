@@ -1,6 +1,5 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 
-import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
@@ -45,27 +44,36 @@ class AggregationServiceTest {
 
     @Test
     void shouldBuildPipelineWithMatchSortSkipLimit() {
-        DomainSpecification<Job> specifications = DomainSpecification.And(List.of(
+        DomainSpecification specifications = DomainSpecification.And(List.of(
+                DomainSpecification.Eq("userId", testUser.getId(), UserId.class),
                 DomainSpecification.In("status", List.of("ACTIVE", "INTERVIEW")),
                 DomainSpecification.Lt("status_updated_at", Instant.parse("2023-01-01T00:00:00Z"))
         ));
-        Aggregation aggregation = service.createAggregationPaginated(testUser.getId(), specifications, "status,asc", 1, 20);
+        Aggregation aggregation = service.createAggregationPaginated(specifications, 1, 20);
 
         List<AggregationOperation> operations = aggregation.getPipeline().getOperations();
         System.out.println(operations);
-        assertThat(operations).hasSize(5);
-        // service is expected to auto-add a MatchOperation to the user_id
-        assertThat(operations.get(0)).isInstanceOf(MatchOperation.class); // match user_id
-        assertThat(operations.get(1)).isInstanceOf(MatchOperation.class); // match And with subs In and Lt
-        assertThat(operations.get(1).getOperator()).isEqualTo("$match");
-        assertThat(operations.get(2)).isInstanceOf(SortOperation.class);
-        assertThat(operations.get(3)).isInstanceOf(SkipOperation.class);
-        assertThat(operations.get(4)).isInstanceOf(LimitOperation.class);
+        assertThat(operations).hasSize(4);
+        assertThat(operations.get(0)).isInstanceOf(MatchOperation.class); // match And with subs Eq In and Lt
+        assertThat(operations.get(0).getOperator()).isEqualTo("$match");
+        assertThat(operations.get(1)).isInstanceOf(SortOperation.class);
+        assertThat(operations.get(2)).isInstanceOf(SkipOperation.class);
+        assertThat(operations.get(3)).isInstanceOf(LimitOperation.class);
+
+        // TODO : check pipeline stages
+        System.out.println(operations.get(0).toPipelineStages(Aggregation.DEFAULT_CONTEXT));
     }
 
     @Test
     void whenSortPassed_thenShouldParseFieldAndDirectionCorrectly() {
-        Aggregation aggregation = service.createAggregationPaginated(testUser.getId(), null, "statusUpdatedAt,desc", 0, 10);
+        var spec = DomainSpecification.applySort(
+            DomainSpecification.And(List.of(
+                    DomainSpecification.Eq("userId", testUser.getId(), UserId.class),
+                    DomainSpecification.In("status", List.of("ACTIVE", "INTERVIEW"))
+            )),
+            DomainSpecification.Sort("statusUpdatedAt,desc")
+        );
+        Aggregation aggregation = service.createAggregationPaginated(spec, 0, 10);
 
         List<Document> pipeline = aggregation.toPipeline(Aggregation.DEFAULT_CONTEXT);
 
@@ -81,8 +89,8 @@ class AggregationServiceTest {
     }
 
     @Test
-    void whenNoSortPassed_thenShouldParseFieldAndDirectionCorrectly() {
-        Aggregation aggregation = service.createAggregationPaginated(testUser.getId(), null, null, 0, 10);
+    void whenNoSortPassed_thenShouldNotCreateSort() {
+        Aggregation aggregation = service.createAggregationPaginated(DomainSpecification.Eq("userId", UserId.generate(), UserId.class), 0, 10);
 
         List<Document> pipeline = aggregation.toPipeline(Aggregation.DEFAULT_CONTEXT);
 
@@ -123,18 +131,18 @@ class AggregationServiceTest {
     @Test
     void shouldBuildPipelineWithJobFollowUpToRemindSpecification() {
         DomainSpecification.JobFollowUpToRemind specifications = DomainSpecification.JobFollowUpToRemind(Instant.now());
-        Aggregation aggregation = service.createAggregationPaginated(testUser.getId(), specifications, "status,asc", 1, 20);
+        Aggregation aggregation = service.createAggregationPaginated(specifications, 1, 20);
 
         List<AggregationOperation> operations = aggregation.getPipeline().getOperations();
         System.out.println(operations);
         assertThat(operations).hasSize(12);
-        // service is expected to auto-add a lot of AggregationOperation
         // TODO
         /*assertThat(operations.get(0)).isInstanceOf(MatchOperation.class); // match user_id
         assertThat(operations.get(1)).isInstanceOf(MatchOperation.class); // match And with subs In and Lt
         assertThat(operations.get(1).getOperator()).isEqualTo("$match");
         assertThat(operations.get(2)).isInstanceOf(SortOperation.class);
         assertThat(operations.get(3)).isInstanceOf(SkipOperation.class);
-        assertThat(operations.get(4)).isInstanceOf(LimitOperation.class);*/
+        assertThat(operations.get(4)).isInstanceOf(LimitOperation.class);
+        etc. */
     }
 }

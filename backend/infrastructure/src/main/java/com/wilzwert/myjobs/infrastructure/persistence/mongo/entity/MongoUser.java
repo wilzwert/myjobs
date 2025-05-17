@@ -68,7 +68,6 @@ public class MongoUser  {
     private Instant updatedAt;
 
     @Field(name = "job_follow_up_reminder_sent_at")
-    @LastModifiedDate
     private Instant jobFollowUpReminderSentAt;
 }
 

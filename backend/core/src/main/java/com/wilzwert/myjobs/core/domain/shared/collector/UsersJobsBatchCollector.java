@@ -4,7 +4,6 @@ package com.wilzwert.myjobs.core.domain.shared.collector;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
-import com.wilzwert.myjobs.core.domain.shared.batch.UsersJobsBatchResult;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -66,6 +65,8 @@ public class UsersJobsBatchCollector<T> implements Collector<Job, Map<UserId, So
     }
 
     private Map<User, Set<Job>> load(Map<UserId, SortedSet<Job>> userIdsToJobs) {
+        System.out.println("loading userIds");
+        System.out.println(userIdsToJobs.keySet());
         Map<UserId, User> users = findUsersFunction.apply(userIdsToJobs.keySet().stream().toList());
         return users
                 .entrySet().stream()
@@ -103,6 +104,7 @@ public class UsersJobsBatchCollector<T> implements Collector<Job, Map<UserId, So
     public Function<Map<UserId, SortedSet<Job>>, List<T>> finisher() {
         return userIdsToJobs -> {
             if(!userIdsToJobs.isEmpty()) {
+                System.out.println("userIdsToJobs not cleared, apply batch processing");
                 results.add(batchProcessing.apply(load(userIdsToJobs)));
             }
             return results;

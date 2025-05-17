@@ -9,7 +9,6 @@ import com.wilzwert.myjobs.core.domain.model.user.UserView;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.shared.bulk.BulkServiceSaveResult;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
-import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoJob;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoUser;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.UserMapper;
@@ -60,14 +59,16 @@ public class UserServiceAdapter implements UserService {
     }
 
     @Override
-    public List<UserView> findView(DomainSpecification<User> specifications) {
-        Aggregation aggregation = aggregationService.createAggregation(specifications, "id");
+    public List<UserView> findView(DomainSpecification specifications) {
+        Aggregation aggregation = aggregationService.createAggregation(specifications);
         return userMapper.toDomainView(aggregationService.aggregate(aggregation, "users", MongoUser.class));
     }
 
     @Override
-    public Map<UserId, User> findMinimal(DomainSpecification<User> specifications) {
-        Aggregation aggregation = aggregationService.createAggregation(specifications, "id");
+    public Map<UserId, User> findMinimal(DomainSpecification specifications) {
+        System.out.println(specifications);
+        Aggregation aggregation = aggregationService.createAggregation(specifications);
+        System.out.println(aggregationService.aggregate(aggregation, "users", MongoUser.class));
         return userMapper.toDomain(aggregationService.aggregate(aggregation, "users", MongoUser.class))
                 .stream()
                 .collect(Collectors.toMap(User::getId, user -> user));
@@ -186,12 +187,14 @@ public class UserServiceAdapter implements UserService {
         mongoUserRepository.delete(userMapper.toEntity(user));
     }
 
+
+    // TODO : tests (dont forget to test with empty set)
     @Override
     public BulkServiceSaveResult saveAll(Set<User> users) {
         BulkOperations bulkOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.ORDERED, MongoUser.class);
 
         List<MongoUser> mongoUsers = userMapper.toEntity(users.stream().toList());
-
+        System.out.println("----------------------- should save all "+mongoUsers);
         for(MongoUser user : mongoUsers) {
             Update update = new Update();
             update.set("jobFollowUpReminderSentAt", user.getJobFollowUpReminderSentAt());
@@ -199,6 +202,7 @@ public class UserServiceAdapter implements UserService {
         }
 
         BulkWriteResult result = bulkOps.execute();
+        System.out.println(result);
         return new BulkServiceSaveResult(users.size(), result.getModifiedCount(), result.getInsertedCount(), result.getDeletedCount());
     }
 }

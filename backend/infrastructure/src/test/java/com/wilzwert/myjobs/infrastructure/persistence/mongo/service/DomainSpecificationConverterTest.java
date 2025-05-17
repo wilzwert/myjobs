@@ -1,6 +1,5 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 
-import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.exception.UnsupportedDomainCriterionException;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,10 +20,7 @@ class DomainSpecificationConverterTest {
 
     @Test
     void whenDomainCriteriaNotSupported_thenShouldThrowException() {
-        class UnsupportedSpecification extends DomainSpecification<User> {
-            UnsupportedSpecification() {
-                super();
-            }
+        class UnsupportedSpecification extends DomainSpecification {
         }
 
         var unsupported = new UnsupportedSpecification();

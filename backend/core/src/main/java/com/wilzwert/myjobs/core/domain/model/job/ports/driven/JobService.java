@@ -5,13 +5,14 @@ import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
-import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.model.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
+import com.wilzwert.myjobs.core.domain.shared.bulk.BulkServiceSaveResult;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 /**
@@ -27,13 +28,11 @@ public interface JobService {
 
     Optional<Job> findByIdAndUserId(JobId jobId, UserId userId);
 
-    DomainPage<Job> findAllByUserIdPaginated(UserId userId, int page, int size, JobStatus status, String sort);
+    DomainPage<Job> findPaginated(DomainSpecification specifications, int page, int size);
 
-    DomainPage<Job> findByUserIdPaginated(UserId userId, DomainSpecification<Job> specification, int page, int size, String sort);
+    List<Job> find(DomainSpecification specification);
 
-    List<Job> find(DomainSpecification<Job> specification, String sortString);
-
-    Stream<Job> stream(DomainSpecification<Job> specification);
+    Stream<Job> stream(DomainSpecification specification);
 
     Job save(Job job);
 
@@ -44,4 +43,6 @@ public interface JobService {
     void delete(Job job);
 
     Job deleteAttachment(Job job, Attachment attachment, Activity activity);
+
+    BulkServiceSaveResult saveAll(Set<Job> job);
 }

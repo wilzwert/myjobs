@@ -478,4 +478,10 @@ public class User extends DomainEntity<UserId> {
         requireLoadedProperty(jobs);
         return jobs;
     }
+
+    @Override
+    public String toString() {
+        return getId().toString()+ " [email="+getEmail() + "]";
+    }
+
 }

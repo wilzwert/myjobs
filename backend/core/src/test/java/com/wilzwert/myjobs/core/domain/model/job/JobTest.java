@@ -29,12 +29,13 @@ public class JobTest {
     @Test
     public void whenInvalid_thenJobBuildShouldThrowValidationException() {
         ValidationException exception = assertThrows(ValidationException.class, () -> {
-            Job job = Job.builder().build();
+            Job.builder().build();
         });
         assertNotNull(exception);
-        assertEquals(4, exception.getErrors().getErrors().entrySet().size());
+        assertEquals(5, exception.getErrors().getErrors().entrySet().size());
         assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY, exception.getErrors().getErrors().get("userId").getFirst().code());
         assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY, exception.getErrors().getErrors().get("title").getFirst().code());
+        assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY, exception.getErrors().getErrors().get("company").getFirst().code());
         assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY, exception.getErrors().getErrors().get("description").getFirst().code());
         assertEquals(ErrorCode.INVALID_URL, exception.getErrors().getErrors().get("url").getFirst().code());
     }

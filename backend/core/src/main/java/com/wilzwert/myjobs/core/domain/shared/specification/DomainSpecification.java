@@ -1,10 +1,9 @@
 package com.wilzwert.myjobs.core.domain.shared.specification;
 
-import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.shared.exception.DomainSpecificationException;
 
 import java.time.Instant;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,11 +22,11 @@ import java.util.List;
  * <p>Use example :
  * if some domain use case had a business rule where it has to load Jobs that are currently in JobStatus.PENDING,
  * have been created more than 7 days ago and have been updated more than 3 days ago, we could pass something like this :<br>
- * jobService.find(DomainSpecification.And(List.of(
+ * jobService.findPaginated(DomainSpecification.And(List.of(
  *  DomainSpecification.Eq("status", JobStatus.PENDING),*
  *  DomainSpecification.Lt("createdAt", Instant.now() - 7 * 86_400_000),
  *  DomainSpecification.Lt("updatedAt", Instant.now() - 3 * 86_400_000)
- *  ))
+ *  )), 0, 10)
  * instead of adding a findByStatusPendingAndCreatedMoreThan7DaysAgoAndUpdatedMoreThan3DaysAgo method to our JobService interface
  * </p>
  * On the other side, some simple rules would be very difficult to implement using these simple Specification
@@ -44,8 +43,33 @@ import java.util.List;
  * because it makes them easily reusable.
  * </p>
  */
-public abstract class DomainSpecification<T> {
-    protected DomainSpecification() {}
+public abstract class DomainSpecification {
+
+    private final List<DomainSpecification.Sort> sort = new ArrayList<>();
+
+    public final List<DomainSpecification.Sort> getSort() {
+        if(sort.isEmpty()) {
+            // by convention, sort always defaults to createdAt desc
+            return List.of(new Sort("createdAt", SortDirection.DESC));
+        }
+        return sort;
+    }
+
+    public final void sortBy(DomainSpecification.Sort sort) {
+        this.sort.add(sort);
+    }
+
+    public static <T extends DomainSpecification> T applySort(T spec, Sort sort) {
+        spec.sortBy(sort);
+        return spec;
+    }
+
+    public static <T extends DomainSpecification> T applySort(T spec, List<Sort> sortList) {
+        for (Sort sort: sortList) {
+            spec.sortBy(sort);
+        }
+        return spec;
+    }
 
     /**
      * In some cases, infra may have to check if a certain specification exists in the current hierarchy
@@ -57,24 +81,35 @@ public abstract class DomainSpecification<T> {
         return classToFind.equals(getClass());
     }
 
-
-
-
+    /**
+     * Sorting
+     *
+     */
     public enum SortDirection {
         ASC, DESC
     }
 
-    public static <T> Sort<T> Sort(String fieldName, SortDirection sortDirection) {
-        return new Sort<>(fieldName, sortDirection);
+    public static Sort Sort(String sort) {
+        return new Sort(sort);
     }
 
-    public static class Sort<T> extends DomainSpecification<T> {
+    public static Sort Sort(String fieldName, SortDirection sortDirection) {
+        return new Sort(fieldName, sortDirection);
+    }
+
+    public static class Sort extends DomainSpecification {
         private final String fieldName;
         private final SortDirection sortDirection;
 
         Sort(String fieldName, SortDirection sortDirection) {
             this.fieldName = fieldName;
             this.sortDirection = sortDirection;
+        }
+
+        Sort(String sort) {
+            String[] parts = sort.split(",");
+            this.fieldName = parts[0];
+            this.sortDirection = parts.length < 2 || parts[1].equals("asc") ? SortDirection.ASC : SortDirection.DESC;
         }
 
         public String getFieldName() {
@@ -86,26 +121,166 @@ public abstract class DomainSpecification<T> {
         }
     }
 
-    private abstract static class FieldSpecification<T> extends DomainSpecification<T> {
+    /**
+     * Field specs concern only one field
+     */
+    public abstract static class FieldSpecification<V> extends DomainSpecification {
         private final String field;
+        private Class<V> valueClass;
+        private FieldSpecification(String field, Class<V> valueClass) {
+            this.field = field;
+            this.valueClass = valueClass;
+        }
+
         private FieldSpecification(String field) {
             this.field = field;
         }
+
         public String getField() {
             return field;
         }
+
+        public Class<V> getValueClass() {
+            return valueClass;
+        }
     }
 
-    private abstract static class ConditionSpecification<T> extends DomainSpecification<T> {
-        private final List<DomainSpecification<T>> specifications;
-        private ConditionSpecification(List<DomainSpecification<T>> specifications) {
-            if(specifications.stream().anyMatch(s -> s instanceof DomainSpecification.FullSpecification<?>)) {
+    public abstract static class FieldSpecificationWithSingleValue<V> extends FieldSpecification<V> {
+        private final V value;
+
+        public FieldSpecificationWithSingleValue(String field, V value, Class<V> valueClass) {
+            super(field, valueClass);
+            this.value = value;
+        }
+
+        public FieldSpecificationWithSingleValue(String field, V value) {
+            this(field, value, null);
+        }
+
+        public V getValue() {
+            return value;
+        }
+
+        @Override
+        public Class<V> getValueClass() {
+            Class<V> valueClass = super.getValueClass();
+            if(valueClass != null) {
+                return valueClass;
+            }
+
+            if(value == null) {
+                throw new IllegalStateException("Cannot determine valueClass: value is empty and valueClass is null");
+            }
+
+            @SuppressWarnings("unchecked")
+            Class<V> inferredClass = (Class<V>) value.getClass();
+            return inferredClass;
+        }
+    }
+
+    public abstract static class FieldSpecificationWithValuesList<V> extends FieldSpecification<V> {
+        private final  List<V> values;
+
+        public FieldSpecificationWithValuesList(String field, List<V> values, Class<V> valueClass) {
+            super(field, valueClass);
+            this.values = values;
+        }
+
+        public FieldSpecificationWithValuesList(String field, List<V> values) {
+            this(field, values, null);
+        }
+
+        public List<V> getValues() {
+            return values;
+        }
+
+        @Override
+        public Class<V> getValueClass() {
+            Class<V> valueClass = super.getValueClass();
+            if(valueClass != null) {
+                return valueClass;
+            }
+            if (values == null || values.isEmpty()) {
+                throw new IllegalStateException("Cannot determine valueClass: values are empty and valueClass is null");
+            }
+            V firstValue = values.getFirst();
+            if (firstValue == null) {
+                throw new IllegalStateException("Cannot determine valueClass: first value is null");
+            }
+            @SuppressWarnings("unchecked")
+            Class<V> inferredClass = (Class<V>) firstValue.getClass();
+            return inferredClass;
+        }
+    }
+
+    public static <V> In<V> In(String field, List<V> values, Class<V> valueClass) {
+        return new In<>(field, values, valueClass);
+    }
+
+    public static <V> In<V> In(String field, List<V> values) {
+        return In(field, values, null);
+    }
+
+    public static final class In<V> extends FieldSpecificationWithValuesList<V> {
+        public In(String field, List<V> values, Class<V> valueClass) {
+            super(field, values, valueClass);
+        }
+
+        public In(String field, List<V> values) {
+            this(field, values, null);
+        }
+    }
+
+    public static <V> Eq<V> Eq(String field, V value, Class<V> valueClass) {
+        return new Eq<>(field, value, valueClass);
+    }
+
+    public static <V> Eq<V> Eq(String field, V value) {
+        return Eq(field, value, null);
+    }
+
+    public static final class Eq<V> extends FieldSpecificationWithSingleValue<V> {
+        public Eq(String field, V value, Class<V> valueClass) {
+            super(field, value, valueClass);
+        }
+
+        public Eq(String field, V value) {
+            this(field, value, null);
+        }
+    }
+
+    public static <V extends Comparable<V>> Lt<V> Lt(String field, V value, Class<V> valueClass) {
+        return new Lt<>(field, value, valueClass);
+    }
+
+    public static <V extends Comparable<V>> Lt<V> Lt(String field, V value) {
+        return Lt(field, value, null);
+    }
+
+    public static final class Lt<V extends Comparable<V>> extends FieldSpecificationWithSingleValue<V> {
+        public Lt(String field, V value, Class<V> valueClass) {
+            super(field, value, valueClass);
+        }
+
+        public Lt(String field, V value) {
+            this(field, value, null);
+        }
+    }
+
+
+    /**
+     * Conditions : And / Or
+     */
+    public abstract static class ConditionSpecification extends DomainSpecification {
+        private final List<DomainSpecification> specifications;
+        private ConditionSpecification(List<DomainSpecification> specifications) {
+            if(specifications.stream().anyMatch(s -> s instanceof DomainSpecification.FullSpecification)) {
                 throw new DomainSpecificationException("Full specifications cannot be nested");
             }
             this.specifications = specifications;
         }
 
-        public List<DomainSpecification<T>> getSpecifications() {
+        public List<DomainSpecification> getSpecifications() {
             return specifications;
         }
 
@@ -115,91 +290,33 @@ public abstract class DomainSpecification<T> {
         }
     }
 
-    public static <T, V> In<T, V> In(String field, List<V> values) {
-        return new In<>(field, values);
+    public static  Or Or(List<DomainSpecification> criteriaList) {
+        return new Or(criteriaList);
     }
 
-    public static final class In<T, V> extends FieldSpecification<T> {
-
-        private final  List<V> values;
-
-        public In(String field, List<V> values) {
-            super(field);
-            this.values = values;
-        }
-
-        public List<V> getValues() {
-            return values;
-        }
-    }
-
-    public static <T, V> Eq<T, V> Eq(String field, V value) {
-        return new Eq<>(field, value);
-    }
-
-    public static final class Eq<T, V> extends FieldSpecification<T> {
-        private final V value;
-        public Eq(String field, V value) {
-            super(field);
-            this.value = value;
-        }
-
-        public V getValue() {
-            return value;
-        }
-    }
-
-    public static <T, V extends Comparable<V>> Lt<T, V> Lt(String field, V value) {
-        return new Lt<>(field, value);
-    }
-
-    public static final class Lt<T, V extends Comparable<V>> extends FieldSpecification<T> {
-        private final V value;
-
-        public Lt(String field, V value) {
-            super(field);
-            this.value = value;
-        }
-
-        public V getValue() {
-            return value;
-        }
-    }
-
-    public static <T> Or<T> Or(List<DomainSpecification<T>> criteriaList) {
-        return new Or<>(criteriaList);
-    }
-
-    public static final class Or<T> extends ConditionSpecification<T> {
-        public Or(List<DomainSpecification<T>> criteriaList) {
+    public static final class Or extends ConditionSpecification {
+        public Or(List<DomainSpecification> criteriaList) {
             super(criteriaList);
         }
     }
 
-    public static <T> And<T> And(List<DomainSpecification<T>> criteriaList) {
-        return new And<>(criteriaList);
+    public static  And And(List<DomainSpecification> criteriaList) {
+        return new And(criteriaList);
     }
 
-    public static final class And<T> extends ConditionSpecification<T> {
-        public And(List<DomainSpecification<T>> criteriaList) {
+    public static final class And extends ConditionSpecification {
+        public And(List<DomainSpecification> criteriaList) {
             super(criteriaList);
         }
     }
 
-    public abstract static class FullSpecification<T> extends DomainSpecification<T> {
-        private final List<DomainSpecification<T>> nested;
-
-        public FullSpecification(List<DomainSpecification<T>> nested) {
-            this.nested = nested;
-        }
-
-        public FullSpecification() {
-            this.nested = Collections.emptyList();
-        }
-
-        public List<DomainSpecification<T>> getNested() {
-            return nested;
-        }
+    /**
+     * Full specs : an object that encapsulates ALL specs needed to find something
+     * Used for complex specs that cannot be expressed through existing (basic) DomainSpecification
+     * The abstract FullSpecification is only used as a way to identify full specs
+     *
+     */
+    public abstract static class FullSpecification extends DomainSpecification {
     }
 
 
@@ -208,10 +325,10 @@ public abstract class DomainSpecification<T> {
      * in this case this specification is used to query users who have not received any job follow-up reminders after some
      * "threshold" instant, which should be checked in infra, based on provided Instant and user's jobFollowUpReminderDelay
       */
-    public static <T> UserJobFollowUpReminderThreshold<T> UserJobFollowUpReminderThreshold(Instant referenceInstant) {
-        return new UserJobFollowUpReminderThreshold<>(referenceInstant);
+    public static UserJobFollowUpReminderThreshold UserJobFollowUpReminderThreshold(Instant referenceInstant) {
+        return new UserJobFollowUpReminderThreshold(referenceInstant);
     }
-    public static final class UserJobFollowUpReminderThreshold<T> extends FullSpecification<T> {
+    public static final class UserJobFollowUpReminderThreshold extends FullSpecification {
         private final Instant referenceInstant;
 
         public UserJobFollowUpReminderThreshold(Instant referenceInstant) {
@@ -225,22 +342,26 @@ public abstract class DomainSpecification<T> {
 
     /**
      * This Specification is used to query a list of Job based on these criteria :
+     * - related users MUST have a not null jobFollowUpReminderDays
      * - jobs are active (ie status IN JobStatus.activeStatuses())
-     * - have ever been reminded OR
-     *   have not been reminded in the last user.jobFollowUpReminderDelay before provided referenceInstant
+     * - have ever been updated less than user.jobFollowUpReminderDays days before provided referenceInstant
+     * - have not been reminded less than user.jobFollowUpReminderDays days before provided referenceInstant
      * As this would be nearly impossible to effectively model it using DomainSpecification
      * (especially because we would be assuming how the infra persistence layer works (joins in Sql based DBMS, collections in NoSql...)),
-     * we kindly ask (and trust) the infra to handle it
+     * we kindly ask (and trust) the infra to convert and handle it
+     * Rules :
+     * -
      */
     public static JobFollowUpToRemind JobFollowUpToRemind(Instant referenceInstant) {
         return new JobFollowUpToRemind(referenceInstant);
     }
-    public static final class JobFollowUpToRemind extends FullSpecification<Job> {
+    public static final class JobFollowUpToRemind extends FullSpecification {
         private final Instant referenceInstant;
 
         public JobFollowUpToRemind(Instant referenceInstant) {
-            super(List.of(Sort("userId", SortDirection.ASC)));
+            super();
             this.referenceInstant = referenceInstant;
+            super.sortBy(Sort("userId", SortDirection.ASC));
         }
 
         public Instant getReferenceInstant() {

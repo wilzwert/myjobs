@@ -14,6 +14,7 @@ import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -45,15 +46,22 @@ public class SendJobsRemindersUseCaseImpl implements SendJobsRemindersUseCase {
             try {
                 jobReminderMessageProvider.send(entry.getKey(), entry.getValue());
                 usersToSave.add(entry.getKey());
+                // we have to map the jobs set because saveFollowUpReminderSentAt returns a new job
+                Set<Job> jobsToSave = entry.getValue().stream().map(Job::saveFollowUpReminderSentAt).collect(Collectors.toSet());
+                jobService.saveAll(jobsToSave);
             }
             catch (Exception e) {
                 errors.add("An error occurred while sending reminders to "+entry.getKey()+": "+e.getMessage());
             }
         }
-        usersToSave.forEach(User::saveJobFollowUpReminderSentAt);
-        BulkServiceSaveResult serviceResult = userService.saveAll(usersToSave);
-
-        return new UsersJobsRemindersBatchResult(0, 0, errors, errors.size(), serviceResult.totalCount()-serviceResult.updatedCount());
+        // we have to map the users set because saveJobFollowUpReminderSentAt returns a new user
+        usersToSave = usersToSave.stream().map(User::saveJobFollowUpReminderSentAt).collect(Collectors.toSet());
+        BulkServiceSaveResult serviceResult = null;
+        if(!usersToSave.isEmpty()) {
+             serviceResult = userService.saveAll(usersToSave);
+        }
+        int saveErrors = serviceResult != null ? serviceResult.totalCount()-serviceResult.updatedCount() : usersToSave.size();
+        return new UsersJobsRemindersBatchResult(0, 0, errors, errors.size(), saveErrors);
     }
 
     @Override
@@ -61,7 +69,6 @@ public class SendJobsRemindersUseCaseImpl implements SendJobsRemindersUseCase {
         // load jobs to remind...important : as UsersJobsBatchCollector expects Jobs to be pre-sorted by userId
         // the sort is configured in the DomainSpecification.JobFollowUpToRemind spec
         Stream<Job> jobsToRemind = jobService.stream(DomainSpecification.JobFollowUpToRemind(Instant.now()));
-
         return jobsToRemind.collect(
                 new UsersJobsBatchCollector<>(
                         userIds -> userService.findMinimal(DomainSpecification.In("id", userIds)),

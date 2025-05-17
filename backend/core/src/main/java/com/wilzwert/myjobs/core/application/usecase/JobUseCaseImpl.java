@@ -123,24 +123,27 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         }
 
         User user = foundUser.get();
+
+        List<DomainSpecification> specs = new ArrayList<>(List.of(DomainSpecification.Eq("userId", user.getId(), UserId.class)));
+
         DomainPage<Job> jobs;
         if(filterLate) {
             // threshold instant : jobs not updated since that instant are considered late
             Instant nowMinusReminderDays = Instant.now().minus(user.getJobFollowUpReminderDays(), ChronoUnit.DAYS);
-            jobs = jobService.findByUserIdPaginated(
-                    user.getId(),
-                    DomainSpecification.And(List.of(
-                        DomainSpecification.In("status", JobStatus.activeStatuses()),
-                        DomainSpecification.Lt("status_updated_at", nowMinusReminderDays)
-                    )),
-                    page,
-                    size,
-                    sort
-            );
+            specs.add(DomainSpecification.In("status", JobStatus.activeStatuses()));
+            specs.add(DomainSpecification.Lt("statusUpdatedAt", nowMinusReminderDays));
         }
         else {
-            jobs = jobService.findAllByUserIdPaginated(user.getId(), page, size, status, sort);
+            if( status != null) {
+                specs.add(DomainSpecification.Eq("status", status, JobStatus.class));
+            }
         }
+        var finalSpecs = DomainSpecification.And(specs);
+        if(sort != null && !sort.isEmpty()) {
+            DomainSpecification.applySort(finalSpecs, DomainSpecification.Sort(sort));
+        }
+System.out.println("getting page "+page);
+        jobs = jobService.findPaginated(finalSpecs, page, size);
         return jobEnricher.enrich(jobs, user);
     }
 
