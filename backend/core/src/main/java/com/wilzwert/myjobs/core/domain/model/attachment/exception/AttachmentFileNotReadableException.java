@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.core.domain.model.attachment.exception;
 
 
-import com.wilzwert.myjobs.core.domain.shared.exception.EntityNotFoundException;
+import com.wilzwert.myjobs.core.domain.shared.exception.DomainException;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 
 /**
@@ -10,7 +10,7 @@ import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
  * Time:09:17
  */
 
-public class AttachmentFileNotReadableException extends EntityNotFoundException {
+public class AttachmentFileNotReadableException extends DomainException {
     public AttachmentFileNotReadableException() {
         super(ErrorCode.ATTACHMENT_FILE_NOT_READABLE);
     }

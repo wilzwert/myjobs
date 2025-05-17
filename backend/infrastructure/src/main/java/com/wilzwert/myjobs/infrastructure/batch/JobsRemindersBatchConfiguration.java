@@ -2,6 +2,7 @@ package com.wilzwert.myjobs.infrastructure.batch;
 
 
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.SendJobsRemindersUseCase;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
@@ -21,6 +22,7 @@ import org.springframework.data.mongodb.MongoTransactionManager;
  */
 
 @Configuration
+@Slf4j
 public class JobsRemindersBatchConfiguration {
     @Bean
     public Job jobReminderJob(Step jobReminderStep, JobRepository jobRepository) {
@@ -40,9 +42,9 @@ public class JobsRemindersBatchConfiguration {
     @Bean
     public Tasklet jobReminderTasklet(SendJobsRemindersUseCase useCase) {
         return (contribution, chunkContext) -> {
-            System.out.println("-------------------------------------Batch : step stepName["+chunkContext.getStepContext().getStepName()+"] instanceId["+chunkContext.getStepContext().getJobInstanceId()+"]");
             try {
-                System.out.println("-------------------------------------reminder result "+useCase.sendJobsReminders(1));
+                useCase.sendJobsReminders(1);
+                // TODO handle result
             }
             catch (Exception e) {
                 // TODO log

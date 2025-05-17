@@ -65,8 +65,6 @@ public class UsersJobsBatchCollector<T> implements Collector<Job, Map<UserId, So
     }
 
     private Map<User, Set<Job>> load(Map<UserId, SortedSet<Job>> userIdsToJobs) {
-        System.out.println("loading userIds");
-        System.out.println(userIdsToJobs.keySet());
         Map<UserId, User> users = findUsersFunction.apply(userIdsToJobs.keySet().stream().toList());
         return users
                 .entrySet().stream()
@@ -77,14 +75,11 @@ public class UsersJobsBatchCollector<T> implements Collector<Job, Map<UserId, So
     @Override
     public BiConsumer<Map<UserId, SortedSet<Job>>, Job> accumulator() {
         return (userIdsToJobs, job) -> {
-            System.out.println("current "+(currentUserId != null ? currentUserId.value() : "NULL")+" / read "+job.getUserId().value()+", size of userIdsToJobs"+userIdsToJobs.size());
             // detecting a change of user in the stream triggers the processing
             // (only after at least first job / user has been handled)
             if(currentUserId != null && !job.getUserId().equals(currentUserId) && userIdsToJobs.size() >= batchSize) {
                 // pass a copy of the current supplier to the batchProcessing
                 final Map<UserId, SortedSet<Job>> copy =  new HashMap<>(userIdsToJobs);
-                System.out.println("batch processing");
-                System.out.println(copy);
                 results.add(batchProcessing.apply(load(copy)));
 
                 // reset current supplier
@@ -104,7 +99,7 @@ public class UsersJobsBatchCollector<T> implements Collector<Job, Map<UserId, So
     public Function<Map<UserId, SortedSet<Job>>, List<T>> finisher() {
         return userIdsToJobs -> {
             if(!userIdsToJobs.isEmpty()) {
-                System.out.println("userIdsToJobs not cleared, apply batch processing");
+                // userIdsToJobs not cleared, apply batch processing to the remaining entries
                 results.add(batchProcessing.apply(load(userIdsToJobs)));
             }
             return results;

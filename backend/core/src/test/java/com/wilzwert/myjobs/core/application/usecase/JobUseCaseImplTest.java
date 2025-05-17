@@ -111,14 +111,15 @@ class JobUseCaseImplTest {
         reset(userService);
         when(userService.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
 
+        CreateJobCommand.Builder builder = new CreateJobCommand.Builder()
+                .userId(UserId.generate())
+                .title("Job title")
+                .description("Job description")
+                .url("http://www.example.com/1")
+                .company("Company 3");
+
         assertThrows(JobAlreadyExistsException.class, () -> underTest.createJob(
-                new CreateJobCommand.Builder()
-                    .userId(UserId.generate())
-                    .title("Job title")
-                    .description("Job description")
-                    .url("http://www.example.com/1")
-                    .company("Company 3")
-                    .build()
+                builder.build()
         ));
     }
 
@@ -135,7 +136,6 @@ class JobUseCaseImplTest {
             argThat(specification -> {
                 // TODO we MUST check userId, filter late and sort specs
                 DomainSpecification.And spec = (DomainSpecification.And) specification;
-                System.out.println(specification+ "->" +spec.getSpecifications().size());
                 return  spec.getSpecifications().size() == 3 &&
                         spec.getSpecifications().getFirst() instanceof DomainSpecification.Eq &&
                         spec.getSpecifications().get(1) instanceof DomainSpecification.In<?> &&

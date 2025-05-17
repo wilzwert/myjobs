@@ -91,7 +91,6 @@ public class JobsReminderMessageProviderAdapterIT extends AbstractBaseIntegratio
 
         assertThat(message.getSubject()).isEqualTo(expectedSubject);
         String htmlBody = EmailUtility.extractHtmlContent(message);
-        System.out.println(htmlBody);
         assertThat(htmlBody.indexOf(expectedHtml)).isGreaterThan(-1);
         assertThat(message.getAllRecipients()[0].toString()).isEqualTo("John <user@example.com>");
     }

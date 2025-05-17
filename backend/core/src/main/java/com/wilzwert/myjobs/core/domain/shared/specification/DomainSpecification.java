@@ -126,14 +126,11 @@ public abstract class DomainSpecification {
      */
     public abstract static class FieldSpecification<V> extends DomainSpecification {
         private final String field;
-        private Class<V> valueClass;
+        private final Class<V> valueClass;
+
         private FieldSpecification(String field, Class<V> valueClass) {
             this.field = field;
             this.valueClass = valueClass;
-        }
-
-        private FieldSpecification(String field) {
-            this.field = field;
         }
 
         public String getField() {
@@ -148,12 +145,12 @@ public abstract class DomainSpecification {
     public abstract static class FieldSpecificationWithSingleValue<V> extends FieldSpecification<V> {
         private final V value;
 
-        public FieldSpecificationWithSingleValue(String field, V value, Class<V> valueClass) {
+        protected FieldSpecificationWithSingleValue(String field, V value, Class<V> valueClass) {
             super(field, valueClass);
             this.value = value;
         }
 
-        public FieldSpecificationWithSingleValue(String field, V value) {
+        protected FieldSpecificationWithSingleValue(String field, V value) {
             this(field, value, null);
         }
 
@@ -181,12 +178,12 @@ public abstract class DomainSpecification {
     public abstract static class FieldSpecificationWithValuesList<V> extends FieldSpecification<V> {
         private final  List<V> values;
 
-        public FieldSpecificationWithValuesList(String field, List<V> values, Class<V> valueClass) {
+        protected FieldSpecificationWithValuesList(String field, List<V> values, Class<V> valueClass) {
             super(field, valueClass);
             this.values = values;
         }
 
-        public FieldSpecificationWithValuesList(String field, List<V> values) {
+        protected FieldSpecificationWithValuesList(String field, List<V> values) {
             this(field, values, null);
         }
 
@@ -286,7 +283,7 @@ public abstract class DomainSpecification {
 
         @Override
         public boolean contains(Class<?> classToFind) {
-            return super.contains(classToFind) ||  specifications.stream().anyMatch(specifications -> specifications.contains(classToFind));
+            return super.contains(classToFind) ||  specifications.stream().anyMatch(s -> s.contains(classToFind));
         }
     }
 

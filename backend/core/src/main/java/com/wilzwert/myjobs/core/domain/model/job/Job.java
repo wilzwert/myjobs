@@ -239,7 +239,6 @@ public class Job extends DomainEntity<JobId> {
 
         ValidationErrors validationErrors = validate();
         if(validationErrors.hasErrors()) {
-            validationErrors.getErrors().entrySet().stream().forEach(entry -> System.out.println(entry.getKey() + ": " + entry.getValue()));
             throw new ValidationException(validationErrors);
         }
     }

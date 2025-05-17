@@ -106,7 +106,6 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
                 fileStorage.delete(attachment.getFileId());
             }
             catch (Exception e) {
-                System.out.println("failed to delete attachment "+attachment.getFileId()+e.getMessage());
                 // TODO log incoherence
             }
         });
@@ -142,7 +141,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         if(sort != null && !sort.isEmpty()) {
             DomainSpecification.applySort(finalSpecs, DomainSpecification.Sort(sort));
         }
-System.out.println("getting page "+page);
+
         jobs = jobService.findPaginated(finalSpecs, page, size);
         return jobEnricher.enrich(jobs, user);
     }

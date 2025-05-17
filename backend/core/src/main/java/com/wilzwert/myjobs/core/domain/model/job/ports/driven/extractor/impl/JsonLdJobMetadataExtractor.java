@@ -60,8 +60,6 @@ public class JsonLdJobMetadataExtractor implements JobMetadataExtractor {
             }
             return Optional.empty();
         } catch (Exception e) {
-            // TODO : don't print stack trace, log instead
-            e.printStackTrace();
             return Optional.empty();
         }
     }

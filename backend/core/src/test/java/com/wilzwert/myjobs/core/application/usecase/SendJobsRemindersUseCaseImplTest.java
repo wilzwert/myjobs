@@ -114,7 +114,6 @@ class SendJobsRemindersUseCaseImplTest {
 
         List<UsersJobsRemindersBatchResult> result = underTest.sendJobsReminders(1);
         assertNotNull(result);
-        System.out.println(result);
         verify(userService, times(2)).findMinimal(any());
         verify(userService, times(2)).saveAll(any());
         verify(jobReminderMessageProvider, times(2)).send(any(User.class), any());

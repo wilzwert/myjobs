@@ -120,7 +120,7 @@ public class AuthControllerTest {
                     .email("test@example.com")
                     .username("test")
                     .lang(Lang.EN)
-                    .createdAt(Instant.now().toString())
+                    .createdAt(Instant.now())
                     .emailStatus(EmailStatus.PENDING.toString())
                     .build();
 

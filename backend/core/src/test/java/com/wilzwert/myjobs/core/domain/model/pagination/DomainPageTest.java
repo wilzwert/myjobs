@@ -55,7 +55,7 @@ class DomainPageTest {
                 .pageSize(5)
                 .totalElementsCount(0)
                 .build();
-        System.out.println(page.getContent());
+
         assertNotNull(page.getContent());
         assertTrue(page.getContent().isEmpty());
         assertEquals(5, page.getPageSize());

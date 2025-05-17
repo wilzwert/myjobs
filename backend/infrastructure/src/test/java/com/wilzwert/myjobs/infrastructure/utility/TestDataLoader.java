@@ -7,6 +7,7 @@ import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoUser;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoJobRepository;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoRefreshTokenRepository;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoUserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @Configuration
 @Profile({"integration"})
+@Slf4j
 public class TestDataLoader {
 
     private final MongoUserRepository userRepository;
@@ -38,12 +40,12 @@ public class TestDataLoader {
             if (is != null) {
                 List<T> elements = objectMapper.readValue(is, objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));
                 repository.saveAll(elements);
-                System.out.println("✅ Test data loaded from "+fileName+" (found "+elements.size()+")" );
+                log.info("✅ Test data loaded from {} (found {}", fileName, elements.size());
             } else {
-                System.err.println("❌ Cannot find file "+fileName+" !");
+                log.error("❌ Cannot find file {} !", fileName);
             }
         } catch (IOException e) {
-            System.err.println("❌ Error while loading test data from "+fileName+" : " + e.getMessage());
+            log.info("❌ Error while loading test data from {} : {}", fileName, e.getMessage());
         }
     }
 

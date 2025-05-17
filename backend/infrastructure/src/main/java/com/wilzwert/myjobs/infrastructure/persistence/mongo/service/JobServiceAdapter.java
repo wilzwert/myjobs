@@ -86,7 +86,7 @@ public class JobServiceAdapter implements JobService {
     public Stream<Job> stream(DomainSpecification specification) {
         Aggregation aggregation = aggregationService.createAggregation(specification);
         Stream<MongoJob> stream = aggregationService.stream(aggregation, "jobs", MongoJob.class);
-        return stream.map(j -> {System.out.println(j);return jobMapper.toDomain(j);}).onClose(stream::close);
+        return stream.map(jobMapper::toDomain).onClose(stream::close);
     }
 
         @Override
@@ -120,8 +120,6 @@ public class JobServiceAdapter implements JobService {
         BulkOperations bulkOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.ORDERED, MongoJob.class);
 
         List<MongoJob> mongoJobs = jobMapper.toEntity(jobs.stream().toList());
-        System.out.println("-----------------------------------jobService should save all");
-        System.out.println(mongoJobs);
         for(MongoJob job : mongoJobs) {
             Update update = new Update();
             update.set("followUpReminderSentAt", job.getFollowUpReminderSentAt());
@@ -129,8 +127,6 @@ public class JobServiceAdapter implements JobService {
         }
 
         BulkWriteResult result = bulkOps.execute();
-        System.out.println("----------------- Jobs saveAll");
-        System.out.println(result);
         return new BulkServiceSaveResult(jobs.size(), result.getModifiedCount(), result.getInsertedCount(), result.getDeletedCount());
     }
 }

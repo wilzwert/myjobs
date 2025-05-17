@@ -66,9 +66,7 @@ public class UserServiceAdapter implements UserService {
 
     @Override
     public Map<UserId, User> findMinimal(DomainSpecification specifications) {
-        System.out.println(specifications);
         Aggregation aggregation = aggregationService.createAggregation(specifications);
-        System.out.println(aggregationService.aggregate(aggregation, "users", MongoUser.class));
         return userMapper.toDomain(aggregationService.aggregate(aggregation, "users", MongoUser.class))
                 .stream()
                 .collect(Collectors.toMap(User::getId, user -> user));
@@ -194,7 +192,6 @@ public class UserServiceAdapter implements UserService {
         BulkOperations bulkOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.ORDERED, MongoUser.class);
 
         List<MongoUser> mongoUsers = userMapper.toEntity(users.stream().toList());
-        System.out.println("----------------------- should save all "+mongoUsers);
         for(MongoUser user : mongoUsers) {
             Update update = new Update();
             update.set("jobFollowUpReminderSentAt", user.getJobFollowUpReminderSentAt());
@@ -202,7 +199,6 @@ public class UserServiceAdapter implements UserService {
         }
 
         BulkWriteResult result = bulkOps.execute();
-        System.out.println(result);
         return new BulkServiceSaveResult(users.size(), result.getModifiedCount(), result.getInsertedCount(), result.getDeletedCount());
     }
 }

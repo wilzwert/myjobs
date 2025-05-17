@@ -52,7 +52,6 @@ class AggregationServiceTest {
         Aggregation aggregation = service.createAggregationPaginated(specifications, 1, 20);
 
         List<AggregationOperation> operations = aggregation.getPipeline().getOperations();
-        System.out.println(operations);
         assertThat(operations).hasSize(4);
         assertThat(operations.get(0)).isInstanceOf(MatchOperation.class); // match And with subs Eq In and Lt
         assertThat(operations.get(0).getOperator()).isEqualTo("$match");
@@ -61,7 +60,7 @@ class AggregationServiceTest {
         assertThat(operations.get(3)).isInstanceOf(LimitOperation.class);
 
         // TODO : check pipeline stages
-        System.out.println(operations.get(0).toPipelineStages(Aggregation.DEFAULT_CONTEXT));
+        // with operations.get(0).toPipelineStages(Aggregation.DEFAULT_CONTEXT);
     }
 
     @Test
@@ -134,7 +133,6 @@ class AggregationServiceTest {
         Aggregation aggregation = service.createAggregationPaginated(specifications, 1, 20);
 
         List<AggregationOperation> operations = aggregation.getPipeline().getOperations();
-        System.out.println(operations);
         assertThat(operations).hasSize(12);
         // TODO
         /*assertThat(operations.get(0)).isInstanceOf(MatchOperation.class); // match user_id

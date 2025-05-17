@@ -6,7 +6,6 @@ import com.wilzwert.myjobs.infrastructure.security.configuration.JwtProperties;
 import com.wilzwert.myjobs.infrastructure.security.ratelimit.RateLimitingProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -16,7 +15,4 @@ import org.springframework.core.env.Environment;
 @Configuration
 @EnableConfigurationProperties({ CookieProperties.class, JwtProperties.class, RateLimitingProperties.class})
 public class ApplicationConfiguration {
-    public ApplicationConfiguration(Environment environment) {
-        System.out.println("------------------ current env "+environment.getProperty("spring.profiles.active"));
-    }
 }

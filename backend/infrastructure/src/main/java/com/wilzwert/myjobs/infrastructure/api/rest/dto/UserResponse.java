@@ -28,7 +28,7 @@ public class UserResponse {
 
     private String username;
 
-    private String createdAt;
+    private Instant createdAt;
 
     private String emailStatus;
 

@@ -5,6 +5,7 @@ import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.exception.UnsupportedDomainCriterionException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -21,6 +22,7 @@ import java.util.function.Function;
  */
 
 @Service
+@Slf4j
 public class DomainSpecificationConverter {
 
     private final static Map<Class<?>, Function<DomainSpecification.FieldSpecificationWithValuesList<?>, List<?>>> valuesClassMap = Map.of(
@@ -72,28 +74,28 @@ public class DomainSpecificationConverter {
     public Criteria domainCriterionToCriteria(DomainSpecification domainSpecification) {
         switch (domainSpecification) {
             case null -> {
-                System.out.println("criteria is null because domainSpecification is null");
+                log.debug("criteria is null because domainSpecification is null");
                 return null;
             }
             case DomainSpecification.Eq<?> c -> {
-                System.out.println("criteria is EQ for " + c.getField());
+                log.debug("criteria is EQ for " + c.getField());
                 return Criteria.where(convertField(c.getField())).is(convertValue(c));
             }
             case DomainSpecification.In<?> c -> {
-                System.out.println("criteria is In for " + c.getField());
-                System.out.println(c.getValues());
+                log.debug("criteria is In for {}", c.getField());
+                log.debug("values {}", c.getValues());
                 return Criteria.where(convertField(c.getField())).in(convertValues(c));
             }
             case DomainSpecification.Lt<?> c -> {
-                System.out.println("criteria is Lt for " + c.getField());
+                log.debug("criteria is Lt for {}", c.getField());
                 return Criteria.where(convertField(c.getField())).lt(convertValue(c));
             }
             case DomainSpecification.Or c -> {
-                System.out.println("criteria is Or");
+                log.debug("criteria is Or");
                 return new Criteria().orOperator(c.getSpecifications().stream().map(this::domainCriterionToCriteria).toList());
             }
             case DomainSpecification.And c -> {
-                System.out.println("criteria is And");
+                log.debug("criteria is And");
                 return new Criteria().andOperator(c.getSpecifications().stream().map(this::domainCriterionToCriteria).toList());
             }
             default -> throw new UnsupportedDomainCriterionException(domainSpecification.getClass().getName());
@@ -101,7 +103,6 @@ public class DomainSpecificationConverter {
     }
 
     private AggregationOperation domainSpecificationSortToAggregationOperation(DomainSpecification.Sort sort) {
-        System.out.println("converting sort");
         return Aggregation.sort(sort.getSortDirection().equals(DomainSpecification.SortDirection.ASC) ? Sort.Direction.ASC : Sort.Direction.DESC, convertField(sort.getFieldName()));
     }
 
