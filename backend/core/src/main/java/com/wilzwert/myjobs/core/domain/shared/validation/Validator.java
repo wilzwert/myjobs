@@ -57,6 +57,11 @@ public class Validator {
     public Validator requireValidUrl(String fieldName, String fieldValue) {
         try {
             new URI(fieldValue).toURL();
+            // we want at least something like domain.com
+            // we have to check it because toURL accepts http://localhost or similar URLS
+            if(!fieldValue.contains(".")) {
+                throw new Exception();
+            }
 
         } catch (Exception e) {
             validationErrors.add(new ValidationError(fieldName, ErrorCode.INVALID_URL));
