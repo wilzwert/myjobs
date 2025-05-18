@@ -1,8 +1,15 @@
 package com.wilzwert.myjobs.core.application.usecase;
 
+import com.wilzwert.myjobs.core.domain.model.DownloadableFile;
+import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
 import com.wilzwert.myjobs.core.domain.model.activity.command.CreateActivityCommand;
+import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
+import com.wilzwert.myjobs.core.domain.model.attachment.AttachmentId;
+import com.wilzwert.myjobs.core.domain.model.attachment.command.CreateAttachmentCommand;
+import com.wilzwert.myjobs.core.domain.model.attachment.command.DeleteAttachmentCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.command.DownloadAttachmentCommand;
+import com.wilzwert.myjobs.core.domain.model.attachment.exception.AttachmentFileNotReadableException;
 import com.wilzwert.myjobs.core.domain.model.attachment.exception.AttachmentNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.job.command.CreateJobCommand;
 import com.wilzwert.myjobs.core.domain.model.job.exception.JobAlreadyExistsException;
@@ -24,10 +31,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.File;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -184,11 +194,111 @@ class JobUseCaseImplTest {
     @Nested
     class AttachmentTest {
 
+        private Attachment attachment;
+
+        private Job testJobWithAttachment;
+
+        @BeforeEach
+        void setUp() {
+            attachment = Attachment.builder()
+                    .contentType("application/msword")
+                    .id(AttachmentId.generate())
+                    .name("My file")
+                    .fileId("notReadable")
+                    .filename("notReadable.doc")
+                    .build();
+            testJobWithAttachment = Job.builder()
+                    .id(JobId.generate())
+                    .userId(UserId.generate())
+                    .title("With attachment")
+                    .company("Company")
+                    .description("Job description")
+                    .profile("Job profile")
+                    .status(JobStatus.PENDING)
+                    .url("http://www.example.com/1")
+                    .attachments(new ArrayList<>(List.of(attachment)))
+                    .statusUpdatedAt(Instant.now().minusSeconds(3600)).build();
+        }
+
+        @Test
+        void shouldCreateAttachment() {
+            ArgumentCaptor<Attachment> attachmentArg = ArgumentCaptor.forClass(Attachment.class);
+            ArgumentCaptor<Activity> activityArg = ArgumentCaptor.forClass(Activity.class);
+            ArgumentCaptor<Job> jobArg = ArgumentCaptor.forClass(Job.class);
+            File file = mock(File.class);
+            Instant before = Instant.now();
+
+            reset(userService);
+            when(jobService.findByIdAndUserId(any(), any())).thenReturn(Optional.of(testJob));
+            when(fileStorage.store(eq(file), any(String.class), eq("test.pdf"))).thenReturn(
+                    new DownloadableFile("newFileId", "stored/newFileId.pdf", "application/pdf", "test.pdf")
+            );
+            when(jobService.saveJobAndAttachment(jobArg.capture(), attachmentArg.capture(), activityArg.capture())).thenAnswer((i) -> i.getArgument(0));
+
+
+
+            Attachment result = underTest.addAttachmentToJob(new CreateAttachmentCommand("my file", file, "test.pdf", testJob.getUserId(), testJob.getId()));
+
+            assertNotNull(result);
+            verify(jobService).findByIdAndUserId(any(), any());
+            verify(fileStorage).store(eq(file), any(String.class), eq("test.pdf"));
+            verify(jobService).saveJobAndAttachment(jobArg.capture(), attachmentArg.capture(), activityArg.capture());
+
+            // check created/updated entities
+
+            assertEquals("my file", result.getName());
+            assertEquals("newFileId", result.getFileId());
+            assertEquals("test.pdf", result.getFilename());
+
+            assertTrue(result.getCreatedAt().isAfter(before) || result.getUpdatedAt().equals(before));
+
+            Job job = jobArg.getValue();
+            assertNotNull(job);
+            assertEquals(1, job.getAttachments().size());
+
+            Activity activity = activityArg.getValue();
+            assertNotNull(activity);
+            assertEquals(activity, job.getActivities().getFirst());
+            assertEquals(ActivityType.ATTACHMENT_CREATION, activity.getType());
+        }
+
         @Test
         void whenAttachmentNotFound_thenShouldThrowAttachmentNotFoundException() {
             reset(userService);
             when(jobService.findByIdAndUserId(any(), any())).thenReturn(Optional.of(testJob));
-            assertThrows(AttachmentNotFoundException.class, () -> underTest.downloadAttachment(new DownloadAttachmentCommand("nonexistend", testJob.getUserId(), testJob.getId())));
+            assertThrows(AttachmentNotFoundException.class, () -> underTest.downloadAttachment(new DownloadAttachmentCommand("nonexistent", testJob.getUserId(), testJob.getId())));
+        }
+
+        @Test
+        void whenAttachmentNotReadable_thenShouldThrowAttachmentFileNotReadableException() {
+            reset(userService);
+            when(jobService.findByIdAndUserId(any(), any())).thenReturn(Optional.of(testJobWithAttachment));
+            when(fileStorage.retrieve(eq("notReadable"), eq("notReadable.doc"))).thenThrow(AttachmentFileNotReadableException.class);
+            assertThrows(AttachmentFileNotReadableException.class, () -> underTest.downloadAttachment(new DownloadAttachmentCommand(attachment.getId().value().toString(), testJobWithAttachment.getUserId(), testJobWithAttachment.getId())));
+            verify(jobService).findByIdAndUserId(any(), any());
+            verify(fileStorage).retrieve(eq("notReadable"), eq("notReadable.doc"));
+        }
+
+        @Test
+        void whenAttachmentExists_thenShouldDelete() {
+            ArgumentCaptor<Activity> activityArg = ArgumentCaptor.forClass(Activity.class);
+            ArgumentCaptor<Job> jobArg = ArgumentCaptor.forClass(Job.class);
+
+            reset(userService);
+            when(jobService.findByIdAndUserId(any(), any())).thenReturn(Optional.of(testJobWithAttachment));
+            doNothing().when(fileStorage).delete(eq(attachment.getFileId()));
+            when(jobService.deleteAttachment(jobArg.capture(), eq(attachment), activityArg.capture())).thenAnswer((i) -> i.getArgument(0));
+
+            underTest.deleteAttachment(new DeleteAttachmentCommand(attachment.getId(), testJobWithAttachment.getUserId(), testJobWithAttachment.getId()));
+
+            verify(jobService).deleteAttachment(jobArg.capture(), eq(attachment), activityArg.capture());
+            verify(fileStorage).delete(eq(attachment.getFileId()));
+
+            // check that an activity has been created, and has been passed to the jobservice
+            Job job = jobArg.getValue();
+            assertEquals(1, job.getActivities().size());
+            assertEquals(activityArg.getValue(), job.getActivities().getFirst());
+            assertEquals(ActivityType.ATTACHMENT_DELETION, job.getActivities().getFirst().getType());
         }
     }
 

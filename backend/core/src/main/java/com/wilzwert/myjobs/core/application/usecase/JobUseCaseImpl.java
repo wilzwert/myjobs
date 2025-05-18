@@ -252,7 +252,12 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         // the Job aggregate should be the one to do it, although it would be too complicated for us for the time being
 
         DownloadableFile file = fileStorage.store(command.file(), command.userId().value().toString()+"/"+attachmentId.value().toString(), command.filename());
-        Attachment attachment = Attachment.builder().id(attachmentId).name(command.name()).fileId(file.path()).filename(command.filename()).contentType(file.contentType()).build();
+        Attachment attachment = Attachment.builder()
+                .id(attachmentId)
+                .name(command.name())
+                .fileId(file.fileId())
+                .filename(command.filename())
+                .contentType(file.contentType()).build();
         job = job.addAttachment(attachment);
 
         Activity activity = Activity.builder().type(ActivityType.ATTACHMENT_CREATION).comment(attachment.getName()).build();
