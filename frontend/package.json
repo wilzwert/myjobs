@@ -76,6 +76,7 @@
     "jest-preset-angular": "^14.5.4",
     "ng-extract-i18n-merge": "^2.14.3",
     "nyc": "^17.1.0",
+    "sonar-scanner": "^3.1.0",
     "typescript": "~5.5.2"
   }
 }

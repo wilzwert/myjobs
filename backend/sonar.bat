@@ -1,11 +1,9 @@
-REM === this script is provided as a shortcut for running sonar:sonar plugin ===
+REM === this script is provided as a shortcut for running sonar:sonar plugin in DEV ("local") or not dev env ===
 @echo off
 setlocal EnableDelayedExpansion
 
 set "env=%1"
-echo !env!
-
-
+echo [INFO] Environment: !env!
 
 REM === "mapping" from .env var names to sonar args ===
 if "!env!" == "dev" (
@@ -42,7 +40,6 @@ for /f "usebackq tokens=1,* delims==" %%A in (".env") do (
 			)
 
 			set "mapName=MAP_!key!"
-			echo "map Name !mapName!"
 			
 			for %%X in (!mapName!) do (
                 REM === get mapped variable value ===
@@ -63,10 +60,10 @@ for /f "delims=" %%i in ('git rev-parse --abbrev-ref HEAD') do set BRANCH_NAME=%
 REM === add branch to sonar args ONLY IF sonarqube version supports it ===
 if "%SONAR_SUPPORTS_BRANCH%"=="true" (
 	set SONAR_ARGS=%SONAR_ARGS% -Dsonar.branch.name=%BRANCH_NAME%
-	echo SonarQube analysis for branch : %BRANCH_NAME%
+	echo [INFO] SonarQube analysis for branch : %BRANCH_NAME%
 )
 
-echo Sonar args %SONAR_ARGS%
+echo [INFO] Launching Sonar with args: %SONAR_ARGS%
 
 REM === Run maven with Sonar ===
 ./mvnw clean install sonar:sonar %SONAR_ARGS%
