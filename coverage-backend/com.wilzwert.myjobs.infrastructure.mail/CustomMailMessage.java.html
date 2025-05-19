@@ -24,7 +24,7 @@ public class CustomMailMessage {
 
     private Locale locale;
 
-<span class="fc" id="L27">    private HashMap&lt;String, String&gt; variables = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L27">    private HashMap&lt;String, Object&gt; variables = new HashMap&lt;&gt;();</span>
 
 <span class="fc" id="L29">    public CustomMailMessage(String template, String recipientMail, String recipientName, String subject, String lang) {</span>
 <span class="fc" id="L30">        this.template = template;</span>
@@ -39,5 +39,9 @@ public class CustomMailMessage {
     public void setVariable(String key, String value) {
 <span class="fc" id="L40">        this.variables.put(key, value);</span>
 <span class="fc" id="L41">    }</span>
+
+    public void setVariable(String key, Object value) {
+<span class="fc" id="L44">        this.variables.put(key, value);</span>
+<span class="fc" id="L45">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

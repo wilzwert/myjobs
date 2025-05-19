@@ -1,23 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JobServiceAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MyJobsInfra</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.infrastructure.persistence.mongo.service</a> &gt; <span class="el_source">JobServiceAdapter.java</span></div><h1>JobServiceAdapter.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 
 
+import com.mongodb.bulk.BulkWriteResult;
 import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
-import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.model.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
-import com.wilzwert.myjobs.core.domain.ports.driven.JobService;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
+import com.wilzwert.myjobs.core.domain.shared.bulk.BulkServiceSaveResult;
+import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoJob;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoJobRepository;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.BulkOperations;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.*;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-/**
+    /**
  * @author Wilhelm Zwertvaegher
  * Date:14/03/2025
  * Time:16:28
@@ -26,72 +38,104 @@ import java.util.Optional;
 public class JobServiceAdapter implements JobService {
     private final MongoJobRepository mongoJobRepository;
     private final JobMapper jobMapper;
+    private final AggregationService aggregationService;
+    private final MongoTemplate mongoTemplate;
 
-<span class="fc" id="L30">    public JobServiceAdapter(MongoJobRepository mongoJobRepository, JobMapper jobMapper) {</span>
-<span class="fc" id="L31">        this.mongoJobRepository = mongoJobRepository;</span>
-<span class="fc" id="L32">        this.jobMapper = jobMapper;</span>
-<span class="fc" id="L33">    }</span>
+
+<span class="fc" id="L45">    public JobServiceAdapter(MongoJobRepository mongoJobRepository, JobMapper jobMapper, AggregationService aggregationService, MongoTemplate mongoTemplate) {</span>
+<span class="fc" id="L46">        this.mongoJobRepository = mongoJobRepository;</span>
+<span class="fc" id="L47">        this.jobMapper = jobMapper;</span>
+<span class="fc" id="L48">        this.aggregationService = aggregationService;</span>
+<span class="fc" id="L49">        this.mongoTemplate = mongoTemplate;</span>
+<span class="fc" id="L50">    }</span>
 
     @Override
     public Optional&lt;Job&gt; findById(JobId jobId) {
-<span class="fc" id="L37">        return mongoJobRepository.findById(jobId.value()).map(jobMapper::toDomain).or(Optional::empty);</span>
+<span class="fc" id="L54">        return mongoJobRepository.findById(jobId.value()).map(jobMapper::toDomain).or(Optional::empty);</span>
     }
 
     @Override
     public Optional&lt;Job&gt; findByUrlAndUserId(String url, UserId userId) {
-<span class="fc" id="L42">        return mongoJobRepository.findByUrlAndUserId(url, userId.value()).map(jobMapper::toDomain).or(Optional::empty);</span>
+<span class="fc" id="L59">        return mongoJobRepository.findByUrlAndUserId(url, userId.value()).map(jobMapper::toDomain).or(Optional::empty);</span>
     }
 
     @Override
     public Optional&lt;Job&gt; findByIdAndUserId(JobId jobId, UserId userId) {
-<span class="fc" id="L47">        return mongoJobRepository.findByIdAndUserId(jobId.value(), userId.value()).map(jobMapper::toDomain).or(Optional::empty);</span>
+<span class="fc" id="L64">        return mongoJobRepository.findByIdAndUserId(jobId.value(), userId.value()).map(jobMapper::toDomain).or(Optional::empty);</span>
     }
 
     @Override
-    public DomainPage&lt;Job&gt; findAllByUserId(UserId userId, int page, int size, JobStatus status, String sortString) {
-<span class="pc bpc" id="L52" title="1 of 4 branches missed.">        if(sortString == null || sortString.isEmpty()) {</span>
-<span class="fc" id="L53">            sortString = &quot;createdAt,desc&quot;;</span>
+    public DomainPage&lt;Job&gt; findPaginated(DomainSpecification specifications, int page, int size) {
+<span class="fc" id="L69">        Aggregation aggregation = aggregationService.createAggregationPaginated(specifications, page, size);</span>
+<span class="fc" id="L70">        List&lt;MongoJob&gt; jobs = aggregationService.aggregate(aggregation, &quot;jobs&quot;, MongoJob.class);</span>
+
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        if(jobs.isEmpty()) {</span>
+<span class="fc" id="L73">            return DomainPage.builder(this.jobMapper.toDomain(jobs)).totalElementsCount(0L).currentPage(page).pageSize(size).build();</span>
         }
 
-<span class="fc" id="L56">        var sortOrder = sortString.split(&quot;,&quot;);</span>
-
-<span class="fc" id="L58">        Sort sort = Sort.by(sortOrder[0]);</span>
-<span class="fc bfc" id="L59" title="All 2 branches covered.">        if(sortOrder[1].equals(&quot;desc&quot;)) {</span>
-<span class="fc" id="L60">            sort = sort.descending();</span>
-        }
-        else {
-<span class="fc" id="L63">            sort = sort.ascending();</span>
-        }
-
-<span class="fc bfc" id="L66" title="All 2 branches covered.">        if(status != null) {</span>
-<span class="fc" id="L67">            return this.jobMapper.toDomain(mongoJobRepository.findByUserIdAndStatus(userId.value(), status, PageRequest.of(page, size, sort)));</span>
-        }
-<span class="fc" id="L69">        return this.jobMapper.toDomain(mongoJobRepository.findByUserId(userId.value(), PageRequest.of(page, size, sort)));</span>
+<span class="fc" id="L76">        long total = aggregationService.getAggregationCount(aggregation, &quot;jobs&quot;);</span>
+<span class="fc" id="L77">        return DomainPage.builder(this.jobMapper.toDomain(jobs)).totalElementsCount(total).currentPage(page).pageSize(size).build();</span>
     }
 
     @Override
+    public Map&lt;JobId, Job&gt; findMinimal(DomainSpecification specification) {
+<span class="fc" id="L82">        Aggregation aggregation = aggregationService.createAggregation(specification);</span>
+<span class="fc" id="L83">        return jobMapper.toDomain(aggregationService.aggregate(aggregation, &quot;jobs&quot;, MongoJob.class))</span>
+<span class="fc" id="L84">                .stream()</span>
+<span class="fc" id="L85">                .collect(Collectors.toMap(Job::getId, job -&gt; job));</span>
+    }
+
+    @Override
+    public Stream&lt;Job&gt; stream(DomainSpecification specification) {
+<span class="fc" id="L90">        Aggregation aggregation = aggregationService.createAggregation(specification);</span>
+<span class="fc" id="L91">        Stream&lt;MongoJob&gt; stream = aggregationService.stream(aggregation, &quot;jobs&quot;, MongoJob.class);</span>
+<span class="fc" id="L92">        return stream.map(jobMapper::toDomain).onClose(stream::close);</span>
+    }
+
+        @Override
     public Job save(Job job) {
-<span class="fc" id="L74">        return this.jobMapper.toDomain(mongoJobRepository.save(this.jobMapper.toEntity(job)));</span>
+<span class="fc" id="L97">        return this.jobMapper.toDomain(mongoJobRepository.save(this.jobMapper.toEntity(job)));</span>
     }
 
     @Override
     public Job saveJobAndActivity(Job job, Activity activity) {
-<span class="fc" id="L79">        return jobMapper.toDomain(mongoJobRepository.save(jobMapper.toEntity(job)));</span>
+<span class="fc" id="L102">        return jobMapper.toDomain(mongoJobRepository.save(jobMapper.toEntity(job)));</span>
     }
 
     @Override
     public Job saveJobAndAttachment(Job job, Attachment attachment, Activity activity) {
-<span class="fc" id="L84">        return jobMapper.toDomain(mongoJobRepository.save(jobMapper.toEntity(job)));</span>
+<span class="fc" id="L107">        return jobMapper.toDomain(mongoJobRepository.save(jobMapper.toEntity(job)));</span>
     }
 
     @Override
     public void delete(Job job) {
-<span class="fc" id="L89">        mongoJobRepository.delete(jobMapper.toEntity(job));</span>
-<span class="fc" id="L90">    }</span>
+<span class="fc" id="L112">        mongoJobRepository.delete(jobMapper.toEntity(job));</span>
+<span class="fc" id="L113">    }</span>
 
     @Override
     public Job deleteAttachment(Job job, Attachment attachment, Activity activity) {
-<span class="fc" id="L94">        return jobMapper.toDomain(mongoJobRepository.save(jobMapper.toEntity(job)));</span>
+<span class="fc" id="L117">        return jobMapper.toDomain(mongoJobRepository.save(jobMapper.toEntity(job)));</span>
+    }
+
+    // TODO : tests (dont forget to test with empty set)
+    @Override
+    public BulkServiceSaveResult saveAll(Set&lt;Job&gt; jobs) {
+        // we chose to throw an exception because it seems like something went wrong if someone tries to save an empty set
+<span class="fc bfc" id="L124" title="All 2 branches covered.">        if(jobs.isEmpty()) {</span>
+<span class="fc" id="L125">            throw new IllegalArgumentException(&quot;jobs must not be empty&quot;);</span>
+        }
+
+<span class="fc" id="L128">        BulkOperations bulkOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.ORDERED, MongoJob.class);</span>
+
+<span class="fc" id="L130">        List&lt;MongoJob&gt; mongoJobs = jobMapper.toEntity(jobs.stream().toList());</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">        for(MongoJob job : mongoJobs) {</span>
+<span class="fc" id="L132">            Update update = new Update();</span>
+<span class="fc" id="L133">            update.set(&quot;followUpReminderSentAt&quot;, job.getFollowUpReminderSentAt());</span>
+<span class="fc" id="L134">            bulkOps.updateOne(Query.query(Criteria.where(&quot;_id&quot;).is(job.getId())), update);</span>
+<span class="fc" id="L135">        }</span>
+
+<span class="fc" id="L137">        BulkWriteResult result = bulkOps.execute();</span>
+<span class="fc" id="L138">        return new BulkServiceSaveResult(jobs.size(), result.getModifiedCount(), result.getInsertedCount(), result.getDeletedCount());</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
