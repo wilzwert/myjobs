@@ -46,6 +46,7 @@ export class ResetPasswordComponent {
   }
 
   submit() :void {
+    console.log('submit ', this.isSubmitting, this.form.valid);
     if(!this.isSubmitting && this.form.valid) {
           this.isSubmitting = true;
           this.userService.resetPassword(this.form.value as ResetPasswordRequest)
@@ -61,7 +62,7 @@ export class ResetPasswordComponent {
           ))
           .subscribe(() => {
               this.isSubmitting = false;
-              this.notificationService.confirmation("Your request has been processed. If your email is linked to an account, an email has been sent. Please check your emails for further instructions.");
+              this.notificationService.confirmation($localize `:@@info.password.reset.processed:Your request has been processed. If your email is linked to an account, an email has been sent. Please check your emails for further instructions.`);
               this.router.navigate(["/"])
           });
         }

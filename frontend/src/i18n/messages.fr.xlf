@@ -4,47 +4,47 @@
     <body>
       <trans-unit id="error.validation_failed" datatype="html">
         <source>Validation error</source>
-        <target>Erreur de validation</target>
+        <target state="translated">Erreur de validation</target>
       </trans-unit>
       <trans-unit id="error.field_cannot_be_empty" datatype="html">
         <source>Field cannot be empty</source>
-        <target>Le champ ne doit pas être vide</target>
+        <target state="translated">Le champ ne doit pas être vide</target>
       </trans-unit>
       <trans-unit id="error.invalid_value" datatype="html">
         <source>Invalid value</source>
-        <target>Valeur invalide</target>
+        <target state="translated">Valeur invalide</target>
       </trans-unit>
       <trans-unit id="error.invalid_email" datatype="html">
         <source>Invalid email</source>
-        <target>Email invalide</target>
+        <target state="translated">Email invalide</target>
       </trans-unit>
       <trans-unit id="error.invalid_url" datatype="html">
         <source>Invalid url</source>
-        <target>URL invalide</target>
+        <target state="translated">URL invalide</target>
       </trans-unit>
       <trans-unit id="error.field_too_short" datatype="html">
         <source>Field too short</source>
-        <target>Valeur trop courte</target>
+        <target state="translated">Valeur trop courte</target>
       </trans-unit>
       <trans-unit id="error.field_too_long" datatype="html">
         <source>Field too long</source>
-        <target>Valeur trop longue</target>
+        <target state="translated">Valeur trop longue</target>
       </trans-unit>
       <trans-unit id="error.field_min_max_length" datatype="html">
         <source>Invalid field size</source>
-        <target>Longueur incorrecte</target>
+        <target state="translated">Longueur incorrecte</target>
       </trans-unit>
       <trans-unit id="error.pagination_invalid_page" datatype="html">
         <source>Invalid page</source>
-        <target>Page invalide</target>
+        <target state="translated">Page invalide</target>
       </trans-unit>
       <trans-unit id="error.pagination_invalid_page_size" datatype="html">
         <source>Invalid page size</source>
-        <target>Taille de page invalide</target>
+        <target state="translated">Taille de page invalide</target>
       </trans-unit>
       <trans-unit id="error.pagination_offset_too_big" datatype="html">
         <source>Pagination offset too big</source>
-        <target>Position invalide</target>
+        <target state="translated">Position invalide</target>
       </trans-unit>
       <trans-unit id="error.no_html_fetcher_found" datatype="html">
         <source>HTML could not be fetched</source>
@@ -52,55 +52,55 @@
       </trans-unit>
       <trans-unit id="error.no_metadata_extractor_found" datatype="html">
         <source>Job metadata could not be extracted</source>
-        <target>Impossible d'extraire les données du Job</target>
+        <target state="translated">Impossible d'extraire les données du Job</target>
       </trans-unit>
       <trans-unit id="error.user_weak_password" datatype="html">
         <source>Password does not meet requirements</source>
-        <target>Le mot de passe est trop faible</target>
+        <target state="translated">Le mot de passe est trop faible</target>
       </trans-unit>
       <trans-unit id="error.user_already_exists" datatype="html">
         <source>User already exists</source>
-        <target>L'utilisateur existe déjà</target>
+        <target state="translated">L'utilisateur existe déjà</target>
       </trans-unit>
       <trans-unit id="error.user_not_found" datatype="html">
         <source>User not found</source>
-        <target>Utilisateur non trouvé</target>
+        <target state="translated">Utilisateur non trouvé</target>
       </trans-unit>
       <trans-unit id="error.user_login_failed" datatype="html">
         <source>Login failed</source>
-        <target>Connexion échouée</target>
+        <target state="translated">Connexion échouée</target>
       </trans-unit>
       <trans-unit id="error.user_password_match_failed" datatype="html">
         <source>Invalid old password</source>
-        <target>L'ancien mot de passe est incorrect</target>
+        <target state="translated">L'ancien mot de passe est incorrect</target>
       </trans-unit>
       <trans-unit id="error.user_password_reset_expired" datatype="html">
         <source>Reset password token expired</source>
-        <target>Le jeton de réinitialisation du mot de passe a expiré</target>
+        <target state="translated">Le jeton de réinitialisation du mot de passe a expiré</target>
       </trans-unit>
       <trans-unit id="error.attachment_not_found" datatype="html">
         <source>Attachment not found</source>
-        <target>Pièce jointe non trouvée</target>
+        <target state="translated">Pièce jointe non trouvée</target>
       </trans-unit>
       <trans-unit id="error.attachment_file_not_readable" datatype="html">
         <source>Attachment file not readable</source>
-        <target>Fichier non lisible</target>
+        <target state="translated">Fichier non lisible</target>
       </trans-unit>
       <trans-unit id="error.job_already_exists" datatype="html">
         <source>Job already exists</source>
-        <target>Le job existe déjà</target>
+        <target state="translated">Le job existe déjà</target>
       </trans-unit>
       <trans-unit id="error.job_not_found" datatype="html">
         <source>Job not found</source>
-        <target>Job non trouvé</target>
+        <target state="translated">Job non trouvé</target>
       </trans-unit>
       <trans-unit id="error.unknown" datatype="html">
-        <source>An unknown error occurred</source>
+        <source>An unknown error occurred <x id="PH" equiv-text="code"/></source>
         <target state="translated">Une erreur inconnue est survenue<x id="PH" equiv-text="code"/></target>
       </trans-unit>
       <trans-unit id="info.registered" datatype="html">
         <source>Registered</source>
-        <target>Inscrit</target>
+        <target state="translated">Inscrit</target>
         <note priority="1" from="description">label preceding registration date in user account</note>
         <note priority="1" from="meaning">registered</note>
       </trans-unit>
@@ -649,8 +649,8 @@
         <target state="translated">Job supprimé.</target>
       </trans-unit>
       <trans-unit id="warning.job.delete" datatype="html">
-        <source>Delete job "<x id="PH" equiv-text="job.title"/>" ?</source>
-        <target state="translated">Supprimer "<x id="PH" equiv-text="job.title"/>" ?</target>
+        <source>Delete job "<x id="PH" equiv-text="job.title"/>" ? All data will be lost.</source>
+        <target state="translated">Supprimer "<x id="PH" equiv-text="job.title"/>" ? Toutes les données seront perdues.</target>
       </trans-unit>
       <trans-unit id="info.job.status.updated" datatype="html">
         <source>Status updated successfully.</source>
@@ -658,7 +658,7 @@
       </trans-unit>
       <trans-unit id="info.job.rating.updated" datatype="html">
         <source>Rating updated successfully.</source>
-        <target state="translated">La note a bien été modifiée.</target>
+        <target state="new">La note a bien été modifiée.</target>
       </trans-unit>
       <trans-unit id="info.job.created" datatype="html">
         <source>created</source>
@@ -826,6 +826,43 @@
       <trans-unit id="info.login.verify" datatype="html">
         <source>Please verify your email or password</source>
         <target state="translated">Merci de vérifier votre email et votre mot de passe</target>
+      </trans-unit>
+      <trans-unit id="error.field_value_too_small" datatype="html">
+        <source>Value must be at least {{min}}</source>
+        <target state="translated">La valeur doit être d'au moins {{min}}</target>
+      </trans-unit>
+      <trans-unit id="input.jobFollowUpReminderDays.label" datatype="html">
+        <source>Job reminder delay (days)</source>
+        <target state="translated">Délai de rappel sur les Jobs en attente (en jours)</target>
+      </trans-unit>
+      <trans-unit id="input.jobFollowUpReminderDays.placeholder" datatype="html">
+        <source>Job reminder delay (days)</source>
+        <target state="translated">Me rappeler au bout de X jours</target>
+        <note priority="1" from="description">jobFollowUpReminderDays placeholder</note>
+      </trans-unit>
+      <trans-unit id="error.field_value_too_big" datatype="html">
+        <source>Value must be at most {{max}}</source>
+        <target state="translated">La valeur doit être inférieure ou égale à {{max}}</target>
+      </trans-unit>
+      <trans-unit id="error.password.creation" datatype="html">
+        <source>Password creation failed</source>
+        <target state="translated">La création du mot de passe a échoué</target>
+      </trans-unit>
+      <trans-unit id="info.password.updated" datatype="html">
+        <source>Your password has been updated.</source>
+        <target state="translated">Votre mot de passe a bien été mis à jour.</target>
+      </trans-unit>
+      <trans-unit id="info.login.possible" datatype="html">
+        <source>You may now log in.</source>
+        <target state="translated">Vous pouvez maintenant vous connecter.</target>
+      </trans-unit>
+      <trans-unit id="info.user.edit.success" datatype="html">
+        <source>Your information has been updated.</source>
+        <target state="translated">Vos informations ont bien été mises à jour.</target>
+      </trans-unit>
+      <trans-unit id="info.email.verification.needed" datatype="html">
+        <source>Your new email address needs verification ; please check your emails.</source>
+        <target state="translated">Votre nouvelle adresse mail doit être vérifiée ; veuillez vérifier vos emails.</target>
       </trans-unit>
     </body>
   </file>

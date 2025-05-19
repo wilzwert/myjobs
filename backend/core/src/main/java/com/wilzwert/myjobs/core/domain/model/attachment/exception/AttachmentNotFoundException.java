@@ -1,0 +1,17 @@
+package com.wilzwert.myjobs.core.domain.model.attachment.exception;
+
+
+import com.wilzwert.myjobs.core.domain.shared.exception.EntityNotFoundException;
+import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
+
+/**
+ * @author Wilhelm Zwertvaegher
+ * Date:13/03/2025
+ * Time:09:17
+ */
+
+public class AttachmentNotFoundException extends EntityNotFoundException {
+    public AttachmentNotFoundException() {
+        super(ErrorCode.ATTACHMENT_NOT_FOUND);
+    }
+}

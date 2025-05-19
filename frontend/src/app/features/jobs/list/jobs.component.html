@@ -1,3 +1,5 @@
+@let user = user$ | async;
+
 @if( urlForm) {
     <form class="loggedin-form job-quick-create-form" [formGroup]="urlForm!" (ngSubmit)="createJobWithMetadata()">
         <mat-form-field>
@@ -27,6 +29,7 @@
         @for(status of statusKeys ; track $index) {
             <mat-option [value]="status">{{ status | statusLabel }} </mat-option>
         }
+        <mat-option value="filter-late">Late only </mat-option>
         </mat-select>
     </mat-form-field>
 </div>
@@ -53,9 +56,9 @@
                i18n-aria-label="select list page@@pagination.jobs.select_page_label">
     </mat-paginator>
     @let content = page.content;
-    @if(content !== null) {
+    @if(content !== null && user !== null) {
         @for (job of page.content ; track $index) {
-            <mat-card appearance="outlined" aria-label="Job details" i18n-aria-label="job details@@job.details">
+            <mat-card appearance="outlined" [class]="{ 'follow-up-needed': job.followUpLate }" aria-label="Job details" i18n-aria-label="job details@@job.details">
                 <mat-card-header>
                     <mat-card-title>{{ job.title }}</mat-card-title>
                     <mat-card-subtitle>{{ job.url }}</mat-card-subtitle>
@@ -63,7 +66,7 @@
                     <mat-card-subtitle>{{ job.salary }}</mat-card-subtitle>
                 </mat-card-header>
                 <mat-card-content>
-                    <p><span i18n="job status|label preceeding a job's status@@job.status">Status</span> : {{ job.status | statusLabel}}
+                    <p><span i18n="job status|label preceeding a job's status@@job.status">Status</span> : {{ job.status | statusLabel}} ( {{ job.statusUpdatedAt | date }})
                         <mat-form-field>
                             <mat-label i18n="change job status|label of the input used to change a job's status@@input.job.change_status.label">Change status</mat-label>
                             <mat-select (selectionChange)="updateJobStatus(job, $event)" [value]="currentStatus">

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
-import com.wilzwert.myjobs.core.domain.ports.driven.JobService;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
@@ -34,12 +34,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
-    private final static String JOBS_URL = "/api/jobs";
+    private static final String JOBS_URL = "/api/jobs";
     private static final String JOB_FOR_TEST_ID =  "77777777-7777-7777-7777-123456789012";
     private static final String JOB_ATTACHMENTS_TEST_URL = "/api/jobs/"+JOB_FOR_TEST_ID+"/attachments";
 
     // id for the User to use for tests
-    private final static String USER_FOR_JOBS_TEST_ID = "abcd1234-1234-1234-1234-123456789012";
+    private static final String USER_FOR_JOBS_TEST_ID = "abcd1234-1234-1234-1234-123456789012";
 
     @Autowired
     private MockMvc mockMvc;
@@ -116,7 +116,7 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(errorResponse.getMessage()).isEqualTo(ErrorCode.VALIDATION_FAILED.name());
             assertThat(errorResponse.getErrors()).hasSize(3);
 
-            String expectedError = ErrorCode.FIELD_CANNOT_BE_EMPTY.name();
+            ValidationErrorResponse expectedError = new ValidationErrorResponse(ErrorCode.FIELD_CANNOT_BE_EMPTY.name());
             assertThat(errorResponse.getErrors().get("name")).containsExactly(expectedError);
             assertThat(errorResponse.getErrors().get("filename")).containsExactly(expectedError);
             assertThat(errorResponse.getErrors().get("content")).containsExactly(expectedError);
@@ -174,8 +174,8 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
     @Nested
     class AttachmentControllerDeleteIt {
 
-        private final static String ATTACHMENT_TEST_ID = "b7777777-7777-7777-7770-123456789012";
-        private final static String JOB_ATTACHMENT_TEST_URL = JOB_ATTACHMENTS_TEST_URL+"/b7777777-7777-7777-7770-123456789012";
+        private static final String ATTACHMENT_TEST_ID = "b7777777-7777-7777-7770-123456789012";
+        private static final String JOB_ATTACHMENT_TEST_URL = JOB_ATTACHMENTS_TEST_URL+"/b7777777-7777-7777-7770-123456789012";
 
         @Test
         public void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {

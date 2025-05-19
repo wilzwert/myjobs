@@ -4,10 +4,12 @@ import com.wilzwert.myjobs.core.domain.model.job.JobRating;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -30,12 +32,14 @@ import java.util.UUID;
 @CompoundIndexes({
         @CompoundIndex(name = "unique_user_job", def = "{'user_id': 1, 'url': 1}", unique = true)
 })
+@ToString
 public class MongoJob {
     @Id
     private UUID id;
 
     private String url;
 
+    @Indexed
     private JobStatus status;
 
     private String title;
@@ -53,8 +57,15 @@ public class MongoJob {
     @Field(name = "created_at")
     private Instant createdAt;
 
+    @Indexed
     @Field(name = "updated_at")
     private Instant updatedAt;
+
+    @Field(name = "status_updated_at")
+    private Instant statusUpdatedAt;
+
+    @Field(name = "follow_up_reminder_sent_at")
+    private Instant followUpReminderSentAt;
 
     @Field(name = "user_id")
     private UUID userId;

@@ -1,12 +1,14 @@
 package com.wilzwert.myjobs.core.domain.model;
 
+import com.wilzwert.myjobs.core.domain.shared.exception.IncompleteAggregateException;
+
 /**
  * @author Wilhelm Zwertvaegher
  * Date:18/03/2025
  * Time:13:17
  */
 
-public abstract class DomainEntity<ID> {
+public abstract class DomainEntity<I> {
 
     @Override
     public boolean equals(Object o) {
@@ -16,5 +18,11 @@ public abstract class DomainEntity<ID> {
         return this.getId().equals(that.getId());
     }
 
-    public abstract ID getId();
+    public abstract I getId();
+
+    protected void requireLoadedProperty(Object property) {
+        if(null == property) {
+            throw new IncompleteAggregateException();
+        }
+    }
 }

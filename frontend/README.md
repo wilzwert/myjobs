@@ -33,3 +33,10 @@ To build the app and run it locally in a Docker container with a basic nginx con
 - run `ng build --localize --configuration=integration`, `cd docker` and then `docker-compose up --build`.  
 This will start a container that exposes your app on http://localhost:8081, consuming the API on http://localhost:8080
 NOTE : this is for testing / demo purposes only !
+
+## Sonar
+To manually run a Sonar analysis while developing, you can use the script provided : `./sonar-scan.bat`.
+It allows to get Sonar feedback without having to trigger CI. If your Sonar target supports branches, the git branch is auto detected.
+This can be done in 2 different environments by providing an arg to the script, e.g. : `./sonar-scan.bat dev`
+At this time only 2 environments exist : 'dev' and 'non dev' i.e. no arg.
+You can configure the run by providing some vars in the .env file. See .env.example for more information.

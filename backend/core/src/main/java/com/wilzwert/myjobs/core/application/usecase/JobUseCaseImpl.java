@@ -1,26 +1,42 @@
 package com.wilzwert.myjobs.core.application.usecase;
 
 
-import com.wilzwert.myjobs.core.domain.command.*;
-import com.wilzwert.myjobs.core.domain.exception.*;
 import com.wilzwert.myjobs.core.domain.model.*;
 import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
+import com.wilzwert.myjobs.core.domain.model.activity.command.CreateActivityCommand;
+import com.wilzwert.myjobs.core.domain.model.activity.command.UpdateActivityCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.attachment.AttachmentId;
+import com.wilzwert.myjobs.core.domain.model.attachment.command.CreateAttachmentCommand;
+import com.wilzwert.myjobs.core.domain.model.attachment.command.DeleteAttachmentCommand;
+import com.wilzwert.myjobs.core.domain.model.attachment.command.DownloadAttachmentCommand;
+import com.wilzwert.myjobs.core.domain.model.attachment.exception.AttachmentNotFoundException;
+import com.wilzwert.myjobs.core.domain.model.attachment.ports.driving.DownloadAttachmentUseCase;
+import com.wilzwert.myjobs.core.domain.model.job.EnrichedJob;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
+import com.wilzwert.myjobs.core.domain.model.job.command.*;
+import com.wilzwert.myjobs.core.domain.model.job.exception.JobAlreadyExistsException;
+import com.wilzwert.myjobs.core.domain.model.job.exception.JobNotFoundException;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driving.*;
 import com.wilzwert.myjobs.core.domain.model.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
-import com.wilzwert.myjobs.core.domain.ports.driven.FileStorage;
-import com.wilzwert.myjobs.core.domain.ports.driven.HtmlSanitizer;
-import com.wilzwert.myjobs.core.domain.ports.driven.JobService;
-import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
-import com.wilzwert.myjobs.core.domain.ports.driving.*;
+import com.wilzwert.myjobs.core.domain.model.user.exception.UserNotFoundException;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.GetUserJobUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.GetUserJobsUseCase;
+import com.wilzwert.myjobs.core.domain.model.job.service.JobEnricher;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.HtmlSanitizer;
+import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 
 import java.lang.reflect.Method;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 /**
@@ -29,7 +45,7 @@ import java.util.*;
  * Time:16:55
  */
 
-public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, UpdateJobUseCase, UpdateJobStatusUseCase, UpdateJobRatingUseCase, DeleteJobUseCase, GetUserJobsUseCase, AddActivityToJobUseCase, AddAttachmentToJobUseCase, DownloadAttachmentUseCase, DeleteAttachmentUseCase {
+public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, UpdateJobUseCase, UpdateJobStatusUseCase, UpdateJobRatingUseCase, DeleteJobUseCase, GetUserJobsUseCase, AddActivityToJobUseCase, UpdateActivityUseCase, AddAttachmentToJobUseCase, DownloadAttachmentUseCase, DeleteAttachmentUseCase {
 
     private final JobService jobService;
 
@@ -38,6 +54,8 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
     private final FileStorage fileStorage;
 
     private final HtmlSanitizer htmlSanitizer;
+
+    private final JobEnricher jobEnricher = new JobEnricher();
 
     public JobUseCaseImpl(JobService jobService, UserService userService, FileStorage fileStorage, HtmlSanitizer htmlSanitizer) {
         this.jobService = jobService;
@@ -48,11 +66,12 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
     @Override
     public Job createJob(CreateJobCommand command) {
-        Optional<User> user = userService.findByIdWithJobs(command.userId());
+        Optional<User> user = userService.findById(command.userId());
         if(user.isEmpty()) {
             throw new UserNotFoundException();
         }
-        Job jobToCreate = Job.builder()
+        Job jobToCreate = Job.create(
+                Job.builder()
                 .url(command.url())
                 .title(command.title())
                 .company(command.company())
@@ -60,7 +79,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
                 .profile(command.profile())
                 .salary(command.salary())
                 .userId(user.get().getId())
-                .build();
+        );
         Job job = user.get().addJob(jobToCreate);
         userService.saveUserAndJob(user.get(), job);
         return job;
@@ -68,7 +87,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
     @Override
     public void deleteJob(DeleteJobCommand command) {
-        Optional<User> foundUser = userService.findByIdWithJobs(command.userId());
+        Optional<User> foundUser = userService.findById(command.userId());
         if(foundUser.isEmpty()) {
             throw new UserNotFoundException();
         }
@@ -89,7 +108,6 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
                 fileStorage.delete(attachment.getFileId());
             }
             catch (Exception e) {
-                System.out.println("failed to delete attachment "+attachment.getFileId()+e.getMessage());
                 // TODO log incoherence
             }
         });
@@ -99,12 +117,35 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
     }
 
     @Override
-    public DomainPage<Job> getUserJobs(UserId userId, int page, int size, JobStatus status, String sort) {
-        Optional<User> user = userService.findById(userId);
-        if(user.isEmpty()) {
+    public DomainPage<EnrichedJob> getUserJobs(UserId userId, int page, int size, JobStatus status, boolean filterLate, String sort) {
+        Optional<User> foundUser = userService.findById(userId);
+        if(foundUser.isEmpty()) {
             throw new UserNotFoundException();
         }
-        return jobService.findAllByUserId(user.get().getId(), page, size, status, sort);
+
+        User user = foundUser.get();
+
+        List<DomainSpecification> specs = new ArrayList<>(List.of(DomainSpecification.Eq("userId", user.getId(), UserId.class)));
+
+        DomainPage<Job> jobs;
+        if(filterLate) {
+            // threshold instant : jobs not updated since that instant are considered late
+            Instant nowMinusReminderDays = Instant.now().minus(user.getJobFollowUpReminderDays(), ChronoUnit.DAYS);
+            specs.add(DomainSpecification.In("status", JobStatus.activeStatuses()));
+            specs.add(DomainSpecification.Lt("statusUpdatedAt", nowMinusReminderDays));
+        }
+        else {
+            if( status != null) {
+                specs.add(DomainSpecification.Eq("status", status, JobStatus.class));
+            }
+        }
+        var finalSpecs = DomainSpecification.And(specs);
+        if(sort != null && !sort.isEmpty()) {
+            DomainSpecification.applySort(finalSpecs, DomainSpecification.Sort(sort));
+        }
+
+        jobs = jobService.findPaginated(finalSpecs, page, size);
+        return jobEnricher.enrich(jobs, user);
     }
 
     @Override
@@ -168,6 +209,26 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
     }
 
     @Override
+    public Activity updateActivity(UpdateActivityCommand command) {
+        Job job = jobService.findByIdAndUserId(command.jobId(), command.userId()).orElseThrow(JobNotFoundException::new);
+
+        Activity activity = Activity.builder()
+                .id(command.activityId())
+                .type(command.activityType())
+                .comment(command.comment())
+                .build();
+
+        job = job.updateActivity(activity);
+
+        // FIXME
+        // this is an ugly workaround to force the infra (persistence in particular) to save all data
+        // as I understand DDD, only the aggregate should be explicitly persisted
+        // but I just don't how to do it cleanly for now
+        this.jobService.saveJobAndActivity(job, activity);
+        return activity;
+    }
+
+    @Override
     public Job getUserJob(UserId userId, JobId jobId) {
         return jobService.findByIdAndUserId(jobId, userId).orElseThrow(JobNotFoundException::new);
     }
@@ -213,7 +274,12 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         // the Job aggregate should be the one to do it, although it would be too complicated for us for the time being
 
         DownloadableFile file = fileStorage.store(command.file(), command.userId().value().toString()+"/"+attachmentId.value().toString(), command.filename());
-        Attachment attachment = Attachment.builder().id(attachmentId).name(command.name()).fileId(file.path()).filename(command.filename()).contentType(file.contentType()).build();
+        Attachment attachment = Attachment.builder()
+                .id(attachmentId)
+                .name(command.name())
+                .fileId(file.fileId())
+                .filename(command.filename())
+                .contentType(file.contentType()).build();
         job = job.addAttachment(attachment);
 
         Activity activity = Activity.builder().type(ActivityType.ATTACHMENT_CREATION).comment(attachment.getName()).build();
@@ -261,14 +327,14 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
         // FIXME
         // this is an ugly workaround to force the infra (persistence in particular) to save all data
-        // as I understand DDD, only the aggregate should be explicitly persisted
+        // as I understand DDD, only the root aggregate should be explicitly persisted
         // but I just don't how to do it cleanly for now
         jobService.deleteAttachment(job, attachment, activity);
         try {
             fileStorage.delete(attachment.getFileId());
         }
         catch (Exception e) {
-            // TODO log incoherence
+            // TODO do something
         }
     }
 

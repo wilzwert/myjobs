@@ -45,7 +45,7 @@ class RateLimitingIT extends AbstractBaseIntegrationTest  {
     private MockMvc mockMvc;
 
     // id for the User to use for get /api/user tests
-    private final static String USER_FOR_GET_TEST_ID = "abcd4321-4321-4321-4321-123456789012";
+    private static final String USER_FOR_GET_TEST_ID = "abcd4321-4321-4321-4321-123456789012";
 
     @Test
     void shouldLimitRequestsBasedOnIpAndPath() throws Exception {

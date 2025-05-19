@@ -1,6 +1,6 @@
 package com.wilzwert.myjobs.core.domain.model.activity;
 
-import com.wilzwert.myjobs.core.domain.exception.ValidationException;
+import com.wilzwert.myjobs.core.domain.shared.exception.ValidationException;
 import com.wilzwert.myjobs.core.domain.model.DomainEntity;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.core.domain.shared.validation.ValidationErrors;
@@ -26,6 +26,10 @@ public class Activity extends DomainEntity<ActivityId> {
 
     public static Builder builder() {
         return new Builder();
+    }
+
+    public static Builder from(Activity activity) {
+        return new Builder(activity);
     }
 
     public static class Builder {

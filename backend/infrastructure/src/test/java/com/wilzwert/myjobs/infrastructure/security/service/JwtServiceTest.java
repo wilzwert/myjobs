@@ -49,7 +49,7 @@ public class JwtServiceTest {
     @Mock
     private HttpServletRequest request;
 
-    private final static String SECRET_KEY = "testSecretWithEnoughBytesToGenerateKeyWithoutThrowingWeakKeyException";
+    private static final String SECRET_KEY = "testSecretWithEnoughBytesToGenerateKeyWithoutThrowingWeakKeyException";
 
     @BeforeEach
     public void setUp() {

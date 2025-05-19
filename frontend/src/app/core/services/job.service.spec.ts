@@ -140,7 +140,7 @@ describe('JobService', () => {
 
     dataServiceMock.get.mockReturnValue(of(page));
 
-    const result = await firstValueFrom(jobService.getAllJobs(1, 10, null, 'createdAt'));
+    const result = await firstValueFrom(jobService.getAllJobs(1, 10, null, false, 'createdAt'));
     expect(result).toEqual(page);
     expect(dataServiceMock.get).toHaveBeenCalledWith('jobs?page=1&itemsPerPage=10&sort=createdAt');
   });
@@ -157,9 +157,9 @@ describe('JobService', () => {
     dataServiceMock.get.mockReturnValue(of(page));
 
     // first call (loading)
-    const firstLoad = await firstValueFrom(jobService.getAllJobs(1, 10, null, 'createdAt'));
+    const firstLoad = await firstValueFrom(jobService.getAllJobs(1, 10, null, false, 'createdAt'));
     // second call with same parameters
-    const secondResult = await firstValueFrom(jobService.getAllJobs(1, 10, null, 'createdAt'));
+    const secondResult = await firstValueFrom(jobService.getAllJobs(1, 10, null, false, 'createdAt'));
     expect(dataServiceMock.get).toHaveBeenCalledTimes(1); // only one call expected as page and order did not change
     expect(secondResult).toEqual(page);
   });

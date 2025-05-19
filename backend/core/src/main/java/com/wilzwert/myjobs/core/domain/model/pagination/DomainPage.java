@@ -20,10 +20,19 @@ public class DomainPage<T> {
     private final int pageCount;
 
     private DomainPage(DomainPageBuilder<T> builder) {
+        if(builder.pageSize == -1) {
+            throw new IllegalStateException("Page size is not set");
+        }
+        if(builder.totalElementsCount == -1) {
+            throw new IllegalStateException("Total elements count is not set");
+        }
+        if(builder.currentPage == -1) {
+            throw new IllegalStateException("Current page is not set");
+        }
         content = buildContent(builder.content);
         currentPage = builder.currentPage;
-        pageSize = buildPageSize(builder.pageSize);
-        totalElementsCount = buildTotalElementsCount(builder.totalElementsCount);
+        pageSize = builder.pageSize;
+        totalElementsCount = builder.totalElementsCount;
         pageCount = buildPageCount();
     }
 
@@ -35,22 +44,6 @@ public class DomainPage<T> {
         return Collections.unmodifiableList(content);
     }
 
-    private int buildPageSize(int pageSize) {
-        if (pageSize == -1) {
-            return content.size();
-        }
-
-        return pageSize;
-    }
-
-    private long buildTotalElementsCount(long totalElementsCount) {
-        if (totalElementsCount == -1) {
-            return content.size();
-        }
-
-        return totalElementsCount;
-    }
-
     public int buildPageCount() {
         if (totalElementsCount > 0) {
             return (int) Math.ceil(totalElementsCount / (float) pageSize);
@@ -59,12 +52,24 @@ public class DomainPage<T> {
         return MINIMAL_PAGE_COUNT;
     }
 
+    public static <T> DomainPageBuilder<T> builder(DomainPage<?> page, List<T> content) {
+        return new DomainPageBuilder<>(content)
+                .currentPage(page.currentPage)
+                .pageSize(page.pageSize)
+                .totalElementsCount(page.totalElementsCount)
+                ;
+    }
+
     public static <T> DomainPageBuilder<T> builder(List<T> content) {
         return new DomainPageBuilder<>(content);
     }
 
     public static <T> DomainPage<T> singlePage(List<T> content) {
-        return builder(content).build();
+        return builder(content)
+                .currentPage(0)
+                .totalElementsCount(content.size())
+                .pageSize(content.size())
+                .build();
     }
 
     public List<T> getContent() {
@@ -93,7 +98,7 @@ public class DomainPage<T> {
 
     public static class DomainPageBuilder<T> {
         private final List<T> content;
-        private int currentPage;
+        private int currentPage = -1;
         private int pageSize = -1;
         private long totalElementsCount = -1;
 
@@ -120,7 +125,7 @@ public class DomainPage<T> {
         }
 
         public DomainPage<T> build() {
-            return new DomainPage<>(this);
+           return new DomainPage<>(this);
         }
     }
 }

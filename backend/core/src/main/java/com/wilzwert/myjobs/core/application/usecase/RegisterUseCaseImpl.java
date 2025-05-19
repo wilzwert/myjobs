@@ -1,18 +1,19 @@
 package com.wilzwert.myjobs.core.application.usecase;
 
 
-import com.wilzwert.myjobs.core.domain.command.RegisterUserCommand;
-import com.wilzwert.myjobs.core.domain.command.ValidateEmailCommand;
-import com.wilzwert.myjobs.core.domain.exception.UserAlreadyExistsException;
-import com.wilzwert.myjobs.core.domain.exception.UserNotFoundException;
+import com.wilzwert.myjobs.core.domain.model.user.command.RegisterUserCommand;
+import com.wilzwert.myjobs.core.domain.model.user.command.ValidateEmailCommand;
+import com.wilzwert.myjobs.core.domain.model.user.exception.UserAlreadyExistsException;
+import com.wilzwert.myjobs.core.domain.model.user.exception.UserNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.user.User;
-import com.wilzwert.myjobs.core.domain.ports.driven.AccountCreationMessageProvider;
-import com.wilzwert.myjobs.core.domain.ports.driven.PasswordHasher;
-import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
-import com.wilzwert.myjobs.core.domain.ports.driving.CheckUserAvailabilityUseCase;
-import com.wilzwert.myjobs.core.domain.ports.driving.RegisterUseCase;
-import com.wilzwert.myjobs.core.domain.ports.driving.ValidateEmailUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.AccountCreationMessageProvider;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.PasswordHasher;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.CheckUserAvailabilityUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.RegisterUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.ValidateEmailUseCase;
 
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -45,12 +46,15 @@ public class RegisterUseCaseImpl implements RegisterUseCase, CheckUserAvailabili
         }
 
         User user = userService.save(User.create(
-                registerUserCommand.email(),
-                passwordHasher.hashPassword(registerUserCommand.password()),
-                registerUserCommand.username(),
-                registerUserCommand.firstName(),
-                registerUserCommand.lastName(),
-                registerUserCommand.lang(),
+                User.builder()
+                    .email(registerUserCommand.email())
+                    .password(passwordHasher.hashPassword(registerUserCommand.password()))
+                    .username(registerUserCommand.username())
+                    .firstName(registerUserCommand.firstName())
+                    .lastName(registerUserCommand.lastName())
+                    .jobFollowUpReminderDays(registerUserCommand.jobFollowUpReminderDays())
+                    .lang(registerUserCommand.lang())
+                    .jobs(Collections.emptyList()),
                 registerUserCommand.password()
         ));
 
@@ -71,7 +75,7 @@ public class RegisterUseCaseImpl implements RegisterUseCase, CheckUserAvailabili
 
     @Override
     public User validateEmail(ValidateEmailCommand command) {
-        Optional<User> userOptional = userService.findByEmailValidationCode(command.validationCode());
+        Optional<User> userOptional = userService.findMinimalByEmailValidationCode(command.validationCode());
         if(userOptional.isPresent()) {
             User user = userOptional.get();
             user = user.validateEmail(command.validationCode());

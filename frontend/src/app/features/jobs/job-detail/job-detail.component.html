@@ -8,7 +8,7 @@
         <mat-card-header>
             <mat-card-title>{{ job.title }}</mat-card-title>
             <mat-card-subtitle>{{ job.createdAt | date }}</mat-card-subtitle>
-            <mat-card-subtitle>{{ job.status | statusLabel }}</mat-card-subtitle>
+            <mat-card-subtitle>{{ job.status | statusLabel }} ( {{ job.statusUpdatedAt | date }} )</mat-card-subtitle>
             <mat-card-subtitle>{{ job.url }}</mat-card-subtitle>
             <mat-card-subtitle>{{ job.company }}</mat-card-subtitle>
             <app-rating [rating]="job.rating ? job.rating.value : 0" (ratingChange)="updateJobRating(job, $event)"></app-rating>

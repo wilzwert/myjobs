@@ -1,23 +1,35 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 
 
+import com.mongodb.bulk.BulkWriteResult;
 import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
-import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.model.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
-import com.wilzwert.myjobs.core.domain.ports.driven.JobService;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
+import com.wilzwert.myjobs.core.domain.shared.bulk.BulkServiceSaveResult;
+import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoJob;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoJobRepository;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.BulkOperations;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.*;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-/**
+    /**
  * @author Wilhelm Zwertvaegher
  * Date:14/03/2025
  * Time:16:28
@@ -26,10 +38,15 @@ import java.util.Optional;
 public class JobServiceAdapter implements JobService {
     private final MongoJobRepository mongoJobRepository;
     private final JobMapper jobMapper;
+    private final AggregationService aggregationService;
+    private final MongoTemplate mongoTemplate;
 
-    public JobServiceAdapter(MongoJobRepository mongoJobRepository, JobMapper jobMapper) {
+
+    public JobServiceAdapter(MongoJobRepository mongoJobRepository, JobMapper jobMapper, AggregationService aggregationService, MongoTemplate mongoTemplate) {
         this.mongoJobRepository = mongoJobRepository;
         this.jobMapper = jobMapper;
+        this.aggregationService = aggregationService;
+        this.mongoTemplate = mongoTemplate;
     }
 
     @Override
@@ -48,28 +65,34 @@ public class JobServiceAdapter implements JobService {
     }
 
     @Override
-    public DomainPage<Job> findAllByUserId(UserId userId, int page, int size, JobStatus status, String sortString) {
-        if(sortString == null || sortString.isEmpty()) {
-            sortString = "createdAt,desc";
+    public DomainPage<Job> findPaginated(DomainSpecification specifications, int page, int size) {
+        Aggregation aggregation = aggregationService.createAggregationPaginated(specifications, page, size);
+        List<MongoJob> jobs = aggregationService.aggregate(aggregation, "jobs", MongoJob.class);
+
+        if(jobs.isEmpty()) {
+            return DomainPage.builder(this.jobMapper.toDomain(jobs)).totalElementsCount(0L).currentPage(page).pageSize(size).build();
         }
 
-        var sortOrder = sortString.split(",");
-
-        Sort sort = Sort.by(sortOrder[0]);
-        if(sortOrder[1].equals("desc")) {
-            sort = sort.descending();
-        }
-        else {
-            sort = sort.ascending();
-        }
-
-        if(status != null) {
-            return this.jobMapper.toDomain(mongoJobRepository.findByUserIdAndStatus(userId.value(), status, PageRequest.of(page, size, sort)));
-        }
-        return this.jobMapper.toDomain(mongoJobRepository.findByUserId(userId.value(), PageRequest.of(page, size, sort)));
+        long total = aggregationService.getAggregationCount(aggregation, "jobs");
+        return DomainPage.builder(this.jobMapper.toDomain(jobs)).totalElementsCount(total).currentPage(page).pageSize(size).build();
     }
 
     @Override
+    public Map<JobId, Job> findMinimal(DomainSpecification specification) {
+        Aggregation aggregation = aggregationService.createAggregation(specification);
+        return jobMapper.toDomain(aggregationService.aggregate(aggregation, "jobs", MongoJob.class))
+                .stream()
+                .collect(Collectors.toMap(Job::getId, job -> job));
+    }
+
+    @Override
+    public Stream<Job> stream(DomainSpecification specification) {
+        Aggregation aggregation = aggregationService.createAggregation(specification);
+        Stream<MongoJob> stream = aggregationService.stream(aggregation, "jobs", MongoJob.class);
+        return stream.map(jobMapper::toDomain).onClose(stream::close);
+    }
+
+        @Override
     public Job save(Job job) {
         return this.jobMapper.toDomain(mongoJobRepository.save(this.jobMapper.toEntity(job)));
     }
@@ -92,5 +115,26 @@ public class JobServiceAdapter implements JobService {
     @Override
     public Job deleteAttachment(Job job, Attachment attachment, Activity activity) {
         return jobMapper.toDomain(mongoJobRepository.save(jobMapper.toEntity(job)));
+    }
+
+    // TODO : tests (dont forget to test with empty set)
+    @Override
+    public BulkServiceSaveResult saveAll(Set<Job> jobs) {
+        // we chose to throw an exception because it seems like something went wrong if someone tries to save an empty set
+        if(jobs.isEmpty()) {
+            throw new IllegalArgumentException("jobs must not be empty");
+        }
+
+        BulkOperations bulkOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.ORDERED, MongoJob.class);
+
+        List<MongoJob> mongoJobs = jobMapper.toEntity(jobs.stream().toList());
+        for(MongoJob job : mongoJobs) {
+            Update update = new Update();
+            update.set("followUpReminderSentAt", job.getFollowUpReminderSentAt());
+            bulkOps.updateOne(Query.query(Criteria.where("_id").is(job.getId())), update);
+        }
+
+        BulkWriteResult result = bulkOps.execute();
+        return new BulkServiceSaveResult(jobs.size(), result.getModifiedCount(), result.getInsertedCount(), result.getDeletedCount());
     }
 }

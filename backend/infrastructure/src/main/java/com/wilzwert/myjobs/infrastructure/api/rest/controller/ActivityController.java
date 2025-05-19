@@ -1,9 +1,9 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 
-import com.wilzwert.myjobs.core.domain.command.CreateActivityCommand;
+import com.wilzwert.myjobs.core.domain.model.activity.command.CreateActivityCommand;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
-import com.wilzwert.myjobs.core.domain.ports.driving.*;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driving.AddActivityToJobUseCase;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.ActivityMapper;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;

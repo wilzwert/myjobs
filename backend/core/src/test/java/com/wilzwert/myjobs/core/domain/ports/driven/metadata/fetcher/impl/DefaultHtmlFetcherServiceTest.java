@@ -1,8 +1,9 @@
 package com.wilzwert.myjobs.core.domain.ports.driven.metadata.fetcher.impl;
 
 
-import com.wilzwert.myjobs.core.domain.exception.NoHtmlFetcherException;
-import com.wilzwert.myjobs.core.domain.ports.driven.metadata.fetcher.HtmlFetcher;
+import com.wilzwert.myjobs.core.domain.shared.exception.NoHtmlFetcherException;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.fetcher.HtmlFetcher;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.fetcher.impl.DefaultHtmlFetcherService;
 import org.junit.jupiter.api.Test;
 import java.util.Optional;
 

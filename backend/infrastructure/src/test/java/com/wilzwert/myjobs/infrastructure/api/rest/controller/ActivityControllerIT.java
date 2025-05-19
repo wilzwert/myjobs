@@ -5,12 +5,11 @@ import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
-import com.wilzwert.myjobs.core.domain.ports.driven.JobService;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
 import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
-import com.wilzwert.myjobs.infrastructure.utility.TestDataLoader;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,7 +34,7 @@ public class ActivityControllerIT extends AbstractBaseIntegrationTest  {
     private static final String TEST_URL = "/api/jobs/"+JOB_FOR_TEST_ID+"/activities";
 
     // id for the User to use for get tests
-    private final static String USER_FOR_JOBS_TEST_ID = "abcd1234-1234-1234-1234-123456789012";
+    private static final String USER_FOR_JOBS_TEST_ID = "abcd1234-1234-1234-1234-123456789012";
 
     @Autowired
     private MockMvc mockMvc;
@@ -48,9 +47,6 @@ public class ActivityControllerIT extends AbstractBaseIntegrationTest  {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @Autowired
-    private TestDataLoader testDataLoader;
 
     Cookie accessTokenCookie;
 
@@ -105,7 +101,7 @@ public class ActivityControllerIT extends AbstractBaseIntegrationTest  {
         assertThat(errorResponse.getStatus()).isEqualTo("400");
         assertThat(errorResponse.getMessage()).isEqualTo(ErrorCode.VALIDATION_FAILED.name());
         assertThat(errorResponse.getErrors()).hasSize(1);
-        assertThat(errorResponse.getErrors().get("type")).containsExactly(ErrorCode.INVALID_VALUE.name());
+        assertThat(errorResponse.getErrors().get("type")).containsExactly(new ValidationErrorResponse(ErrorCode.INVALID_VALUE.name()));
     }
 
     @Test

@@ -2,23 +2,27 @@ package com.wilzwert.myjobs.infrastructure.configuration;
 
 
 import com.wilzwert.myjobs.core.application.usecase.*;
-import com.wilzwert.myjobs.core.domain.ports.driven.*;
-import com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.JobMetadataExtractorService;
-import com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.impl.DefaultJobMetadataExtractorService;
-import com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.impl.HtmlJobMetadataExtractor;
-import com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.impl.JsonLdJobMetadataExtractor;
-import com.wilzwert.myjobs.core.domain.ports.driven.metadata.fetcher.HtmlFetcherService;
-import com.wilzwert.myjobs.core.domain.ports.driven.metadata.fetcher.JsHtmlFetcher;
-import com.wilzwert.myjobs.core.domain.ports.driven.metadata.fetcher.StaticHtmlFetcher;
-import com.wilzwert.myjobs.core.domain.ports.driving.DeleteAccountUseCase;
-import com.wilzwert.myjobs.core.domain.ports.driving.ExtractJobMetadataUseCase;
-import com.wilzwert.myjobs.core.domain.ports.driving.LoginUseCase;
-import com.wilzwert.myjobs.core.domain.ports.driving.RegisterUseCase;
-import com.wilzwert.myjobs.core.domain.service.metadata.JobMetadataService;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
+import com.wilzwert.myjobs.core.domain.model.user.User;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.*;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.extractor.JobMetadataExtractorService;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.extractor.impl.DefaultJobMetadataExtractorService;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.extractor.impl.HtmlJobMetadataExtractor;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.extractor.impl.JsonLdJobMetadataExtractor;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.SendJobsRemindersUseCase;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.HtmlSanitizer;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.fetcher.HtmlFetcherService;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.fetcher.JsHtmlFetcher;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.fetcher.StaticHtmlFetcher;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.DeleteAccountUseCase;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driving.ExtractJobMetadataUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.LoginUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.RegisterUseCase;
+import com.wilzwert.myjobs.core.domain.model.job.service.JobMetadataService;
 import com.wilzwert.myjobs.infrastructure.adapter.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -84,5 +88,10 @@ public class BeanConfiguration {
     @Bean
     ExtractJobMetadataUseCase extractJobMetadataUseCase(JobMetadataService jobMetadataService) {
         return new ExtractJobMetadataUseCaseImpl(jobMetadataService);
+    }
+
+    @Bean
+    SendJobsRemindersUseCase sendJobsRemindersUseCase(JobService jobService, UserService userService, JobReminderMessageProvider messageProvider) {
+        return new SendJobsRemindersUseCaseImpl(jobService, userService, messageProvider);
     }
 }

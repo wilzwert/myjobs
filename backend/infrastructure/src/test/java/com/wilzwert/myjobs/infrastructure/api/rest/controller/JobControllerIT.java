@@ -6,7 +6,7 @@ import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.JobRating;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
-import com.wilzwert.myjobs.core.domain.ports.driven.JobService;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
@@ -35,13 +35,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 public class JobControllerIT extends AbstractBaseIntegrationTest  {
-    private final static String JOBS_URL = "/api/jobs";
+    private static final String JOBS_URL = "/api/jobs";
 
     private static final String JOB_FOR_TEST_ID =  "77777777-7777-7777-7777-123456789012";
     private static final String JOB_FOR_TEST_URL = JOBS_URL+"/"+JOB_FOR_TEST_ID;
 
     // id for the User to use for get /api/jobs tests
-    private final static String USER_FOR_JOBS_TEST_ID = "abcd1234-1234-1234-1234-123456789012";
+    private static final String USER_FOR_JOBS_TEST_ID = "abcd1234-1234-1234-1234-123456789012";
 
     @Autowired
     private MockMvc mockMvc;
@@ -76,7 +76,8 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
                     .andExpect(status().isOk())
                     .andReturn();
 
-            RestPage<JobResponse> jobResponseRestPage = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<RestPage<JobResponse>>() {});
+            RestPage<JobResponse> jobResponseRestPage = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<>() {
+            });
             assertThat(jobResponseRestPage).isNotNull();
             assertThat(jobResponseRestPage.getContent()).isNotNull();
             assertThat(jobResponseRestPage.getContent()).hasSize(3);
@@ -288,9 +289,9 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(errorResponse.getErrors()).hasSize(3);
 
             String expectedError = ErrorCode.FIELD_CANNOT_BE_EMPTY.name();
-            assertThat(errorResponse.getErrors().get("description")).containsExactly(expectedError);
-            assertThat(errorResponse.getErrors().get("title")).containsExactly(expectedError);
-            assertThat(errorResponse.getErrors().get("url")).containsExactly(ErrorCode.INVALID_URL.name());
+            assertThat(errorResponse.getErrors().get("description")).extracting(ValidationErrorResponse::getCode).containsExactly(expectedError);
+            assertThat(errorResponse.getErrors().get("title")).extracting(ValidationErrorResponse::getCode).containsExactly(expectedError);
+            assertThat(errorResponse.getErrors().get("url")).extracting(ValidationErrorResponse::getCode).containsExactly(ErrorCode.INVALID_URL.name());
         }
 
         @Test
@@ -392,9 +393,9 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(errorResponse.getErrors()).hasSize(3);
 
             String expectedError = ErrorCode.FIELD_CANNOT_BE_EMPTY.name();
-            assertThat(errorResponse.getErrors().get("description")).containsExactly(expectedError);
-            assertThat(errorResponse.getErrors().get("title")).containsExactly(expectedError);
-            assertThat(errorResponse.getErrors().get("url")).containsExactly(ErrorCode.INVALID_URL.name());
+            assertThat(errorResponse.getErrors().get("description")).extracting(ValidationErrorResponse::getCode).containsExactly(expectedError);
+            assertThat(errorResponse.getErrors().get("title")).extracting(ValidationErrorResponse::getCode).containsExactly(expectedError);
+            assertThat(errorResponse.getErrors().get("url")).extracting(ValidationErrorResponse::getCode).containsExactly(ErrorCode.INVALID_URL.name());
         }
 
         @Test
@@ -444,7 +445,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
     @Nested
     class JobControllerUpdateStatusIt {
 
-        private final static String JOB_STATUS_UPDATE_URL = JOB_FOR_TEST_URL+"/status";
+        private static final String JOB_STATUS_UPDATE_URL = JOB_FOR_TEST_URL+"/status";
 
         @Test
         public void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
@@ -493,7 +494,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(errorResponse.getStatus()).isEqualTo("400");
             assertThat(errorResponse.getMessage()).isEqualTo(ErrorCode.VALIDATION_FAILED.name());
             assertThat(errorResponse.getErrors()).hasSize(1);
-            assertThat(errorResponse.getErrors().get("status")).containsExactly(ErrorCode.INVALID_VALUE.name());
+            assertThat(errorResponse.getErrors().get("status")).extracting(ValidationErrorResponse::getCode).containsExactly(ErrorCode.INVALID_VALUE.name());
         }
 
         @Test
@@ -530,7 +531,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
     @Nested
     class JobControllerUpdateRatingIT {
 
-        private final static String JOB_RATING_UPDATE_URL = JOB_FOR_TEST_URL+"/rating";
+        private static final String JOB_RATING_UPDATE_URL = JOB_FOR_TEST_URL+"/rating";
 
         @Test
         public void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
@@ -580,7 +581,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(errorResponse.getStatus()).isEqualTo("400");
             assertThat(errorResponse.getMessage()).isEqualTo(ErrorCode.VALIDATION_FAILED.name());
             assertThat(errorResponse.getErrors()).hasSize(1);
-            assertThat(errorResponse.getErrors().get("rating")).containsExactly(ErrorCode.INVALID_VALUE.name());
+            assertThat(errorResponse.getErrors().get("rating")).extracting(ValidationErrorResponse::getCode).containsExactly(ErrorCode.INVALID_VALUE.name());
         }
 
         @Test

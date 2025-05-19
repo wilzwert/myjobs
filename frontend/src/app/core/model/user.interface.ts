@@ -8,5 +8,6 @@ export interface User {
     lastName: string;
     createdAt: string;
     emailStatus: EmailStatus
+    jobFollowUpReminderDays: number,
     lang?: Lang
   }

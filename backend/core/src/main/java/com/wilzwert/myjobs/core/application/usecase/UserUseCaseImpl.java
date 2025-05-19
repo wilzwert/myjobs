@@ -1,17 +1,19 @@
 package com.wilzwert.myjobs.core.application.usecase;
 
 
-import com.wilzwert.myjobs.core.domain.command.UpdateUserCommand;
-import com.wilzwert.myjobs.core.domain.command.UpdateUserLangCommand;
-import com.wilzwert.myjobs.core.domain.exception.UserAlreadyExistsException;
-import com.wilzwert.myjobs.core.domain.exception.UserNotFoundException;
+import com.wilzwert.myjobs.core.domain.model.user.UserView;
+import com.wilzwert.myjobs.core.domain.model.user.command.UpdateUserCommand;
+import com.wilzwert.myjobs.core.domain.model.user.command.UpdateUserLangCommand;
+import com.wilzwert.myjobs.core.domain.model.user.exception.UserAlreadyExistsException;
+import com.wilzwert.myjobs.core.domain.model.user.exception.UserNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
-import com.wilzwert.myjobs.core.domain.ports.driven.EmailVerificationMessageProvider;
-import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
-import com.wilzwert.myjobs.core.domain.ports.driving.SendVerificationEmailUseCase;
-import com.wilzwert.myjobs.core.domain.ports.driving.UpdateUserLangUseCase;
-import com.wilzwert.myjobs.core.domain.ports.driving.UpdateUserUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.EmailVerificationMessageProvider;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.GetUserViewUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.SendVerificationEmailUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.UpdateUserLangUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.UpdateUserUseCase;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -19,7 +21,7 @@ import com.wilzwert.myjobs.core.domain.ports.driving.UpdateUserUseCase;
  * Time:16:55
  */
 
-public class UserUseCaseImpl implements SendVerificationEmailUseCase, UpdateUserUseCase, UpdateUserLangUseCase {
+public class UserUseCaseImpl implements SendVerificationEmailUseCase, GetUserViewUseCase, UpdateUserUseCase, UpdateUserLangUseCase {
 
     private final UserService userService;
 
@@ -32,23 +34,23 @@ public class UserUseCaseImpl implements SendVerificationEmailUseCase, UpdateUser
 
     @Override
     public void sendVerificationEmail(UserId userId) {
-        userService.findById(userId).ifPresent(emailVerificationMessageProvider::send);
+        userService.findMinimalById(userId).ifPresent(emailVerificationMessageProvider::send);
     }
 
     @Override
     public User updateUser(UpdateUserCommand command) {
-        User user = userService.findById(command.userId()).orElseThrow(UserNotFoundException::new);
+        User user = userService.findMinimalById(command.userId()).orElseThrow(UserNotFoundException::new);
 
         // if email changes, check availability
         if(!command.email().equals(user.getEmail())) {
-            User existingUser = userService.findByEmail(command.email()).orElse(null);
+            User existingUser = userService.findMinimalByEmail(command.email()).orElse(null);
             if(existingUser != null && !existingUser.equals(user)) {
                 throw new UserAlreadyExistsException();
             }
         }
         // if username changes, check availability
         if(!command.username().equals(user.getUsername())) {
-            User existingUser = userService.findByUsername(command.username()).orElse(null);
+            User existingUser = userService.findMinimalByUsername(command.username()).orElse(null);
             if(existingUser != null && !existingUser.equals(user)) {
                 throw new UserAlreadyExistsException();
             }
@@ -56,7 +58,7 @@ public class UserUseCaseImpl implements SendVerificationEmailUseCase, UpdateUser
 
         boolean shouldResendVerificationEmail = !user.getEmail().equals(command.email());
 
-        user = userService.save(user.update(command.email(), command.username(), command.firstName(), command.lastName()));
+        user = userService.save(user.update(command.email(), command.username(), command.firstName(), command.lastName(), command.jobFollowUpReminderDays()));
 
         if(shouldResendVerificationEmail) {
             emailVerificationMessageProvider.send(user);
@@ -66,10 +68,15 @@ public class UserUseCaseImpl implements SendVerificationEmailUseCase, UpdateUser
 
     @Override
     public User updateUserLang(UpdateUserLangCommand command) {
-        User user = userService.findById(command.userId()).orElseThrow(UserNotFoundException::new);
+        User user = userService.findMinimalById(command.userId()).orElseThrow(UserNotFoundException::new);
         if(user.getLang().equals(command.lang())) {
             return user;
         }
         return userService.save(user.updateLang(command.lang()));
+    }
+
+    @Override
+    public UserView getUser(UserId userId) {
+        return userService.findViewById(userId).orElseThrow(UserNotFoundException::new);
     }
 }

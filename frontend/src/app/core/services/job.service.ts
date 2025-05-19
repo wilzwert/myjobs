@@ -21,7 +21,8 @@ export class JobService {
   private jobsSubject: BehaviorSubject<Page<Job> | null> = new BehaviorSubject<Page<Job> | null> (null);
   private currentPage: number = -1;
   private itemsPerPage: number = -1;
-  private currentStatus: JobStatus | null = null;
+  private currentStatus: keyof typeof JobStatus | null = null;
+  private filterLate = false;
   private currentSort: string | null = null;
 
   constructor(private dataService: DataService) { }
@@ -39,15 +40,18 @@ export class JobService {
    * Retrieves the sorted jobs loded from the backend 
    * @returns the jobs
    */
-  public getAllJobs(page: number, itemsPerPage: number, status: JobStatus | null = null, sort: string): Observable<Page<Job>> {
+  public getAllJobs(page: number, itemsPerPage: number, status: keyof typeof JobStatus | null = null, filterLate: boolean, sort: string): Observable<Page<Job>> {
     return this.jobsSubject.pipe(
       switchMap((jobsPage: Page<Job> | null) => {
-        if(jobsPage === null || page != this.currentPage || status != this.currentStatus || sort != this.currentSort) {
+        if(jobsPage === null || page != this.currentPage || status != this.currentStatus || filterLate != this.filterLate || sort != this.currentSort) {
           this.currentPage = page;
+          console.log(status);
           this.currentStatus = status;
+          this.filterLate = status == null && filterLate;
           this.itemsPerPage = itemsPerPage;
           this.currentSort = sort;
-          return this.dataService.get<Page<Job>>(`jobs?page=${page}&itemsPerPage=${itemsPerPage}`+(status ? `&status=${status}` : '')+`&sort=${sort}`).pipe(
+          const statusOrFilterParam = (status != null ?  `status=${status}`  : filterLate ? `filterLate=true` : '');
+          return this.dataService.get<Page<Job>>(`jobs?page=${page}&itemsPerPage=${itemsPerPage}`+(statusOrFilterParam ? `&${statusOrFilterParam}` : '')+`&sort=${sort}`).pipe(
             switchMap((fetchedJobs: Page<Job>) => {
               this.jobsSubject.next(fetchedJobs);
               return of(fetchedJobs);

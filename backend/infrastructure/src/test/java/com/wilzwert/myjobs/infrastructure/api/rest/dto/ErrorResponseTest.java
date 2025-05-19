@@ -1,6 +1,10 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
-import com.wilzwert.myjobs.core.domain.exception.*;
+import com.wilzwert.myjobs.core.domain.model.user.exception.LoginException;
+import com.wilzwert.myjobs.core.domain.model.user.exception.PasswordMatchException;
+import com.wilzwert.myjobs.core.domain.model.user.exception.UserAlreadyExistsException;
+import com.wilzwert.myjobs.core.domain.model.user.exception.UserNotFoundException;
+import com.wilzwert.myjobs.core.domain.shared.exception.ValidationException;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.core.domain.shared.validation.ValidationError;
 import com.wilzwert.myjobs.core.domain.shared.validation.ValidationErrors;
@@ -114,7 +118,7 @@ public class ErrorResponseTest {
             assertEquals("400", response.getStatus());
             assertEquals(ErrorCode.VALIDATION_FAILED.name(), response.getMessage());
             assertEquals(1, response.getErrors().size());
-            assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY.name(), response.getErrors().get("id").getFirst());
+            assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY.name(), response.getErrors().get("id").getFirst().getCode());
             assertEquals(new Date().toString(), response.getTime());
         }
         catch (NoSuchMethodException ex) {
@@ -212,7 +216,7 @@ public class ErrorResponseTest {
         assertEquals(ErrorCode.VALIDATION_FAILED.name(), response.getMessage());
         assertEquals(1, response.getErrors().size());
         assertEquals(1, response.getErrors().get("param").size());
-        assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY.name(), response.getErrors().get("param").getFirst());
+        assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY.name(), response.getErrors().get("param").getFirst().getCode());
         assertEquals(new Date().toString(), response.getTime());
     }
 }

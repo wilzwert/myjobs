@@ -1,13 +1,13 @@
 package com.wilzwert.myjobs.core.application.usecase;
 
 
-import com.wilzwert.myjobs.core.domain.exception.LoginException;
+import com.wilzwert.myjobs.core.domain.model.user.exception.LoginException;
 import com.wilzwert.myjobs.core.domain.model.user.AuthenticatedUser;
 import com.wilzwert.myjobs.core.domain.model.user.User;
-import com.wilzwert.myjobs.core.domain.ports.driven.Authenticator;
-import com.wilzwert.myjobs.core.domain.ports.driven.PasswordHasher;
-import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
-import com.wilzwert.myjobs.core.domain.ports.driving.LoginUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.Authenticator;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.PasswordHasher;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.LoginUseCase;
 
 /**
  * @author Wilhelm Zwertvaegher

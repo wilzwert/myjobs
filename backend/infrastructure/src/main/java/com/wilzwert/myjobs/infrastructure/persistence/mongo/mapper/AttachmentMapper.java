@@ -1,8 +1,8 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper;
 
 
-import com.wilzwert.myjobs.core.domain.command.CreateAttachmentCommand;
-import com.wilzwert.myjobs.core.domain.command.UpdateActivityCommand;
+import com.wilzwert.myjobs.core.domain.model.attachment.command.CreateAttachmentCommand;
+import com.wilzwert.myjobs.core.domain.model.activity.command.UpdateActivityCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;

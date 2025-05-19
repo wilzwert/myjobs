@@ -12,12 +12,18 @@ public record BaseSalary(String currency, BaseSalaryValue value) {
 public class BaseSalary {
     private String currency;
     private BaseSalaryValue value;
-private String numberValue;
+    private String numberValue;
 
     public BaseSalary() {
         this.currency = null;
         this.value = null;
         this.numberValue = null;
+    }
+
+    public BaseSalary(String stringValue) {
+        this.currency = null;
+        this.value = null;
+        this.numberValue = stringValue;
     }
 
     public BaseSalary(String currency, BaseSalaryValue value) {

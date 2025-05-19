@@ -21,6 +21,8 @@ import { MatInput } from '@angular/material/input';
 import { JobMetadata } from '../../../core/model/job-metadata.interface';
 import { StatusIconComponent } from "../../../layout/shared/status-icon/status-icon.component";
 import { CustomPaginatorIntl } from '../../../core/services/custom-paginator-intl';
+import { User } from '../../../core/model/user.interface';
+import { UserService } from '../../../core/services/user.service';
 
 
 @Component({
@@ -36,15 +38,17 @@ export class JobsComponent implements OnInit {
   public urlFormLoading = false;
 
   public jobs$!: Observable<Page<Job>>;
+  protected user$: Observable<User>;
 
   public currentPage: number;
   public currentPageSize: number;
-  public currentStatus: JobStatus | null = null;
+  public currentStatus: keyof typeof JobStatus | null = null;
   public currentSort: string = 'createdAt,desc';
+  public filterLate = false;
 
   statusKeys: string[] = [];
 
-  constructor(private fb: FormBuilder, private jobService: JobService, private modalService: ModalService, private confirmDialogService: ConfirmDialogService, private notificationService: NotificationService) {
+  constructor(private fb: FormBuilder, private userService: UserService, private jobService: JobService, private modalService: ModalService, private confirmDialogService: ConfirmDialogService, private notificationService: NotificationService) {
     this.currentPage = jobService.getCurrentPage();
     if (this.currentPage == -1) {
       this.currentPage = 0;
@@ -55,6 +59,7 @@ export class JobsComponent implements OnInit {
     }
 
     this.statusKeys = Object.keys(JobStatus);
+    this.user$ = this.userService.getUser();
   }
 
   get url() {
@@ -62,7 +67,7 @@ export class JobsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.jobs$ = this.jobService.getAllJobs(this.currentPage, this.currentPageSize, this.currentStatus, this.currentSort);
+    this.jobs$ = this.jobService.getAllJobs(this.currentPage, this.currentPageSize, this.currentStatus, this.filterLate, this.currentSort);
     this.urlForm = this.fb.group({
       url: [
         '',
@@ -75,7 +80,10 @@ export class JobsComponent implements OnInit {
   }
 
   setStatus(event: MatSelectChange): void {
-    this.currentStatus = event.value;
+    // having two properties to handle status or "filter-late" filters may seem unclean, as they are exclusive at the moment
+    // but it actually allow us to change our mind in the future and use both filters cumulatively 
+    this.currentStatus = event.value === "filter-late" ? null : event.value;
+    this.filterLate = event.value === "filter-late";
     this.reloadJobs();
   }
 
@@ -102,14 +110,14 @@ export class JobsComponent implements OnInit {
   }
 
   handlePageEvent(event: PageEvent) {
-    this.jobs$ = this.jobService.getAllJobs(event.pageIndex, event.pageSize, this.currentStatus, this.currentSort);
+    this.jobs$ = this.jobService.getAllJobs(event.pageIndex, event.pageSize, this.currentStatus, this.filterLate, this.currentSort);
     this.currentPage = event.pageIndex;
     this.currentPageSize = event.pageSize;
   }
 
   reloadJobs(job: Job | null = null): void {
     this.currentPage = 0;
-    this.jobs$ = this.jobService.getAllJobs(this.currentPage, this.currentPageSize, this.currentStatus, this.currentSort);
+    this.jobs$ = this.jobService.getAllJobs(this.currentPage, this.currentPageSize, this.currentStatus, this.filterLate, this.currentSort);
   }
 
   createJobWithMetadata(): void {
@@ -138,7 +146,7 @@ export class JobsComponent implements OnInit {
   }
 
   deleteJob(job: Job): void {
-    this.confirmDialogService.openConfirmDialog($localize`:@@warning.job.delete:Delete job "${job.title}" ?`, () => this.confirmDeleteJob(job));
+    this.confirmDialogService.openConfirmDialog($localize`:@@warning.job.delete:Delete job "${job.title}" ? All data will be lost.`, () => this.confirmDeleteJob(job));
   }
 
   manageAttachments(event: Event, job: Job): void {

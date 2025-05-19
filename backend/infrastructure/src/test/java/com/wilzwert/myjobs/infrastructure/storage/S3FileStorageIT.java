@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.storage;
 
 
-import com.wilzwert.myjobs.core.domain.ports.driven.FileStorage;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;

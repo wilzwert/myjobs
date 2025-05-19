@@ -1,6 +1,7 @@
 package com.wilzwert.myjobs.core.domain.model.job;
 
-import com.wilzwert.myjobs.core.domain.exception.ValidationException;
+import com.wilzwert.myjobs.core.domain.model.activity.exception.ActivityNotFoundException;
+import com.wilzwert.myjobs.core.domain.shared.exception.ValidationException;
 import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
@@ -40,13 +41,17 @@ public class Job extends DomainEntity<JobId> {
 
     private final Instant updatedAt;
 
+    private final Instant statusUpdatedAt;
+
+    private final Instant followUpReminderSentAt;
+
     private final UserId userId;
 
     private final List<Activity> activities;
 
     private final List<Attachment> attachments;
 
-    private final static Map<ActivityType, JobStatus> activityToStatus = Map.of(
+    private static final Map<ActivityType, JobStatus> activityToStatus = Map.of(
         ActivityType.APPLICATION, JobStatus.PENDING,
         ActivityType.APPLICANT_REFUSAL, JobStatus.APPLICANT_REFUSED,
         ActivityType.COMPANY_REFUSAL, JobStatus.COMPANY_REFUSED,
@@ -55,6 +60,20 @@ public class Job extends DomainEntity<JobId> {
 
     public static Builder builder() {
         return new Builder();
+    }
+
+    public static Builder from(Job job) {
+        return new Builder(job, true);
+    }
+
+    /**
+     * Warning : this is used to get a Builder allowing an incomplete aggregate
+     * Use with great caution, as some methods on the aggregate won't work if it is not complete !
+     * @param job the job we want to get a Builder from
+     * @return the Builder
+     */
+    public static Builder fromMinimal(Job job) {
+        return new Job.Builder(job, false);
     }
 
     public static class Builder {
@@ -80,6 +99,10 @@ public class Job extends DomainEntity<JobId> {
 
         private Instant updatedAt;
 
+        private Instant statusUpdatedAt;
+
+        private Instant followUpReminderSentAt;
+
         private UserId userId;
 
         private List<Activity> activities;
@@ -87,6 +110,25 @@ public class Job extends DomainEntity<JobId> {
         private List<Attachment> attachments;
 
         public Builder() {
+        }
+
+        public Builder(Job job, boolean full) {
+            this.id = job.getId();
+            this.url = job.getUrl();
+            this.status = job.getStatus();
+            this.title = job.getTitle();
+            this.company = job.getCompany();
+            this.description = job.getDescription();
+            this.profile = job.getProfile();
+            this.salary = job.getSalary();
+            this.rating = job.getRating();
+            this.createdAt = job.getCreatedAt();
+            this.updatedAt = job.getUpdatedAt();
+            this.statusUpdatedAt = job.getStatusUpdatedAt();
+            this.followUpReminderSentAt = job.getFollowUpReminderSentAt();
+            this.userId = job.getUserId();
+            this.activities = full || job.activities != null ? job.getActivities() : null;
+            this.attachments = full || job.attachments != null ? job.getAttachments() : null;
         }
 
         public Builder id(JobId id) {
@@ -144,6 +186,16 @@ public class Job extends DomainEntity<JobId> {
             return this;
         }
 
+        public Builder statusUpdatedAt(Instant updatedAt) {
+            this.statusUpdatedAt = updatedAt;
+            return this;
+        }
+
+        public Builder followUpReminderSentAt(Instant followUpReminderSentAt) {
+            this.followUpReminderSentAt = followUpReminderSentAt;
+            return this;
+        }
+
         public Builder userId(UserId userId) {
             this.userId = userId;
             return this;
@@ -160,22 +212,7 @@ public class Job extends DomainEntity<JobId> {
         }
 
         public Job build() {
-            return new Job(
-                    id,
-                    url,
-                    status,
-                    title,
-                    company,
-                    description,
-                    profile,
-                    salary,
-                    rating,
-                    createdAt,
-                    updatedAt,
-                    userId,
-                    activities,
-                    attachments
-            );
+            return new Job(this);
         }
     }
 
@@ -185,28 +222,33 @@ public class Job extends DomainEntity<JobId> {
                 .requireNotEmpty("userId", userId)
                 .requireNotEmpty("title", title)
                 .requireNotEmpty("description", description)
+                .requireNotEmpty("company", company)
                 .requireValidUrl("url", url)
                 .getErrors();
     }
 
-    private Job(JobId id, String url, JobStatus status, String title, String company, String description, String profile, String salary, JobRating rating, Instant createdAt, Instant updatedAt, UserId userId, List<Activity> activities, List<Attachment> attachments) {
-        this.id = id != null ? id : JobId.generate();
-        this.url = url;
-        this.status = status != null ? status : JobStatus.CREATED;
-        this.title = title;
-        this.company = company;
-        this.description = description;
-        this.profile = profile;
-        this.salary = salary;
-        this.rating = rating != null ? rating : JobRating.of(0);
-        this.createdAt = createdAt != null ? createdAt : Instant.now();
-        this.updatedAt = updatedAt != null ? updatedAt : Instant.now();
-        this.userId = userId;
+    private Job(Builder builder) {
+        this.id = builder.id != null ? builder.id : JobId.generate();
+        this.url = builder.url;
+        this.status = builder.status != null ? builder.status : JobStatus.CREATED;
+        this.title = builder.title;
+        this.company = builder.company;
+        this.description = builder.description;
+        this.profile = builder.profile;
+        this.salary = builder.salary;
+        this.rating = builder.rating != null ? builder.rating : JobRating.of(0);
+        this.createdAt = builder.createdAt != null ? builder.createdAt : Instant.now();
+        this.updatedAt = builder.updatedAt != null ? builder.updatedAt : Instant.now();
+        this.statusUpdatedAt = builder.statusUpdatedAt != null ? builder.statusUpdatedAt : Instant.now();
+        this.followUpReminderSentAt = builder.followUpReminderSentAt;
+        this.userId = builder.userId;
 
         // ensure immutability
-        this.activities = activities != null ? List.copyOf(activities) : new ArrayList<>();
+        // null is accepted because in some cases we allow working on aggregates that could be "incomplete"
+        this.activities = builder.activities != null ? List.copyOf(builder.activities) : null;
         // ensure immutability
-        this.attachments = attachments != null ? List.copyOf(attachments) : new ArrayList<>();
+        // null is accepted because in some cases we allow working on aggregates that could be "incomplete"
+        this.attachments = builder.attachments != null ? List.copyOf(builder.attachments) : null;
 
         ValidationErrors validationErrors = validate();
         if(validationErrors.hasErrors()) {
@@ -214,25 +256,35 @@ public class Job extends DomainEntity<JobId> {
         }
     }
 
+    public static Job create(Job.Builder builder) {
+        builder.attachments(Collections.emptyList()).activities(Collections.emptyList());
+        return new Job(builder);
+    }
+
+    private void requireFull() {
+        requireLoadedProperty(attachments);
+        requireLoadedProperty(activities);
+    }
+
     private Job copy(List<Attachment> attachments, List<Activity> activities, JobStatus status, Instant updatedAt) {
+        Instant newStatusUpdatedAt = getStatusUpdatedAt();
+        if( status != null && !status.equals(getStatus())) {
+            // set statusUpdatedAt
+            newStatusUpdatedAt = Instant.now();
+        }
+
         return new Job(
-            getId(),
-            getUrl(),
-            (status != null ? status : getStatus()),
-            getTitle(),
-            getCompany(),
-            getDescription(),
-            getProfile(),
-            getSalary(),
-            getRating(),
-            getCreatedAt(),
-            (updatedAt != null ? updatedAt : getUpdatedAt()),
-            getUserId(),
-            (activities != null ? activities : getActivities()),
-            (attachments != null ? attachments : getAttachments())
+            from(this)
+                .status(status != null ? status : getStatus())
+                .updatedAt(updatedAt != null ? updatedAt : getUpdatedAt())
+                .statusUpdatedAt(newStatusUpdatedAt)
+                .activities(activities != null ? activities : getActivities())
+                .attachments(attachments != null ? attachments : getAttachments())
         );
     }
     public Job addActivity(Activity activity) {
+        requireFull();
+
         JobStatus newJobStatus = activityToStatus.get(activity.getType());
         var updatedActivities = new ArrayList<>(getActivities());
         updatedActivities.add(activity);
@@ -240,26 +292,45 @@ public class Job extends DomainEntity<JobId> {
         return copy(null, updatedActivities, newJobStatus, Instant.now());
     }
 
+    public Job updateActivity(Activity activity) {
+        requireFull();
+
+        Activity oldActivity = activities.stream().filter(a -> a.equals(activity)).findFirst().orElseThrow(ActivityNotFoundException::new);
+
+        JobStatus newJobStatus = activityToStatus.get(activity.getType());
+
+        // create new activity based on the old one and the activity passed
+        Activity updateActivity = Activity.from(oldActivity)
+                .updatedAt(Instant.now())
+                .type(activity.getType())
+                .comment(activity.getComment())
+                .build();
+
+        // update activities list
+        var updatedActivities = new ArrayList<>(getActivities());
+        updatedActivities.remove(oldActivity);
+        updatedActivities.add(updateActivity);
+        updatedActivities.sort(Comparator.comparing(Activity::getCreatedAt).thenComparing(Activity::getUpdatedAt).reversed());
+
+        // return a copy of this job with updated data
+        return copy(null, updatedActivities, newJobStatus, Instant.now());
+    }
+
     public Job updateJob(String url, String title, String company, String description, String profile, String salary) {
         return new Job(
-                getId(),
-                url,
-                getStatus(),
-                title,
-                company,
-                description,
-                profile,
-                salary,
-                getRating(),
-                getCreatedAt(),
-                Instant.now(),
-                getUserId(),
-                getActivities(),
-                getAttachments()
+            from(this)
+                .url(url)
+                .title(title)
+                .company(company)
+                .description(description)
+                .profile(profile)
+                .salary(salary)
+                .updatedAt(Instant.now())
         );
     }
 
     public Job addAttachment(Attachment attachment) {
+        requireFull();
         var updatedAttachments = new ArrayList<>(getAttachments());
         updatedAttachments.add(attachment);
         updatedAttachments.sort(Comparator.comparing(Attachment::getCreatedAt).reversed());
@@ -267,6 +338,7 @@ public class Job extends DomainEntity<JobId> {
     }
 
     public Job removeAttachment(Attachment attachment) {
+        requireFull();
         var updatedAttachments = new ArrayList<>(getAttachments());
         if(!updatedAttachments.contains(attachment)) {
             throw new IllegalArgumentException("Attachment not in list");
@@ -278,6 +350,8 @@ public class Job extends DomainEntity<JobId> {
 
     public Job updateStatus(JobStatus newStatus) {
         if(this.status == newStatus) return this;
+
+        requireFull();
 
         Job result;
         ActivityType activityType = activityToStatus.entrySet().stream().filter(entry -> newStatus.equals(entry.getValue())).map(Map.Entry::getKey).findFirst().orElse(null);
@@ -297,24 +371,22 @@ public class Job extends DomainEntity<JobId> {
     public Job updateRating(JobRating newJobRating) {
         if(newJobRating.equals(getRating())) return this;
 
+        requireFull();
+
         Job result = new Job(
-                getId(),
-                getUrl(),
-                getStatus(),
-                getTitle(),
-                getCompany(),
-                getDescription(),
-                getProfile(),
-                getSalary(),
-                newJobRating,
-                getCreatedAt(),
-                Instant.now(),
-                getUserId(),
-                getActivities(),
-                getAttachments()
+            from(this)
+                .rating(newJobRating)
+                .updatedAt(Instant.now())
         );
         Activity newActivity = Activity.builder().type(ActivityType.RATING).comment(""+newJobRating.getValue()).build();
         return result.addActivity(newActivity);
+    }
+
+    public Job saveFollowUpReminderSentAt() {
+        return new Job(
+            from(this)
+                .followUpReminderSentAt(Instant.now())
+        );
     }
 
     public JobId getId() {
@@ -351,13 +423,17 @@ public class Job extends DomainEntity<JobId> {
         return rating;
     }
 
-    public Instant getCreatedAt() {
-        return createdAt;
-    }
+    public Instant getCreatedAt() {return createdAt;}
 
     public Instant getUpdatedAt() {
         return updatedAt;
     }
+
+    public Instant getStatusUpdatedAt() {
+        return statusUpdatedAt;
+    }
+
+    public Instant getFollowUpReminderSentAt() { return followUpReminderSentAt; }
 
     public UserId getUserId() {
         return userId;
@@ -368,6 +444,11 @@ public class Job extends DomainEntity<JobId> {
     }
     public List<Attachment> getAttachments() {
         return attachments;
+    }
+
+    @Override
+    public String toString() {
+        return getId().toString()+ " [userId="+getUserId().toString()+",title="+getTitle() + "]";
     }
 
 }

@@ -4,6 +4,8 @@ package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 import com.wilzwert.myjobs.core.domain.model.user.Lang;
 import lombok.*;
 
+import java.time.Instant;
+
 /**
  * @author Wilhelm Zwertvaegher
  * Date:13/03/2025
@@ -26,9 +28,13 @@ public class UserResponse {
 
     private String username;
 
-    private String createdAt;
+    private Instant createdAt;
 
     private String emailStatus;
+
+    private Integer jobFollowUpReminderDays;
+
+    private Instant jobFollowUpReminderSentAt;
 
     private Lang lang;
 }

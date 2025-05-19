@@ -1,6 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.adapter;
 
-import com.wilzwert.myjobs.core.domain.ports.driven.PasswordHasher;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.PasswordHasher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**

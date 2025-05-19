@@ -1,10 +1,11 @@
 package com.wilzwert.myjobs.core.domain.service.metadata;
 
 
-import com.wilzwert.myjobs.core.domain.exception.MalformedUrlException;
+import com.wilzwert.myjobs.core.domain.shared.exception.MalformedUrlException;
 import com.wilzwert.myjobs.core.domain.model.job.JobMetadata;
-import com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor.JobMetadataExtractorService;
-import com.wilzwert.myjobs.core.domain.ports.driven.metadata.fetcher.HtmlFetcherService;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.extractor.JobMetadataExtractorService;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.fetcher.HtmlFetcherService;
+import com.wilzwert.myjobs.core.domain.model.job.service.JobMetadataService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,17 +59,17 @@ public class JobMetadataServiceTest {
 
     @Test
     public void testGetUrlDomainWithOneSubdomain() {
-        assertEquals("example.com", jobMetadataService.getUrlDomain("https://www.example.com/uri"));
+        assertEquals("www.example.com", jobMetadataService.getUrlDomain("https://www.example.com/uri"));
     }
 
     @Test
     public void testGetUrlDomainWithMultipleSubdomain() {
-        assertEquals("example.com", jobMetadataService.getUrlDomain("https://w3.www.fr.example.com/uri"));
+        assertEquals("w3.www.fr.example.com", jobMetadataService.getUrlDomain("https://w3.www.fr.example.com/uri"));
     }
 
     @Test
     public void testGetUrlDomainWithSubdomain() {
-        assertEquals("fhf.fr", jobMetadataService.getUrlDomain("https://emploi.fhf.fr/emploi/414440"));
+        assertEquals("emploi.fhf.fr", jobMetadataService.getUrlDomain("https://emploi.fhf.fr/emploi/414440"));
     }
 
     @Test

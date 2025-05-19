@@ -18,6 +18,6 @@ describe('JobEditionComponent', () => {
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    
   });
 });

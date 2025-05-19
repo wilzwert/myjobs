@@ -5,7 +5,7 @@ logging:
         security: WARN
         mail: WARN
         data:
-          mongodb: WARN
+          mongodb: DEBUG
 
 
 google:

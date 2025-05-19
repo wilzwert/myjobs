@@ -24,7 +24,7 @@ public class CustomMailMessage {
 
     private Locale locale;
 
-    private HashMap<String, String> variables = new HashMap<>();
+    private HashMap<String, Object> variables = new HashMap<>();
 
     public CustomMailMessage(String template, String recipientMail, String recipientName, String subject, String lang) {
         this.template = template;
@@ -37,6 +37,10 @@ public class CustomMailMessage {
     }
 
     public void setVariable(String key, String value) {
+        this.variables.put(key, value);
+    }
+
+    public void setVariable(String key, Object value) {
         this.variables.put(key, value);
     }
 }

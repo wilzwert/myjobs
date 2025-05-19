@@ -41,11 +41,10 @@ export class EmailValidationComponent implements OnInit {
               ));
             }
         )).subscribe(() => {
-          this.notificationService.confirmation("Your email has been validated.");
+          this.notificationService.confirmation($localize `:@@info.email.validated:Your email has been validated.`);
           this.redirect();
         })
       }
     });
   }
-
 }

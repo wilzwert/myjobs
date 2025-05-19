@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { map, Observable, switchMap } from 'rxjs';
+import { Observable, switchMap } from 'rxjs';
 import { DataService } from './data.service';
 import { CaptchaService } from './captcha.service';
 import { ResetPasswordRequest } from '../model/reset-password-request.interface';
@@ -7,17 +7,15 @@ import { NewPasswordRequest } from '../model/new-password-request.interface';
 import { ValidateEmailRequest } from '../model/validate-email-request.interface';
 import { User } from '../model/user.interface';
 import { ChangePasswordRequest } from '../model/change-password-request.interface';
-import { EmailStatus } from '../model/email-status';
 import { EditUserRequest } from '../model/edit-user-request.interface';
 import { EditUserLangRequest } from '../model/edit-user-lang-request.interface';
-import { Lang } from '../model/lang';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
 
-  private apiPath = 'user/me';
+  private apiPath = 'user';
 
   constructor(private dataService: DataService, private captchaService: CaptchaService) { }
 
@@ -38,17 +36,17 @@ export class UserService {
   }
 
   public changePassword(changePasswordRequest: ChangePasswordRequest): Observable<void> {
-    return this.dataService.put<void>(`${this.apiPath}/password`, changePasswordRequest);
+    return this.dataService.put<void>(`${this.apiPath}/me/password`, changePasswordRequest);
   }
 
   public sendVerificationMail(): Observable<void> {
-    return this.dataService.post<void>(`${this.apiPath}/email/verification`, null);
+    return this.dataService.post<void>(`${this.apiPath}/me/email/verification`, null);
   }
 
   public validateEmail(validateEmailRequest: ValidateEmailRequest): Observable<void> {
     /*return this.captchaService.getCaptchaToken().pipe(
       switchMap(() => {*/
-        return this.dataService.post<void>(`${this.apiPath}/email/validation`, validateEmailRequest);
+        return this.dataService.post<void>(`${this.apiPath}/me/email/validation`, validateEmailRequest);
       /*})
     );*/
   }
@@ -56,21 +54,21 @@ export class UserService {
   public getUser(): Observable<User> {
     /*return this.captchaService.getCaptchaToken().pipe(
       switchMap(() => {*/
-        return this.dataService.get<User>(`${this.apiPath}`);
-        return this.dataService.get<User>(`${this.apiPath}`).pipe(map((user: User) => {user.emailStatus = user.emailStatus as EmailStatus; return user;}));
+        return this.dataService.get<User>(`${this.apiPath}/me`);
+        // return this.dataService.get<User>(`${this.apiPath}`).pipe(map((user: User) => {user.emailStatus = user.emailStatus as EmailStatus; return user;}));
       /*})
     );*/
   }
 
   public deleteUser() :Observable<void> {
-    return this.dataService.delete<void>(`${this.apiPath}`);
+    return this.dataService.delete<void>(`${this.apiPath}/me`);
   }
 
   public editUser(editUserRequest: EditUserRequest) :Observable<User> {
-    return this.dataService.patch<User>(`${this.apiPath}`, editUserRequest);
+    return this.dataService.patch<User>(`${this.apiPath}/me`, editUserRequest);
   }
 
   public saveUserLang(newLang: string) :Observable<void> {
-    return this.dataService.put<void>(`${this.apiPath}/lang`, {lang: newLang.toUpperCase()} as EditUserLangRequest);
+    return this.dataService.put<void>(`${this.apiPath}/me/lang`, {lang: newLang.toUpperCase()} as EditUserLangRequest);
   }
 }

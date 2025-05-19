@@ -17,8 +17,12 @@ export interface Job {
     rating: JobRating,
     createdAt: string
     updatedAt: string,
+    statusUpdatedAt: string,
     activities: Activity[],
-    attachments: Attachment[]
+    attachments: Attachment[],
+    // for now it remains optional because 
+    // the backend doesn't ensure this info is always provided
+    followUpLate?: boolean
 }
 
 export enum JobStatus {

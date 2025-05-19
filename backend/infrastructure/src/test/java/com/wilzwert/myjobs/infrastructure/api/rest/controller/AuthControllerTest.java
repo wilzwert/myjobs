@@ -1,13 +1,13 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 
-import com.wilzwert.myjobs.core.domain.command.RegisterUserCommand;
-import com.wilzwert.myjobs.core.domain.exception.UserAlreadyExistsException;
+import com.wilzwert.myjobs.core.domain.model.user.command.RegisterUserCommand;
+import com.wilzwert.myjobs.core.domain.model.user.exception.UserAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.model.user.*;
-import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
-import com.wilzwert.myjobs.core.domain.ports.driving.CheckUserAvailabilityUseCase;
-import com.wilzwert.myjobs.core.domain.ports.driving.LoginUseCase;
-import com.wilzwert.myjobs.core.domain.ports.driving.RegisterUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.CheckUserAvailabilityUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.LoginUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.RegisterUseCase;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.AuthResponse;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.LoginRequest;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.RegisterUserRequest;
@@ -120,7 +120,7 @@ public class AuthControllerTest {
                     .email("test@example.com")
                     .username("test")
                     .lang(Lang.EN)
-                    .createdAt(Instant.now().toString())
+                    .createdAt(Instant.now())
                     .emailStatus(EmailStatus.PENDING.toString())
                     .build();
 
@@ -227,11 +227,11 @@ public class AuthControllerTest {
 
         @Test
         public void whenEmailAvailable_thenShouldReturnOk() {
-            when(checkUserAvailabilityUseCase.isEmailTaken("test@example.com")).thenReturn(true);
+            when(checkUserAvailabilityUseCase.isEmailTaken("test@example.com")).thenReturn(false);
 
             ResponseEntity<?> responseEntity = authController.emailCheck("test@example.com");
 
-            assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
+            assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
             verify(checkUserAvailabilityUseCase, times(1)).isEmailTaken("test@example.com");
         }
 

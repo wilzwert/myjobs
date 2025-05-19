@@ -1,16 +1,16 @@
 package com.wilzwert.myjobs.core.application.usecase;
 
 
-import com.wilzwert.myjobs.core.domain.command.ChangePasswordCommand;
-import com.wilzwert.myjobs.core.domain.command.CreatePasswordCommand;
-import com.wilzwert.myjobs.core.domain.exception.PasswordMatchException;
-import com.wilzwert.myjobs.core.domain.exception.ResetPasswordExpiredException;
-import com.wilzwert.myjobs.core.domain.exception.UserNotFoundException;
+import com.wilzwert.myjobs.core.domain.model.user.command.ChangePasswordCommand;
+import com.wilzwert.myjobs.core.domain.model.user.command.CreatePasswordCommand;
+import com.wilzwert.myjobs.core.domain.model.user.exception.PasswordMatchException;
+import com.wilzwert.myjobs.core.domain.model.user.exception.ResetPasswordExpiredException;
+import com.wilzwert.myjobs.core.domain.model.user.exception.UserNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
-import com.wilzwert.myjobs.core.domain.ports.driven.PasswordHasher;
-import com.wilzwert.myjobs.core.domain.ports.driven.PasswordResetMessageProvider;
-import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.PasswordHasher;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.PasswordResetMessageProvider;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -18,6 +18,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -67,6 +68,7 @@ public class PasswordUseCaseImplTest {
                 .lastName("lastName")
                 .password("OldPassword1!")
                 .resetPasswordExpiresAt(Instant.now().plusSeconds(600))
+                .jobs(Collections.emptyList())
                 .build();
         ArgumentCaptor<User> argument = ArgumentCaptor.forClass(User.class);
         when(userService.findByResetPasswordToken("passwordResetToken")).thenReturn(Optional.of(user));
@@ -117,6 +119,7 @@ public class PasswordUseCaseImplTest {
                 .lastName("lastName")
                 .password("OldPassword1!")
                 .resetPasswordExpiresAt(Instant.MIN)
+                .jobs(Collections.emptyList())
                 .build();
         ArgumentCaptor<User> argument = ArgumentCaptor.forClass(User.class);
         when(userService.findByEmail("test@example.com")).thenReturn(Optional.of(user));
@@ -166,6 +169,7 @@ public class PasswordUseCaseImplTest {
                 .lastName("lastName")
                 .password("OldPassword1!")
                 .resetPasswordExpiresAt(Instant.MIN)
+                .jobs(Collections.emptyList())
                 .build();
         ArgumentCaptor<User> argument = ArgumentCaptor.forClass(User.class);
 

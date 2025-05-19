@@ -71,18 +71,15 @@ export class NewPasswordComponent implements OnInit {
                     () => {
                       this.isSubmitting = false;
                       return throwError(() => new Error(
-                        'Password creation failed'
+                        $localize `:@@error.password.creation:Password creation failed`
                       ));
                     }
                 ))
                 .subscribe(() => {
                     this.isSubmitting = false;
-                    this.notificationService.confirmation("Your password has been updated. You may now log in.");
+                    this.notificationService.confirmation($localize `:@@info.password.updated:Your password has been updated.` + ' '+ $localize `:@@info.login.possible:You may now log in.`);
                     this.router.navigate(["/login"])
                 });
-
-
-
     }
   }
 }

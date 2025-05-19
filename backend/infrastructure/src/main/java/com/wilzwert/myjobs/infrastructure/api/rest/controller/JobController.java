@@ -1,10 +1,12 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 
-import com.wilzwert.myjobs.core.domain.command.*;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
-import com.wilzwert.myjobs.core.domain.ports.driving.*;
+import com.wilzwert.myjobs.core.domain.model.job.command.*;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driving.*;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.GetUserJobUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.GetUserJobsUseCase;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
@@ -98,7 +100,7 @@ public class JobController {
     }
 
     @GetMapping()
-    public RestPage<JobResponse> getUserJobs(Authentication authentication, @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer itemsPerPage, @RequestParam(required = false) String status, @RequestParam(required = false) String sort) {
+    public RestPage<JobResponse> getUserJobs(Authentication authentication, @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer itemsPerPage, @RequestParam(required = false) String status, @RequestParam(required = false) Boolean filterLate, @RequestParam(required = false) String sort) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         if(page == null) {
             page = 0;
@@ -111,6 +113,11 @@ public class JobController {
         if(status != null) {
             jobStatus = JobStatus.valueOf(status);
         }
-        return jobMapper.toResponse(getUserJobsUseCase.getUserJobs(userDetails.getId(), page, itemsPerPage, jobStatus, sort));
+
+        if(filterLate == null) {
+            filterLate = false;
+        }
+
+        return jobMapper.toEnrichedResponse(getUserJobsUseCase.getUserJobs(userDetails.getId(), page, itemsPerPage, jobStatus, filterLate, sort));
     }
 }

@@ -2,7 +2,7 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wilzwert.myjobs.core.domain.model.user.User;
-import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.NewPasswordRequest;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.ResetPasswordRequest;
@@ -47,7 +47,7 @@ public class PasswordControllerIT extends AbstractBaseIntegrationTest {
             mockMvc.perform(post(RESET_PASSWORD_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(resetPasswordRequest)))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("message").value(ErrorCode.VALIDATION_FAILED.name()))
-                    .andExpect(jsonPath("errors.email").value(ErrorCode.INVALID_EMAIL.name()));
+                    .andExpect(jsonPath("errors.email[0].code").value(ErrorCode.INVALID_EMAIL.name()));
         }
 
         @Test
@@ -106,7 +106,7 @@ public class PasswordControllerIT extends AbstractBaseIntegrationTest {
             mockMvc.perform(post(CREATE_PASSWORD_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("message").value(ErrorCode.VALIDATION_FAILED.name()))
-                    .andExpect(jsonPath("errors.token").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
+                    .andExpect(jsonPath("errors.token[0].code").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
         }
 
         @Test
@@ -115,7 +115,7 @@ public class PasswordControllerIT extends AbstractBaseIntegrationTest {
             mockMvc.perform(post(CREATE_PASSWORD_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("message").value(ErrorCode.VALIDATION_FAILED.name()))
-                    .andExpect(jsonPath("errors.password").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
+                    .andExpect(jsonPath("errors.password[0].code").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
         }
 
         @Test
@@ -124,7 +124,7 @@ public class PasswordControllerIT extends AbstractBaseIntegrationTest {
             mockMvc.perform(post(CREATE_PASSWORD_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("message").value(ErrorCode.VALIDATION_FAILED.name()))
-                    .andExpect(jsonPath("errors.password").value(ErrorCode.USER_WEAK_PASSWORD.name()));
+                    .andExpect(jsonPath("errors.password[0].code").value(ErrorCode.USER_WEAK_PASSWORD.name()));
         }
 
         @Test

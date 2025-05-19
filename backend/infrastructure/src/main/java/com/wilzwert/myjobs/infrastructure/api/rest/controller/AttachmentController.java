@@ -1,16 +1,16 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 
-import com.wilzwert.myjobs.core.domain.command.CreateAttachmentCommand;
-import com.wilzwert.myjobs.core.domain.command.DeleteAttachmentCommand;
-import com.wilzwert.myjobs.core.domain.command.DownloadAttachmentCommand;
+import com.wilzwert.myjobs.core.domain.model.attachment.command.CreateAttachmentCommand;
+import com.wilzwert.myjobs.core.domain.model.attachment.command.DeleteAttachmentCommand;
+import com.wilzwert.myjobs.core.domain.model.attachment.command.DownloadAttachmentCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.DownloadableFile;
 import com.wilzwert.myjobs.core.domain.model.attachment.AttachmentId;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
-import com.wilzwert.myjobs.core.domain.ports.driving.AddAttachmentToJobUseCase;
-import com.wilzwert.myjobs.core.domain.ports.driving.DeleteAttachmentUseCase;
-import com.wilzwert.myjobs.core.domain.ports.driving.DownloadAttachmentUseCase;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driving.AddAttachmentToJobUseCase;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driving.DeleteAttachmentUseCase;
+import com.wilzwert.myjobs.core.domain.model.attachment.ports.driving.DownloadAttachmentUseCase;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.AttachmentMapper;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;

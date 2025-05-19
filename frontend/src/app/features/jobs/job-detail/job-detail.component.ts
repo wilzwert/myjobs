@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JobService } from '../../../core/services/job.service';
-import { catchError, Observable, Subject, take, takeUntil, tap, throwError } from 'rxjs';
+import { catchError, EMPTY, Observable, Subject, take, takeUntil, tap, throwError } from 'rxjs';
 import { Job } from '../../../core/model/job.interface';
 import { Title } from '@angular/platform-browser';
 import { AsyncPipe, DatePipe } from '@angular/common';
@@ -42,10 +42,12 @@ export class JobDetailComponent implements OnInit, OnDestroy {
   ) {}
 
   private loadJob(jobId: string): void {
+    console.log('-------------------loadJob');
     this.job$ = this.jobService.getJobById(jobId).pipe(
       // set page title once the job  is available
-      tap((job: Job) =>{this.title.setTitle(`Job - ${job.title}`)}),
+      tap((job: Job) =>{console.log('-------------------setting Title'); this.title.setTitle(`Job - ${job.title}`)}),
       catchError((error: ApiError) => {
+        console.log('we got an erreor and should nav');
         this.router.navigate(["/jobs"]);
         return throwError(() => error);
       })
@@ -84,19 +86,18 @@ export class JobDetailComponent implements OnInit, OnDestroy {
   }
 
   deleteJob(job: Job) :void {
-    this.confirmDialogService.openConfirmDialog(`Delete job "${job.title}" ? ALL DATA WILL BE LOST`, () => this.confirmDeleteJob(job));
+    this.confirmDialogService.openConfirmDialog($localize `:@@warning.job.delete:Delete job "${job.title}" ? All data will be lost.`, () => this.confirmDeleteJob(job));
   }
 
   updateJobRating(job: Job, rating: number) :void {
     this.jobService.updateJobRating(job.id, {rating: rating}).pipe(
       take(1),
       catchError((error: ApiError) => {
-        this.notificationService.confirmation("Job rating update failed.");
         return throwError(() => error);
 
       })
     ).subscribe(() => {
-      this.notificationService.confirmation("Job rating updated successfully.");
+      this.notificationService.confirmation($localize `:@@info.job.rating.updated:Rating updated successfully.`);
       this.loadJob(job.id);
     });
   }

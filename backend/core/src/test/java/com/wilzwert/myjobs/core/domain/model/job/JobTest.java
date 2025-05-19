@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.core.domain.model.job;
 
 
-import com.wilzwert.myjobs.core.domain.exception.ValidationException;
+import com.wilzwert.myjobs.core.domain.shared.exception.ValidationException;
 import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.activity.ActivityId;
 import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
@@ -28,13 +28,12 @@ public class JobTest {
 
     @Test
     public void whenInvalid_thenJobBuildShouldThrowValidationException() {
-        ValidationException exception = assertThrows(ValidationException.class, () -> {
-            Job job = Job.builder().build();
-        });
+        ValidationException exception = assertThrows(ValidationException.class, () -> Job.builder().build());
         assertNotNull(exception);
-        assertEquals(4, exception.getErrors().getErrors().entrySet().size());
+        assertEquals(5, exception.getErrors().getErrors().entrySet().size());
         assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY, exception.getErrors().getErrors().get("userId").getFirst().code());
         assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY, exception.getErrors().getErrors().get("title").getFirst().code());
+        assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY, exception.getErrors().getErrors().get("company").getFirst().code());
         assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY, exception.getErrors().getErrors().get("description").getFirst().code());
         assertEquals(ErrorCode.INVALID_URL, exception.getErrors().getErrors().get("url").getFirst().code());
     }
@@ -44,7 +43,7 @@ public class JobTest {
         UserId userId = new UserId(UUID.randomUUID());
         JobId jobId = new JobId(UUID.randomUUID());
         Instant before = Instant.now();
-        Job job = Job.builder()
+        Job job = Job.create(Job.builder()
                 .id(jobId)
                 .url("http://www.example.com")
                 .title("Job title")
@@ -53,7 +52,7 @@ public class JobTest {
                 .profile("Job profile")
                 .salary("TBD")
                 .userId(userId)
-                .build();
+        );
         Instant after = Instant.now();
 
         assertNotNull(job);
@@ -68,8 +67,10 @@ public class JobTest {
         assertEquals(userId, job.getUserId());
         Instant createdAt = job.getCreatedAt();
         Instant updatedAt = job.getUpdatedAt();
+        Instant statusUpdatedAt = job.getStatusUpdatedAt();
         assertTrue(createdAt.equals(before) || createdAt.equals(after) || createdAt.isAfter(before) && createdAt.isBefore(after));
         assertTrue(updatedAt.equals(before) || updatedAt.equals(after) || updatedAt.isAfter(before) && updatedAt.isBefore(after));
+        assertTrue(statusUpdatedAt.equals(before) || statusUpdatedAt.equals(after) || statusUpdatedAt.isAfter(before) && statusUpdatedAt.isBefore(after));
         assertEquals(Collections.emptyList(), job.getActivities());
         assertEquals(Collections.emptyList(), job.getAttachments());
         assertEquals(userId.value(), job.getUserId().value());
@@ -132,6 +133,7 @@ public class JobTest {
                 .userId(userId)
                 .createdAt(now)
                 .updatedAt(now)
+                .statusUpdatedAt(now)
                 .activities(activities)
                 .attachments(attachments)
                 .build();
@@ -148,6 +150,7 @@ public class JobTest {
         assertEquals(userId, job.getUserId());
         assertEquals(now, job.getCreatedAt());
         assertEquals(now, job.getUpdatedAt());
+        assertEquals(now, job.getStatusUpdatedAt());
         assertEquals(activities, job.getActivities());
         assertEquals(attachments, job.getAttachments());
         assertEquals(userId.value(), job.getUserId().value());
@@ -157,6 +160,7 @@ public class JobTest {
     public void shouldUpdateJob() {
         UserId userId = new UserId(UUID.randomUUID());
         JobId jobId = new JobId(UUID.randomUUID());
+        Instant jobCreatedAt = Instant.parse("2025-03-09T13:45:30Z");
         Instant now = Instant.now();
         List<Activity> activities = List.of(Activity.builder()
                 .id(ActivityId.generate())
@@ -186,8 +190,9 @@ public class JobTest {
                 .profile("Job profile")
                 .salary("TBD")
                 .userId(userId)
-                .createdAt(now)
-                .updatedAt(now)
+                .createdAt(jobCreatedAt)
+                .updatedAt(jobCreatedAt)
+                .statusUpdatedAt(jobCreatedAt)
                 .activities(activities)
                 .attachments(attachments)
                 .build();
@@ -209,6 +214,9 @@ public class JobTest {
         assertEquals("Job updated salary", updatedJob.getSalary());
         Instant updatedAt = updatedJob.getUpdatedAt();
         assertTrue(updatedAt.equals(before) || updatedAt.equals(after) || updatedAt.isAfter(before) && updatedAt.isBefore(after));
+        assertEquals(jobCreatedAt, updatedJob.getCreatedAt());
+        // status has not changed, check that the status update date also didn't change
+        assertEquals(jobCreatedAt, updatedJob.getStatusUpdatedAt());
         assertEquals(1, updatedJob.getActivities().size());
         assertEquals(1, updatedJob.getAttachments().size());
     }
@@ -231,6 +239,8 @@ public class JobTest {
                 .userId(userId)
                 .createdAt(now)
                 .updatedAt(now)
+                .activities(Collections.emptyList())
+                .attachments(Collections.emptyList())
                 .build();
 
         ActivityId activityId = ActivityId.generate();
@@ -257,6 +267,9 @@ public class JobTest {
         assertEquals(now, updatedJob.getCreatedAt());
         Instant updatedAt = updatedJob.getUpdatedAt();
         assertTrue(updatedAt.equals(before) || updatedAt.equals(after) || updatedAt.isAfter(before) && updatedAt.isBefore(after));
+        // job status has changed, status updated at should have changed too
+        Instant statusUpdatedAt = updatedJob.getStatusUpdatedAt();
+        assertTrue(statusUpdatedAt.equals(before) || statusUpdatedAt.equals(after) || statusUpdatedAt.isAfter(before) && statusUpdatedAt.isBefore(after));
 
         Activity addedActivity = updatedJob.getActivities().getLast();
         assertNotNull(addedActivity);
@@ -281,6 +294,8 @@ public class JobTest {
                 .userId(userId)
                 .createdAt(now)
                 .updatedAt(now)
+                .activities(Collections.emptyList())
+                .attachments(Collections.emptyList())
                 .build();
 
         AttachmentId attachmentId = AttachmentId.generate();
@@ -357,6 +372,7 @@ public class JobTest {
                 .createdAt(now)
                 .updatedAt(now)
                 .attachments(attachments)
+                .activities(Collections.emptyList())
                 .build();
 
         assertNotNull(job);
@@ -373,7 +389,7 @@ public class JobTest {
     public void whenUpdateStatusToSameStatus_thenShouldDoNothing() {
         UserId userId = new UserId(UUID.randomUUID());
         JobId jobId = new JobId(UUID.randomUUID());
-        Instant now = Instant.now();
+        Instant jobCreatedAt = Instant.parse("2025-03-09T13:45:30Z");
         Job job = Job.builder()
                 .id(jobId)
                 .url("http://www.example.com")
@@ -385,20 +401,22 @@ public class JobTest {
                 .profile("Job profile")
                 .salary("TBD")
                 .userId(userId)
-                .createdAt(now)
-                .updatedAt(now)
+                .createdAt(jobCreatedAt)
+                .updatedAt(jobCreatedAt)
+                .statusUpdatedAt(jobCreatedAt)
                 .build();
 
         Job updatedJob = job.updateStatus(JobStatus.CREATED);
         assertSame(updatedJob, job);
-        assertEquals(updatedJob.getStatus(), job.getStatus());
+        assertEquals(job.getStatus(), updatedJob.getStatus());
+        assertEquals(jobCreatedAt, updatedJob.getStatusUpdatedAt());
     }
 
     @Test
     public void shouldUpdateStatus() {
         UserId userId = new UserId(UUID.randomUUID());
         JobId jobId = new JobId(UUID.randomUUID());
-        Instant now = Instant.now();
+        Instant jobCreatedAt = Instant.parse("2025-03-09T13:45:30Z");
         Job job = Job.builder()
                 .id(jobId)
                 .url("http://www.example.com")
@@ -410,14 +428,25 @@ public class JobTest {
                 .profile("Job profile")
                 .salary("TBD")
                 .userId(userId)
-                .createdAt(now)
-                .updatedAt(now)
+                .createdAt(jobCreatedAt)
+                .updatedAt(jobCreatedAt)
+                .statusUpdatedAt(jobCreatedAt)
+                .activities(Collections.emptyList())
+                .attachments(Collections.emptyList())
                 .build();
 
+        Instant before = Instant.now();
         Job updatedJob = job.updateStatus(JobStatus.PENDING);
+        Instant after = Instant.now();
+
         assertEquals(JobStatus.PENDING, updatedJob.getStatus());
+        // an APPLICATION activity should have been added
         assertEquals(1, updatedJob.getActivities().size());
         assertEquals(ActivityType.APPLICATION, updatedJob.getActivities().getFirst().getType());
+        // status has changed, status update date must have changed too
+        Instant statusUpdatedAt = updatedJob.getStatusUpdatedAt();
+        assertTrue(statusUpdatedAt.equals(before) || statusUpdatedAt.equals(after) || statusUpdatedAt.isAfter(before) && statusUpdatedAt.isBefore(after));
+
     }
 
     @Test
@@ -463,13 +492,32 @@ public class JobTest {
                 .userId(userId)
                 .createdAt(now)
                 .updatedAt(now)
+                .activities(Collections.emptyList())
+                .attachments(Collections.emptyList())
                 .build();
 
         Job updatedJob = job.updateRating(JobRating.of(5));
         assertEquals(JobRating.of(5), updatedJob.getRating());
     }
 
+    @Test
+    void shouldSaveFollowUpReminderSentAt() {
+        UserId userId = UserId.generate();
+        Job job = Job.builder()
+                .id(JobId.generate())
+                .url("http://www.example.com")
+                .title("Job title")
+                .status(JobStatus.CREATED)
+                .rating(JobRating.of(3))
+                .company("Job company")
+                .description("Job description")
+                .profile("Job profile")
+                .salary("TBD")
+                .userId(userId)
+                .build();
 
-
-
+        assertNull(job.getFollowUpReminderSentAt());
+        Job updatedJob = job.saveFollowUpReminderSentAt();
+        assertTrue(updatedJob.getFollowUpReminderSentAt().getEpochSecond() - Instant.now().getEpochSecond() < 1);
+    }
 }

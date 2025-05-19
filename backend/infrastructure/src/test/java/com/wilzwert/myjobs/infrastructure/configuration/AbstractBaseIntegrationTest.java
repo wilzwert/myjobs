@@ -1,6 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.configuration;
 
 import com.wilzwert.myjobs.infrastructure.utility.TestDataLoader;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.bson.Document;
 @SpringBootTest
 @ActiveProfiles("integration")
 @Tag("Integration")
+@Slf4j
 public abstract class AbstractBaseIntegrationTest {
 
 
@@ -33,7 +35,7 @@ public abstract class AbstractBaseIntegrationTest {
     @AfterEach
     public void tearDown() {
         // reload all test data to ensure further tests consistency
-        // we could e.g. manually delete the created Job but this would be unreliable
+        // we could e.g. manually delete the created entities but this would be unreliable
         // because for all we know, domain could trigger other data creation / update
         testDataLoader.resetAndReload();
     }
@@ -56,12 +58,12 @@ public abstract class AbstractBaseIntegrationTest {
             if (!isMaster.getBoolean("ismaster", false)) {
                 Document result = client.getDatabase("admin")
                         .runCommand(new Document("replSetInitiate", new Document()));
-                System.out.println("Replica set initiated: " + result.toJson());
+                log.info("Replica set initiated: {}", result.toJson());
             } else {
-                System.out.println("Replica set already initiated.");
+                log.info("Replica set already initiated.");
             }
         } catch (Exception e) {
-            System.err.println("Error while initiating replica set: " + e.getMessage());
+            log.error("Error while initiating replica set : {}", e.getMessage());
         }
     }
 

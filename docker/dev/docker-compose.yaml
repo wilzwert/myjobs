@@ -42,7 +42,7 @@ services:
     volumes:
       - ./smtp4dev-data:/smtp4dev
     networks:
-      - myjobs-network
+      - myjobs-network  
 
 networks:
   myjobs-network:

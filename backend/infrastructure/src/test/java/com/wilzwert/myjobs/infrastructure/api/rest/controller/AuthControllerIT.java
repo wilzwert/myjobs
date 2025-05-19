@@ -4,7 +4,7 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wilzwert.myjobs.core.domain.model.user.EmailStatus;
 import com.wilzwert.myjobs.core.domain.model.user.User;
-import com.wilzwert.myjobs.core.domain.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.AuthResponse;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.LoginRequest;
@@ -53,7 +53,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
 
     @Nested
     class AuthControllerRegisterIT {
-        private final static String REGISTER_URL = "/api/auth/register";
+        private static final String REGISTER_URL = "/api/auth/register";
 
         private RegisterUserRequest registerUserRequest;
 
@@ -86,7 +86,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
             registerUserRequest.setEmail("test");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("errors.email").value(ErrorCode.INVALID_EMAIL.name()));
+                    .andExpect(jsonPath("errors.email[0].code").value(ErrorCode.INVALID_EMAIL.name()));
         }
 
         @Test
@@ -94,7 +94,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
             registerUserRequest.setFirstName("");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("errors.firstName").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
+                    .andExpect(jsonPath("errors.firstName[0].code").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
         }
 
         @Test
@@ -102,7 +102,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
             registerUserRequest.setLastName("");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("errors.lastName").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
+                    .andExpect(jsonPath("errors.lastName[0].code").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
         }
 
         @Test
@@ -110,7 +110,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
             registerUserRequest.setUsername("T");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("errors.username").value(ErrorCode.FIELD_TOO_SHORT.name()));
+                    .andExpect(jsonPath("errors.username[0].code").value(ErrorCode.FIELD_TOO_SHORT.name()));
         }
 
         @Test
@@ -118,7 +118,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
             registerUserRequest.setUsername("thisisafartoolongusernamethatshouldtriggeravalidationerror");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("errors.username").value(ErrorCode.FIELD_TOO_LONG.name()));
+                    .andExpect(jsonPath("errors.username[0].code").value(ErrorCode.FIELD_TOO_LONG.name()));
         }
 
         @Test
@@ -126,7 +126,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
             registerUserRequest.setPassword("");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("errors.password").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
+                    .andExpect(jsonPath("errors.password[0].code").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
         }
 
         @Test
@@ -134,7 +134,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
             registerUserRequest.setPassword("pass");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("errors.password").value(ErrorCode.USER_WEAK_PASSWORD.name()));
+                    .andExpect(jsonPath("errors.password[0].code").value(ErrorCode.USER_WEAK_PASSWORD.name()));
         }
 
         @Test
@@ -168,6 +168,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
                     .andExpect(jsonPath("lastName").value("lastName"))
                     .andExpect(jsonPath("email").value("test@example.com"))
                     .andExpect(jsonPath("lang").value("FR"))
+                    .andExpect(jsonPath("jobFollowUpReminderDays").value(User.DEFAULT_JOB_FOLLOW_UP_REMINDER_DAYS))
                     .andExpect(jsonPath("emailStatus").value(EmailStatus.PENDING.name()))
                     .andExpect(jsonPath("createdAt").isNotEmpty())
                     .andReturn();
@@ -194,7 +195,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
 
     @Nested
     class AuthControllerLoginIT {
-        private final static String LOGIN_URL = "/api/auth/login";
+        private static final String LOGIN_URL = "/api/auth/login";
 
         @Test
         public void whenLoginFailed_thenShouldReturnUnauthorized() throws Exception {
@@ -273,7 +274,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
 
     @Nested
     class AuthControllerRefreshTokenIT {
-        private final static String REFRESH_TOKEN_URL = "/api/auth/refresh-token";
+        private static final String REFRESH_TOKEN_URL = "/api/auth/refresh-token";
 
         @Autowired
         private RefreshTokenService refreshTokenService;

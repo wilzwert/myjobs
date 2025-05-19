@@ -3,6 +3,9 @@ spring:
     active: dev
   application:
     name: MyJobsInfra
+  batch:
+    jdbc:
+      initialize-schema: always
   mail:
     host: ${MAIL_HOST:localhost}
     port: ${MAIL_PORT:25}
@@ -46,12 +49,23 @@ security:
 
 logging:
   level:
-    org:
-      springframework:
-        security: DEBUG
-        mail: DEBUG
-        data:
-          mongodb: DEBUG
+    org.springframework.batch: DEBUG
+    org.springframework.batch.core: DEBUG
+    org.springframework.batch.core.job: DEBUG
+    org.springframework.batch.core.step: TRACE
+    org.springframework.batch.item: DEBUG
+    org.springframework.batch.repeat: DEBUG
+    org.springframework.batch.core.repository: TRACE
+    org.springframework.batch.core.launch: DEBUG
+    org.springframework.data.mongodb: TRACE
+    org.springframework.transaction: DEBUG
+    org.springframework:
+      batch: DEBUG
+      core:
+        task: DEBUG
+      security: DEBUG
+      mail: DEBUG
+
 
 
 google:
