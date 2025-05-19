@@ -10,7 +10,7 @@ import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.shared.bulk.BulkServiceSaveResult;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -30,7 +30,7 @@ public interface JobService {
 
     DomainPage<Job> findPaginated(DomainSpecification specifications, int page, int size);
 
-    List<Job> find(DomainSpecification specification);
+    Map<JobId, Job> findMinimal(DomainSpecification specification);
 
     Stream<Job> stream(DomainSpecification specification);
 

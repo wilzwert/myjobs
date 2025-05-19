@@ -1,7 +1,9 @@
 package com.wilzwert.myjobs.core.domain.model.activity.command;
 
+import com.wilzwert.myjobs.core.domain.model.activity.ActivityId;
 import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -9,6 +11,6 @@ import com.wilzwert.myjobs.core.domain.model.job.JobId;
  * Time:11:10
  */
 
-public record UpdateActivityCommand(JobId jobId, ActivityType activityType, String comment) {
+public record UpdateActivityCommand(ActivityId activityId, ActivityType activityType, String comment, UserId userId, JobId jobId) {
 }
 

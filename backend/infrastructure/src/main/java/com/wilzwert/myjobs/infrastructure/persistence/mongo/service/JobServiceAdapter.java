@@ -23,8 +23,10 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
     /**
@@ -76,10 +78,11 @@ public class JobServiceAdapter implements JobService {
     }
 
     @Override
-    public List<Job> find(DomainSpecification specification) {
+    public Map<JobId, Job> findMinimal(DomainSpecification specification) {
         Aggregation aggregation = aggregationService.createAggregation(specification);
-        List<MongoJob> jobs = aggregationService.aggregate(aggregation, "jobs", MongoJob.class);
-        return jobMapper.toDomain(jobs);
+        return jobMapper.toDomain(aggregationService.aggregate(aggregation, "jobs", MongoJob.class))
+                .stream()
+                .collect(Collectors.toMap(Job::getId, job -> job));
     }
 
     @Override
@@ -117,6 +120,11 @@ public class JobServiceAdapter implements JobService {
     // TODO : tests (dont forget to test with empty set)
     @Override
     public BulkServiceSaveResult saveAll(Set<Job> jobs) {
+        // we chose to throw an exception because it seems like something went wrong if someone tries to save an empty set
+        if(jobs.isEmpty()) {
+            throw new IllegalArgumentException("jobs must not be empty");
+        }
+
         BulkOperations bulkOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.ORDERED, MongoJob.class);
 
         List<MongoJob> mongoJobs = jobMapper.toEntity(jobs.stream().toList());

@@ -34,23 +34,23 @@ public class UserUseCaseImpl implements SendVerificationEmailUseCase, GetUserVie
 
     @Override
     public void sendVerificationEmail(UserId userId) {
-        userService.findById(userId).ifPresent(emailVerificationMessageProvider::send);
+        userService.findMinimalById(userId).ifPresent(emailVerificationMessageProvider::send);
     }
 
     @Override
     public User updateUser(UpdateUserCommand command) {
-        User user = userService.findById(command.userId()).orElseThrow(UserNotFoundException::new);
+        User user = userService.findMinimalById(command.userId()).orElseThrow(UserNotFoundException::new);
 
         // if email changes, check availability
         if(!command.email().equals(user.getEmail())) {
-            User existingUser = userService.findByEmail(command.email()).orElse(null);
+            User existingUser = userService.findMinimalByEmail(command.email()).orElse(null);
             if(existingUser != null && !existingUser.equals(user)) {
                 throw new UserAlreadyExistsException();
             }
         }
         // if username changes, check availability
         if(!command.username().equals(user.getUsername())) {
-            User existingUser = userService.findByUsername(command.username()).orElse(null);
+            User existingUser = userService.findMinimalByUsername(command.username()).orElse(null);
             if(existingUser != null && !existingUser.equals(user)) {
                 throw new UserAlreadyExistsException();
             }
@@ -68,7 +68,7 @@ public class UserUseCaseImpl implements SendVerificationEmailUseCase, GetUserVie
 
     @Override
     public User updateUserLang(UpdateUserLangCommand command) {
-        User user = userService.findById(command.userId()).orElseThrow(UserNotFoundException::new);
+        User user = userService.findMinimalById(command.userId()).orElseThrow(UserNotFoundException::new);
         if(user.getLang().equals(command.lang())) {
             return user;
         }

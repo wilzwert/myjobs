@@ -4,6 +4,7 @@ package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
+import com.wilzwert.myjobs.core.domain.shared.bulk.BulkServiceSaveResult;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.Instant;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -52,123 +59,6 @@ public class JobServiceAdapterIT extends AbstractBaseIntegrationTest {
         assertEquals("https://www.example.com", result.getUrl());
         assertEquals("title", result.getTitle());*/
     }
-    /*
-    @Test
-    public void shouldReturnEmpty_whenJobNotFound() {
-        JobId jobId = JobId.generate();
-        when(mongoJobRepository.findById(jobId.value())).thenReturn(Optional.empty());
-
-        assert(underTest.findById(jobId).isEmpty());
-    }
-
-    @Test
-    public void shouldReturnEmpty_whenJobNotFoundByUrlAndUserId() {
-        UserId userId = UserId.generate();
-        when(mongoJobRepository.findByUrlAndUserId("url", userId.value())).thenReturn(Optional.empty());
-
-        assert(underTest.findByUrlAndUserId("url", userId).isEmpty());
-    }
-
-    @Test
-    public void shouldReturnJob_whenJobFoundByUrlAndUserId() {
-        UserId userId = UserId.generate();
-        JobId jobId = JobId.generate();
-        Job job = Job.builder().id(jobId).title("title").url("https://www.example.com").userId(userId).build();
-        MongoJob mongoJob = new MongoJob().setUserId(userId.value()).setId(jobId.value()).setTitle("title").setUrl("https://www.example.com");
-
-        when(mongoJobRepository.findByUrlAndUserId("https://www.example.com", userId.value())).thenReturn(Optional.of(mongoJob));
-        when(jobMapper.toDomain(mongoJob)).thenReturn(job);
-
-        var foundJob = underTest.findByUrlAndUserId("https://www.example.com", userId);
-
-        assert(foundJob.isPresent());
-        verify(mongoJobRepository, times(1)).findByUrlAndUserId("https://www.example.com", userId.value());
-        verify(jobMapper, times(1)).toDomain(mongoJob);
-
-        Job result = foundJob.get();
-        assertEquals(jobId, result.getId());
-        assertEquals(userId, result.getUserId());
-        assertEquals("https://www.example.com", result.getUrl());
-        assertEquals("title", result.getTitle());
-    }
-
-    @Test
-    public void shouldReturnEmpty_whenJobNotFoundByIdAndUserId() {
-        JobId jobId = JobId.generate();
-        UserId userId = UserId.generate();
-        when(mongoJobRepository.findByIdAndUserId(jobId.value(), userId.value())).thenReturn(Optional.empty());
-
-        assert(underTest.findByIdAndUserId(jobId, userId).isEmpty());
-    }
-
-    @Test
-    public void shouldReturnJob_whenJobFoundByIdAndUserId() {
-        UserId userId = UserId.generate();
-        JobId jobId = JobId.generate();
-        Job job = Job.builder().id(jobId).title("title").url("https://www.example.com").userId(userId).build();
-        MongoJob mongoJob = new MongoJob().setUserId(userId.value()).setId(jobId.value()).setTitle("title").setUrl("https://www.example.com");
-
-        when(mongoJobRepository.findByIdAndUserId(jobId.value(), userId.value())).thenReturn(Optional.of(mongoJob));
-        when(jobMapper.toDomain(mongoJob)).thenReturn(job);
-
-        var foundJob = underTest.findByIdAndUserId(jobId, userId);
-
-        assert(foundJob.isPresent());
-        verify(mongoJobRepository, times(1)).findByIdAndUserId(jobId.value(), userId.value());
-        verify(jobMapper, times(1)).toDomain(mongoJob);
-
-        Job result = foundJob.get();
-        assertEquals(jobId, result.getId());
-        assertEquals(userId, result.getUserId());
-        assertEquals("https://www.example.com", result.getUrl());
-        assertEquals("title", result.getTitle());
-    }
-
-    @Test
-    public void shouldReturnDomainPageWithoutContent_whenUserHasNoJob_withDefaultArgs() {
-        UserId userId = UserId.generate();
-        ArgumentCaptor<Pageable> argument = ArgumentCaptor.forClass(Pageable.class);
-        Page<MongoJob> page = Page.empty();
-        List<Job> jobList = Collections.emptyList();
-
-        when(mongoJobRepository.findByUserId(any(UUID.class), argument.capture())).thenReturn(page);
-        when(jobMapper.toDomain(page)).thenReturn(DomainPage.builder(jobList).build());
-
-        DomainPage<Job> result = underTest.findAllByUserId(userId, 1, 10, null, null);
-
-        assertEquals(0, result.getContent().size());
-        verify(mongoJobRepository, times(1)).findByUserId(any(UUID.class), argument.capture());
-        verify(jobMapper, times(1)).toDomain(page);
-        assertNotNull(argument.getValue().getSort().getOrderFor("createdAt"));
-        assertEquals(Sort.Direction.DESC, argument.getValue().getSort().getOrderFor("createdAt").getDirection());
-    }
-
-    @Test
-    public void shouldReturnDomainPageWithContent_whenUserHasJobs_withArgs() {
-        UserId userId = UserId.generate();
-        ArgumentCaptor<Pageable> argument = ArgumentCaptor.forClass(Pageable.class);
-        List<MongoJob> mongoJobs = List.of(
-                new MongoJob().setTitle("job 1"),
-                new MongoJob().setTitle("job 2")
-        );
-        Page<MongoJob> page = new PageImpl<>(mongoJobs);
-        List<Job> jobs = List.of(
-                Job.builder().title("job 1").build(),
-                Job.builder().title("job 2").build()
-        );
-
-        when(mongoJobRepository.findByUserIdAndStatus(any(UUID.class), any(JobStatus.class), argument.capture())).thenReturn(page);
-        when(jobMapper.toDomain(page)).thenReturn(DomainPage.builder(jobs).build());
-
-        DomainPage<Job> result = underTest.findAllByUserId(userId, 1, 10, JobStatus.CREATED, "rating,asc");
-
-        assertEquals(2, result.getContent().size());
-        verify(mongoJobRepository, times(1)).findByUserIdAndStatus(any(UUID.class), any(JobStatus.class), argument.capture());
-        verify(jobMapper, times(1)).toDomain(page);
-        assertNull(argument.getValue().getSort().getOrderFor("createdAt"));
-        assertNotNull(argument.getValue().getSort().getOrderFor("rating"));
-        assertEquals(Sort.Direction.ASC, argument.getValue().getSort().getOrderFor("rating").getDirection());
-    }*/
 
     @Test
     public void shouldCreateJob_andRetrieveCreatedJob() {
@@ -202,92 +92,118 @@ public class JobServiceAdapterIT extends AbstractBaseIntegrationTest {
 
     @Test
     public void shouldRetrieveJobToBeReminded() {
-        List<Job> jobs = underTest.find(DomainSpecification.JobFollowUpToRemind(Instant.now()));
+        Map<JobId, Job> jobs = underTest.findMinimal(DomainSpecification.JobFollowUpToRemind(Instant.now()));
         assertNotNull(jobs);
         assertThat(jobs.size()).isEqualTo(3);
     }
-    /*
+
     @Test
-    public void shouldReturnJob_whenJobAndActivitySaved() {
-        JobId jobId = JobId.generate();
-        Job jobToSave = Job.builder().id(jobId).title("title").url("https://www.example.com").build();
-        Activity activity = Activity.builder().type(ActivityType.APPLICATION).comment("application").build();
+    public void shouldRetrieveMinimalJobs() {
+        // get 2 known jobs
+        JobId jobId1 = new JobId(UUID.fromString("77777777-7777-7777-7777-123456789012"));
+        JobId jobId2 = new JobId(UUID.fromString("88888888-8888-8888-8888-123456789012"));
 
-        MongoJob mongoJob = new MongoJob().setId(jobId.value()).setTitle("title").setUrl("https://www.example.com");
+        DomainSpecification spec = DomainSpecification.applySort(
+                DomainSpecification.In("id", List.of(jobId1, jobId2)),
+                DomainSpecification.Sort("id", DomainSpecification.SortDirection.ASC)
+        );
+        Map<JobId, Job> jobs = underTest.findMinimal(spec);
+        assertNotNull(jobs);
+        assertThat(jobs.size()).isEqualTo(2);
 
-        when(jobMapper.toEntity(jobToSave)).thenReturn(mongoJob);
-        when(mongoJobRepository.save(mongoJob)).thenReturn(mongoJob);
-        when(jobMapper.toDomain(mongoJob)).thenReturn(jobToSave);
+        // we know that for the jobs collection, we always load complete aggregates because
+        // needed "relations" in domain are implemented as nested collections in infra with mongo
+        assertDoesNotThrow(() -> jobs.get(jobId1).getActivities());
+        assertDoesNotThrow(() -> jobs.get(jobId2).getActivities());
+    }
 
-        Job result = underTest.saveJobAndActivity(jobToSave, activity);
 
-        assertEquals(jobId, result.getId());
-        assertEquals("title", result.getTitle());
-        assertEquals("https://www.example.com", result.getUrl());
+    @Test
+    public void shouldSaveAllJobs() {
+        // get 2 known jobs
+        JobId jobId1 = new JobId(UUID.fromString("77777777-7777-7777-7777-123456789012"));
+        JobId jobId2 = new JobId(UUID.fromString("88888888-8888-8888-8888-123456789012"));
 
-        verify(jobMapper, times(1)).toEntity(jobToSave);
-        verify(mongoJobRepository, times(1)).save(mongoJob);
-        verify(jobMapper, times(1)).toDomain(mongoJob);
+        DomainSpecification spec = DomainSpecification.applySort(
+                DomainSpecification.In("id", List.of(jobId1, jobId2)),
+                DomainSpecification.Sort("id", DomainSpecification.SortDirection.ASC)
+        );
+
+        Map<JobId, Job> jobs = underTest.findMinimal(spec);
+        assertThat(jobs.size()).isEqualTo(2);
+
+        String stringDate = "09:15:30, 10/05/2025";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss, dd/MM/yyyy");
+        LocalDateTime localDateTime = LocalDateTime.parse(stringDate, formatter);
+        ZoneId zoneId = ZoneId.of("Europe/Paris");
+        ZonedDateTime zonedDateTime = localDateTime.atZone(zoneId);
+        Instant newInstant = zonedDateTime.toInstant();
+
+        // update jobFollowUpReminderSentAt for both
+        Set<Job> jobsToSave = new HashSet<>();
+        jobsToSave.add(Job.fromMinimal(jobs.get(jobId1)).title("new title").followUpReminderSentAt(newInstant).build());
+        jobsToSave.add(Job.fromMinimal(jobs.get(jobId2)).title("new title 2").followUpReminderSentAt(newInstant).build());
+
+        // when
+        BulkServiceSaveResult result = underTest.saveAll(jobsToSave);
+
+        assertThat(result).isNotNull();
+        assertThat(result.totalCount()).isEqualTo(2);
+        assertThat(result.updatedCount()).isEqualTo(2);
+
+        // check that only jobFollowUpReminderSentAt has been saved, as it is the only property supported for bulk updates
+        // original followUpReminderSentAt | title (see resources/test-data/jobs.json)
+        // job1 "followUpReminderSentAt": "2025-05-04T15:25:31.162Z" | My job,
+        // job2 null | My second job
+        Map<JobId, Job> usersReloaded = underTest.findMinimal(spec);
+        assertThat(usersReloaded.size()).isEqualTo(2);
+        assertThat(usersReloaded.get(jobId1).getTitle()).isEqualTo("My job");
+        assertThat(usersReloaded.get(jobId1).getFollowUpReminderSentAt()).isEqualTo(newInstant);
+        assertThat(usersReloaded.get(jobId2).getTitle()).isEqualTo("My second job");
+        assertThat(usersReloaded.get(jobId2).getFollowUpReminderSentAt()).isEqualTo(newInstant);
+
+
+        // reset original jobs to ensure tests further consistency and predictability
+        // (which in itself could be considered another similar saveAll test)
+        // actually we just have to save the jobs loaded at the beginning of this test
+        // because they remain at their original state, as all the other methods worked on copies
+        Set<Job> jobsToReset = new HashSet<>();
+        jobsToReset.add(jobs.get(jobId1));
+        jobsToReset.add(jobs.get(jobId2));
+
+        BulkServiceSaveResult result2 = underTest.saveAll(jobsToReset);
+
+        assertThat(result2).isNotNull();
+        assertThat(result2.totalCount()).isEqualTo(2);
+        assertThat(result2.updatedCount()).isEqualTo(2);
     }
 
     @Test
-    public void shouldReturnJob_whenJobAndAttachmentSaved() {
-        JobId jobId = JobId.generate();
-        Job jobToSave = Job.builder().id(jobId).title("title").url("https://www.example.com").build();
-        Attachment attachment = Attachment.builder().name("attachment").build();
-        Activity activity = Activity.builder().type(ActivityType.ATTACHMENT_CREATION).comment("attachment").build();
+    void whenUsersSetEmpty_thenSaveShouldThrowException() {
+        // given
+        var emptySet = Collections.<Job>emptySet();
 
-        MongoJob mongoJob = new MongoJob().setId(jobId.value()).setTitle("title").setUrl("https://www.example.com");
-
-        when(jobMapper.toEntity(jobToSave)).thenReturn(mongoJob);
-        when(mongoJobRepository.save(mongoJob)).thenReturn(mongoJob);
-        when(jobMapper.toDomain(mongoJob)).thenReturn(jobToSave);
-
-        Job result = underTest.saveJobAndAttachment(jobToSave, attachment, activity);
-
-        assertEquals(jobId, result.getId());
-        assertEquals("title", result.getTitle());
-        assertEquals("https://www.example.com", result.getUrl());
-
-        verify(jobMapper, times(1)).toEntity(jobToSave);
-        verify(mongoJobRepository, times(1)).save(mongoJob);
-        verify(jobMapper, times(1)).toDomain(mongoJob);
+        // when + then
+        assertThrows(IllegalArgumentException.class, () -> underTest.saveAll(emptySet));
     }
 
     @Test
-    public void shouldDeleteJob() {
-        JobId jobId = JobId.generate();
-        Job jobToDelete = Job.builder().id(jobId).title("title").url("https://www.example.com").build();
-        MongoJob mongoJob = new MongoJob().setId(jobId.value()).setTitle("title").setUrl("https://www.example.com");
+    void shouldStreamJobs() {
+        // get 2 known jobs
+        JobId jobId1 = new JobId(UUID.fromString("77777777-7777-7777-7777-123456789012"));
+        JobId jobId2 = new JobId(UUID.fromString("88888888-8888-8888-8888-123456789012"));
 
-        when(jobMapper.toEntity(jobToDelete)).thenReturn(mongoJob);
-        doNothing().when(mongoJobRepository).delete(any());
+        DomainSpecification spec = DomainSpecification.applySort(
+                DomainSpecification.In("id", List.of(jobId1, jobId2)),
+                DomainSpecification.Sort("id", DomainSpecification.SortDirection.ASC)
+        );
 
-        underTest.delete(jobToDelete);
+        Stream<Job> stream = underTest.stream(spec);
 
-        verify(jobMapper, times(1)).toEntity(jobToDelete);
-        verify(mongoJobRepository, times(1)).delete(mongoJob);
+        // collect the Stream into a Map to be able to check contents
+        Map<JobId, Job> result = stream.collect(Collectors.toMap(Job::getId, e -> e));
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result.get(jobId1).getTitle()).isEqualTo("My job");
+        assertThat(result.get(jobId2).getTitle()).isEqualTo("My second job");
     }
-
-    @Test
-    public void shouldDeleteAttachment() {
-        JobId jobId = JobId.generate();
-        Job job = Job.builder().id(jobId).title("title").url("https://www.example.com").build();
-        MongoJob mongoJob = new MongoJob().setId(jobId.value()).setTitle("title").setUrl("https://www.example.com");
-        Attachment attachment = Attachment.builder().name("attachment").build();
-        Activity activity = Activity.builder().type(ActivityType.ATTACHMENT_DELETION).comment("attachment").build();
-
-        when(jobMapper.toEntity(job)).thenReturn(mongoJob);
-        when(mongoJobRepository.save(mongoJob)).thenReturn(mongoJob);
-        when(jobMapper.toDomain(mongoJob)).thenReturn(job);
-
-        Job updateJob = underTest.deleteAttachment(job, attachment, activity);
-
-        verify(jobMapper, times(1)).toEntity(job);
-        verify(mongoJobRepository, times(1)).save(mongoJob);
-        verify(jobMapper, times(1)).toDomain(mongoJob);
-        assertEquals(jobId, updateJob.getId());
-        assertEquals("title", updateJob.getTitle());
-        assertEquals("https://www.example.com", updateJob.getUrl());
-    }*/
 }

@@ -72,13 +72,12 @@ class DomainSpecificationTest {
                 DomainSpecification.Lt("createdAt", Instant.now()));
 
         // DomainSpecification.JobFollowUpToRemind being a FullSpecification, it cannot be composed
+        var list = List.of(
+                DomainSpecification.Or(specs),
+                DomainSpecification.JobFollowUpToRemind(Instant.now())
+        );
         assertThrows(DomainSpecificationException.class, () ->
-            DomainSpecification.And(
-                List.of(
-                    DomainSpecification.Or(specs),
-                    DomainSpecification.JobFollowUpToRemind(Instant.now())
-                )
-            )
+            DomainSpecification.And(list)
         );
     }
 

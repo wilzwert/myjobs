@@ -1,5 +1,7 @@
 package com.wilzwert.myjobs.core.domain.model;
 
+import com.wilzwert.myjobs.core.domain.shared.exception.IncompleteAggregateException;
+
 /**
  * @author Wilhelm Zwertvaegher
  * Date:18/03/2025
@@ -17,4 +19,10 @@ public abstract class DomainEntity<I> {
     }
 
     public abstract I getId();
+
+    protected void requireLoadedProperty(Object property) {
+        if(null == property) {
+            throw new IncompleteAggregateException();
+        }
+    }
 }

@@ -1,9 +1,10 @@
 package com.wilzwert.myjobs.core.domain.shared.validation;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ValidationErrors {
+public class ValidationErrors implements Serializable {
     private final Map<String, Map<ErrorCode, ValidationError>> errors = new LinkedHashMap<>();
 
     public void add(ValidationError error) {

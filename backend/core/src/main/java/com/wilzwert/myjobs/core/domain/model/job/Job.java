@@ -1,5 +1,6 @@
 package com.wilzwert.myjobs.core.domain.model.job;
 
+import com.wilzwert.myjobs.core.domain.model.activity.exception.ActivityNotFoundException;
 import com.wilzwert.myjobs.core.domain.shared.exception.ValidationException;
 import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
@@ -61,8 +62,18 @@ public class Job extends DomainEntity<JobId> {
         return new Builder();
     }
 
-    private static Builder from(Job job) {
-        return new Builder(job);
+    public static Builder from(Job job) {
+        return new Builder(job, true);
+    }
+
+    /**
+     * Warning : this is used to get a Builder allowing an incomplete aggregate
+     * Use with great caution, as some methods on the aggregate won't work if it is not complete !
+     * @param job the job we want to get a Builder from
+     * @return the Builder
+     */
+    public static Builder fromMinimal(Job job) {
+        return new Job.Builder(job, false);
     }
 
     public static class Builder {
@@ -101,7 +112,7 @@ public class Job extends DomainEntity<JobId> {
         public Builder() {
         }
 
-        public Builder(Job job) {
+        public Builder(Job job, boolean full) {
             this.id = job.getId();
             this.url = job.getUrl();
             this.status = job.getStatus();
@@ -116,8 +127,8 @@ public class Job extends DomainEntity<JobId> {
             this.statusUpdatedAt = job.getStatusUpdatedAt();
             this.followUpReminderSentAt = job.getFollowUpReminderSentAt();
             this.userId = job.getUserId();
-            this.activities = job.getActivities();
-            this.attachments = job.getAttachments();
+            this.activities = full || job.activities != null ? job.getActivities() : null;
+            this.attachments = full || job.attachments != null ? job.getAttachments() : null;
         }
 
         public Builder id(JobId id) {
@@ -233,14 +244,26 @@ public class Job extends DomainEntity<JobId> {
         this.userId = builder.userId;
 
         // ensure immutability
-        this.activities = builder.activities != null ? List.copyOf(builder.activities) : new ArrayList<>();
+        // null is accepted because in some cases we allow working on aggregates that could be "incomplete"
+        this.activities = builder.activities != null ? List.copyOf(builder.activities) : null;
         // ensure immutability
-        this.attachments = builder.attachments != null ? List.copyOf(builder.attachments) : new ArrayList<>();
+        // null is accepted because in some cases we allow working on aggregates that could be "incomplete"
+        this.attachments = builder.attachments != null ? List.copyOf(builder.attachments) : null;
 
         ValidationErrors validationErrors = validate();
         if(validationErrors.hasErrors()) {
             throw new ValidationException(validationErrors);
         }
+    }
+
+    public static Job create(Job.Builder builder) {
+        builder.attachments(Collections.emptyList()).activities(Collections.emptyList());
+        return new Job(builder);
+    }
+
+    private void requireFull() {
+        requireLoadedProperty(attachments);
+        requireLoadedProperty(activities);
     }
 
     private Job copy(List<Attachment> attachments, List<Activity> activities, JobStatus status, Instant updatedAt) {
@@ -260,10 +283,36 @@ public class Job extends DomainEntity<JobId> {
         );
     }
     public Job addActivity(Activity activity) {
+        requireFull();
+
         JobStatus newJobStatus = activityToStatus.get(activity.getType());
         var updatedActivities = new ArrayList<>(getActivities());
         updatedActivities.add(activity);
         updatedActivities.sort(Comparator.comparing(Activity::getCreatedAt).reversed());
+        return copy(null, updatedActivities, newJobStatus, Instant.now());
+    }
+
+    public Job updateActivity(Activity activity) {
+        requireFull();
+
+        Activity oldActivity = activities.stream().filter(a -> a.equals(activity)).findFirst().orElseThrow(ActivityNotFoundException::new);
+
+        JobStatus newJobStatus = activityToStatus.get(activity.getType());
+
+        // create new activity based on the old one and the activity passed
+        Activity updateActivity = Activity.from(oldActivity)
+                .updatedAt(Instant.now())
+                .type(activity.getType())
+                .comment(activity.getComment())
+                .build();
+
+        // update activities list
+        var updatedActivities = new ArrayList<>(getActivities());
+        updatedActivities.remove(oldActivity);
+        updatedActivities.add(updateActivity);
+        updatedActivities.sort(Comparator.comparing(Activity::getCreatedAt).thenComparing(Activity::getUpdatedAt).reversed());
+
+        // return a copy of this job with updated data
         return copy(null, updatedActivities, newJobStatus, Instant.now());
     }
 
@@ -281,6 +330,7 @@ public class Job extends DomainEntity<JobId> {
     }
 
     public Job addAttachment(Attachment attachment) {
+        requireFull();
         var updatedAttachments = new ArrayList<>(getAttachments());
         updatedAttachments.add(attachment);
         updatedAttachments.sort(Comparator.comparing(Attachment::getCreatedAt).reversed());
@@ -288,6 +338,7 @@ public class Job extends DomainEntity<JobId> {
     }
 
     public Job removeAttachment(Attachment attachment) {
+        requireFull();
         var updatedAttachments = new ArrayList<>(getAttachments());
         if(!updatedAttachments.contains(attachment)) {
             throw new IllegalArgumentException("Attachment not in list");
@@ -299,6 +350,8 @@ public class Job extends DomainEntity<JobId> {
 
     public Job updateStatus(JobStatus newStatus) {
         if(this.status == newStatus) return this;
+
+        requireFull();
 
         Job result;
         ActivityType activityType = activityToStatus.entrySet().stream().filter(entry -> newStatus.equals(entry.getValue())).map(Map.Entry::getKey).findFirst().orElse(null);
@@ -317,6 +370,8 @@ public class Job extends DomainEntity<JobId> {
 
     public Job updateRating(JobRating newJobRating) {
         if(newJobRating.equals(getRating())) return this;
+
+        requireFull();
 
         Job result = new Job(
             from(this)

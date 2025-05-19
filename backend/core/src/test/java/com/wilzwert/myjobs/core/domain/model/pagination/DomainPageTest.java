@@ -80,33 +80,29 @@ class DomainPageTest {
     @Test
     void whenPageSizeNotSet_thenShouldThrowException() {
         List<String> content = List.of("A", "B");
-
-        assertThrows(IllegalStateException.class, () -> DomainPage.builder(content)
+        var builder = DomainPage.builder(content)
                 .currentPage(0)
-                .totalElementsCount(10)
-                .build()
-        );
+                .totalElementsCount(10);
+        assertThrows(IllegalStateException.class, builder::build);
     }
 
     @Test
     void whenTotalElementsCountNotSet_thenShouldThrowException() {
         List<String> content = List.of("A", "B");
-
-        assertThrows(IllegalStateException.class, () -> DomainPage.builder(content)
+        var builder = DomainPage.builder(content)
                 .currentPage(0)
-                .pageSize(10)
-                .build()
-        );
+                .pageSize(10);
+        assertThrows(IllegalStateException.class, builder::build);
     }
     @Test
     void whenCurrentPageNotSet_thenShouldThrowException() {
         List<String> content = List.of("A", "B");
 
-        assertThrows(IllegalStateException.class, () -> DomainPage.builder(content)
+        var builder = DomainPage.builder(content)
                 .totalElementsCount(20)
-                .pageSize(10)
-                .build()
-        );
+                .pageSize(10);
+
+        assertThrows(IllegalStateException.class, builder::build);
     }
 
 

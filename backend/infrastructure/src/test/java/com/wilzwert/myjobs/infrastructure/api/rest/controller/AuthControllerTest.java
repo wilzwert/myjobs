@@ -227,11 +227,11 @@ public class AuthControllerTest {
 
         @Test
         public void whenEmailAvailable_thenShouldReturnOk() {
-            when(checkUserAvailabilityUseCase.isEmailTaken("test@example.com")).thenReturn(true);
+            when(checkUserAvailabilityUseCase.isEmailTaken("test@example.com")).thenReturn(false);
 
             ResponseEntity<?> responseEntity = authController.emailCheck("test@example.com");
 
-            assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
+            assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
             verify(checkUserAvailabilityUseCase, times(1)).isEmailTaken("test@example.com");
         }
 

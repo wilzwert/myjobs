@@ -1,6 +1,7 @@
 package com.wilzwert.myjobs.core.domain.shared.validation;
 
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -10,7 +11,7 @@ import java.util.Map;
  * Date:25/04/2025
  * Time:12:07
  */
-public class ValidationError {
+public class ValidationError implements Serializable {
     private final String field;
     private final ErrorCode code;
 
@@ -28,9 +29,7 @@ public class ValidationError {
 
     public void merge(ValidationError error) {
         if(error.details != null) {
-            System.out.println("validation error "+error.code+" to merge has "+error.details.size()+" details");
             if(details == null) {
-                System.out.println("local validation error "+error.code+" has NO details");
                 details = new HashMap<>();
             }
             details.putAll(error.details);

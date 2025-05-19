@@ -52,12 +52,12 @@ public class UserUseCaseImplTest {
     public void whenUserExists_thenShouldSendVerificationEmail() {
         UserId userId = UserId.generate();
         User user = getValidTestUser(userId);
-        when(userService.findById(userId)).thenReturn(Optional.of(user));
+        when(userService.findMinimalById(userId)).thenReturn(Optional.of(user));
         doNothing().when(emailVerificationMessageProvider).send(user);
 
         underTest.sendVerificationEmail(userId);
 
-        verify(userService, times(1)).findById(userId);
+        verify(userService, times(1)).findMinimalById(userId);
         verify(emailVerificationMessageProvider, times(1)).send(user);
     }
 
@@ -66,7 +66,7 @@ public class UserUseCaseImplTest {
         UserId userId = UserId.generate();
         User user = getValidTestUser(userId);
 
-        when(userService.findById(userId)).thenReturn(Optional.of(user));
+        when(userService.findMinimalById(userId)).thenReturn(Optional.of(user));
         when(userService.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
 
         User updatedUser = underTest.updateUser(new UpdateUserCommand(user.getEmail(), "updatedusername", "updatedfirstName", "updatedlastName", 12, userId));
@@ -85,7 +85,7 @@ public class UserUseCaseImplTest {
         UserId userId = UserId.generate();
         User user = getValidTestUser(userId);
 
-        when(userService.findById(userId)).thenReturn(Optional.of(user));
+        when(userService.findMinimalById(userId)).thenReturn(Optional.of(user));
         when(userService.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
         doNothing().when(emailVerificationMessageProvider).send(user);
 

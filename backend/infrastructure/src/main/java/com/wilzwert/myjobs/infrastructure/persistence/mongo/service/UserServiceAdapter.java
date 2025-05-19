@@ -73,18 +73,13 @@ public class UserServiceAdapter implements UserService {
     }
 
     @Override
-    public Optional<UserView> findViewByEmail(String email) {
-        return mongoUserRepository.findByEmail(email).map(userMapper::toDomainView).or(Optional::empty);
-    }
-
-    @Override
     public Optional<User> findByEmail(String email) {
         return getFullUser(mongoUserRepository.findByEmail(email));
     }
 
     @Override
-    public Optional<User> findByEmailValidationCode(String code) {
-        return getFullUser(mongoUserRepository.findByEmailValidationCode(code));
+    public Optional<User> findMinimalByEmailValidationCode(String code) {
+        return mongoUserRepository.findByEmailValidationCode(code).map(userMapper::toDomain);
     }
 
     @Override
@@ -104,7 +99,17 @@ public class UserServiceAdapter implements UserService {
 
     @Override
     public Optional<UserView> findViewById(UserId id) {
-        return mongoUserRepository.findById(id.value()).map(userMapper::toDomainView).or(Optional::empty);
+        return mongoUserRepository.findById(id.value()).map(userMapper::toDomainView);
+    }
+
+    @Override
+    public Optional<User> findMinimalByUsername(String username) {
+        return mongoUserRepository.findByUsername(username).map(userMapper::toDomain);
+    }
+
+    @Override
+    public Optional<User> findMinimalByEmail(String email) {
+        return mongoUserRepository.findByEmail(email).map(userMapper::toDomain).or(Optional::empty);
     }
 
     private Optional<User> getFullUser(Optional<MongoUser> user) {
@@ -117,8 +122,8 @@ public class UserServiceAdapter implements UserService {
     }
 
     @Override
-    public Optional<User> findByIdMinimal(UserId id) {
-        return (mongoUserRepository.findById(id.value()).map(userMapper::toDomain));
+    public Optional<User> findMinimalById(UserId id) {
+        return mongoUserRepository.findById(id.value()).map(userMapper::toDomain);
     }
 
 
@@ -185,10 +190,13 @@ public class UserServiceAdapter implements UserService {
         mongoUserRepository.delete(userMapper.toEntity(user));
     }
 
-
-    // TODO : tests (dont forget to test with empty set)
     @Override
     public BulkServiceSaveResult saveAll(Set<User> users) {
+        // we chose to throw an exception because it seems like something went wrong if someone tries to save an empty set
+        if(users.isEmpty()) {
+            throw new IllegalArgumentException("users must not be empty");
+        }
+
         BulkOperations bulkOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.ORDERED, MongoUser.class);
 
         List<MongoUser> mongoUsers = userMapper.toEntity(users.stream().toList());

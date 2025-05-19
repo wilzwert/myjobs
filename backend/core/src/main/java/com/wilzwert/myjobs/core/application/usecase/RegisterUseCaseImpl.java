@@ -75,7 +75,7 @@ public class RegisterUseCaseImpl implements RegisterUseCase, CheckUserAvailabili
 
     @Override
     public User validateEmail(ValidateEmailCommand command) {
-        Optional<User> userOptional = userService.findByEmailValidationCode(command.validationCode());
+        Optional<User> userOptional = userService.findMinimalByEmailValidationCode(command.validationCode());
         if(userOptional.isPresent()) {
             User user = userOptional.get();
             user = user.validateEmail(command.validationCode());

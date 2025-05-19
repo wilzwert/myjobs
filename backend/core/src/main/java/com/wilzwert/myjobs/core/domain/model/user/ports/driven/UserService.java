@@ -17,6 +17,13 @@ import java.util.Set;
  * @author Wilhelm Zwertvaegher
  * Date:12/03/2025
  * Time:15:29
+ * Method findMinimal* allow the infra to define ways of loading a user without its related entities / aggregates
+ * It is useful when we need to perform an action only the user (i.e. with no side effects on related aggregates)
+ * In some cases, it may improve performance as Infra will be able e.g. in a relational DB to load the user with no joins on jobs,
+ * In other cases, (e.g. nested collections in nosql) infra will handle it differently
+ * Warning ! these methodes are to be used with caution because in some cases it may lead to exceptions or aggregates inconsistency
+ * User aggregate consistency is ensured by throwing exceptions in cases actions require the full aggregate to be loaded
+ * Only use cases should dictate the loading strategy minimal / full because they are the actions orchestrators
  */
 public interface UserService {
 
@@ -25,10 +32,6 @@ public interface UserService {
     Map<UserId, User> findMinimal(DomainSpecification specifications);
 
     Optional<User> findByEmail(String email);
-
-    Optional<UserView> findViewByEmail(String email);
-
-    Optional<User> findByEmailValidationCode(String code);
 
     Optional<User> findByResetPasswordToken(String code);
 
@@ -40,7 +43,13 @@ public interface UserService {
 
     Optional<User> findById(UserId id);
 
-    Optional<User> findByIdMinimal(UserId id);
+    Optional<User> findMinimalByUsername(String username);
+
+    Optional<User> findMinimalByEmail(String email);
+
+    Optional<User> findMinimalByEmailValidationCode(String code);
+
+    Optional<User> findMinimalById(UserId id);
 
     User save(User user);
 

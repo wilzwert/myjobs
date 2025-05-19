@@ -4,6 +4,7 @@ import com.wilzwert.myjobs.core.domain.model.job.JobRating;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
@@ -31,6 +32,7 @@ import java.util.UUID;
 @CompoundIndexes({
         @CompoundIndex(name = "unique_user_job", def = "{'user_id': 1, 'url': 1}", unique = true)
 })
+@ToString
 public class MongoJob {
     @Id
     private UUID id;

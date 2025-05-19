@@ -182,9 +182,10 @@ public class DomainSpecificationConverter {
         aggregationOperations.add(Aggregation.match(Criteria.where("user.job_follow_up_reminder_days").exists(true).ne(null)));
 
         // compute 'thresholdDate' based on provided instant and user.jobFollowUpReminderDelay
+        String thresholdField = "job_follow_up_reminder_threshold";
         aggregationOperations.add( Aggregation.addFields()
                 .addFieldWithValue(
-                        "job_follow_up_reminder_threshold",
+                        thresholdField,
                         ArithmeticOperators.Subtract.valueOf(domainSpecification.getReferenceInstant().toEpochMilli()).subtract(
                                 ArithmeticOperators.Multiply.valueOf("user.job_follow_up_reminder_days")
                                         .multiplyBy(86400000)
@@ -198,7 +199,7 @@ public class DomainSpecificationConverter {
         // filter by updatedAt (or statusUpdatedAt ?) < threshold
         aggregationOperations.add(Aggregation.match(
                 Criteria.expr(
-                    ComparisonOperators.Lte.valueOf("updated_at_millis").lessThanEqualTo("job_follow_up_reminder_threshold"))
+                    ComparisonOperators.Lte.valueOf("updated_at_millis").lessThanEqualTo(thresholdField))
         ));
 
         // convert job's followUpReminderSentAt Instant to a long (in millis)
@@ -215,7 +216,7 @@ public class DomainSpecificationConverter {
         // filter lastReminderSentAt < threshold to avoid multiple reminders
         aggregationOperations.add(Aggregation.match(
                 Criteria.expr(
-                        ComparisonOperators.Lte.valueOf("job_follow_up_reminder_sent_at_millis").lessThanEqualTo("job_follow_up_reminder_threshold"))
+                        ComparisonOperators.Lte.valueOf("job_follow_up_reminder_sent_at_millis").lessThanEqualTo(thresholdField))
         ));
 
         return aggregationOperations;

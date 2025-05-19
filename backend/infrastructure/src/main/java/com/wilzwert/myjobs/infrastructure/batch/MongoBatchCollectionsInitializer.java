@@ -28,39 +28,44 @@ public class MongoBatchCollectionsInitializer {
 
     @PostConstruct
     public void initCollections() {
+        String batchObjInstanceCollection = "BATCH_JOB_INSTANCE";
+        String batchJobExecutionCollection = "BATCH_JOB_EXECUTION";
+        String batchStepExecutionCollection = "BATCH_STEP_EXECUTION";
+        String batchSequencesCollection = "BATCH_SEQUENCES";
+
         // collections
-        if(!mongoTemplate.collectionExists("BATCH_JOB_INSTANCE")) {
-            mongoTemplate.createCollection("BATCH_JOB_INSTANCE");
+        if(!mongoTemplate.collectionExists(batchObjInstanceCollection)) {
+            mongoTemplate.createCollection(batchObjInstanceCollection);
         }
-        if(!mongoTemplate.collectionExists("BATCH_JOB_EXECUTION")) {
-            mongoTemplate.createCollection("BATCH_JOB_EXECUTION");
+        if(!mongoTemplate.collectionExists(batchJobExecutionCollection)) {
+            mongoTemplate.createCollection(batchJobExecutionCollection);
         }
-        if(!mongoTemplate.collectionExists("BATCH_STEP_EXECUTION")) {
-            mongoTemplate.createCollection("BATCH_STEP_EXECUTION");
+        if(!mongoTemplate.collectionExists(batchStepExecutionCollection)) {
+            mongoTemplate.createCollection(batchStepExecutionCollection);
         }
         // sequences
-        if(!mongoTemplate.collectionExists("BATCH_SEQUENCES")) {
-            mongoTemplate.createCollection("BATCH_SEQUENCES");
+        if(!mongoTemplate.collectionExists(batchSequencesCollection)) {
+            mongoTemplate.createCollection(batchSequencesCollection);
         }
-
-        Document seqInstance = new Document(Map.of("_id", "BATCH_JOB_INSTANCE_SEQ", "count", 0L));
-        mongoTemplate.getCollection("BATCH_SEQUENCES")
+        String countField = "count";
+        Document seqInstance = new Document(Map.of("_id", "BATCH_JOB_INSTANCE_SEQ", countField, 0L));
+        mongoTemplate.getCollection(batchSequencesCollection)
             .replaceOne(
                     Filters.eq("_id", "BATCH_JOB_INSTANCE_SEQ"),
                     seqInstance,
                     new ReplaceOptions().upsert(true)
             );
 
-        Document seqExecution = new Document(Map.of("_id", "BATCH_JOB_EXECUTION_SEQ", "count", 0L));
-        mongoTemplate.getCollection("BATCH_SEQUENCES")
+        Document seqExecution = new Document(Map.of("_id", "BATCH_JOB_EXECUTION_SEQ", countField, 0L));
+        mongoTemplate.getCollection(batchSequencesCollection)
                 .replaceOne(
                         Filters.eq("_id", "BATCH_JOB_EXECUTION_SEQ"),
                         seqExecution,
                         new ReplaceOptions().upsert(true)
                 );
 
-        Document seqStep = new Document(Map.of("_id", "BATCH_STEP_EXECUTION_SEQ", "count", 0L));
-        mongoTemplate.getCollection("BATCH_SEQUENCES")
+        Document seqStep = new Document(Map.of("_id", "BATCH_STEP_EXECUTION_SEQ", countField, 0L));
+        mongoTemplate.getCollection(batchSequencesCollection)
                 .replaceOne(
                         Filters.eq("_id", "BATCH_STEP_EXECUTION_SEQ"),
                         seqStep,
@@ -68,21 +73,23 @@ public class MongoBatchCollectionsInitializer {
                 );
 
         // indices
-        mongoTemplate.indexOps("BATCH_JOB_INSTANCE")
+        mongoTemplate.indexOps(batchObjInstanceCollection)
                 .ensureIndex(new Index().on("jobName", Sort.Direction.ASC).named("job_name_idx"));
-        mongoTemplate.indexOps("BATCH_JOB_INSTANCE")
+        mongoTemplate.indexOps(batchObjInstanceCollection)
                 .ensureIndex(new Index().on("jobName", Sort.Direction.ASC)
                         .on("jobKey", Sort.Direction.ASC)
                         .named("job_name_key_idx"));
-        mongoTemplate.indexOps("BATCH_JOB_INSTANCE")
-                .ensureIndex(new Index().on("jobInstanceId", Sort.Direction.DESC).named("job_instance_idx"));
-        mongoTemplate.indexOps("BATCH_JOB_EXECUTION")
-                .ensureIndex(new Index().on("jobInstanceId", Sort.Direction.ASC).named("job_instance_idx"));
-        mongoTemplate.indexOps("BATCH_JOB_EXECUTION")
-                .ensureIndex(new Index().on("jobInstanceId", Sort.Direction.ASC)
+
+        String jobInstanceIdField = "jobInstanceId";
+        mongoTemplate.indexOps(batchObjInstanceCollection)
+                .ensureIndex(new Index().on(jobInstanceIdField, Sort.Direction.DESC).named("job_instance_idx"));
+        mongoTemplate.indexOps(batchJobExecutionCollection)
+                .ensureIndex(new Index().on(jobInstanceIdField, Sort.Direction.ASC).named("job_instance_idx"));
+        mongoTemplate.indexOps(batchJobExecutionCollection)
+                .ensureIndex(new Index().on(jobInstanceIdField, Sort.Direction.ASC)
                         .on("status", Sort.Direction.ASC)
                         .named("job_instance_status_idx"));
-        mongoTemplate.indexOps("BATCH_STEP_EXECUTION")
+        mongoTemplate.indexOps(batchStepExecutionCollection)
                 .ensureIndex(new Index().on("stepExecutionId", Sort.Direction.ASC).named("step_execution_idx"));
     }
 }

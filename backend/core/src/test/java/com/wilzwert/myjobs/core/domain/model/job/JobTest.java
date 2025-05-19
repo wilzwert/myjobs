@@ -28,9 +28,7 @@ public class JobTest {
 
     @Test
     public void whenInvalid_thenJobBuildShouldThrowValidationException() {
-        ValidationException exception = assertThrows(ValidationException.class, () -> {
-            Job.builder().build();
-        });
+        ValidationException exception = assertThrows(ValidationException.class, () -> Job.builder().build());
         assertNotNull(exception);
         assertEquals(5, exception.getErrors().getErrors().entrySet().size());
         assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY, exception.getErrors().getErrors().get("userId").getFirst().code());
@@ -45,7 +43,7 @@ public class JobTest {
         UserId userId = new UserId(UUID.randomUUID());
         JobId jobId = new JobId(UUID.randomUUID());
         Instant before = Instant.now();
-        Job job = Job.builder()
+        Job job = Job.create(Job.builder()
                 .id(jobId)
                 .url("http://www.example.com")
                 .title("Job title")
@@ -54,7 +52,7 @@ public class JobTest {
                 .profile("Job profile")
                 .salary("TBD")
                 .userId(userId)
-                .build();
+        );
         Instant after = Instant.now();
 
         assertNotNull(job);
@@ -241,6 +239,8 @@ public class JobTest {
                 .userId(userId)
                 .createdAt(now)
                 .updatedAt(now)
+                .activities(Collections.emptyList())
+                .attachments(Collections.emptyList())
                 .build();
 
         ActivityId activityId = ActivityId.generate();
@@ -294,6 +294,8 @@ public class JobTest {
                 .userId(userId)
                 .createdAt(now)
                 .updatedAt(now)
+                .activities(Collections.emptyList())
+                .attachments(Collections.emptyList())
                 .build();
 
         AttachmentId attachmentId = AttachmentId.generate();
@@ -370,6 +372,7 @@ public class JobTest {
                 .createdAt(now)
                 .updatedAt(now)
                 .attachments(attachments)
+                .activities(Collections.emptyList())
                 .build();
 
         assertNotNull(job);
@@ -428,6 +431,8 @@ public class JobTest {
                 .createdAt(jobCreatedAt)
                 .updatedAt(jobCreatedAt)
                 .statusUpdatedAt(jobCreatedAt)
+                .activities(Collections.emptyList())
+                .attachments(Collections.emptyList())
                 .build();
 
         Instant before = Instant.now();
@@ -487,6 +492,8 @@ public class JobTest {
                 .userId(userId)
                 .createdAt(now)
                 .updatedAt(now)
+                .activities(Collections.emptyList())
+                .attachments(Collections.emptyList())
                 .build();
 
         Job updatedJob = job.updateRating(JobRating.of(5));

@@ -1,5 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.batch;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
+@Slf4j
 public class JobsRemindersScheduler {
 
     private final JobLauncher jobLauncher;
@@ -25,9 +27,10 @@ public class JobsRemindersScheduler {
                 .toJobParameters();
         try {
             JobExecution execution = jobLauncher.run(jobReminderJob, params);
+            log.info("Job reminders scheduled run, started at {}, ended at {}, exited with {}", execution.getStartTime(), execution.getEndTime(), execution.getExitStatus());
         }
         catch (Exception e) {
-            // TODO : log
+            log.info("Job reminders scheduled throw an exception {}", e.getMessage());
         }
     }
 }

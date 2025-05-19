@@ -2,8 +2,11 @@ package com.wilzwert.myjobs.core.application.usecase;
 
 import com.wilzwert.myjobs.core.domain.model.DownloadableFile;
 import com.wilzwert.myjobs.core.domain.model.activity.Activity;
+import com.wilzwert.myjobs.core.domain.model.activity.ActivityId;
 import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
 import com.wilzwert.myjobs.core.domain.model.activity.command.CreateActivityCommand;
+import com.wilzwert.myjobs.core.domain.model.activity.command.UpdateActivityCommand;
+import com.wilzwert.myjobs.core.domain.model.activity.exception.ActivityNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.attachment.AttachmentId;
 import com.wilzwert.myjobs.core.domain.model.attachment.command.CreateAttachmentCommand;
@@ -37,10 +40,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.File;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -75,6 +75,8 @@ class JobUseCaseImplTest {
                 .profile("job profile 1")
                 .status(JobStatus.PENDING)
                 .url("http://www.example.com/1")
+                .attachments(Collections.emptyList())
+                .activities(Collections.emptyList())
                 .statusUpdatedAt(Instant.now().minusSeconds(3600)).build();
         testFollowUpLateJob = Job.builder()
                 .id(JobId.generate())
@@ -85,6 +87,8 @@ class JobUseCaseImplTest {
                 .profile("job profile 2")
                 .status(JobStatus.PENDING)
                 .url("http://www.example.com/2")
+                .attachments(Collections.emptyList())
+                .activities(Collections.emptyList())
                 .statusUpdatedAt(Instant.now().minusSeconds(86400*31)).build();
 
         testUser = User.builder()
@@ -121,16 +125,14 @@ class JobUseCaseImplTest {
         reset(userService);
         when(userService.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
 
-        CreateJobCommand.Builder builder = new CreateJobCommand.Builder()
+        CreateJobCommand command = new CreateJobCommand.Builder()
                 .userId(UserId.generate())
                 .title("Job title")
                 .description("Job description")
                 .url("http://www.example.com/1")
-                .company("Company 3");
+                .company("Company 3").build();
 
-        assertThrows(JobAlreadyExistsException.class, () -> underTest.createJob(
-                builder.build()
-        ));
+        assertThrows(JobAlreadyExistsException.class, () -> underTest.createJob(command));
     }
 
     @Test
@@ -216,7 +218,8 @@ class JobUseCaseImplTest {
                     .profile("Job profile")
                     .status(JobStatus.PENDING)
                     .url("http://www.example.com/1")
-                    .attachments(new ArrayList<>(List.of(attachment)))
+                    .attachments(List.of(attachment))
+                    .activities(Collections.emptyList())
                     .statusUpdatedAt(Instant.now().minusSeconds(3600)).build();
         }
 
@@ -266,7 +269,10 @@ class JobUseCaseImplTest {
         void whenAttachmentNotFound_thenShouldThrowAttachmentNotFoundException() {
             reset(userService);
             when(jobService.findByIdAndUserId(any(), any())).thenReturn(Optional.of(testJob));
-            assertThrows(AttachmentNotFoundException.class, () -> underTest.downloadAttachment(new DownloadAttachmentCommand("nonexistent", testJob.getUserId(), testJob.getId())));
+
+            DownloadAttachmentCommand command = new DownloadAttachmentCommand("nonexistent", testJob.getUserId(), testJob.getId());
+
+            assertThrows(AttachmentNotFoundException.class, () -> underTest.downloadAttachment(command));
         }
 
         @Test
@@ -274,7 +280,9 @@ class JobUseCaseImplTest {
             reset(userService);
             when(jobService.findByIdAndUserId(any(), any())).thenReturn(Optional.of(testJobWithAttachment));
             when(fileStorage.retrieve(eq("notReadable"), eq("notReadable.doc"))).thenThrow(AttachmentFileNotReadableException.class);
-            assertThrows(AttachmentFileNotReadableException.class, () -> underTest.downloadAttachment(new DownloadAttachmentCommand(attachment.getId().value().toString(), testJobWithAttachment.getUserId(), testJobWithAttachment.getId())));
+            var command = new DownloadAttachmentCommand(attachment.getId().value().toString(), testJobWithAttachment.getUserId(), testJobWithAttachment.getId());
+
+            assertThrows(AttachmentFileNotReadableException.class, () -> underTest.downloadAttachment(command));
             verify(jobService).findByIdAndUserId(any(), any());
             verify(fileStorage).retrieve(eq("notReadable"), eq("notReadable.doc"));
         }
@@ -304,11 +312,112 @@ class JobUseCaseImplTest {
 
     @Nested
     class ActivityTest {
+
+        private Activity activity;
+
+        private Job testJobWithActivity;
+
+        @BeforeEach
+        void setUp() {
+            activity = Activity.builder()
+                    .id(ActivityId.generate())
+                    .type(ActivityType.APPLICATION)
+                    .createdAt(Instant.now().minusSeconds(86_400 * 7))
+                    .updatedAt(Instant.now().minusSeconds(86_400 * 4))
+                    .comment("activity comment")
+                    .build();
+            testJobWithActivity = Job.builder()
+                    .id(JobId.generate())
+                    .userId(UserId.generate())
+                    .title("With attachment")
+                    .company("Company")
+                    .description("Job description")
+                    .profile("Job profile")
+                    .status(JobStatus.PENDING)
+                    .url("http://www.example.com/1")
+                    .activities(List.of(activity))
+                    .attachments(Collections.emptyList())
+                    .statusUpdatedAt(Instant.now().minusSeconds(3600)).build();
+        }
+
+
         @Test
         void whenJobNotFound_thenShouldThrowJobNotFoundException() {
             reset(userService);
             when(jobService.findByIdAndUserId(any(), any())).thenReturn(Optional.empty());
-            assertThrows(JobNotFoundException.class, () -> underTest.addActivityToJob(new CreateActivityCommand(ActivityType.EMAIL, "comment", UserId.generate(), JobId.generate())));
+            var command = new CreateActivityCommand(ActivityType.EMAIL, "comment", UserId.generate(), JobId.generate());
+            assertThrows(JobNotFoundException.class, () -> underTest.addActivityToJob(command));
+        }
+
+        @Test
+        void shouldCreateActivity() {
+            ArgumentCaptor<Activity> activityArg = ArgumentCaptor.forClass(Activity.class);
+            ArgumentCaptor<Job> jobArg = ArgumentCaptor.forClass(Job.class);
+            Instant before = Instant.now();
+
+            reset(userService);
+            when(jobService.findByIdAndUserId(eq(testJobWithActivity.getId()), eq(testJobWithActivity.getUserId()))).thenReturn(Optional.of(this.testJobWithActivity));
+            when(jobService.saveJobAndActivity(jobArg.capture(), activityArg.capture())).thenAnswer((i) -> i.getArgument(0));
+
+            Activity result = underTest.addActivityToJob(new CreateActivityCommand(ActivityType.EMAIL, "new activity comment", testJobWithActivity.getUserId(), testJobWithActivity.getId()));
+
+            verify(jobService).findByIdAndUserId(eq(testJobWithActivity.getId()), eq(testJobWithActivity.getUserId()));
+            verify(jobService).saveJobAndActivity(jobArg.capture(), activityArg.capture());
+
+            assertNotEquals(activity.getId(), result.getId());
+            assertEquals(ActivityType.EMAIL, result.getType());
+            assertEquals("new activity comment", result.getComment());
+            assertTrue(result.getUpdatedAt().isAfter(before) || result.getUpdatedAt().equals(before));
+
+            Job updatedJob = jobArg.getValue();
+            assertNotNull(updatedJob);
+            updatedJob.getActivities().forEach(a -> System.out.println(a.getComment()));
+            assertEquals(2, updatedJob.getActivities().size());
+            // check activities ordre (most recent first)
+            assertEquals(result, updatedJob.getActivities().getFirst());
+            assertEquals(activity, updatedJob.getActivities().get(1));
+        }
+
+        @Test
+        void whenJobNotFound_thenUpdateActivityShouldThrowJobNotFoundException() {
+            reset(userService);
+            when(jobService.findByIdAndUserId(any(), any())).thenReturn(Optional.empty());
+            var command = new UpdateActivityCommand(activity.getId(), ActivityType.EMAIL, "comment", UserId.generate(), JobId.generate());
+            assertThrows(JobNotFoundException.class, () -> underTest.updateActivity(command));
+        }
+
+        @Test
+        void shouldUpdateActivity() {
+            ArgumentCaptor<Activity> activityArg = ArgumentCaptor.forClass(Activity.class);
+            ArgumentCaptor<Job> jobArg = ArgumentCaptor.forClass(Job.class);
+            Instant before = Instant.now();
+
+            reset(userService);
+            when(jobService.findByIdAndUserId(eq(testJobWithActivity.getId()), eq(testJobWithActivity.getUserId()))).thenReturn(Optional.of(this.testJobWithActivity));
+            when(jobService.saveJobAndActivity(jobArg.capture(), activityArg.capture())).thenAnswer((i) -> i.getArgument(0));
+
+            Activity result = underTest.updateActivity(new UpdateActivityCommand(activity.getId(), ActivityType.EMAIL, "activity comment edited", testJobWithActivity.getUserId(), testJobWithActivity.getId()));
+
+            verify(jobService).findByIdAndUserId(eq(testJobWithActivity.getId()), eq(testJobWithActivity.getUserId()));
+            verify(jobService).saveJobAndActivity(jobArg.capture(), activityArg.capture());
+
+            assertEquals(activity.getId(), result.getId());
+            assertEquals(ActivityType.EMAIL, result.getType());
+            assertEquals("activity comment edited", result.getComment());
+            assertTrue(result.getUpdatedAt().isAfter(before) || result.getUpdatedAt().equals(before));
+
+            Job updatedJob = jobArg.getValue();
+            assertNotNull(updatedJob);
+            assertEquals(1, updatedJob.getActivities().size());
+            assertEquals(result, updatedJob.getActivities().getFirst());
+        }
+
+        @Test
+        void whenActivityNotFound_thenShouldThrowActivityNotFoundException() {
+            reset(userService);
+            when(jobService.findByIdAndUserId(any(), any())).thenReturn(Optional.of(this.testJobWithActivity));
+            var command = new UpdateActivityCommand(ActivityId.generate(), ActivityType.EMAIL, "comment", UserId.generate(), JobId.generate());
+            assertThrows(ActivityNotFoundException.class, () -> underTest.updateActivity(command));
         }
     }
 }

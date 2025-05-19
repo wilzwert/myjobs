@@ -6,8 +6,8 @@ import java.time.Instant;
  * @author Wilhelm Zwertvaegher
  * Date:12/03/2025
  * Time:15:32
- * Partial view of a User (without jobs in our case)
- * Used for reads only to avoid loading all data when not necessary
+ * Partial view of a User with minimal info for presentation
+ * Use for reads only
  */
 public class UserView  {
 
@@ -52,7 +52,9 @@ public class UserView  {
 
         private Lang lang;
 
-        public Builder() {}
+        public Builder() {
+            // create empty builder, no default values as they must be provided by the infra
+        }
 
         public Builder email(String email) {
             this.email = email;
@@ -113,6 +115,8 @@ public class UserView  {
         this.lang = builder.lang;
         this.createdAt = builder.createdAt;
         this.jobFollowUpReminderSentAt = builder.jobFollowUpReminderSentAt;
+
+        // FIXME : building the UserView should trigger validation
     }
 
     public String getEmail() {

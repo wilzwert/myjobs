@@ -3,6 +3,7 @@ package com.wilzwert.myjobs.core.domain.shared.validation;
 
 import com.wilzwert.myjobs.core.domain.model.EntityId;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.Map;
 import java.util.function.BooleanSupplier;
@@ -36,6 +37,13 @@ public class Validator {
         return true;
     }
 
+    public Validator requireNotNull(String fieldName, Object fieldValue) {
+        if(null == fieldValue) {
+            validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_CANNOT_BE_NULL));
+        }
+        return this;
+    }
+
     public Validator requireNotEmpty(String fieldName, String fieldValue) {
         notEmpty(fieldName, fieldValue);
         return this;
@@ -60,7 +68,7 @@ public class Validator {
             // we want at least something like domain.com
             // we have to check it because toURL accepts http://localhost or similar URLS
             if(!fieldValue.contains(".")) {
-                throw new Exception();
+                throw new MalformedURLException();
             }
 
         } catch (Exception e) {

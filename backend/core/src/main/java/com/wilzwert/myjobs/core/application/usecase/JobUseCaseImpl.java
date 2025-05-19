@@ -5,6 +5,7 @@ import com.wilzwert.myjobs.core.domain.model.*;
 import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
 import com.wilzwert.myjobs.core.domain.model.activity.command.CreateActivityCommand;
+import com.wilzwert.myjobs.core.domain.model.activity.command.UpdateActivityCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.attachment.AttachmentId;
 import com.wilzwert.myjobs.core.domain.model.attachment.command.CreateAttachmentCommand;
@@ -44,7 +45,7 @@ import java.util.*;
  * Time:16:55
  */
 
-public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, UpdateJobUseCase, UpdateJobStatusUseCase, UpdateJobRatingUseCase, DeleteJobUseCase, GetUserJobsUseCase, AddActivityToJobUseCase, AddAttachmentToJobUseCase, DownloadAttachmentUseCase, DeleteAttachmentUseCase {
+public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, UpdateJobUseCase, UpdateJobStatusUseCase, UpdateJobRatingUseCase, DeleteJobUseCase, GetUserJobsUseCase, AddActivityToJobUseCase, UpdateActivityUseCase, AddAttachmentToJobUseCase, DownloadAttachmentUseCase, DeleteAttachmentUseCase {
 
     private final JobService jobService;
 
@@ -69,7 +70,8 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         if(user.isEmpty()) {
             throw new UserNotFoundException();
         }
-        Job jobToCreate = Job.builder()
+        Job jobToCreate = Job.create(
+                Job.builder()
                 .url(command.url())
                 .title(command.title())
                 .company(command.company())
@@ -77,7 +79,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
                 .profile(command.profile())
                 .salary(command.salary())
                 .userId(user.get().getId())
-                .build();
+        );
         Job job = user.get().addJob(jobToCreate);
         userService.saveUserAndJob(user.get(), job);
         return job;
@@ -197,6 +199,26 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
                 .build();
 
         job = job.addActivity(activity);
+
+        // FIXME
+        // this is an ugly workaround to force the infra (persistence in particular) to save all data
+        // as I understand DDD, only the aggregate should be explicitly persisted
+        // but I just don't how to do it cleanly for now
+        this.jobService.saveJobAndActivity(job, activity);
+        return activity;
+    }
+
+    @Override
+    public Activity updateActivity(UpdateActivityCommand command) {
+        Job job = jobService.findByIdAndUserId(command.jobId(), command.userId()).orElseThrow(JobNotFoundException::new);
+
+        Activity activity = Activity.builder()
+                .id(command.activityId())
+                .type(command.activityType())
+                .comment(command.comment())
+                .build();
+
+        job = job.updateActivity(activity);
 
         // FIXME
         // this is an ugly workaround to force the infra (persistence in particular) to save all data

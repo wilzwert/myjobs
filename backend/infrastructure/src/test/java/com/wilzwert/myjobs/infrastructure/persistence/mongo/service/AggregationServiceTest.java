@@ -60,7 +60,7 @@ class AggregationServiceTest {
         assertThat(operations.get(3)).isInstanceOf(LimitOperation.class);
 
         // TODO : check pipeline stages
-        // with operations.get(0).toPipelineStages(Aggregation.DEFAULT_CONTEXT);
+        // with see toPipelineStages with Aggregation.DEFAULT_CONTEXT
     }
 
     @Test
@@ -134,13 +134,6 @@ class AggregationServiceTest {
 
         List<AggregationOperation> operations = aggregation.getPipeline().getOperations();
         assertThat(operations).hasSize(12);
-        // TODO
-        /*assertThat(operations.get(0)).isInstanceOf(MatchOperation.class); // match user_id
-        assertThat(operations.get(1)).isInstanceOf(MatchOperation.class); // match And with subs In and Lt
-        assertThat(operations.get(1).getOperator()).isEqualTo("$match");
-        assertThat(operations.get(2)).isInstanceOf(SortOperation.class);
-        assertThat(operations.get(3)).isInstanceOf(SkipOperation.class);
-        assertThat(operations.get(4)).isInstanceOf(LimitOperation.class);
-        etc. */
+        // TODO check actual operations
     }
 }

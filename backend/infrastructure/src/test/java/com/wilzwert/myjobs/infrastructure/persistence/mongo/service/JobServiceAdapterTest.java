@@ -18,7 +18,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 
 import java.util.*;
@@ -163,7 +162,6 @@ public class JobServiceAdapterTest {
     @Test
     public void whenUserHasNoJob_thenShouldReturnDomainPageWithoutContent_withDefaultArgs() {
         UserId userId = UserId.generate();
-        Page<MongoJob> page = Page.empty();
         List<MongoJob> mongoJobs = new ArrayList<>();
         List<Job> jobList = Collections.emptyList();
         Aggregation aggregation = mock(Aggregation.class);

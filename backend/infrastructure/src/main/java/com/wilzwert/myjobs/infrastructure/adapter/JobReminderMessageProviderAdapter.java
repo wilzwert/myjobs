@@ -3,6 +3,7 @@ package com.wilzwert.myjobs.infrastructure.adapter;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.JobReminderMessageProvider;
+import com.wilzwert.myjobs.core.domain.shared.exception.MessageProviderException;
 import com.wilzwert.myjobs.infrastructure.mail.MailProvider;
 import org.springframework.stereotype.Component;
 
@@ -31,9 +32,8 @@ public class JobReminderMessageProviderAdapter implements JobReminderMessageProv
             message.setVariable("validationUrl", mailProvider.createUrl("uri.email_validation", message.getLocale(), user.getEmailValidationCode()));
             mailProvider.send(message);
         }
-        // TODO : improve exception handling
         catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new MessageProviderException();
         }
     }
 }

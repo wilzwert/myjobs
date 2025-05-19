@@ -5,7 +5,6 @@ import com.wilzwert.myjobs.core.domain.model.user.command.ChangePasswordCommand;
 import com.wilzwert.myjobs.core.domain.model.user.command.UpdateUserLangCommand;
 import com.wilzwert.myjobs.core.domain.model.user.command.ValidateEmailCommand;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.*;
-import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.UserMapper;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
@@ -41,11 +40,7 @@ public class UserController {
 
     private final UserMapper userMapper;
 
-    private final UserService userService;
-
-
-
-    public UserController(ValidateEmailUseCase validateEmailUseCase, ChangePasswordUseCase changePasswordUseCase, SendVerificationEmailUseCase sendVerificationEmailUseCase, GetUserViewUseCase getUserViewUseCase, UpdateUserUseCase updateUserUseCase, UpdateUserLangUseCase updateUserLangUseCase, DeleteAccountUseCase deleteAccountUseCase, UserMapper userMapper, UserService userService) {
+    public UserController(ValidateEmailUseCase validateEmailUseCase, ChangePasswordUseCase changePasswordUseCase, SendVerificationEmailUseCase sendVerificationEmailUseCase, GetUserViewUseCase getUserViewUseCase, UpdateUserUseCase updateUserUseCase, UpdateUserLangUseCase updateUserLangUseCase, DeleteAccountUseCase deleteAccountUseCase, UserMapper userMapper) {
         this.validateEmailUseCase = validateEmailUseCase;
         this.changePasswordUseCase = changePasswordUseCase;
         this.sendVerificationEmailUseCase = sendVerificationEmailUseCase;
@@ -54,7 +49,6 @@ public class UserController {
         this.updateUserLangUseCase = updateUserLangUseCase;
         this.deleteAccountUseCase = deleteAccountUseCase;
         this.userMapper = userMapper;
-        this.userService = userService;
     }
 
     @DeleteMapping

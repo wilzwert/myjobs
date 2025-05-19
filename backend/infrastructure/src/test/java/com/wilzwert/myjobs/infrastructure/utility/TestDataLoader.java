@@ -39,6 +39,7 @@ public class TestDataLoader {
         try (InputStream is = getClass().getResourceAsStream("/test-data/"+fileName)) {
             if (is != null) {
                 List<T> elements = objectMapper.readValue(is, objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));
+                elements.forEach(e -> System.out.println("Loading "+e));
                 repository.saveAll(elements);
                 log.info("✅ Test data loaded from {} (found {}", fileName, elements.size());
             } else {

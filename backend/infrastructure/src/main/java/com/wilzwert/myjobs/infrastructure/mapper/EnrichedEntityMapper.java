@@ -9,7 +9,7 @@ import java.util.List;
  * @author Wilhelm Zwertvaegher
  * Date:14/03/2025
  * Time:22:46
- X for the extended domain class
+ X for the enriched domain class
  */
 public interface EnrichedEntityMapper<D, E, R, C, A, U, S, X> extends EntityMapper<D, E, R, C, A, U, S> {
 

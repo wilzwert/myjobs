@@ -9,7 +9,6 @@ import com.wilzwert.myjobs.core.domain.model.job.exception.JobAlreadyExistsExcep
 import com.wilzwert.myjobs.core.domain.model.job.exception.JobNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.user.exception.ResetPasswordExpiredException;
 import com.wilzwert.myjobs.core.domain.model.user.exception.UserNotFoundException;
-import com.wilzwert.myjobs.core.domain.shared.exception.IncompleteAggregateException;
 import com.wilzwert.myjobs.core.domain.shared.exception.ValidationException;
 import com.wilzwert.myjobs.core.domain.shared.validation.*;
 
@@ -64,17 +63,17 @@ public class User extends DomainEntity<UserId> {
      * @param user the user we want to get a Builder from
      * @return the Builder
      */
-    private static Builder from(User user) {
+    public static Builder from(User user) {
         return new Builder(user, true);
     }
 
     /**
-     * Warning : this is used to get a Builder WITHOUT any of the properties that make the aggregate complete
+     * Warning : this is used to get a Builder allowing an incomplete aggregate
      * Use with great caution, as some methods on the aggregate won't work if it is not complete !
      * @param user the user we want to get a Builder from
      * @return the Builder
      */
-    private static Builder fromIncomplete(User user) {
+    public static Builder fromMinimal(User user) {
         return new Builder(user, false);
     }
 
@@ -101,7 +100,7 @@ public class User extends DomainEntity<UserId> {
 
         public Builder() {}
 
-        private Builder(User user, boolean complete) {
+        private Builder(User user, boolean full) {
             id = user.getId();
             email = user.getEmail();
             emailStatus = user.getEmailStatus();
@@ -118,10 +117,7 @@ public class User extends DomainEntity<UserId> {
             createdAt = user.getCreatedAt();
             updatedAt = user.getUpdatedAt();
             jobFollowUpReminderSentAt = user.getJobFollowUpReminderSentAt();
-
-            if(complete) {
-                jobs = user.getJobs();
-            }
+            jobs = full || user.jobs != null ? user.getJobs() : null;
         }
 
         public Builder id(UserId userId) {
@@ -258,6 +254,10 @@ public class User extends DomainEntity<UserId> {
         }
     }
 
+    private void requireFull() {
+        requireLoadedProperty(jobs);
+    }
+
     public static User create(User.Builder builder, String plainPassword) {
         ValidationErrors errors = new ValidationErrors();
         User createdUser = null;
@@ -281,12 +281,6 @@ public class User extends DomainEntity<UserId> {
         return createdUser;
     }
 
-    private void requireLoadedProperty(Object property) {
-        if(null == property) {
-            throw new IncompleteAggregateException();
-        }
-    }
-
     public User update(String email, String username, String firstName, String lastName, Integer jobFollowUpReminderDays) {
 
         // if email changed we have to change its status
@@ -296,7 +290,7 @@ public class User extends DomainEntity<UserId> {
         }
 
         return new User(
-                from(this)
+                fromMinimal(this)
                         .email(email)
                         .emailStatus(newEmailStatus)
                         .username(username)
@@ -308,7 +302,7 @@ public class User extends DomainEntity<UserId> {
     }
 
     public Job addJob(Job job) {
-        requireLoadedProperty(jobs);
+        requireFull();
 
         // check if job to be added already exists by its url
         jobs.stream().filter(j -> j.getUrl().equals(job.getUrl())).findAny().ifPresent(found -> {throw new JobAlreadyExistsException();});
@@ -320,7 +314,7 @@ public class User extends DomainEntity<UserId> {
     }
 
     public void removeJob(Job job) {
-        requireLoadedProperty(jobs);
+        requireFull();
 
         if(!jobs.contains(job)) {
             throw new JobNotFoundException();
@@ -340,7 +334,7 @@ public class User extends DomainEntity<UserId> {
         requireLoadedProperty(jobsList);
 
         return new User(
-            fromIncomplete(this)
+            fromMinimal(this)
                 .jobs(jobsList)
         );
     }
@@ -401,21 +395,21 @@ public class User extends DomainEntity<UserId> {
         }
 
         return new User(
-            fromIncomplete(this)
+            fromMinimal(this)
                 .emailStatus(getEmailStatus().equals(EmailStatus.PENDING) ? EmailStatus.VALIDATED : getEmailStatus())
         );
     }
 
     public User updateLang(Lang lang) {
         return new User(
-            fromIncomplete(this)
+            fromMinimal(this)
                 .lang(lang)
         );
     }
 
     public User saveJobFollowUpReminderSentAt() {
         return new User(
-            fromIncomplete(this)
+            fromMinimal(this)
                 .jobFollowUpReminderSentAt(Instant.now())
         );
     }

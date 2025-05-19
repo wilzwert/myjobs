@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.core.domain.model.job.exception;
 
 
-import com.wilzwert.myjobs.core.domain.shared.exception.EntityNotFoundException;
+import com.wilzwert.myjobs.core.domain.shared.exception.DomainException;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 
 /**
@@ -10,7 +10,7 @@ import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
  * Time:09:17
  */
 
-public class NoJobMetadataExtractorException extends EntityNotFoundException {
+public class NoJobMetadataExtractorException extends DomainException {
     public NoJobMetadataExtractorException() {
         super(ErrorCode.NO_METADATA_EXTRACTOR_FOUND);
     }

@@ -9,7 +9,7 @@ import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
  * Time:09:17
  */
 
-public class NoHtmlFetcherException extends EntityNotFoundException {
+public class NoHtmlFetcherException extends DomainException {
     public NoHtmlFetcherException() {
         super(ErrorCode.NO_HTML_FETCHER_FOUND);
     }

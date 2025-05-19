@@ -28,6 +28,10 @@ public class Activity extends DomainEntity<ActivityId> {
         return new Builder();
     }
 
+    public static Builder from(Activity activity) {
+        return new Builder(activity);
+    }
+
     public static class Builder {
         private ActivityId id;
 
