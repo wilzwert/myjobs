@@ -38,6 +38,16 @@ public class SendJobsRemindersUseCaseImpl implements SendJobsRemindersUseCase {
         this.jobReminderMessageProvider = jobReminderMessageProvider;
     }
 
+    /**
+     * This is the main logic for sending jobs reminders to a users/jobs chunk :
+     * - send a message by user through the JobReminderMessageProvider
+     * - save the jobs with their new followUpReminderSentAt through the JobService
+     * - save the users with their new jobFollowUpReminderSentAt through the UserService
+     * A reference to this method is passed to the batch collector
+     * This method could (should ?) be moved to a domain service, but for now it will do
+     * @param usersToJobs map of user -> jobs, the relevant users and jobs
+     * @return the results for this chunk
+     */
     private UsersJobsRemindersBatchResult doSend(Map<User, Set<Job>> usersToJobs) {
         List<String> errors = new ArrayList<>();
         Set<User> usersToSave = new HashSet<>();
@@ -46,7 +56,7 @@ public class SendJobsRemindersUseCaseImpl implements SendJobsRemindersUseCase {
             try {
                 jobReminderMessageProvider.send(entry.getKey(), entry.getValue());
                 usersToSave.add(entry.getKey());
-                // we have to map the jobs set because saveFollowUpReminderSentAt returns a new job
+                // we have to map the jobs Set because the saveFollowUpReminderSentAt method returns a copy of the Job
                 Set<Job> jobsToSave = entry.getValue().stream().map(Job::saveFollowUpReminderSentAt).collect(Collectors.toSet());
                 jobService.saveAll(jobsToSave);
             }
@@ -54,7 +64,7 @@ public class SendJobsRemindersUseCaseImpl implements SendJobsRemindersUseCase {
                 errors.add("An error occurred while sending reminders to "+entry.getKey()+": "+e.getMessage());
             }
         }
-        // we have to map the users set because saveJobFollowUpReminderSentAt returns a new user
+        // we have to map the users set because saveJobFollowUpReminderSentAt returns a copy of the User
         usersToSave = usersToSave.stream().map(User::saveJobFollowUpReminderSentAt).collect(Collectors.toSet());
         BulkServiceSaveResult serviceResult = null;
         if(!usersToSave.isEmpty()) {
@@ -64,6 +74,14 @@ public class SendJobsRemindersUseCaseImpl implements SendJobsRemindersUseCase {
         return new UsersJobsRemindersBatchResult(0, 0, errors, errors.size(), saveErrors);
     }
 
+    /**
+     *  The entrypoint to this use case
+     *  This method loads all the jobs that need reminders in a Stream, hen uses a custom collector which will iterate through
+     *  the stream, chunk it and load the users through the provided callback (userService.findMinimal...)
+     *  and finally use a reference to this::doSend to actually send the reminders and collect and return the results
+     * @param batchSize the chunk size passed by the infra ; as the infra knows what size can be handled
+     * @return a list of results the infra may or may not use
+     */
     @Override
     public List<UsersJobsRemindersBatchResult> sendJobsReminders(int batchSize) {
         // load jobs to remind...important : as UsersJobsBatchCollector expects Jobs to be pre-sorted by userId

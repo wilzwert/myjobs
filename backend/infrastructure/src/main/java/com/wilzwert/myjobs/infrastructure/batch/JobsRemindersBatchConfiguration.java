@@ -22,6 +22,10 @@ import java.util.List;
  * @author Wilhelm Zwertvaegher
  * Date:16/05/2025
  * Time:13:24
+ * Batch to send jobs reminders
+ * As an exercice, I decided to let the domain handle the chunking
+ * Therefore there is no ItemReader or ItemWriter
+ * The only responsibility of the infra is to provide a chunk size and log results
  */
 
 @Configuration
