@@ -1,145 +1,186 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { JobsComponent } from './jobs.component';
-import { JobService } from '../../../core/services/job.service';
-import { ModalService } from '../../../core/services/modal.service';
-import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
-import { NotificationService } from '../../../core/services/notification.service';
 import { of } from 'rxjs';
-import { ReactiveFormsModule } from '@angular/forms';
-import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { Page } from '../../../core/model/page.interface';
 import { Job, JobStatus } from '../../../core/model/job.interface';
-import { MatSelectChange } from '@angular/material/select';
-
 
 describe('JobsComponent', () => {
   let component: JobsComponent;
-  let fixture: ComponentFixture<JobsComponent>;
-  let jobServiceMock: any;
-  let modalServiceMock: any;
-  let confirmDialogServiceMock: any;
-  let notificationServiceMock: any;
 
-  beforeEach(async () => {
-    jobServiceMock = {
-      getCurrentPage: jest.fn().mockReturnValue(0),
-      getItemsPerPage: jest.fn().mockReturnValue(10),
-      getAllJobs: jest.fn().mockReturnValue(of({ content: [], totalElements: 0 })),
-      updateJobStatus: jest.fn().mockReturnValue(of({})),
-      updateJobRating: jest.fn().mockReturnValue(of({})),
-      deleteJob: jest.fn().mockReturnValue(of({})),
-      getJobMetadata: jest.fn().mockReturnValue(of({}))
-    };
+  // Mocks des services injectés
+  const jobServiceMock = {
+    getCurrentPage: jest.fn(),
+    getItemsPerPage: jest.fn(),
+    getAllJobs: jest.fn(),
+    updateJobStatus: jest.fn(),
+    updateJobRating: jest.fn(),
+    getJobMetadata: jest.fn(),
+    deleteJob: jest.fn(),
+  };
 
-    modalServiceMock = {
-      openJobModal: jest.fn(),
-      openJobStepperModal: jest.fn()
-    };
+  const userServiceMock = {
+    getUser: jest.fn(),
+  };
 
-    confirmDialogServiceMock = {
-      openConfirmDialog: jest.fn()
-    };
+  const modalServiceMock = {
+    openJobStepperModal: jest.fn(),
+    openJobModal: jest.fn(),
+  };
 
-    notificationServiceMock = {
-      confirmation: jest.fn()
-    };
+  const confirmDialogServiceMock = {
+    openConfirmDialog: jest.fn(),
+  };
 
-    await TestBed.configureTestingModule({
-      imports: [JobsComponent, ReactiveFormsModule, MatPaginatorModule],
-      providers: [
-        { provide: JobService, useValue: jobServiceMock },
-        { provide: ModalService, useValue: modalServiceMock },
-        { provide: ConfirmDialogService, useValue: confirmDialogServiceMock },
-        { provide: NotificationService, useValue: notificationServiceMock },
-      ]
-    }).compileComponents();
+  const notificationServiceMock = {
+    confirmation: jest.fn(),
+  };
 
-    fixture = TestBed.createComponent(JobsComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+  const fbMock = new (require('@angular/forms').FormBuilder)();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+
+    jobServiceMock.getCurrentPage.mockReturnValue(0);
+    jobServiceMock.getItemsPerPage.mockReturnValue(10);
+    jobServiceMock.getAllJobs.mockReturnValue(of({ content: [], totalElementsCount: 0, pagesCount: 0 } as unknown as Page<Job>));
+    userServiceMock.getUser.mockReturnValue(of({ id: 'user1', name: 'Test User' }));
+
+    component = new JobsComponent(
+      fbMock,
+      userServiceMock as any,
+      jobServiceMock as any,
+      modalServiceMock as any,
+      confirmDialogServiceMock as any,
+      notificationServiceMock as any,
+    );
+
+    component.ngOnInit();
   });
 
-  it('should create the component', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should initialize the urlForm and jobs$', () => {
+  it('should create form with url control', () => {
     expect(component.urlForm).toBeDefined();
-    expect(jobServiceMock.getAllJobs).toHaveBeenCalledWith(0, 10, null, 'createdAt,desc');
+    expect(component.urlForm?.contains('url')).toBe(true);
   });
 
-  it('should call setStatus and reload jobs', () => {
-    const spy = jest.spyOn(component, 'reloadJobs');
-    const event = { value: JobStatus.PENDING } as MatSelectChange;
-    component.setStatus(event);
-    expect(component.currentStatus).toBe(JobStatus.PENDING);
-    expect(spy).toHaveBeenCalled();
+  it('should load jobs on init', () => {
+    expect(jobServiceMock.getAllJobs).toHaveBeenCalledWith(0, 10, null, false, 'createdAt,desc');
   });
 
-  it('should update job status and show confirmation', () => {
-    const job = { id: '1' } as Job;
-    const event = { value: JobStatus.DONE } as MatSelectChange;
-    component.updateJobStatus(job, event);
-    expect(jobServiceMock.updateJobStatus).toHaveBeenCalledWith('1', { status: JobStatus.DONE });
-    expect(notificationServiceMock.confirmation).toHaveBeenCalled();
+  it('should set status filter and reload jobs', () => {
+    jobServiceMock.getAllJobs.mockClear();
+
+    component.setStatus({ value: 'OPEN' } as any);
+    expect(component.currentStatus).toBe('OPEN');
+    expect(component.filterLate).toBe(false);
+    expect(jobServiceMock.getAllJobs).toHaveBeenCalled();
+
+    component.setStatus({ value: 'filter-late' } as any);
+    expect(component.currentStatus).toBeNull();
+    expect(component.filterLate).toBe(true);
   });
 
-  it('should update job rating and show confirmation', () => {
-    const job = { id: '1' } as Job;
-    component.updateJobRating(job, 4.5);
-    expect(jobServiceMock.updateJobRating).toHaveBeenCalledWith('1', { rating: 4.5 });
-    expect(notificationServiceMock.confirmation).toHaveBeenCalled();
+  it('should update job status and show notification', done => {
+    jobServiceMock.updateJobStatus.mockReturnValue(of({ id: 'job1', status: JobStatus.RELAUNCHED }));
+
+    const job = { id: 'job1', status: JobStatus.PENDING } as Job;
+
+    component.updateJobStatus(job, { value: JobStatus.RELAUNCHED } as any);
+
+    setTimeout(() => {
+      expect(jobServiceMock.updateJobStatus).toHaveBeenCalledWith('job1', { status: JobStatus.RELAUNCHED } as any);
+      expect(notificationServiceMock.confirmation).toHaveBeenCalledWith(expect.stringContaining('Status updated successfully'));
+      done();
+    }, 0);
   });
 
-  it('should handle pagination event', () => {
-    const event = { pageIndex: 2, pageSize: 20 } as PageEvent;
-    component.handlePageEvent(event);
+  it('should update job rating and show notification', done => {
+    jobServiceMock.updateJobRating.mockReturnValue(of({ id: 'job1', rating: 4 }));
+
+    const job = { id: 'job1', rating: 3 } as unknown as Job;
+
+    component.updateJobRating(job, 4);
+
+    setTimeout(() => {
+      expect(jobServiceMock.updateJobRating).toHaveBeenCalledWith('job1', { rating: 4 });
+      expect(notificationServiceMock.confirmation).toHaveBeenCalledWith(expect.stringContaining('Rating updated successfully'));
+      done();
+    }, 0);
+  });
+
+  it('should handle page event and load jobs', () => {
+    jobServiceMock.getAllJobs.mockClear();
+
+    component.handlePageEvent({ pageIndex: 2, pageSize: 20 } as any);
+
     expect(component.currentPage).toBe(2);
     expect(component.currentPageSize).toBe(20);
-    expect(jobServiceMock.getAllJobs).toHaveBeenCalledWith(2, 20, null, 'createdAt,desc');
+    expect(jobServiceMock.getAllJobs).toHaveBeenCalledWith(2, 20, component.currentStatus, component.filterLate, component.currentSort);
   });
 
-  it('should reload jobs', () => {
+  it('should reload jobs resetting page to 0', () => {
+    jobServiceMock.getAllJobs.mockClear();
+
+    component.currentPage = 5;
+
     component.reloadJobs();
-    expect(jobServiceMock.getAllJobs).toHaveBeenCalledWith(0, 10, null, 'createdAt,desc');
+
+    expect(component.currentPage).toBe(0);
+    expect(jobServiceMock.getAllJobs).toHaveBeenCalledWith(0, component.currentPageSize, component.currentStatus, component.filterLate, component.currentSort);
   });
 
-  it('should create job with metadata', () => {
-    component.urlForm?.get('url')?.setValue('https://example.com');
+  it('should create job with metadata and open modal', done => {
+    const fakeMetadata = { title: 'Job from URL' } as any;
+    jobServiceMock.getJobMetadata.mockReturnValue(of(fakeMetadata));
+
+    component.urlForm?.controls['url'].setValue('https://example.com/job');
+
     component.createJobWithMetadata();
-    expect(jobServiceMock.getJobMetadata).toHaveBeenCalledWith('https://example.com');
-    expect(modalServiceMock.openJobStepperModal).toHaveBeenCalled();
+
+    setTimeout(() => {
+      expect(jobServiceMock.getJobMetadata).toHaveBeenCalledWith('https://example.com/job');
+      expect(modalServiceMock.openJobStepperModal).toHaveBeenCalledWith(expect.any(Function), { jobMetadata: fakeMetadata });
+      done();
+    }, 0);
   });
 
-  it('should create a job (without metadata)', () => {
+  it('should create job and open modal without metadata', () => {
     component.createJob();
-    expect(modalServiceMock.openJobStepperModal).toHaveBeenCalled();
+    expect(modalServiceMock.openJobStepperModal).toHaveBeenCalledWith(expect.any(Function));
   });
 
-  it('should edit job', () => {
-    const job = { id: '123' } as Job;
-    component.editJob(new Event('click'), job);
+  it('should edit job and open modal', () => {
+    const job = { id: 'job1' } as Job;
+    const event = { stopPropagation: jest.fn() } as any;
+
+    component.editJob(event, job);
+
     expect(modalServiceMock.openJobModal).toHaveBeenCalledWith('job', job, expect.any(Function));
   });
 
-  it('should delete job after confirmation', () => {
-    const job = { id: '1', title: 'Test Job' } as Job;
-    component.confirmDeleteJob(job);
-    expect(jobServiceMock.deleteJob).toHaveBeenCalledWith('1');
-    expect(notificationServiceMock.confirmation).toHaveBeenCalled();
-  });
+  it('should delete job after confirmation', done => {
+    const job = { id: 'job1', title: 'Job to delete' } as Job;
+    jobServiceMock.deleteJob.mockReturnValue(of(undefined));
 
-  it('should call confirm dialog before delete', () => {
-    const job = { id: '1', title: 'Test Job' } as Job;
+    // simulate confirm dialog callback immediately calls the confirmDeleteJob
+    confirmDialogServiceMock.openConfirmDialog.mockImplementation((msg, cb) => cb());
+
     component.deleteJob(job);
-    expect(confirmDialogServiceMock.openConfirmDialog).toHaveBeenCalled();
+
+    setTimeout(() => {
+      expect(confirmDialogServiceMock.openConfirmDialog).toHaveBeenCalledWith(expect.stringContaining(`Delete job "${job.title}"`), expect.any(Function));
+      expect(jobServiceMock.deleteJob).toHaveBeenCalledWith(job.id);
+      expect(notificationServiceMock.confirmation).toHaveBeenCalledWith(expect.stringContaining('Job successfully deleted'));
+      done();
+    }, 0);
   });
 
-  it('should open attachments modal without routing', () => {
-    const event = new Event('click');
-    jest.spyOn(event, 'stopPropagation');
-    const job = { id: '1' } as Job;
+  it('should open attachments modal and stop event propagation', () => {
+    const job = { id: 'job1' } as Job;
+    const event = { stopPropagation: jest.fn() } as any;
+
     component.manageAttachments(event, job);
+
     expect(event.stopPropagation).toHaveBeenCalled();
     expect(modalServiceMock.openJobModal).toHaveBeenCalledWith('attachments', job, expect.any(Function));
   });
+
 });

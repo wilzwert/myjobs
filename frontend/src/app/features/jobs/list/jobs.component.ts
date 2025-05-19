@@ -44,7 +44,7 @@ export class JobsComponent implements OnInit {
   public currentPageSize: number;
   public currentStatus: keyof typeof JobStatus | null = null;
   public currentSort: string = 'createdAt,desc';
-  private filterLate = false;
+  public filterLate = false;
 
   statusKeys: string[] = [];
 

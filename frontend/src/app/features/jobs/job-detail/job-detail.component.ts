@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JobService } from '../../../core/services/job.service';
-import { catchError, Observable, Subject, take, takeUntil, tap, throwError } from 'rxjs';
+import { catchError, EMPTY, Observable, Subject, take, takeUntil, tap, throwError } from 'rxjs';
 import { Job } from '../../../core/model/job.interface';
 import { Title } from '@angular/platform-browser';
 import { AsyncPipe, DatePipe } from '@angular/common';
@@ -42,10 +42,12 @@ export class JobDetailComponent implements OnInit, OnDestroy {
   ) {}
 
   private loadJob(jobId: string): void {
+    console.log('-------------------loadJob');
     this.job$ = this.jobService.getJobById(jobId).pipe(
       // set page title once the job  is available
-      tap((job: Job) =>{this.title.setTitle(`Job - ${job.title}`)}),
+      tap((job: Job) =>{console.log('-------------------setting Title'); this.title.setTitle(`Job - ${job.title}`)}),
       catchError((error: ApiError) => {
+        console.log('we got an erreor and should nav');
         this.router.navigate(["/jobs"]);
         return throwError(() => error);
       })
