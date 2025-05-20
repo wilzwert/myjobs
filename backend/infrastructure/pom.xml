@@ -11,6 +11,7 @@
     <groupId>com.wilzwert.myjobs.infrastructure</groupId>
     <artifactId>myjobs-infrastructure</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
     <name>MyJobsInfra</name>
     <description>MyJobsInfra</description>
     <url/>

@@ -21,6 +21,7 @@ spring:
             enable: ${MAIL_SMTP_STARTTLS:false}
   data:
     mongodb:
+
       host: ${MONGODB_HOST:localhost}
       port: ${MONGODB_PORT:27017}
       database: ${MONGODB_DATABASE:myjobs}
@@ -29,6 +30,8 @@ spring:
       auto-index-creation: true
       uuid-representation: standard
       replica-set-name: ${MONGODB_RS_NAME:rs0}
+      ssl:
+        enabled: false
   thymeleaf:
     encoding: UTF-8
 
