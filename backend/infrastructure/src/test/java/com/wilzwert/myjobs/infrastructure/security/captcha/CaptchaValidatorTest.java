@@ -7,9 +7,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -29,46 +33,86 @@ public class CaptchaValidatorTest {
 
     @BeforeEach
     public void setUp() {
-        underTest = new CaptchaValidator("secret", false, restTemplate);
+        underTest = new CaptchaValidator("siteKey", "apiKey", false, restTemplate);
     }
 
     @Test
     public void shouldReturnTrue_whenAlwaysTrue() {
-        underTest = new CaptchaValidator("secret", true, restTemplate);
+        underTest = new CaptchaValidator( "siteKey", "apiKey", true, restTemplate);
 
         assertTrue(underTest.validateCaptcha("response"));
-        verify(restTemplate, times(0)).postForObject(anyString(), any(), eq(CaptchaResponse.class));
+        verify(restTemplate, times(0)).postForObject(anyString(), any(), eq(AssessmentResponse.class));
     }
 
     @Test
     public void shouldReturnTrue_whenCaptchaIsValid() {
         ArgumentCaptor<Object> argument = ArgumentCaptor.forClass(Object.class);
-        when(restTemplate.postForObject(anyString(), argument.capture(), eq(CaptchaResponse.class))).thenReturn(new CaptchaResponse().setSuccess(true));
+        AssessmentResponse response = new AssessmentResponse();
+        AssessmentResponse.TokenProperties properties = new AssessmentResponse.TokenProperties();
+        properties.setValid(true);
+        response.setTokenProperties(properties);
+        when(restTemplate.postForEntity(anyString(), argument.capture(), eq(AssessmentResponse.class))).thenReturn(ResponseEntity.ok(response));
 
-        assertTrue(underTest.validateCaptcha("response"));
-        verify(restTemplate, times(1)).postForObject(anyString(), argument.capture(), eq(CaptchaResponse.class));
+        assertTrue(underTest.validateCaptcha("captchaResponse"));
+        verify(restTemplate, times(1)).postForEntity(anyString(), argument.capture(),  eq(AssessmentResponse.class));
         var value = argument.getValue();
-        assertInstanceOf(LinkedMultiValueMap.class, value);
+        assertInstanceOf(HashMap.class, value);
         @SuppressWarnings("unchecked")
-        LinkedMultiValueMap<String, String> map = (LinkedMultiValueMap<String, String>) value;
-        assertNotNull(map.get("secret"));
-        assertNotNull(map.get("response"));
+        HashMap<String, Map<String, Object>> map = (HashMap<String, Map<String, Object>>) value;
+        assertNotNull(map.get("event"));
+        assertThat(map.get("event").get("token")).isEqualTo("captchaResponse");
+        assertThat(map.get("event").get("siteKey")).isEqualTo("siteKey");
     }
 
     @Test
     public void shouldReturnFalse_whenCaptchaIsNotValid() {
         ArgumentCaptor<Object> argument = ArgumentCaptor.forClass(Object.class);
-        when(restTemplate.postForObject(anyString(), argument.capture(), eq(CaptchaResponse.class))).thenReturn(null);
+        AssessmentResponse response = new AssessmentResponse();
+        AssessmentResponse.TokenProperties properties = new AssessmentResponse.TokenProperties();
+        properties.setValid(false);
+        response.setTokenProperties(properties);
+        when(restTemplate.postForEntity(anyString(), argument.capture(), eq(AssessmentResponse.class))).thenReturn(ResponseEntity.ok(response));
 
-        assertFalse(underTest.validateCaptcha("response"));
-
-        verify(restTemplate, times(1)).postForObject(anyString(), argument.capture(), eq(CaptchaResponse.class));
+        assertFalse(underTest.validateCaptcha("captchaResponse"));
+        verify(restTemplate, times(1)).postForEntity(anyString(), argument.capture(),  eq(AssessmentResponse.class));
         var value = argument.getValue();
-        assertInstanceOf(LinkedMultiValueMap.class, value);
+        assertInstanceOf(HashMap.class, value);
         @SuppressWarnings("unchecked")
-        LinkedMultiValueMap<String, String> map = (LinkedMultiValueMap<String, String>) value;
-        assertNotNull(map.get("secret"));
-        assertNotNull(map.get("response"));
+        HashMap<String, Map<String, Object>> map = (HashMap<String, Map<String, Object>>) value;
+        assertNotNull(map.get("event"));
+        assertThat(map.get("event").get("token")).isEqualTo("captchaResponse");
+        assertThat(map.get("event").get("siteKey")).isEqualTo("siteKey");
     }
 
+    @Test
+    public void shouldReturnFalse_whenEmptyResponseFromRecaptchaApi() {
+        ArgumentCaptor<Object> argument = ArgumentCaptor.forClass(Object.class);
+        when(restTemplate.postForEntity(anyString(), argument.capture(), eq(AssessmentResponse.class))).thenReturn(ResponseEntity.ok(null));
+
+        assertFalse(underTest.validateCaptcha("captchaResponse"));
+        verify(restTemplate, times(1)).postForEntity(anyString(), argument.capture(),  eq(AssessmentResponse.class));
+        var value = argument.getValue();
+        assertInstanceOf(HashMap.class, value);
+        @SuppressWarnings("unchecked")
+        HashMap<String, Map<String, Object>> map = (HashMap<String, Map<String, Object>>) value;
+        assertNotNull(map.get("event"));
+        assertThat(map.get("event").get("token")).isEqualTo("captchaResponse");
+        assertThat(map.get("event").get("siteKey")).isEqualTo("siteKey");
+    }
+
+    @Test
+    public void shouldReturnFalse_whenResponseFromRecaptchaApiNotOk() {
+        ArgumentCaptor<Object> argument = ArgumentCaptor.forClass(Object.class);
+        when(restTemplate.postForEntity(anyString(), argument.capture(), eq(AssessmentResponse.class))).thenReturn(ResponseEntity.badRequest().build());
+
+        assertFalse(underTest.validateCaptcha("captchaResponse"));
+        verify(restTemplate, times(1)).postForEntity(anyString(), argument.capture(),  eq(AssessmentResponse.class));
+        var value = argument.getValue();
+        assertInstanceOf(HashMap.class, value);
+        @SuppressWarnings("unchecked")
+        HashMap<String, Map<String, Object>> map = (HashMap<String, Map<String, Object>>) value;
+        assertNotNull(map.get("event"));
+        assertThat(map.get("event").get("token")).isEqualTo("captchaResponse");
+        assertThat(map.get("event").get("siteKey")).isEqualTo("siteKey");
+    }
 }
