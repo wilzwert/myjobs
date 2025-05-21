@@ -295,11 +295,11 @@ class JobUseCaseImplTest {
             reset(userService);
             when(jobService.findByIdAndUserId(any(), any())).thenReturn(Optional.of(testJobWithAttachment));
             doNothing().when(fileStorage).delete(eq(attachment.getFileId()));
-            when(jobService.deleteAttachment(jobArg.capture(), eq(attachment), activityArg.capture())).thenAnswer((i) -> i.getArgument(0));
+            when(jobService.deleteAttachmentAndSaveJob(jobArg.capture(), eq(attachment), activityArg.capture())).thenAnswer((i) -> i.getArgument(0));
 
             underTest.deleteAttachment(new DeleteAttachmentCommand(attachment.getId(), testJobWithAttachment.getUserId(), testJobWithAttachment.getId()));
 
-            verify(jobService).deleteAttachment(jobArg.capture(), eq(attachment), activityArg.capture());
+            verify(jobService).deleteAttachmentAndSaveJob(jobArg.capture(), eq(attachment), activityArg.capture());
             verify(fileStorage).delete(eq(attachment.getFileId()));
 
             // check that an activity has been created, and has been passed to the jobservice

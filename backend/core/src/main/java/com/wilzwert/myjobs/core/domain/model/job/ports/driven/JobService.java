@@ -40,9 +40,21 @@ public interface JobService {
 
     Job saveJobAndAttachment(Job job, Attachment attachment, Activity activity);
 
+    /**
+     * Deletes the Job
+     * Important : all related entities MUST be deleted too
+     * @param job the Job to delete
+     */
     void delete(Job job);
 
-    Job deleteAttachment(Job job, Attachment attachment, Activity activity);
+    /**
+     *
+     * @param job the Job
+     * @param deletedAttachment the attachment that is being deleted
+     * @param createdActivity the activity created by the attachment deletion
+     * @return the Job
+     */
+    Job deleteAttachmentAndSaveJob(Job job, Attachment deletedAttachment, Activity createdActivity);
 
     BulkServiceSaveResult saveAll(Set<Job> job);
 }

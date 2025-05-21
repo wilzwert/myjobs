@@ -300,7 +300,7 @@ public class JobServiceAdapterTest {
     }
 
     @Test
-    public void shouldDeleteAttachment() {
+    public void shouldDeleteAttachmentAndSaveJob() {
         JobId jobId = JobId.generate();
         Job job = getValidTestJob(UserId.generate(), jobId);
         MongoJob mongoJob = new MongoJob().setId(jobId.value()).setTitle("title").setUrl("https://www.example.com");
@@ -311,7 +311,7 @@ public class JobServiceAdapterTest {
         when(mongoJobRepository.save(mongoJob)).thenReturn(mongoJob);
         when(jobMapper.toDomain(mongoJob)).thenReturn(job);
 
-        Job updateJob = underTest.deleteAttachment(job, attachment, activity);
+        Job updateJob = underTest.deleteAttachmentAndSaveJob(job, attachment, activity);
 
         verify(jobMapper, times(1)).toEntity(job);
         verify(mongoJobRepository, times(1)).save(mongoJob);

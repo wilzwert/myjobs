@@ -12,6 +12,7 @@ import { CreateJobActivityRequest } from '../model/create-job-activity-request.i
 import { UpdateJobStatusRequest } from '../model/update-job-status-request.interface';
 import { UpdateJobRatingRequest } from '../model/update-job-rating-request.interface';
 import { JobMetadata } from '../model/job-metadata.interface';
+import { SessionService } from './session.service';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +26,14 @@ export class JobService {
   private filterLate = false;
   private currentSort: string | null = null;
 
-  constructor(private dataService: DataService) { }
+  constructor(private dataService: DataService, private sessionService: SessionService) {
+    
+    this.sessionService.$isLogged().subscribe(l => {
+        // reset subject when user logged in status changes
+        console.log('i m cleaning myselfd');
+        this.jobsSubject.next(null);
+      });
+   }
 
   getCurrentPage() :number {
     return this.currentPage
@@ -41,6 +49,9 @@ export class JobService {
    * @returns the jobs
    */
   public getAllJobs(page: number, itemsPerPage: number, status: keyof typeof JobStatus | null = null, filterLate: boolean, sort: string): Observable<Page<Job>> {
+
+
+    // THIS code has been left as an "idea" to try and improve 
     return this.jobsSubject.pipe(
       switchMap((jobsPage: Page<Job> | null) => {
         if(jobsPage === null || page != this.currentPage || status != this.currentStatus || filterLate != this.filterLate || sort != this.currentSort) {
@@ -111,6 +122,7 @@ export class JobService {
         }
       }
     }
+
     if(existingJobIndex === -1) {
       this.jobsSubject.next(null);
     }

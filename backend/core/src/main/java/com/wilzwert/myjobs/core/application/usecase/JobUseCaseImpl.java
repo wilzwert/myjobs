@@ -100,9 +100,8 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         }
         Job job = foundJob.get();
 
+        // delete attachments' files
         job.getAttachments().forEach(attachment -> {
-            job.removeAttachment(attachment);
-            jobService.deleteAttachment(job, attachment, null);
             try {
                 fileStorage.delete(attachment.getFileId());
             }
@@ -328,7 +327,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         // this is an ugly workaround to force the infra (persistence in particular) to save all data
         // as I understand DDD, only the root aggregate should be explicitly persisted
         // but I just don't how to do it cleanly for now
-        jobService.deleteAttachment(job, attachment, activity);
+        jobService.deleteAttachmentAndSaveJob(job, attachment, activity);
         try {
             fileStorage.delete(attachment.getFileId());
         }

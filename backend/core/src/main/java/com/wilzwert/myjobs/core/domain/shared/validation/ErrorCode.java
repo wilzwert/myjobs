@@ -40,6 +40,7 @@ public enum ErrorCode {
     USER_LOGIN_FAILED,
     USER_PASSWORD_MATCH_FAILED,
     USER_PASSWORD_RESET_EXPIRED,
+    USER_DELETE_FAILED,
 
     // activity specific errors
     ACTIVITY_NOT_FOUND,
