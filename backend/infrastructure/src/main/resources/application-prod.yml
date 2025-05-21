@@ -3,19 +3,17 @@ security:
   cookie:
     secure: true
 
-
-logging:
-  level:
-    org:
-      springframework:
-        security: WARN
-        mail: WARN
-        data:
-          mongodb: DEBUG
-
 spring:
   data:
     mongodb:
-      uri: mongodb+srv://${MONGODB_USERNAME:mongouser}:${MONGODB_PASSWORD:mongopwd}@${MONGODB_HOST:localhost}:${MONGODB_PORT:27017}/${MONGODB_DATABASE:myjobs}?retryWrites=true&w=majority
+      uri: mongodb+srv://${MONGODB_USERNAME:mongouser}:${MONGODB_PASSWORD:mongopwd}@${MONGODB_HOST:localhost}/${MONGODB_DATABASE:myjobs}?retryWrites=true&w=majority
       ssl:
         enabled: true
+
+logging:
+  level:
+    software:
+      amazon:
+        awssdk:
+          services:
+            s3: ${LOG_LEVEL_STORAGE:WARN}
