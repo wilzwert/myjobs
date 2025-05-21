@@ -68,7 +68,7 @@ public class S3FileStorage implements FileStorage {
 
     @Override
     public DownloadableFile retrieve(String fileId, String originalFilename) {
-        throw new RuntimeException("Not implemented yet");
+        throw new UnsupportedOperationException("Not implemented yet");
         // TODO : locally store file in a tmp file, return a downloadablefile from this tmp file
     }
 
