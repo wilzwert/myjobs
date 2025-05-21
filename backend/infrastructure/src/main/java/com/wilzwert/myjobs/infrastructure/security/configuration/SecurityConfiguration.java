@@ -8,7 +8,6 @@ import com.wilzwert.myjobs.infrastructure.security.jwt.JwtAuthenticationFilter;
 import com.wilzwert.myjobs.infrastructure.security.jwt.JwtAuthenticator;
 import com.wilzwert.myjobs.infrastructure.security.ratelimit.RateLimitingFilter;
 import com.wilzwert.myjobs.infrastructure.security.service.CookieService;
-import com.wilzwert.myjobs.infrastructure.security.service.CustomUserDetailsService;
 import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
 import com.wilzwert.myjobs.infrastructure.security.service.RefreshTokenService;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,7 +37,7 @@ import java.util.List;
 @Configuration
 public class SecurityConfiguration {
 
-    private final CustomUserDetailsService userDetailsService;
+    private final UserDetailsService userDetailsService;
 
     private final JwtService jwtService;
 
@@ -50,7 +49,7 @@ public class SecurityConfiguration {
 
 
 
-    public SecurityConfiguration(CustomUserDetailsService userDetailsService, JwtService jwtService, RateLimitingFilter rateLimitingFilter, @Value("${application.frontend.url}") String frontendUrl, @Value("${security.cors.allow-all}") boolean corsAllowAll) {
+    public SecurityConfiguration(UserDetailsService userDetailsService, JwtService jwtService, RateLimitingFilter rateLimitingFilter, @Value("${application.frontend.url}") String frontendUrl, @Value("${security.cors.allow-all}") boolean corsAllowAll) {
         this.userDetailsService = userDetailsService;
         this.jwtService = jwtService;
         this.rateLimitingFilter = rateLimitingFilter;
@@ -123,17 +122,8 @@ public class SecurityConfiguration {
                 )
                 .exceptionHandling(exp -> exp.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 // insert our custom filter, which will authenticate user from token if provided in the request
-                .addFilterBefore(new JwtAuthenticationFilter(jwtService, userDetailsService(), cookieService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtService, userDetailsService, cookieService), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAfter(rateLimitingFilter, JwtAuthenticationFilter.class)
                 .build();
-    }
-
-    /**
-     * Provide our custom UserDetailsService to the security component
-     * @return UserDetailsService
-     */
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return userDetailsService;
     }
 }

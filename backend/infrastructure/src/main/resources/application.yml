@@ -19,6 +19,8 @@ spring:
           auth: ${MAIL_SMTP_AUTH:false}
           starttls:
             enable: ${MAIL_SMTP_STARTTLS:false}
+            require: ${MAIL_SMTP_STARTTLS:false}
+    test-connection: true
   data:
     mongodb:
 
@@ -60,6 +62,8 @@ logging:
     org.springframework.core.task: ${LOG_LEVEL_BATCH:WARN}
     org.springframework.security: ${LOG_LEVEL_SECURITY:WARN}
     org.springframework.mail: ${LOG_LEVEL_MAIL:WARN}
+
+    software.amazon.awssdk: ${LOG_LEVEL_AWS:WARN}
 
     com.wilzwert.myjobs.infrastructure.security: ${LOG_LEVEL_SECURITY:WARN}
     com.wilzwert.myjobs.infrastructure.batch: ${LOG_LEVEL_BATCH:WARN}

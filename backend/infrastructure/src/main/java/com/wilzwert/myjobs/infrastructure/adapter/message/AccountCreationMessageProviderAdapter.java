@@ -3,11 +3,8 @@ package com.wilzwert.myjobs.infrastructure.adapter.message;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.AccountCreationMessageProvider;
 import com.wilzwert.myjobs.infrastructure.mail.MailProvider;
-import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
-import java.io.UnsupportedEncodingException;
 
 @Component
 @Slf4j
@@ -23,7 +20,6 @@ public class AccountCreationMessageProviderAdapter implements AccountCreationMes
     public void send(User user) {
         try {
             var message = mailProvider.createMessage("mail/account_creation", user.getEmail(), user.getFirstName(), "email.account_creation.subject", user.getLang().toString());
-
             message.setVariable("url", mailProvider.createMeUrl(message.getLocale()));
             message.setVariable("firstName", user.getFirstName());
             message.setVariable("lastName", user.getLastName());
@@ -31,8 +27,7 @@ public class AccountCreationMessageProviderAdapter implements AccountCreationMes
             log.info("Sending account creation message: {}", user.getEmail());
             mailProvider.send(message);
         }
-        // TODO : improve exception handling
-        catch (MessagingException |UnsupportedEncodingException e) {
+        catch (Exception e) {
             log.info("Sending account creation message failed.", e);
             throw new RuntimeException(e);
         }

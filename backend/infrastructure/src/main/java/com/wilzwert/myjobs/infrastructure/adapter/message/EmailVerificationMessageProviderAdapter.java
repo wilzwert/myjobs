@@ -24,8 +24,10 @@ public class EmailVerificationMessageProviderAdapter implements EmailVerificatio
             message.setVariable("firstName", user.getFirstName());
             message.setVariable("lastName", user.getLastName());
             message.setVariable("validationUrl", mailProvider.createUrl("uri.email_validation", message.getLocale(), user.getEmailValidationCode()));
-            log.info("Sending email verification message: {}", user.getEmail());
+            log.debug("Sending email verification message : {}", user.getEmail());
+            log.debug("Class of mailProvider: {}", mailProvider.getClass());
             mailProvider.send(message);
+            log.debug("Email verification message should have been send");
         }
         // TODO : improve exception handling
         catch (Exception e) {

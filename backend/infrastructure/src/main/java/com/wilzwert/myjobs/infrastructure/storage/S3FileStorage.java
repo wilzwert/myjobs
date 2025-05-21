@@ -52,6 +52,7 @@ public class S3FileStorage implements FileStorage {
         }
         catch (Exception e) {
             log.error("Unable to put file to S3 Bucket {}", bucketName, e);
+            throw new RuntimeException("Failed to store file in S3 bucket", e);
         }
         // use the targetfilename as key and fileId
         return new DownloadableFile(targetFilename, targetFilename, getContentType(originalFilename), originalFilename);

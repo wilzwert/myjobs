@@ -191,6 +191,13 @@
             <version>8.10.1</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.fusesource.jansi</groupId>
+            <artifactId>jansi</artifactId>
+            <version>2.4.1</version>
+            <scope>runtime</scope>
+        </dependency>
+
 
         <!-- Optional Dependency for Development -->
         <dependency>

@@ -7,6 +7,7 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.core.io.ClassPathResource;
@@ -21,6 +22,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Locale;
 
 @Component
+@Slf4j
 public class MailProvider {
     private final JavaMailSender mailSender;
 
@@ -56,7 +58,6 @@ public class MailProvider {
         this.defaultLanguage = defaultLanguage;
     }
 
-    // TODO : improve exception handling with custom exceptions
     public CustomMailMessage createMessage(String template, String recipientMail, String recipientName, String subject, String lang)  {
         return new CustomMailMessage(template, recipientMail, recipientName, subject, (lang != null ? lang : defaultLanguage));
     }
@@ -120,7 +121,7 @@ public class MailProvider {
             multipart.addBodyPart(imgPart);
         }
         catch (IOException e) {
-            // TODO ?
+            log.error("Unable to load logo_email.png", e);
         }
 
         message.setContent(multipart);
@@ -129,10 +130,21 @@ public class MailProvider {
 
     // TODO : improve exception handling with custom exceptions
     @Async
-    public void send(CustomMailMessage messageToSend) throws MessagingException, UnsupportedEncodingException {
-        Context context = new Context(messageToSend.getLocale());
-        messageToSend.getVariables().forEach(context::setVariable);
-        String htmlContent = templateEngine.process(messageToSend.getTemplate(), context);
-        mailSender.send(createMimeMessage(messageToSend, messageToSend.getLocale(), htmlContent));
+    public void send(CustomMailMessage messageToSend) {
+        try {
+            log.debug("MailProvider : begin sending message");
+            Context context = new Context(messageToSend.getLocale());
+            messageToSend.getVariables().forEach(context::setVariable);
+            String htmlContent = templateEngine.process(messageToSend.getTemplate(), context);
+            log.debug("Creating Mime Message to send");
+            MimeMessage mimeMessage = createMimeMessage(messageToSend, messageToSend.getLocale(), htmlContent);
+            log.debug("Passing the mimeMessage to the mail sender");
+            mailSender.send(mimeMessage);
+            log.debug("Mail should have been sent");
+        }
+        catch (MessagingException | UnsupportedEncodingException e) {
+            log.error("Unable to send message", e);
+            throw new RuntimeException(e);
+        }
     }
 }

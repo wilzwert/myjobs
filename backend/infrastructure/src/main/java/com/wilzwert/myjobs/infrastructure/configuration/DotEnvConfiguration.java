@@ -49,7 +49,6 @@ public class DotEnvConfiguration implements EnvironmentPostProcessor {
         String overridePath = props.getProperty(DOT_ENV_PATH_KEY);
 
         if (overridePath != null && !overridePath.isBlank()) {
-            System.out.println("Override path: " + overridePath);
             loadEnvFile(new File(overridePath), environment, "DOT_ENV_PATH");
         } else {
             loadEnvFile(envFile, environment, "local .env");
@@ -59,6 +58,5 @@ public class DotEnvConfiguration implements EnvironmentPostProcessor {
     private void loadEnvFile(File file, ConfigurableEnvironment environment, String origin) throws IOException {
         ResourcePropertySource source = new ResourcePropertySource(new FileSystemResource(file));
         environment.getPropertySources().addLast(source);
-        System.out.println("✅ Loaded " + origin + ": " + file.getAbsolutePath());
     }
 }
