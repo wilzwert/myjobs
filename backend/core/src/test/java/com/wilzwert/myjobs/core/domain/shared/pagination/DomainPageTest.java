@@ -1,6 +1,5 @@
-package com.wilzwert.myjobs.core.domain.model.pagination;
+package com.wilzwert.myjobs.core.domain.shared.pagination;
 
-import com.wilzwert.myjobs.core.domain.shared.pagination.DomainPage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
