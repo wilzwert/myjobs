@@ -25,6 +25,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.Instant;
 import java.util.*;
 
 @Data
@@ -36,7 +37,7 @@ public class ErrorResponse {
     private String status;
     private String message;
     private Map<String, List<ValidationErrorResponse>> errors;
-    private String time;
+    private long timestamp;
 
     public static <E extends EntityAlreadyExistsException>  ErrorResponse fromException(E ex) {
         return build(HttpStatus.CONFLICT, ex.getErrorCode().name());
@@ -68,7 +69,7 @@ public class ErrorResponse {
         Map<String, List<ValidationErrorResponse>> errors = new HashMap<>();
 
         for(FieldError fieldError : fieldErrors){
-            errors.computeIfAbsent(fieldError.getField(), k -> new ArrayList<>()).add(new ValidationErrorResponse(fieldError.getDefaultMessage()));
+            errors.computeIfAbsent(fieldError.getField(), k -> new ArrayList<>()).add(new ValidationErrorResponse(fieldError.getDefaultMessage() != null ? fieldError.getDefaultMessage() : ErrorCode.UNEXPECTED_ERROR.name()));
         }
         return build(ex.getStatusCode(), ErrorCode.VALIDATION_FAILED.name(), errors);
     }
@@ -132,12 +133,10 @@ public class ErrorResponse {
     }
 
     private static ErrorResponse build(HttpStatusCode status, String message) {
-        return new ErrorResponse(status, String.valueOf(status.value()), message, Collections.emptyMap(), new Date().toString());
+        return new ErrorResponse(status, String.valueOf(status.value()), message, Collections.emptyMap(), Instant.now().toEpochMilli());
     }
 
     private static ErrorResponse build(HttpStatusCode status, String message, Map<String, List<ValidationErrorResponse>> errors) {
-        return new ErrorResponse(status, String.valueOf(status.value()), message, errors, new Date().toString());
+        return new ErrorResponse(status, String.valueOf(status.value()), message, errors, Instant.now().toEpochMilli());
     }
-
-
 }

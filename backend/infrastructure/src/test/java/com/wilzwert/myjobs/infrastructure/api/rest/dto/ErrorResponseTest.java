@@ -29,7 +29,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
+import java.time.Instant;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -57,6 +57,12 @@ public class ErrorResponseTest {
         }
     }
 
+    private void assertTimestampCloseToNow(long timestamp) {
+        long diff = Instant.now().toEpochMilli() - timestamp;
+        assertTrue(Math.abs(diff) < 300,
+                "Timestamp is not within " + 300 + "ms of now");
+    }
+
 
     @Test
     public void whenException_thenShouldBuildErrorResponse() {
@@ -64,7 +70,7 @@ public class ErrorResponseTest {
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getHttpStatusCode());
         assertEquals("500", response.getStatus());
         assertEquals(ErrorCode.UNEXPECTED_ERROR.name(), response.getMessage());
-        assertEquals(new Date().toString(), response.getTime());
+        assertTimestampCloseToNow(response.getTimestamp());
     }
 
     @Test
@@ -73,7 +79,7 @@ public class ErrorResponseTest {
         assertEquals(HttpStatus.CONFLICT, response.getHttpStatusCode());
         assertEquals("409", response.getStatus());
         assertEquals("USER_ALREADY_EXISTS", response.getMessage());
-        assertEquals(new Date().toString(), response.getTime());
+        assertTimestampCloseToNow(response.getTimestamp());
     }
 
     @Test
@@ -82,7 +88,7 @@ public class ErrorResponseTest {
         assertEquals(HttpStatus.NOT_FOUND, response.getHttpStatusCode());
         assertEquals("404", response.getStatus());
         assertEquals("USER_NOT_FOUND", response.getMessage());
-        assertEquals(new Date().toString(), response.getTime());
+        assertTimestampCloseToNow(response.getTimestamp());
     }
 
     @Test
@@ -91,7 +97,7 @@ public class ErrorResponseTest {
         assertEquals(HttpStatus.UNSUPPORTED_MEDIA_TYPE, response.getHttpStatusCode());
         assertEquals("415", response.getStatus());
         assertEquals("unsupported", response.getMessage());
-        assertEquals(new Date().toString(), response.getTime());
+        assertTimestampCloseToNow(response.getTimestamp());
     }
 
     @Test
@@ -119,7 +125,7 @@ public class ErrorResponseTest {
             assertEquals(ErrorCode.VALIDATION_FAILED.name(), response.getMessage());
             assertEquals(1, response.getErrors().size());
             assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY.name(), response.getErrors().get("id").getFirst().getCode());
-            assertEquals(new Date().toString(), response.getTime());
+            assertTimestampCloseToNow(response.getTimestamp());
         }
         catch (NoSuchMethodException ex) {
             fail("Unexpected NoSuchMethodException: " + ex.getMessage());
@@ -132,7 +138,7 @@ public class ErrorResponseTest {
         assertEquals(HttpStatus.UNAUTHORIZED, response.getHttpStatusCode());
         assertEquals("401", response.getStatus());
         assertEquals("Access denied", response.getMessage());
-        assertEquals(new Date().toString(), response.getTime());
+        assertTimestampCloseToNow(response.getTimestamp());
     }
 
     @Test
@@ -141,7 +147,7 @@ public class ErrorResponseTest {
         assertEquals(HttpStatus.UNAUTHORIZED, response.getHttpStatusCode());
         assertEquals("401", response.getStatus());
         assertEquals("Access denied", response.getMessage());
-        assertEquals(new Date().toString(), response.getTime());
+        assertTimestampCloseToNow(response.getTimestamp());
     }
 
     @Test
@@ -150,7 +156,7 @@ public class ErrorResponseTest {
         assertEquals(HttpStatus.METHOD_NOT_ALLOWED, response.getHttpStatusCode());
         assertEquals("405", response.getStatus());
         assertEquals("Unsupported method", response.getMessage());
-        assertEquals(new Date().toString(), response.getTime());
+        assertTimestampCloseToNow(response.getTimestamp());
     }
 
     @Test
@@ -159,7 +165,7 @@ public class ErrorResponseTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatusCode());
         assertEquals("400", response.getStatus());
         assertEquals("some message", response.getMessage());
-        assertEquals(new Date().toString(), response.getTime());
+        assertTimestampCloseToNow(response.getTimestamp());
     }
 
     @Test
@@ -168,7 +174,7 @@ public class ErrorResponseTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatusCode());
         assertEquals("400", response.getStatus());
         assertEquals("some message", response.getMessage());
-        assertEquals(new Date().toString(), response.getTime());
+        assertTimestampCloseToNow(response.getTimestamp());
     }
 
     @Test
@@ -177,7 +183,7 @@ public class ErrorResponseTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatusCode());
         assertEquals("400", response.getStatus());
         assertEquals("cannot read", response.getMessage());
-        assertEquals(new Date().toString(), response.getTime());
+        assertTimestampCloseToNow(response.getTimestamp());
     }
 
     @Test
@@ -186,7 +192,7 @@ public class ErrorResponseTest {
         assertEquals(HttpStatus.UNSUPPORTED_MEDIA_TYPE, response.getHttpStatusCode());
         assertEquals("415", response.getStatus());
         assertEquals("unsupported media type", response.getMessage());
-        assertEquals(new Date().toString(), response.getTime());
+        assertTimestampCloseToNow(response.getTimestamp());
     }
 
     @Test
@@ -195,7 +201,7 @@ public class ErrorResponseTest {
         assertEquals(HttpStatus.UNAUTHORIZED, response.getHttpStatusCode());
         assertEquals("401", response.getStatus());
         assertEquals("401 Client error", response.getMessage());
-        assertEquals(new Date().toString(), response.getTime());
+        assertTimestampCloseToNow(response.getTimestamp());
     }
 
     @Test
@@ -204,7 +210,7 @@ public class ErrorResponseTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatusCode());
         assertEquals("400", response.getStatus());
         assertEquals("USER_PASSWORD_MATCH_FAILED", response.getMessage());
-        assertEquals(new Date().toString(), response.getTime());
+        assertTimestampCloseToNow(response.getTimestamp());
     }
 
     @Test
@@ -217,6 +223,6 @@ public class ErrorResponseTest {
         assertEquals(1, response.getErrors().size());
         assertEquals(1, response.getErrors().get("param").size());
         assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY.name(), response.getErrors().get("param").getFirst().getCode());
-        assertEquals(new Date().toString(), response.getTime());
+        assertTimestampCloseToNow(response.getTimestamp());
     }
 }
