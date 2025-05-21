@@ -2,6 +2,7 @@ package com.wilzwert.myjobs.infrastructure.adapter;
 
 
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.fetcher.StaticHtmlFetcher;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.jsoup.Jsoup;
 import org.jsoup.Connection;
@@ -17,6 +18,7 @@ import java.util.Optional;
  * Time:13:19
  */
 @Component
+@Slf4j
 public class StaticHtmlFetcherAdapter implements StaticHtmlFetcher {
     // FIXME : this is not a very clean way of setting headers
     private static final Map<String, String> HEADERS = Map.of(
@@ -37,6 +39,8 @@ public class StaticHtmlFetcherAdapter implements StaticHtmlFetcher {
 
     @Override
     public Optional<String> fetchHtml(String url) {
+        log.info("Fetching HTML from {}", url);
+
         try {
             Connection connection = Jsoup
                     .connect(url)
@@ -45,12 +49,13 @@ public class StaticHtmlFetcherAdapter implements StaticHtmlFetcher {
 
             HEADERS.forEach(connection::header);
             OTHER_HEADERS.forEach(connection::header);
-
             Document document = connection
                     .get();
+            log.info("got html {}", document.html());
             return Optional.of(document.html());
         }
         catch (IOException e) {
+            log.error(e.getMessage(), e);
             return Optional.empty();
         }
     }
