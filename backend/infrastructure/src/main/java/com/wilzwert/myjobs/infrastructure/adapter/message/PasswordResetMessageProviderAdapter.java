@@ -1,4 +1,4 @@
-package com.wilzwert.myjobs.infrastructure.adapter;
+package com.wilzwert.myjobs.infrastructure.adapter.message;
 
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.PasswordResetMessageProvider;
