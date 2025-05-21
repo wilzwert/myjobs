@@ -1,6 +1,6 @@
 name: Frontend CI - Tests and analysis
 concurrency:
-  group: ${{ github.ref }}.frontend
+  group: ${{ github.ref }}.ci
   cancel-in-progress: true
 on:
   # CI should be able to run manually
