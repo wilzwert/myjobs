@@ -23,7 +23,7 @@ import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
-import com.wilzwert.myjobs.core.domain.model.pagination.DomainPage;
+import com.wilzwert.myjobs.core.domain.shared.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
@@ -371,9 +371,8 @@ class JobUseCaseImplTest {
 
             Job updatedJob = jobArg.getValue();
             assertNotNull(updatedJob);
-            updatedJob.getActivities().forEach(a -> System.out.println(a.getComment()));
             assertEquals(2, updatedJob.getActivities().size());
-            // check activities ordre (most recent first)
+            // check activities order (most recent first)
             assertEquals(result, updatedJob.getActivities().getFirst());
             assertEquals(activity, updatedJob.getActivities().get(1));
         }

@@ -3,7 +3,7 @@ package com.wilzwert.myjobs.core.domain.model.job.service;
 import com.wilzwert.myjobs.core.domain.model.job.EnrichedJob;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
-import com.wilzwert.myjobs.core.domain.model.pagination.DomainPage;
+import com.wilzwert.myjobs.core.domain.shared.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 
 import java.time.Instant;

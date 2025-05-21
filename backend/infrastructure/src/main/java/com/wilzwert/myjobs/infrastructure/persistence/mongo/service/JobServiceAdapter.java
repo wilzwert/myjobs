@@ -6,7 +6,7 @@ import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
-import com.wilzwert.myjobs.core.domain.model.pagination.DomainPage;
+import com.wilzwert.myjobs.core.domain.shared.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
 import com.wilzwert.myjobs.core.domain.shared.bulk.BulkServiceSaveResult;

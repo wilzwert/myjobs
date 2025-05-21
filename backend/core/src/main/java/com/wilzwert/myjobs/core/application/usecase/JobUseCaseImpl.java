@@ -22,7 +22,7 @@ import com.wilzwert.myjobs.core.domain.model.job.exception.JobAlreadyExistsExcep
 import com.wilzwert.myjobs.core.domain.model.job.exception.JobNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driving.*;
-import com.wilzwert.myjobs.core.domain.model.pagination.DomainPage;
+import com.wilzwert.myjobs.core.domain.shared.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.user.exception.UserNotFoundException;
@@ -98,7 +98,6 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         if(foundJob.isEmpty()) {
             throw new JobNotFoundException();
         }
-
         Job job = foundJob.get();
 
         job.getAttachments().forEach(attachment -> {

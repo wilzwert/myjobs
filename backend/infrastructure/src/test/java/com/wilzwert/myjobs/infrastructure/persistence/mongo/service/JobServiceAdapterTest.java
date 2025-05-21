@@ -7,7 +7,7 @@ import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
-import com.wilzwert.myjobs.core.domain.model.pagination.DomainPage;
+import com.wilzwert.myjobs.core.domain.shared.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoJob;

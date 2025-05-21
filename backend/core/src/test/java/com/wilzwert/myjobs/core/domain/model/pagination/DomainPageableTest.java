@@ -1,6 +1,7 @@
 package com.wilzwert.myjobs.core.domain.model.pagination;
 
 import com.wilzwert.myjobs.core.domain.shared.exception.PaginationException;
+import com.wilzwert.myjobs.core.domain.shared.pagination.DomainPageable;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import org.junit.jupiter.api.Test;
 

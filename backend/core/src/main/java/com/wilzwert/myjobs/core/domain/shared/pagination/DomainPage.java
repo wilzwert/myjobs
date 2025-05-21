@@ -1,4 +1,4 @@
-package com.wilzwert.myjobs.core.domain.model.pagination;
+package com.wilzwert.myjobs.core.domain.shared.pagination;
 
 
 import java.util.Collections;
