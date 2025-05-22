@@ -4,12 +4,11 @@ import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.attachment.AttachmentId;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
-import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.user.exception.UserDeleteException;
 import com.wilzwert.myjobs.core.domain.model.user.exception.UserNotFoundException;
-import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.DeleteAccountUseCase;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
 
@@ -25,8 +24,7 @@ import static org.mockito.Mockito.*;
 
 class DeleteAccountUseCaseImplTest {
 
-    private UserService userService;
-    private JobService jobService;
+    private UserDataManager userDataManager;
     private FileStorage fileStorage;
     private DeleteAccountUseCase useCase;
 
@@ -57,45 +55,44 @@ class DeleteAccountUseCaseImplTest {
             .jobs(List.of(job)).build();
     @BeforeEach
     void setUp() {
-        userService = mock(UserService.class);
-        jobService = mock(JobService.class);
+        userDataManager = mock(UserDataManager.class);
         fileStorage = mock(FileStorage.class);
-        useCase = new DeleteAccountUseCaseImpl(userService, jobService, fileStorage);
+        useCase = new DeleteAccountUseCaseImpl(userDataManager, fileStorage);
     }
 
     @Test
     void shouldDeleteUserAndAllAttachmentsSuccessfully() {
         // given
-        when(userService.findById(userId)).thenReturn(Optional.of(user));
+        when(userDataManager.findById(userId)).thenReturn(Optional.of(user));
 
         // when
         useCase.deleteAccount(userId);
 
         // then
         verify(fileStorage).delete(attachment.getFileId());
-        verify(userService).deleteUser(user);
+        verify(userDataManager).deleteUser(user);
     }
 
     @Test
     void shouldThrowUserDeleteExceptionWhenFileDeletionFails() {
-        when(userService.findById(userId)).thenReturn(Optional.of(user));
+        when(userDataManager.findById(userId)).thenReturn(Optional.of(user));
         doThrow(new RuntimeException("S3 failure")).when(fileStorage).delete("fileId");
 
         // when / then
         assertThrows(UserDeleteException.class, () -> useCase.deleteAccount(userId));
         verify(fileStorage).delete("fileId");
-        verify(userService, never()).deleteUser(user);
+        verify(userDataManager, never()).deleteUser(user);
     }
 
     @Test
     void shouldThrowUserNotFoundExceptionWhenUserNotFound() {
         // given
-        when(userService.findById(userId)).thenReturn(Optional.empty());
+        when(userDataManager.findById(userId)).thenReturn(Optional.empty());
 
         // when / then
         assertThrows(UserNotFoundException.class, () -> useCase.deleteAccount(userId));
 
         verifyNoInteractions(fileStorage);
-        verify(userService, never()).deleteUser(any());
+        verify(userDataManager, never()).deleteUser(any());
     }
 }

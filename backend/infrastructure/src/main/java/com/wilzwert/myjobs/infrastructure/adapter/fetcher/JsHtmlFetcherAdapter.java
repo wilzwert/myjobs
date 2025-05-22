@@ -1,4 +1,4 @@
-package com.wilzwert.myjobs.infrastructure.adapter;
+package com.wilzwert.myjobs.infrastructure.adapter.fetcher;
 
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.fetcher.JsHtmlFetcher;
 import org.springframework.stereotype.Component;

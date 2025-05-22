@@ -2,7 +2,7 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wilzwert.myjobs.core.domain.model.user.User;
-import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.NewPasswordRequest;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.ResetPasswordRequest;
@@ -32,7 +32,7 @@ public class PasswordControllerIT extends AbstractBaseIntegrationTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private UserService userService;
+    private UserDataManager userDataManager;
 
     @Nested
     class PasswordControllerResetPasswordIT {
@@ -58,7 +58,7 @@ public class PasswordControllerIT extends AbstractBaseIntegrationTest {
             mockMvc.perform(post(RESET_PASSWORD_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(resetPasswordRequest)))
                     .andExpect(status().isOk());
 
-            Optional<User> foundUser = userService.findByEmail("changepassword@example.com");
+            Optional<User> foundUser = userDataManager.findByEmail("changepassword@example.com");
             if(foundUser.isEmpty()) {
                 fail("User should be retrievable");
             }

@@ -1,12 +1,7 @@
 package com.wilzwert.myjobs.core.domain.shared.batch;
 
 
-import com.wilzwert.myjobs.core.domain.model.user.User;
-import com.wilzwert.myjobs.core.domain.shared.bulk.BulkServiceSaveResult;
-
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * @author Wilhelm Zwertvaegher

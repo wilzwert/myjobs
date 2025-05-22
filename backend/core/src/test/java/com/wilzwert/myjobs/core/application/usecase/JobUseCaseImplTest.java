@@ -22,11 +22,11 @@ import com.wilzwert.myjobs.core.domain.model.job.EnrichedJob;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
-import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobDataManager;
 import com.wilzwert.myjobs.core.domain.shared.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
-import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.HtmlSanitizer;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
@@ -49,9 +49,9 @@ import static org.mockito.Mockito.*;
 class JobUseCaseImplTest {
 
     @Mock
-    private JobService jobService;
+    private JobDataManager jobDataManager;
     @Mock
-    private UserService userService;
+    private UserDataManager userDataManager;
     @Mock
     private FileStorage fileStorage;
     @Mock
@@ -104,16 +104,16 @@ class JobUseCaseImplTest {
                     testFollowUpLateJob
                 )).build();
 
-        // Mock de l'UserService
-        when(userService.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+        // Mock de l'UserDataManager
+        when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
 
-        underTest = new JobUseCaseImpl(jobService, userService, fileStorage, htmlSanitizer);
+        underTest = new JobUseCaseImpl(jobDataManager, userDataManager, fileStorage, htmlSanitizer);
     }
 
     @Test
     void whenUserNotFound_thenGetUserJobs_shouldThrowUserNotFoundException() {
-        reset(userService);
-        when(userService.findById(any(UserId.class))).thenReturn(Optional.empty());
+        reset(userDataManager);
+        when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.empty());
 
         UserId userId = new UserId(UUID.randomUUID());
 
@@ -122,8 +122,8 @@ class JobUseCaseImplTest {
 
     @Test
     void whenCreateAndJobExists_thenCreateJob_shouldThrowJobAlreadyExistsException() {
-        reset(userService);
-        when(userService.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+        reset(userDataManager);
+        when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
 
         CreateJobCommand command = new CreateJobCommand.Builder()
                 .userId(UserId.generate())
@@ -139,12 +139,12 @@ class JobUseCaseImplTest {
     void whenFilterLateTrue_thenShouldGetLateUserJobs() {
         DomainPage<Job> mockJobPage = DomainPage.builder(List.of(testFollowUpLateJob)).pageSize(1).currentPage(0).totalElementsCount(1).build();
         
-        when(jobService.findPaginated(any(), eq(0), eq(10))).thenReturn(mockJobPage);
+        when(jobDataManager.findPaginated(any(), eq(0), eq(10))).thenReturn(mockJobPage);
 
         DomainPage<EnrichedJob> result = underTest.getUserJobs(testUser.getId(), 0, 10, JobStatus.PENDING, true, "date,desc");
 
-        // check specification passed to the jobService
-        verify(jobService).findPaginated(
+        // check specification passed to the jobDataManager
+        verify(jobDataManager).findPaginated(
             argThat(specification -> {
                 // TODO we MUST check userId, filter late and sort specs
                 DomainSpecification.And spec = (DomainSpecification.And) specification;
@@ -165,13 +165,13 @@ class JobUseCaseImplTest {
     void whenFilterLateFalse_thenShouldGetUserJobs() {
         DomainPage<Job> mockJobPage = DomainPage.builder(List.of(testJob)).pageSize(1).currentPage(0).totalElementsCount(1).build();
         
-        when(jobService.findPaginated(any(DomainSpecification.class), eq(0), eq(10))).thenReturn(mockJobPage);
+        when(jobDataManager.findPaginated(any(DomainSpecification.class), eq(0), eq(10))).thenReturn(mockJobPage);
 
         DomainPage<EnrichedJob> result = underTest.getUserJobs(testUser.getId(), 0, 10, JobStatus.PENDING, false, "date");
 
         // TODO : check that the DomainSpecification is correctly built
         // as is, we only check that some spec has been built
-        verify(jobService).findPaginated(any(DomainSpecification.class), eq(0), eq(10));
+        verify(jobDataManager).findPaginated(any(DomainSpecification.class), eq(0), eq(10));
 
         // check results page is enriched
         assertNotNull(result);
@@ -182,7 +182,7 @@ class JobUseCaseImplTest {
     void testEnrichJobs() {
         DomainPage<Job> mockJobPage = DomainPage.builder(List.of(testJob)).pageSize(1).currentPage(0).totalElementsCount(1).build();
 
-        when(jobService.findPaginated(any(DomainSpecification.class), eq(0), eq(10))).thenReturn(mockJobPage);
+        when(jobDataManager.findPaginated(any(DomainSpecification.class), eq(0), eq(10))).thenReturn(mockJobPage);
 
         // call test method
         DomainPage<EnrichedJob> result = underTest.getUserJobs(testUser.getId(), 0, 10, JobStatus.PENDING, false, "date");
@@ -231,21 +231,21 @@ class JobUseCaseImplTest {
             File file = mock(File.class);
             Instant before = Instant.now();
 
-            reset(userService);
-            when(jobService.findByIdAndUserId(any(), any())).thenReturn(Optional.of(testJob));
+            reset(userDataManager);
+            when(jobDataManager.findByIdAndUserId(any(), any())).thenReturn(Optional.of(testJob));
             when(fileStorage.store(eq(file), any(String.class), eq("test.pdf"))).thenReturn(
                     new DownloadableFile("newFileId", "stored/newFileId.pdf", "application/pdf", "test.pdf")
             );
-            when(jobService.saveJobAndAttachment(jobArg.capture(), attachmentArg.capture(), activityArg.capture())).thenAnswer((i) -> i.getArgument(0));
+            when(jobDataManager.saveJobAndAttachment(jobArg.capture(), attachmentArg.capture(), activityArg.capture())).thenAnswer((i) -> i.getArgument(0));
 
 
 
             Attachment result = underTest.addAttachmentToJob(new CreateAttachmentCommand("my file", file, "test.pdf", testJob.getUserId(), testJob.getId()));
 
             assertNotNull(result);
-            verify(jobService).findByIdAndUserId(any(), any());
+            verify(jobDataManager).findByIdAndUserId(any(), any());
             verify(fileStorage).store(eq(file), any(String.class), eq("test.pdf"));
-            verify(jobService).saveJobAndAttachment(jobArg.capture(), attachmentArg.capture(), activityArg.capture());
+            verify(jobDataManager).saveJobAndAttachment(jobArg.capture(), attachmentArg.capture(), activityArg.capture());
 
             // check created/updated entities
 
@@ -267,8 +267,8 @@ class JobUseCaseImplTest {
 
         @Test
         void whenAttachmentNotFound_thenShouldThrowAttachmentNotFoundException() {
-            reset(userService);
-            when(jobService.findByIdAndUserId(any(), any())).thenReturn(Optional.of(testJob));
+            reset(userDataManager);
+            when(jobDataManager.findByIdAndUserId(any(), any())).thenReturn(Optional.of(testJob));
 
             DownloadAttachmentCommand command = new DownloadAttachmentCommand("nonexistent", testJob.getUserId(), testJob.getId());
 
@@ -277,13 +277,13 @@ class JobUseCaseImplTest {
 
         @Test
         void whenAttachmentNotReadable_thenShouldThrowAttachmentFileNotReadableException() {
-            reset(userService);
-            when(jobService.findByIdAndUserId(any(), any())).thenReturn(Optional.of(testJobWithAttachment));
+            reset(userDataManager);
+            when(jobDataManager.findByIdAndUserId(any(), any())).thenReturn(Optional.of(testJobWithAttachment));
             when(fileStorage.retrieve(eq("notReadable"), eq("notReadable.doc"))).thenThrow(AttachmentFileNotReadableException.class);
             var command = new DownloadAttachmentCommand(attachment.getId().value().toString(), testJobWithAttachment.getUserId(), testJobWithAttachment.getId());
 
             assertThrows(AttachmentFileNotReadableException.class, () -> underTest.downloadAttachment(command));
-            verify(jobService).findByIdAndUserId(any(), any());
+            verify(jobDataManager).findByIdAndUserId(any(), any());
             verify(fileStorage).retrieve(eq("notReadable"), eq("notReadable.doc"));
         }
 
@@ -292,14 +292,14 @@ class JobUseCaseImplTest {
             ArgumentCaptor<Activity> activityArg = ArgumentCaptor.forClass(Activity.class);
             ArgumentCaptor<Job> jobArg = ArgumentCaptor.forClass(Job.class);
 
-            reset(userService);
-            when(jobService.findByIdAndUserId(any(), any())).thenReturn(Optional.of(testJobWithAttachment));
+            reset(userDataManager);
+            when(jobDataManager.findByIdAndUserId(any(), any())).thenReturn(Optional.of(testJobWithAttachment));
             doNothing().when(fileStorage).delete(eq(attachment.getFileId()));
-            when(jobService.deleteAttachmentAndSaveJob(jobArg.capture(), eq(attachment), activityArg.capture())).thenAnswer((i) -> i.getArgument(0));
+            when(jobDataManager.deleteAttachmentAndSaveJob(jobArg.capture(), eq(attachment), activityArg.capture())).thenAnswer((i) -> i.getArgument(0));
 
             underTest.deleteAttachment(new DeleteAttachmentCommand(attachment.getId(), testJobWithAttachment.getUserId(), testJobWithAttachment.getId()));
 
-            verify(jobService).deleteAttachmentAndSaveJob(jobArg.capture(), eq(attachment), activityArg.capture());
+            verify(jobDataManager).deleteAttachmentAndSaveJob(jobArg.capture(), eq(attachment), activityArg.capture());
             verify(fileStorage).delete(eq(attachment.getFileId()));
 
             // check that an activity has been created, and has been passed to the jobservice
@@ -343,8 +343,8 @@ class JobUseCaseImplTest {
 
         @Test
         void whenJobNotFound_thenShouldThrowJobNotFoundException() {
-            reset(userService);
-            when(jobService.findByIdAndUserId(any(), any())).thenReturn(Optional.empty());
+            reset(userDataManager);
+            when(jobDataManager.findByIdAndUserId(any(), any())).thenReturn(Optional.empty());
             var command = new CreateActivityCommand(ActivityType.EMAIL, "comment", UserId.generate(), JobId.generate());
             assertThrows(JobNotFoundException.class, () -> underTest.addActivityToJob(command));
         }
@@ -355,14 +355,14 @@ class JobUseCaseImplTest {
             ArgumentCaptor<Job> jobArg = ArgumentCaptor.forClass(Job.class);
             Instant before = Instant.now();
 
-            reset(userService);
-            when(jobService.findByIdAndUserId(eq(testJobWithActivity.getId()), eq(testJobWithActivity.getUserId()))).thenReturn(Optional.of(this.testJobWithActivity));
-            when(jobService.saveJobAndActivity(jobArg.capture(), activityArg.capture())).thenAnswer((i) -> i.getArgument(0));
+            reset(userDataManager);
+            when(jobDataManager.findByIdAndUserId(eq(testJobWithActivity.getId()), eq(testJobWithActivity.getUserId()))).thenReturn(Optional.of(this.testJobWithActivity));
+            when(jobDataManager.saveJobAndActivity(jobArg.capture(), activityArg.capture())).thenAnswer((i) -> i.getArgument(0));
 
             Activity result = underTest.addActivityToJob(new CreateActivityCommand(ActivityType.EMAIL, "new activity comment", testJobWithActivity.getUserId(), testJobWithActivity.getId()));
 
-            verify(jobService).findByIdAndUserId(eq(testJobWithActivity.getId()), eq(testJobWithActivity.getUserId()));
-            verify(jobService).saveJobAndActivity(jobArg.capture(), activityArg.capture());
+            verify(jobDataManager).findByIdAndUserId(eq(testJobWithActivity.getId()), eq(testJobWithActivity.getUserId()));
+            verify(jobDataManager).saveJobAndActivity(jobArg.capture(), activityArg.capture());
 
             assertNotEquals(activity.getId(), result.getId());
             assertEquals(ActivityType.EMAIL, result.getType());
@@ -379,8 +379,8 @@ class JobUseCaseImplTest {
 
         @Test
         void whenJobNotFound_thenUpdateActivityShouldThrowJobNotFoundException() {
-            reset(userService);
-            when(jobService.findByIdAndUserId(any(), any())).thenReturn(Optional.empty());
+            reset(userDataManager);
+            when(jobDataManager.findByIdAndUserId(any(), any())).thenReturn(Optional.empty());
             var command = new UpdateActivityCommand(activity.getId(), ActivityType.EMAIL, "comment", UserId.generate(), JobId.generate());
             assertThrows(JobNotFoundException.class, () -> underTest.updateActivity(command));
         }
@@ -391,14 +391,14 @@ class JobUseCaseImplTest {
             ArgumentCaptor<Job> jobArg = ArgumentCaptor.forClass(Job.class);
             Instant before = Instant.now();
 
-            reset(userService);
-            when(jobService.findByIdAndUserId(eq(testJobWithActivity.getId()), eq(testJobWithActivity.getUserId()))).thenReturn(Optional.of(this.testJobWithActivity));
-            when(jobService.saveJobAndActivity(jobArg.capture(), activityArg.capture())).thenAnswer((i) -> i.getArgument(0));
+            reset(userDataManager);
+            when(jobDataManager.findByIdAndUserId(eq(testJobWithActivity.getId()), eq(testJobWithActivity.getUserId()))).thenReturn(Optional.of(this.testJobWithActivity));
+            when(jobDataManager.saveJobAndActivity(jobArg.capture(), activityArg.capture())).thenAnswer((i) -> i.getArgument(0));
 
             Activity result = underTest.updateActivity(new UpdateActivityCommand(activity.getId(), ActivityType.EMAIL, "activity comment edited", testJobWithActivity.getUserId(), testJobWithActivity.getId()));
 
-            verify(jobService).findByIdAndUserId(eq(testJobWithActivity.getId()), eq(testJobWithActivity.getUserId()));
-            verify(jobService).saveJobAndActivity(jobArg.capture(), activityArg.capture());
+            verify(jobDataManager).findByIdAndUserId(eq(testJobWithActivity.getId()), eq(testJobWithActivity.getUserId()));
+            verify(jobDataManager).saveJobAndActivity(jobArg.capture(), activityArg.capture());
 
             assertEquals(activity.getId(), result.getId());
             assertEquals(ActivityType.EMAIL, result.getType());
@@ -413,8 +413,8 @@ class JobUseCaseImplTest {
 
         @Test
         void whenActivityNotFound_thenShouldThrowActivityNotFoundException() {
-            reset(userService);
-            when(jobService.findByIdAndUserId(any(), any())).thenReturn(Optional.of(this.testJobWithActivity));
+            reset(userDataManager);
+            when(jobDataManager.findByIdAndUserId(any(), any())).thenReturn(Optional.of(this.testJobWithActivity));
             var command = new UpdateActivityCommand(ActivityId.generate(), ActivityType.EMAIL, "comment", UserId.generate(), JobId.generate());
             assertThrows(ActivityNotFoundException.class, () -> underTest.updateActivity(command));
         }

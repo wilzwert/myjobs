@@ -20,13 +20,13 @@ import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.model.job.command.*;
 import com.wilzwert.myjobs.core.domain.model.job.exception.JobAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.model.job.exception.JobNotFoundException;
-import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobDataManager;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driving.*;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
 import com.wilzwert.myjobs.core.domain.shared.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.user.exception.UserNotFoundException;
-import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.GetUserJobUseCase;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.GetUserJobsUseCase;
 import com.wilzwert.myjobs.core.domain.model.job.service.JobEnricher;
@@ -47,9 +47,9 @@ import java.util.*;
 
 public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, UpdateJobUseCase, UpdateJobStatusUseCase, UpdateJobRatingUseCase, DeleteJobUseCase, GetUserJobsUseCase, AddActivityToJobUseCase, UpdateActivityUseCase, AddAttachmentToJobUseCase, DownloadAttachmentUseCase, DeleteAttachmentUseCase {
 
-    private final JobService jobService;
+    private final JobDataManager jobDataManager;
 
-    private final UserService userService;
+    private final UserDataManager userDataManager;
 
     private final FileStorage fileStorage;
 
@@ -57,16 +57,16 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
     private final JobEnricher jobEnricher = new JobEnricher();
 
-    public JobUseCaseImpl(JobService jobService, UserService userService, FileStorage fileStorage, HtmlSanitizer htmlSanitizer) {
-        this.jobService = jobService;
-        this.userService = userService;
+    public JobUseCaseImpl(JobDataManager jobDataManager, UserDataManager userDataManager, FileStorage fileStorage, HtmlSanitizer htmlSanitizer) {
+        this.jobDataManager = jobDataManager;
+        this.userDataManager = userDataManager;
         this.fileStorage = fileStorage;
         this.htmlSanitizer = htmlSanitizer;
     }
 
     @Override
     public Job createJob(CreateJobCommand command) {
-        Optional<User> user = userService.findById(command.userId());
+        Optional<User> user = userDataManager.findById(command.userId());
         if(user.isEmpty()) {
             throw new UserNotFoundException();
         }
@@ -81,20 +81,20 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
                 .userId(user.get().getId())
         );
         Job job = user.get().addJob(jobToCreate);
-        userService.saveUserAndJob(user.get(), job);
+        userDataManager.saveUserAndJob(user.get(), job);
         return job;
     }
 
     @Override
     public void deleteJob(DeleteJobCommand command) {
-        Optional<User> foundUser = userService.findById(command.userId());
+        Optional<User> foundUser = userDataManager.findById(command.userId());
         if(foundUser.isEmpty()) {
             throw new UserNotFoundException();
         }
 
         User user = foundUser.get();
 
-        Optional<Job> foundJob = jobService.findByIdAndUserId(command.jobId(), user.getId());
+        Optional<Job> foundJob = jobDataManager.findByIdAndUserId(command.jobId(), user.getId());
         if(foundJob.isEmpty()) {
             throw new JobNotFoundException();
         }
@@ -111,12 +111,12 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         });
 
         user.removeJob(job);
-        userService.deleteJobAndSaveUser(user, job);
+        userDataManager.deleteJobAndSaveUser(user, job);
     }
 
     @Override
     public DomainPage<EnrichedJob> getUserJobs(UserId userId, int page, int size, JobStatus status, boolean filterLate, String sort) {
-        Optional<User> foundUser = userService.findById(userId);
+        Optional<User> foundUser = userDataManager.findById(userId);
         if(foundUser.isEmpty()) {
             throw new UserNotFoundException();
         }
@@ -142,19 +142,19 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
             DomainSpecification.applySort(finalSpecs, DomainSpecification.Sort(sort));
         }
 
-        jobs = jobService.findPaginated(finalSpecs, page, size);
+        jobs = jobDataManager.findPaginated(finalSpecs, page, size);
         return jobEnricher.enrich(jobs, user);
     }
 
     @Override
     public Job updateJob(UpdateJobCommand command) {
-        Optional<User> foundUser = userService.findById(command.userId());
+        Optional<User> foundUser = userDataManager.findById(command.userId());
         if(foundUser.isEmpty()) {
             throw new UserNotFoundException();
         }
         User user = foundUser.get();
 
-        Optional<Job> foundJob = jobService.findByIdAndUserId(command.jobId(), user.getId());
+        Optional<Job> foundJob = jobDataManager.findByIdAndUserId(command.jobId(), user.getId());
         if(foundJob.isEmpty()) {
             throw new JobNotFoundException();
         }
@@ -168,7 +168,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         // it seems that to do things right the user aggregate should handle the job update after all
         // because otherwise the job aggregate cannot check other jobs
         if(!command.url().equals(job.getUrl())) {
-            Optional<Job> otherJob = jobService.findByUrlAndUserId(command.url(), user.getId());
+            Optional<Job> otherJob = jobDataManager.findByUrlAndUserId(command.url(), user.getId());
             if(otherJob.isPresent() && !otherJob.get().getId().equals(job.getId())) {
                 throw new JobAlreadyExistsException();
             }
@@ -179,13 +179,13 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         // this is an ugly workaround to force the infra (persistence in particular) to save all data
         // as I understand DDD, only the root aggregate should be explicitly persisted
         // but I just don't how to do it cleanly for now
-        userService.saveUserAndJob(user, job);
+        userDataManager.saveUserAndJob(user, job);
         return job;
     }
 
     @Override
     public Activity addActivityToJob(CreateActivityCommand command) {
-        Optional<Job> foundJob = jobService.findByIdAndUserId(command.jobId(), command.userId());
+        Optional<Job> foundJob = jobDataManager.findByIdAndUserId(command.jobId(), command.userId());
         if(foundJob.isEmpty()) {
             throw new JobNotFoundException();
         }
@@ -202,13 +202,13 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         // this is an ugly workaround to force the infra (persistence in particular) to save all data
         // as I understand DDD, only the aggregate should be explicitly persisted
         // but I just don't how to do it cleanly for now
-        this.jobService.saveJobAndActivity(job, activity);
+        this.jobDataManager.saveJobAndActivity(job, activity);
         return activity;
     }
 
     @Override
     public Activity updateActivity(UpdateActivityCommand command) {
-        Job job = jobService.findByIdAndUserId(command.jobId(), command.userId()).orElseThrow(JobNotFoundException::new);
+        Job job = jobDataManager.findByIdAndUserId(command.jobId(), command.userId()).orElseThrow(JobNotFoundException::new);
 
         Activity activity = Activity.builder()
                 .id(command.activityId())
@@ -222,13 +222,13 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         // this is an ugly workaround to force the infra (persistence in particular) to save all data
         // as I understand DDD, only the aggregate should be explicitly persisted
         // but I just don't how to do it cleanly for now
-        this.jobService.saveJobAndActivity(job, activity);
+        this.jobDataManager.saveJobAndActivity(job, activity);
         return activity;
     }
 
     @Override
     public Job getUserJob(UserId userId, JobId jobId) {
-        return jobService.findByIdAndUserId(jobId, userId).orElseThrow(JobNotFoundException::new);
+        return jobDataManager.findByIdAndUserId(jobId, userId).orElseThrow(JobNotFoundException::new);
     }
 
     private <T> T sanitizeCommandFields(T command, List<String> fieldsToSanitize) {
@@ -259,7 +259,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
     @Override
     public Attachment addAttachmentToJob(CreateAttachmentCommand command) {
-        Optional<Job> foundJob = jobService.findByIdAndUserId(command.jobId(), command.userId());
+        Optional<Job> foundJob = jobDataManager.findByIdAndUserId(command.jobId(), command.userId());
         if(foundJob.isEmpty()) {
             throw new JobNotFoundException();
         }
@@ -287,14 +287,14 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         // this is an ugly workaround to force the infra (persistence in particular) to save all data
         // as I understant DDD, only the aggregate should be explicitely persisted
         // but I just don't how to do it cleanly for now
-        jobService.saveJobAndAttachment(job, attachment, activity);
+        jobDataManager.saveJobAndAttachment(job, attachment, activity);
         return attachment;
     }
 
 
     @Override
     public DownloadableFile downloadAttachment(DownloadAttachmentCommand command) {
-        Job job = jobService.findByIdAndUserId(command.jobId(), command.userId()).orElseThrow(JobNotFoundException::new);
+        Job job = jobDataManager.findByIdAndUserId(command.jobId(), command.userId()).orElseThrow(JobNotFoundException::new);
 
         Attachment attachment = job.getAttachments().stream().filter(a -> a.getId().value().toString().equals(command.id())).findAny().orElse(null);
         if(attachment == null) {
@@ -306,7 +306,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
     @Override
     public void deleteAttachment(DeleteAttachmentCommand command) {
-        Optional<Job> foundJob = jobService.findByIdAndUserId(command.jobId(), command.userId());
+        Optional<Job> foundJob = jobDataManager.findByIdAndUserId(command.jobId(), command.userId());
         if(foundJob.isEmpty()) {
             throw new JobNotFoundException();
         }
@@ -318,7 +318,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
         // FIXME : the activity should be created by the Job aggregate
         // however for now we do it here,
-        // to be able to explicitly ask the JobService to delete the attachment and store both the job and the new activity
+        // to be able to explicitly ask the JobDataManager to delete the attachment and store both the job and the new activity
         Job job = foundJob.get().removeAttachment(attachment);
         Activity activity = Activity.builder().type(ActivityType.ATTACHMENT_DELETION).comment(attachment.getName()).build();
         job = job.addActivity(activity);
@@ -327,7 +327,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         // this is an ugly workaround to force the infra (persistence in particular) to save all data
         // as I understand DDD, only the root aggregate should be explicitly persisted
         // but I just don't how to do it cleanly for now
-        jobService.deleteAttachmentAndSaveJob(job, attachment, activity);
+        jobDataManager.deleteAttachmentAndSaveJob(job, attachment, activity);
         try {
             fileStorage.delete(attachment.getFileId());
         }
@@ -338,25 +338,25 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
     @Override
     public Job updateJobStatus(UpdateJobStatusCommand command) {
-        Optional<Job> foundJob = jobService.findByIdAndUserId(command.jobId(), command.userId());
+        Optional<Job> foundJob = jobDataManager.findByIdAndUserId(command.jobId(), command.userId());
         if(foundJob.isEmpty()) {
             throw new JobNotFoundException();
         }
 
         Job job = foundJob.get().updateStatus(command.status());
-        jobService.saveJobAndActivity(job, job.getActivities().getFirst());
+        jobDataManager.saveJobAndActivity(job, job.getActivities().getFirst());
         return job;
     }
 
     @Override
     public Job updateJobRating(UpdateJobRatingCommand command) {
-        Optional<Job> foundJob = jobService.findByIdAndUserId(command.jobId(), command.userId());
+        Optional<Job> foundJob = jobDataManager.findByIdAndUserId(command.jobId(), command.userId());
         if(foundJob.isEmpty()) {
             throw new JobNotFoundException();
         }
 
         Job job = foundJob.get().updateRating(command.rating());
-        jobService.saveJobAndActivity(job, job.getActivities().getFirst());
+        jobDataManager.saveJobAndActivity(job, job.getActivities().getFirst());
         return job;
     }
 }

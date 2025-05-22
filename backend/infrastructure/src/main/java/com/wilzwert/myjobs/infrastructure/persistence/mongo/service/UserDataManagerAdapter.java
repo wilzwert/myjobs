@@ -6,8 +6,8 @@ import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.user.UserView;
-import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
-import com.wilzwert.myjobs.core.domain.shared.bulk.BulkServiceSaveResult;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
+import com.wilzwert.myjobs.core.domain.shared.bulk.BulkDataSaveResult;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoUser;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
  * Time:16:10
  */
 @Component
-public class UserServiceAdapter implements UserService {
+public class UserDataManagerAdapter implements UserDataManager {
     private final MongoUserRepository mongoUserRepository;
     private final MongoJobRepository mongoJobRepository;
     private final AggregationService aggregationService;
@@ -48,7 +48,7 @@ public class UserServiceAdapter implements UserService {
     private final MongoRefreshTokenRepository mongoRefreshTokenRepository;
     private final MongoTemplate mongoTemplate;
 
-    public UserServiceAdapter(final MongoUserRepository mongoUserRepository, final MongoJobRepository mongoJobRepository, final AggregationService aggregationService, final UserMapper userMapper, JobMapper jobMapper, MongoRefreshTokenRepository mongoRefreshTokenRepository, MongoTemplate mongoTemplate) {
+    public UserDataManagerAdapter(final MongoUserRepository mongoUserRepository, final MongoJobRepository mongoJobRepository, final AggregationService aggregationService, final UserMapper userMapper, JobMapper jobMapper, MongoRefreshTokenRepository mongoRefreshTokenRepository, MongoTemplate mongoTemplate) {
         this.mongoUserRepository = mongoUserRepository;
         this.mongoJobRepository = mongoJobRepository;
         this.aggregationService = aggregationService;
@@ -191,7 +191,7 @@ public class UserServiceAdapter implements UserService {
     }
 
     @Override
-    public BulkServiceSaveResult saveAll(Set<User> users) {
+    public BulkDataSaveResult saveAll(Set<User> users) {
         // we chose to throw an exception because it seems like something went wrong if someone tries to save an empty set
         if(users.isEmpty()) {
             throw new IllegalArgumentException("users must not be empty");
@@ -207,6 +207,6 @@ public class UserServiceAdapter implements UserService {
         }
 
         BulkWriteResult result = bulkOps.execute();
-        return new BulkServiceSaveResult(users.size(), result.getModifiedCount(), result.getInsertedCount(), result.getDeletedCount());
+        return new BulkDataSaveResult(users.size(), result.getModifiedCount(), result.getInsertedCount(), result.getDeletedCount());
     }
 }

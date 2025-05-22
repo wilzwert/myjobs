@@ -5,7 +5,7 @@ import com.wilzwert.myjobs.core.domain.model.user.Lang;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.PasswordHasher;
-import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.ChangePasswordRequest;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.UpdateUserLangRequest;
@@ -53,7 +53,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private UserService userService;
+    private UserDataManager userDataManager;
 
     Cookie accessTokenCookie;
 
@@ -102,8 +102,8 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
             mockMvc.perform(delete(USER_URL).cookie(cookie))
                     .andExpect(status().isNoContent());
 
-            // since we have UserService at our disposal, we can check that the deleted user cannot be retrieved
-            assertThat(userService.findById(new UserId(UUID.fromString(USER_FOR_DELETE_TEST_ID))).isEmpty());
+            // since we have UserDataManager at our disposal, we can check that the deleted user cannot be retrieved
+            assertThat(userDataManager.findById(new UserId(UUID.fromString(USER_FOR_DELETE_TEST_ID)))).isEmpty();
         }
     }
 
@@ -219,7 +219,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
             assertEquals("2025-03-29T09:46:09.475Z", userResponse.getCreatedAt().toString());
             assertEquals("PENDING", userResponse.getEmailStatus());
 
-            User foundUser = userService.findByEmail("otherexisting-updated@example.com").orElse(null);
+            User foundUser = userDataManager.findByEmail("otherexisting-updated@example.com").orElse(null);
             assertThat(foundUser).isNotNull();
         }
     }
@@ -245,7 +245,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
             mockMvc.perform(put(UPDATE_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(new UpdateUserLangRequest(Lang.FR))))
                     .andExpect(status().isOk());
 
-            User foundUser = userService.findById(new UserId(UUID.fromString(USER_FOR_GET_TEST_ID))).orElse(null);
+            User foundUser = userDataManager.findById(new UserId(UUID.fromString(USER_FOR_GET_TEST_ID))).orElse(null);
             assertThat(foundUser).isNotNull();
             assertThat(foundUser.getLang()).isEqualTo(Lang.FR);
         }
@@ -327,7 +327,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
                     .andExpect(status().isOk());
 
             // check that the password actually changed
-            User foundUser = userService.findByEmail("changepassword@example.com").orElse(null);
+            User foundUser = userDataManager.findByEmail("changepassword@example.com").orElse(null);
             assertThat(foundUser).isNotNull();
             assertTrue(passwordHasher.verifyPassword("Dcba4321!", foundUser.getPassword()));
         }

@@ -2,7 +2,7 @@ package com.wilzwert.myjobs.infrastructure.configuration;
 
 
 import com.wilzwert.myjobs.core.application.usecase.*;
-import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobDataManager;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.*;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.extractor.JobMetadataExtractorService;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.extractor.impl.DefaultJobMetadataExtractorService;
@@ -19,7 +19,7 @@ import com.wilzwert.myjobs.core.domain.model.job.ports.driving.ExtractJobMetadat
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.LoginUseCase;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.RegisterUseCase;
 import com.wilzwert.myjobs.core.domain.model.job.service.JobMetadataService;
-import com.wilzwert.myjobs.infrastructure.adapter.*;
+import com.wilzwert.myjobs.infrastructure.adapter.fetcher.CustomHtmlFetcherService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -33,33 +33,33 @@ import org.springframework.context.annotation.Configuration;
 public class BeanConfiguration {
 
     @Bean
-    RegisterUseCase registerUseCase(UserService userService, PasswordHasher passwordHasher, AccountCreationMessageProvider messageProvider) {
-        return new RegisterUseCaseImpl(userService, passwordHasher, messageProvider);
+    RegisterUseCase registerUseCase(UserDataManager userDataManager, PasswordHasher passwordHasher, AccountCreationMessageProvider messageProvider) {
+        return new RegisterUseCaseImpl(userDataManager, passwordHasher, messageProvider);
     }
 
     @Bean
-    LoginUseCase loginUseCase(UserService userService, PasswordHasher passwordHasher, Authenticator authenticator) {
-        return new LoginUseCaseImpl(userService, passwordHasher, authenticator);
+    LoginUseCase loginUseCase(UserDataManager userDataManager, PasswordHasher passwordHasher, Authenticator authenticator) {
+        return new LoginUseCaseImpl(userDataManager, passwordHasher, authenticator);
     }
 
     @Bean
-    DeleteAccountUseCase deleteAccountUseCase(UserService userService, JobService jobService, FileStorage fileStorage) {
-        return new DeleteAccountUseCaseImpl(userService, jobService, fileStorage);
+    DeleteAccountUseCase deleteAccountUseCase(UserDataManager userDataManager, FileStorage fileStorage) {
+        return new DeleteAccountUseCaseImpl(userDataManager, fileStorage);
     }
 
     @Bean
-    JobUseCaseImpl jobUseCase(JobService jobService, UserService userService, FileStorage fileStorage, HtmlSanitizer htmlSanitizer) {
-        return new JobUseCaseImpl(jobService, userService, fileStorage, htmlSanitizer);
+    JobUseCaseImpl jobUseCase(JobDataManager jobDataManager, UserDataManager userDataManager, FileStorage fileStorage, HtmlSanitizer htmlSanitizer) {
+        return new JobUseCaseImpl(jobDataManager, userDataManager, fileStorage, htmlSanitizer);
     }
 
     @Bean
-    PasswordUseCaseImpl passwordUseCase(UserService userService, PasswordResetMessageProvider passwordResetMessageProvider, PasswordHasher passwordHasher) {
-        return new PasswordUseCaseImpl(userService, passwordResetMessageProvider, passwordHasher);
+    PasswordUseCaseImpl passwordUseCase(UserDataManager userDataManager, PasswordResetMessageProvider passwordResetMessageProvider, PasswordHasher passwordHasher) {
+        return new PasswordUseCaseImpl(userDataManager, passwordResetMessageProvider, passwordHasher);
     }
 
     @Bean
-    UserUseCaseImpl userUseCase(UserService userService, EmailVerificationMessageProvider emailVerificationMessageProvider) {
-        return new UserUseCaseImpl(userService, emailVerificationMessageProvider);
+    UserUseCaseImpl userUseCase(UserDataManager userDataManager, EmailVerificationMessageProvider emailVerificationMessageProvider) {
+        return new UserUseCaseImpl(userDataManager, emailVerificationMessageProvider);
     }
 
     @Bean
@@ -90,7 +90,7 @@ public class BeanConfiguration {
     }
 
     @Bean
-    SendJobsRemindersUseCase sendJobsRemindersUseCase(JobService jobService, UserService userService, JobReminderMessageProvider messageProvider) {
-        return new SendJobsRemindersUseCaseImpl(jobService, userService, messageProvider);
+    SendJobsRemindersUseCase sendJobsRemindersUseCase(JobDataManager jobDataManager, UserDataManager userDataManager, JobReminderMessageProvider messageProvider) {
+        return new SendJobsRemindersUseCaseImpl(jobDataManager, userDataManager, messageProvider);
     }
 }

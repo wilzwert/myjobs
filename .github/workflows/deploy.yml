@@ -1,9 +1,11 @@
 name: Deploy to Cloud Run
 
 on:
+  # deploy should be able to run manually
+  workflow_dispatch:
   push:
     tags:
-      - 'v*'  # déploiement déclenché par n'importe quel tag v1.0.0, v2.3.1, etc.
+      - 'v*'  # triggered by tags v1.0.0, v2.3.1, etc.
 
 jobs:
   deploy-backend:

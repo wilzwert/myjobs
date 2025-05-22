@@ -4,7 +4,7 @@ package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.user.UserView;
-import com.wilzwert.myjobs.core.domain.shared.bulk.BulkServiceSaveResult;
+import com.wilzwert.myjobs.core.domain.shared.bulk.BulkDataSaveResult;
 import com.wilzwert.myjobs.core.domain.shared.exception.IncompleteAggregateException;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
@@ -30,10 +30,10 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @SpringBootTest
 @EnabledIfSystemProperty(named = "spring.profiles.active", matches = "integration")
-public class UserServiceAdapterIT extends AbstractBaseIntegrationTest {
+public class UserDataManagerAdapterIT extends AbstractBaseIntegrationTest {
 
     @Autowired
-    private UserServiceAdapter underTest;
+    private UserDataManagerAdapter underTest;
 
     @Test
     public void shouldReturnAllsUsersMinimalByEmail() {
@@ -173,7 +173,7 @@ public class UserServiceAdapterIT extends AbstractBaseIntegrationTest {
         usersToSave.add(User.fromMinimal(users.get(userId2)).lastName("new last name 2").jobFollowUpReminderSentAt(newInstant).build());
 
         // when
-        BulkServiceSaveResult result = underTest.saveAll(usersToSave);
+        BulkDataSaveResult result = underTest.saveAll(usersToSave);
 
         assertThat(result).isNotNull();
         assertThat(result.totalCount()).isEqualTo(2);
@@ -196,7 +196,7 @@ public class UserServiceAdapterIT extends AbstractBaseIntegrationTest {
         usersToReset.add(users.get(userId1));
         usersToReset.add(users.get(userId2));
 
-        BulkServiceSaveResult result2 = underTest.saveAll(usersToReset);
+        BulkDataSaveResult result2 = underTest.saveAll(usersToReset);
 
         assertThat(result2).isNotNull();
         assertThat(result2.totalCount()).isEqualTo(2);

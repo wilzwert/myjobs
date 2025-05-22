@@ -8,8 +8,8 @@ import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.shared.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
-import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
-import com.wilzwert.myjobs.core.domain.shared.bulk.BulkServiceSaveResult;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobDataManager;
+import com.wilzwert.myjobs.core.domain.shared.bulk.BulkDataSaveResult;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoJob;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
@@ -35,14 +35,14 @@ import java.util.stream.Stream;
  * Time:16:28
  */
 @Component
-public class JobServiceAdapter implements JobService {
+public class JobDataManagerAdapter implements JobDataManager {
     private final MongoJobRepository mongoJobRepository;
     private final JobMapper jobMapper;
     private final AggregationService aggregationService;
     private final MongoTemplate mongoTemplate;
 
 
-    public JobServiceAdapter(MongoJobRepository mongoJobRepository, JobMapper jobMapper, AggregationService aggregationService, MongoTemplate mongoTemplate) {
+    public JobDataManagerAdapter(MongoJobRepository mongoJobRepository, JobMapper jobMapper, AggregationService aggregationService, MongoTemplate mongoTemplate) {
         this.mongoJobRepository = mongoJobRepository;
         this.jobMapper = jobMapper;
         this.aggregationService = aggregationService;
@@ -121,7 +121,7 @@ public class JobServiceAdapter implements JobService {
 
     // TODO : tests (dont forget to test with empty set)
     @Override
-    public BulkServiceSaveResult saveAll(Set<Job> jobs) {
+    public BulkDataSaveResult saveAll(Set<Job> jobs) {
         // we chose to throw an exception because it seems like something went wrong if someone tries to save an empty set
         if(jobs.isEmpty()) {
             throw new IllegalArgumentException("jobs must not be empty");
@@ -137,6 +137,6 @@ public class JobServiceAdapter implements JobService {
         }
 
         BulkWriteResult result = bulkOps.execute();
-        return new BulkServiceSaveResult(jobs.size(), result.getModifiedCount(), result.getInsertedCount(), result.getDeletedCount());
+        return new BulkDataSaveResult(jobs.size(), result.getModifiedCount(), result.getInsertedCount(), result.getDeletedCount());
     }
 }

@@ -7,7 +7,7 @@ import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.shared.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
-import com.wilzwert.myjobs.core.domain.shared.bulk.BulkServiceSaveResult;
+import com.wilzwert.myjobs.core.domain.shared.bulk.BulkDataSaveResult;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 
 import java.util.Map;
@@ -20,7 +20,7 @@ import java.util.stream.Stream;
  * Date:12/03/2025
  * Time:15:29
  */
-public interface JobService {
+public interface JobDataManager {
 
     Optional<Job> findById(JobId id);
 
@@ -56,5 +56,5 @@ public interface JobService {
      */
     Job deleteAttachmentAndSaveJob(Job job, Attachment deletedAttachment, Activity createdActivity);
 
-    BulkServiceSaveResult saveAll(Set<Job> job);
+    BulkDataSaveResult saveAll(Set<Job> job);
 }

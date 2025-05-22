@@ -5,7 +5,7 @@ import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.user.UserView;
-import com.wilzwert.myjobs.core.domain.shared.bulk.BulkServiceSaveResult;
+import com.wilzwert.myjobs.core.domain.shared.bulk.BulkDataSaveResult;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 
 import java.util.List;
@@ -25,7 +25,7 @@ import java.util.Set;
  * User aggregate consistency is ensured by throwing exceptions in cases actions require the full aggregate to be loaded
  * Only use cases should dictate the loading strategy minimal / full because they are the actions orchestrators
  */
-public interface UserService {
+public interface UserDataManager {
 
     List<UserView> findView(DomainSpecification specifications);
 
@@ -68,5 +68,5 @@ public interface UserService {
      */
     void deleteUser(User user);
 
-    BulkServiceSaveResult saveAll(Set<User> users);
+    BulkDataSaveResult saveAll(Set<User> users);
 }

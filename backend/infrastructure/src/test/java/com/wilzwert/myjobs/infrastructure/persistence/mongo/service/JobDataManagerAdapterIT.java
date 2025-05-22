@@ -4,7 +4,7 @@ package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
-import com.wilzwert.myjobs.core.domain.shared.bulk.BulkServiceSaveResult;
+import com.wilzwert.myjobs.core.domain.shared.bulk.BulkDataSaveResult;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
 import org.junit.jupiter.api.Test;
@@ -31,10 +31,10 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 @SpringBootTest
 @EnabledIfSystemProperty(named = "spring.profiles.active", matches = "integration")
-public class JobServiceAdapterIT extends AbstractBaseIntegrationTest {
+public class JobDataManagerAdapterIT extends AbstractBaseIntegrationTest {
 
     @Autowired
-    private JobServiceAdapter underTest;
+    private JobDataManagerAdapter underTest;
 
     // public void shouldReturn
 
@@ -145,7 +145,7 @@ public class JobServiceAdapterIT extends AbstractBaseIntegrationTest {
         jobsToSave.add(Job.fromMinimal(jobs.get(jobId2)).title("new title 2").followUpReminderSentAt(newInstant).build());
 
         // when
-        BulkServiceSaveResult result = underTest.saveAll(jobsToSave);
+        BulkDataSaveResult result = underTest.saveAll(jobsToSave);
 
         assertThat(result).isNotNull();
         assertThat(result.totalCount()).isEqualTo(2);
@@ -171,7 +171,7 @@ public class JobServiceAdapterIT extends AbstractBaseIntegrationTest {
         jobsToReset.add(jobs.get(jobId1));
         jobsToReset.add(jobs.get(jobId2));
 
-        BulkServiceSaveResult result2 = underTest.saveAll(jobsToReset);
+        BulkDataSaveResult result2 = underTest.saveAll(jobsToReset);
 
         assertThat(result2).isNotNull();
         assertThat(result2.totalCount()).isEqualTo(2);

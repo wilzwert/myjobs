@@ -27,7 +27,7 @@ import java.util.List;
  *  DomainSpecification.Lt("createdAt", Instant.now() - 7 * 86_400_000),
  *  DomainSpecification.Lt("updatedAt", Instant.now() - 3 * 86_400_000)
  *  )), 0, 10)
- * instead of adding a findByStatusPendingAndCreatedMoreThan7DaysAgoAndUpdatedMoreThan3DaysAgo method to our JobService interface
+ * instead of adding a findByStatusPendingAndCreatedMoreThan7DaysAgoAndUpdatedMoreThan3DaysAgo method to our JobDataManager interface
  * </p>
  * On the other side, some simple rules would be very difficult to implement using these simple Specification
  * For example, to load all "follow up late" Jobs, we have to filter jobs based on their status, status update date and related user preferences.

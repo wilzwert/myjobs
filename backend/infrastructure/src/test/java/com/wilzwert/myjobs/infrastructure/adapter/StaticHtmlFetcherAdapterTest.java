@@ -1,5 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.adapter;
 
+import com.wilzwert.myjobs.infrastructure.adapter.fetcher.StaticHtmlFetcherAdapter;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
