@@ -23,7 +23,7 @@ import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
-import com.wilzwert.myjobs.core.domain.model.pagination.DomainPage;
+import com.wilzwert.myjobs.core.domain.shared.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
@@ -295,11 +295,11 @@ class JobUseCaseImplTest {
             reset(userService);
             when(jobService.findByIdAndUserId(any(), any())).thenReturn(Optional.of(testJobWithAttachment));
             doNothing().when(fileStorage).delete(eq(attachment.getFileId()));
-            when(jobService.deleteAttachment(jobArg.capture(), eq(attachment), activityArg.capture())).thenAnswer((i) -> i.getArgument(0));
+            when(jobService.deleteAttachmentAndSaveJob(jobArg.capture(), eq(attachment), activityArg.capture())).thenAnswer((i) -> i.getArgument(0));
 
             underTest.deleteAttachment(new DeleteAttachmentCommand(attachment.getId(), testJobWithAttachment.getUserId(), testJobWithAttachment.getId()));
 
-            verify(jobService).deleteAttachment(jobArg.capture(), eq(attachment), activityArg.capture());
+            verify(jobService).deleteAttachmentAndSaveJob(jobArg.capture(), eq(attachment), activityArg.capture());
             verify(fileStorage).delete(eq(attachment.getFileId()));
 
             // check that an activity has been created, and has been passed to the jobservice
@@ -371,9 +371,8 @@ class JobUseCaseImplTest {
 
             Job updatedJob = jobArg.getValue();
             assertNotNull(updatedJob);
-            updatedJob.getActivities().forEach(a -> System.out.println(a.getComment()));
             assertEquals(2, updatedJob.getActivities().size());
-            // check activities ordre (most recent first)
+            // check activities order (most recent first)
             assertEquals(result, updatedJob.getActivities().getFirst());
             assertEquals(activity, updatedJob.getActivities().get(1));
         }

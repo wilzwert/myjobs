@@ -30,7 +30,10 @@ public class JsonLdJobMetadataExtractor implements JobMetadataExtractor {
         JobMetadata.Builder builder = new JobMetadata.Builder();
         builder.title(jobPosting.title());
         builder.description(jobPosting.description());
-        builder.company(jobPosting.hiringOrganization().name());
+        var organization = jobPosting.hiringOrganization();
+        if(organization != null) {
+            builder.company(organization.name());
+        }
 
         if(jobPosting.qualifications() != null) {
             builder.profile(jobPosting.qualifications());
@@ -60,6 +63,8 @@ public class JsonLdJobMetadataExtractor implements JobMetadataExtractor {
             }
             return Optional.empty();
         } catch (Exception e) {
+            /* e.printStackTrace();
+            System.out.println(e.getMessage());*/
             return Optional.empty();
         }
     }

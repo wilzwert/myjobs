@@ -1,13 +1,7 @@
-logging:
-  level:
-    org:
-      springframework:
-        security: WARN
-        data:
-          mongodb: WARN
-
-
 google:
   recaptcha:
-    secret: secret
     always-valid: true
+
+security:
+  cors:
+    allow-all: true # WARNING : use with caution, in dev / integration / staging environments only !

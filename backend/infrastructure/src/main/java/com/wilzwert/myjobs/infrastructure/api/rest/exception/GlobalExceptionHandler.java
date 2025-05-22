@@ -6,6 +6,7 @@ import com.wilzwert.myjobs.core.domain.shared.exception.EntityAlreadyExistsExcep
 import com.wilzwert.myjobs.core.domain.shared.exception.EntityNotFoundException;
 import com.wilzwert.myjobs.core.domain.shared.exception.ValidationException;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.ErrorResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,10 +24,12 @@ import org.springframework.web.server.ResponseStatusException;
 
 /**
  * Global exception handler to intercept several types of Exceptions
- * and set http response status code accordingly
+ * Log unexpected  exceptions
+ * Set http response status code accordingly
  * @author Wilhelm Zwertvaegher
  */
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityAlreadyExistsException.class)
@@ -133,6 +136,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> generateInternalErrorException(Exception ex) {
+        log.error("Unexpected error", ex);
         ErrorResponse errorResponse = ErrorResponse.fromException(ex);
         return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatusCode());
     }

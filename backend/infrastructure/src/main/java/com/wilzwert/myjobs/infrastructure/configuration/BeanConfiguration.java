@@ -3,7 +3,6 @@ package com.wilzwert.myjobs.infrastructure.configuration;
 
 import com.wilzwert.myjobs.core.application.usecase.*;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
-import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.*;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.extractor.JobMetadataExtractorService;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.extractor.impl.DefaultJobMetadataExtractorService;
@@ -44,8 +43,8 @@ public class BeanConfiguration {
     }
 
     @Bean
-    DeleteAccountUseCase deleteAccountUseCase(UserService userService) {
-        return new DeleteAccountUseCaseImpl(userService);
+    DeleteAccountUseCase deleteAccountUseCase(UserService userService, JobService jobService, FileStorage fileStorage) {
+        return new DeleteAccountUseCaseImpl(userService, jobService, fileStorage);
     }
 
     @Bean

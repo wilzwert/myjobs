@@ -6,7 +6,7 @@ import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
-import com.wilzwert.myjobs.core.domain.model.pagination.DomainPage;
+import com.wilzwert.myjobs.core.domain.shared.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
 import com.wilzwert.myjobs.core.domain.shared.bulk.BulkServiceSaveResult;
@@ -109,11 +109,13 @@ public class JobServiceAdapter implements JobService {
 
     @Override
     public void delete(Job job) {
+        // attachments, activities are nested mongo collections, so there's nothing more to do that delete the job
         mongoJobRepository.delete(jobMapper.toEntity(job));
     }
 
     @Override
-    public Job deleteAttachment(Job job, Attachment attachment, Activity activity) {
+    public Job deleteAttachmentAndSaveJob(Job job, Attachment attachment, Activity activity) {
+        // attachments and activities are nested collections, nothing more to do
         return jobMapper.toDomain(mongoJobRepository.save(jobMapper.toEntity(job)));
     }
 

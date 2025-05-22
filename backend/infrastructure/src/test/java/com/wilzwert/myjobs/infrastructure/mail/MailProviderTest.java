@@ -21,6 +21,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -102,5 +103,16 @@ public class MailProviderTest {
         MimeBodyPart htmlPart = (MimeBodyPart) multipart.getBodyPart(0);
         String htmlContent = (String) htmlPart.getContent();
         assertEquals("<html><body>Some html</body></html>", htmlContent);
+    }
+
+    @Test
+    void should_throwRuntimeException_whenSendingFails()  {
+        CustomMailMessage message = new CustomMailMessage("template", "test@test.com", "User", "subject.key", "fr");
+        message.setVariables(new HashMap<>());
+
+        when(templateEngine.process(eq("template"), any(Context.class))).thenReturn("<html>content</html>");
+        when(mailSender.createMimeMessage()).thenThrow(new RuntimeException("Cannot create message"));
+
+        assertThrows(RuntimeException.class, () -> underTest.send(message));
     }
 }

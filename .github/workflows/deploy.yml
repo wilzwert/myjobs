@@ -1,0 +1,51 @@
+name: Deploy to Cloud Run
+
+on:
+  push:
+    tags:
+      - 'v*'  # déploiement déclenché par n'importe quel tag v1.0.0, v2.3.1, etc.
+
+jobs:
+  deploy-backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+      - name: Set up gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Build Docker image
+        run: |
+          docker build -t europe-docker.pkg.dev/YOUR_PROJECT/YOUR_REPO/YOUR_IMAGE:$GITHUB_REF_NAME .
+
+      - name: Push to Artifact Registry
+        run: |
+          docker push europe-docker.pkg.dev/YOUR_PROJECT/YOUR_REPO/YOUR_IMAGE:$GITHUB_REF_NAME
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy your-service-name \
+            --image=europe-docker.pkg.dev/YOUR_PROJECT/YOUR_REPO/YOUR_IMAGE:$GITHUB_REF_NAME \
+            --region=europe-west3 \
+            --platform=managed \
+            --allow-unauthenticated \
+            --project=YOUR_PROJECT
+  deploy-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Build frontend
+        run:
+            ng build --localize
+      - name: Push to S3
+        run:
+            push

@@ -41,12 +41,19 @@ public class S3FileStorage implements FileStorage {
 
     @Override
     public DownloadableFile store(File file, String targetFilename, String originalFilename) {
-        s3Client.putObject(PutObjectRequest.builder()
-                        .bucket(bucketName)
-                        .key(targetFilename)
-                        .contentDisposition("attachment; filename=\"" + originalFilename + "\"")
-                        .build(),
-                        RequestBody.fromFile(file));
+        log.debug("Putting file to S3 bucket {}", bucketName);
+        try {
+            s3Client.putObject(PutObjectRequest.builder()
+                            .bucket(bucketName)
+                            .key(targetFilename)
+                            .contentDisposition("attachment; filename=\"" + originalFilename + "\"")
+                            .build(),
+                    RequestBody.fromFile(file));
+        }
+        catch (Exception e) {
+            log.error("Unable to put file to S3 Bucket {}", bucketName, e);
+            throw new RuntimeException("Failed to store file in S3 bucket", e);
+        }
         // use the targetfilename as key and fileId
         return new DownloadableFile(targetFilename, targetFilename, getContentType(originalFilename), originalFilename);
     }
@@ -61,7 +68,7 @@ public class S3FileStorage implements FileStorage {
 
     @Override
     public DownloadableFile retrieve(String fileId, String originalFilename) {
-        throw new RuntimeException("Not implemented yet");
+        throw new UnsupportedOperationException("Not implemented yet");
         // TODO : locally store file in a tmp file, return a downloadablefile from this tmp file
     }
 

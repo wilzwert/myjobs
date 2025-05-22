@@ -61,6 +61,11 @@ public interface UserService {
 
     boolean usernameExists(String username);
 
+    /**
+     * Deletes the User
+     * Important : all related entities MUST be deleted too
+     * @param user the User to delete
+     */
     void deleteUser(User user);
 
     BulkServiceSaveResult saveAll(Set<User> users);

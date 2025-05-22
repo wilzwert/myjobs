@@ -19,16 +19,22 @@ spring:
           auth: ${MAIL_SMTP_AUTH:false}
           starttls:
             enable: ${MAIL_SMTP_STARTTLS:false}
+            require: ${MAIL_SMTP_STARTTLS:false}
+    test-connection: true
   data:
     mongodb:
-      host: ${MONGODB_HOST:localhost}
-      port: ${MONGODB_PORT:27017}
-      database: ${MONGODB_DATABASE:myjobs}
-      username: ${MONGODB_USERNAME:mongouser}
-      password: ${MONGODB_PASSWORD:mongopwd}
+
+      # host: ${MONGODB_HOST:localhost}
+      # port: ${MONGODB_PORT:27017}
+      # database: ${MONGODB_DATABASE:myjobs}
+      # username: ${MONGODB_USERNAME:mongouser}
+      # password: ${MONGODB_PASSWORD:mongopwd}
       auto-index-creation: true
       uuid-representation: standard
-      replica-set-name: ${MONGODB_RS_NAME:rs0}
+      # replica-set-name: ${MONGODB_RS_NAME:rs0}
+      ssl:
+        enabled: false
+      uri: mongodb://${MONGODB_USERNAME:mongouser}:${MONGODB_PASSWORD:mongopwd}@${MONGODB_HOST:localhost}:${MONGODB_PORT:27017}/${MONGODB_DATABASE:myjobs}?retryWrites=true&w=majority
   thymeleaf:
     encoding: UTF-8
 
@@ -49,28 +55,28 @@ security:
 
 logging:
   level:
-    org.springframework.batch: DEBUG
-    org.springframework.batch.core: DEBUG
-    org.springframework.batch.core.job: DEBUG
-    org.springframework.batch.core.step: TRACE
-    org.springframework.batch.item: DEBUG
-    org.springframework.batch.repeat: DEBUG
-    org.springframework.batch.core.repository: TRACE
-    org.springframework.batch.core.launch: DEBUG
-    org.springframework.data.mongodb: TRACE
-    org.springframework.transaction: DEBUG
-    org.springframework:
-      batch: DEBUG
-      core:
-        task: DEBUG
-      security: DEBUG
-      mail: DEBUG
+    root: ${LOG_LEVEL_ROOT:INFO}
+    org.springframework.batch: ${LOG_LEVEL_BATCH:WARN}
+    org.springframework.data.mongodb: ${LOG_LEVEL_DB:WARN}
+    org.springframework.transaction: ${LOG_LEVEL_DB:WARN}
+    org.springframework.core.task: ${LOG_LEVEL_BATCH:WARN}
+    org.springframework.security: ${LOG_LEVEL_SECURITY:WARN}
+    org.springframework.mail: ${LOG_LEVEL_MAIL:WARN}
 
+    software.amazon.awssdk: ${LOG_LEVEL_AWS:WARN}
+
+    com.wilzwert.myjobs.infrastructure.security: ${LOG_LEVEL_SECURITY:WARN}
+    com.wilzwert.myjobs.infrastructure.batch: ${LOG_LEVEL_BATCH:WARN}
+    com.wilzwert.myjobs.infrastructure.security.captcha: ${LOG_LEVEL_CAPTCHA:WARN}
+    com.wilzwert.myjobs.infrastructure.adapter.message: ${LOG_LEVEL_MAIL:WARN}
+    com.wilzwert.myjobs.infrastructure.storage: ${LOG_LEVEL_STORAGE:WARN}
 
 
 google:
   recaptcha:
-    secret: ${GOOGLE_RECAPTCHA_PRIVATE_KEY}
+    # use of v3 enterprise mandatory
+    site-key: ${GOOGLE_RECAPTCHA_SITE_KEY:siteKey}
+    api-key: ${GOOGLE_RECAPTCHA_API_KEY:apikey}
     always-valid: ${GOOGLE_RECAPTCHA_ALWAYS_VALID:true}
 
 aws:

@@ -6,8 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -16,11 +16,15 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
+
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -37,11 +41,11 @@ public class S3FileStorageTest {
     @Mock
     private S3Presigner s3Presigner;
 
-    @InjectMocks
     private S3FileStorage underTest;
 
     @BeforeEach
     public void setUp() {
+        MockitoAnnotations.openMocks(this);
         underTest = new S3FileStorage(s3Client, s3Presigner, "test");
     }
 
@@ -75,5 +79,25 @@ public class S3FileStorageTest {
         underTest.delete("uploads/cv.doc");
         verify(s3Client, times(1)).deleteObject(any(DeleteObjectRequest.class));
 
+    }
+
+    @Test
+    void shouldGenerateProtectedUrl() throws MalformedURLException {
+        PresignedGetObjectRequest presignedRequest = mock(PresignedGetObjectRequest.class);
+        when(presignedRequest.url()).thenReturn(new URL("https://example.com/fake-url"));
+        when(s3Presigner.presignGetObject(any(GetObjectPresignRequest.class))).thenReturn(presignedRequest);
+
+        String url = underTest.generateProtectedUrl("fileId");
+
+        assertEquals("https://example.com/fake-url", url);
+    }
+
+    @Test
+    void shouldThrowUnsupportedOperationExceptionWhenRetrieve() {
+        S3FileStorage fileStorage = new S3FileStorage(s3Client, s3Presigner, "bucket");
+
+        assertThrows(UnsupportedOperationException.class, () ->
+                fileStorage.retrieve("fileId", "original.txt")
+        );
     }
 }

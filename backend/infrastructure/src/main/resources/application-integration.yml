@@ -1,14 +1,3 @@
-logging:
-  level:
-    org:
-      springframework:
-        security: WARN
-        mail: WARN
-        data:
-          mongodb: DEBUG
-
-
 google:
   recaptcha:
-    secret: secret
     always-valid: true

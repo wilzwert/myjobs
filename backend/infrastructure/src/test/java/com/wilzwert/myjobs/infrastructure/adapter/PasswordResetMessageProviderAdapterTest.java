@@ -4,6 +4,7 @@ import com.wilzwert.myjobs.core.domain.model.user.EmailStatus;
 import com.wilzwert.myjobs.core.domain.model.user.Lang;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
+import com.wilzwert.myjobs.infrastructure.adapter.message.PasswordResetMessageProviderAdapter;
 import com.wilzwert.myjobs.infrastructure.mail.CustomMailMessage;
 import com.wilzwert.myjobs.infrastructure.mail.MailProvider;
 import jakarta.mail.MessagingException;

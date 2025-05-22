@@ -5,7 +5,7 @@ import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
-import com.wilzwert.myjobs.core.domain.model.pagination.DomainPage;
+import com.wilzwert.myjobs.core.domain.shared.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.shared.bulk.BulkServiceSaveResult;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
@@ -40,9 +40,21 @@ public interface JobService {
 
     Job saveJobAndAttachment(Job job, Attachment attachment, Activity activity);
 
+    /**
+     * Deletes the Job
+     * Important : all related entities MUST be deleted too
+     * @param job the Job to delete
+     */
     void delete(Job job);
 
-    Job deleteAttachment(Job job, Attachment attachment, Activity activity);
+    /**
+     *
+     * @param job the Job
+     * @param deletedAttachment the attachment that is being deleted
+     * @param createdActivity the activity created by the attachment deletion
+     * @return the Job
+     */
+    Job deleteAttachmentAndSaveJob(Job job, Attachment deletedAttachment, Activity createdActivity);
 
     BulkServiceSaveResult saveAll(Set<Job> job);
 }

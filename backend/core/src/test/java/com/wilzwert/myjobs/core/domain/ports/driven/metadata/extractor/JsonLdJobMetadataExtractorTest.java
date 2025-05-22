@@ -3,6 +3,7 @@ package com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor;
 
 import com.wilzwert.myjobs.core.domain.model.job.JobMetadata;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.extractor.impl.JsonLdJobMetadataExtractor;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import utils.TestFileLoader;
 
@@ -156,6 +157,26 @@ public class JsonLdJobMetadataExtractorTest {
 
         extractor.extractJobMetadata(html).ifPresentOrElse(
                 extractedMetadata -> assertEquals(expectedMetadata, extractedMetadata),
+                () -> fail("Metadata should not be empty")
+        );
+    }
+
+    @Test
+    public void whenHelloWorkHtml_thenShouldReturnMetadata() throws IOException {
+        String html  = TestFileLoader.loadFileAsString("jobposting.hellowork.html");
+        /* TODO
+        JobMetadata expectedMetadata = new JobMetadata.Builder()
+                .title("Infirmier / Infirmière en Hémodialyse H/F")
+                .description("Description du poste  l'ADH Recrute un(e) IDE pour ses centres de dialyses  L’infirmier en hémodialyse assure la prise en charge globale des patients qui lui sont confiés en conformité avec le décret du Code de la Santé Publique et en cohérence avec...")
+                .profile("Profil recherché Vous êtes titulaire du diplôme d’Infirmier d’État. Une première expérience en dialyse serait un plus. Permis B indispensable. ")
+                .url("https://www.l4m.fr/emploi/offre/62400-bethune-infirmier-infirmiere-hemodialyse-h-f-3628375")
+                .company("ADH - ASSOCIATION POUR LE DEVELOPPEMENT DE L'HEMODIALYSE")
+                .salary("selon CCN 51 + Primes")
+                .build();*/
+
+        // TODO assertEquals(expectedMetadata, extractedMetadata);
+        extractor.extractJobMetadata(html).ifPresentOrElse(
+                Assertions::assertNotNull,
                 () -> fail("Metadata should not be empty")
         );
     }
