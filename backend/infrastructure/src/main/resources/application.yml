@@ -15,6 +15,7 @@ spring:
       mime:
         charset: UTF-8
       mail:
+        debug: true
         smtp:
           auth: ${MAIL_SMTP_AUTH:false}
           starttls:
@@ -56,6 +57,7 @@ security:
 logging:
   level:
     root: ${LOG_LEVEL_ROOT:INFO}
+    javax.mail: ${LOG_LEVEL_MAIL:WARN}
     org.springframework.batch: ${LOG_LEVEL_BATCH:WARN}
     org.springframework.data.mongodb: ${LOG_LEVEL_DB:WARN}
     org.springframework.transaction: ${LOG_LEVEL_DB:WARN}
@@ -87,6 +89,12 @@ aws:
     secret-access-key: ${AWS_SECRET_ACCESS_KEY}
 
 application:
+  scheduler:
+    secret: ${SCHEDULER_SECRET:secret}
+  async:
+    enabled: ${ASYNC_ENABLED:true}
+  batch:
+    enabled: ${BATCH_ENABLED:true}
   frontend:
     url: ${FRONTEND_URL:http://localhost:4200}
   mail:

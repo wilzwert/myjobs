@@ -3,12 +3,14 @@ package com.wilzwert.myjobs.infrastructure.batch;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.*;
 import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
 
 @Component
+@ConditionalOnProperty(name = "application.batch.enabled", havingValue = "true")
 @Slf4j
 public class JobsRemindersScheduler {
 
