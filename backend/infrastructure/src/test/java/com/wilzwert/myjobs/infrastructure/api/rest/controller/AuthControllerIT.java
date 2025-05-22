@@ -4,7 +4,7 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wilzwert.myjobs.core.domain.model.user.EmailStatus;
 import com.wilzwert.myjobs.core.domain.model.user.User;
-import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.AuthResponse;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.LoginRequest;
@@ -49,7 +49,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private UserService userService;
+    private UserDataManager userDataManager;
 
     @Nested
     class AuthControllerRegisterIT {
@@ -183,12 +183,12 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
 
 
             // delete the created user to allow predictable further tests
-            Optional<User> newUser = userService.findByEmail("test@example.com");
+            Optional<User> newUser = userDataManager.findByEmail("test@example.com");
             if(newUser.isEmpty()) {
                 fail("Created user should be retrievable.");
             }
             else {
-                userService.deleteUser(newUser.get());
+                userDataManager.deleteUser(newUser.get());
             }
         }
     }
@@ -227,8 +227,8 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
 
             Map<String, Cookie> cookies = Stream.of(mvcResult.getResponse().getCookies())
                     .collect(Collectors.toMap(Cookie::getName, c -> c));
-            assertThat(cookies.containsKey("access_token"));
-            assertThat(cookies.containsKey("refresh_token"));
+            assertThat(cookies).containsKey("access_token");
+            assertThat(cookies).containsKey("refresh_token");
         }
     }
 
@@ -329,12 +329,12 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
             assertEquals(2, mvcResult.getResponse().getCookies().length);
             Map<String, Cookie> cookies = Stream.of(mvcResult.getResponse().getCookies())
                     .collect(Collectors.toMap(Cookie::getName, c -> c));
-            assertThat(cookies.containsKey("access_token"));
+            assertThat(cookies).containsKey("access_token");
             assertNotEquals("validRefreshToken", cookies.get("access_token").getValue());
-            assertThat(cookies.containsKey("refresh_token"));
+            assertThat(cookies).containsKey("refresh_token");
 
             // let's check the initial valid refresh token was deleted
-            assertThat(refreshTokenService.findByToken("validRefreshToken").isEmpty());
+            assertThat(refreshTokenService.findByToken("validRefreshToken")).isEmpty();
 
         }
     }

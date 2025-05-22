@@ -10,7 +10,7 @@ import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.PasswordHasher;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.PasswordResetMessageProvider;
-import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class PasswordUseCaseImplTest {
     @Mock
-    private UserService userService;
+    private UserDataManager userDataManager;
 
     @Mock
     private PasswordResetMessageProvider passwordResetMessageProvider;
@@ -47,13 +47,13 @@ public class PasswordUseCaseImplTest {
     @Test
     public void whenPasswordResetTokenNotFound_thenCreateNewPasswordShouldDoNothing_() {
         CreatePasswordCommand createPasswordCommand = new CreatePasswordCommand("newPassword", "passwordResetToken");
-        when(userService.findByResetPasswordToken("passwordResetToken")).thenReturn(Optional.empty());
+        when(userDataManager.findByResetPasswordToken("passwordResetToken")).thenReturn(Optional.empty());
 
         underTest.createNewPassword(createPasswordCommand);
 
-        verify(userService, times(1)).findByResetPasswordToken("passwordResetToken");
+        verify(userDataManager, times(1)).findByResetPasswordToken("passwordResetToken");
         verify(passwordHasher, times(0)).hashPassword(anyString());
-        verify(userService, times(0)).save(any(User.class));
+        verify(userDataManager, times(0)).save(any(User.class));
 
 
     }
@@ -71,15 +71,15 @@ public class PasswordUseCaseImplTest {
                 .jobs(Collections.emptyList())
                 .build();
         ArgumentCaptor<User> argument = ArgumentCaptor.forClass(User.class);
-        when(userService.findByResetPasswordToken("passwordResetToken")).thenReturn(Optional.of(user));
-        when(userService.save(argument.capture())).thenReturn(user);
+        when(userDataManager.findByResetPasswordToken("passwordResetToken")).thenReturn(Optional.of(user));
+        when(userDataManager.save(argument.capture())).thenReturn(user);
         when(passwordHasher.hashPassword("newPassword1!")).thenReturn("hashedNewPassword");
 
         underTest.createNewPassword(createPasswordCommand);
 
         assertEquals("hashedNewPassword", argument.getValue().getPassword());
-        verify(userService, times(1)).findByResetPasswordToken("passwordResetToken");
-        verify(userService, times(1)).save(argument.capture());
+        verify(userDataManager, times(1)).findByResetPasswordToken("passwordResetToken");
+        verify(userDataManager, times(1)).save(argument.capture());
     }
 
     @Test
@@ -94,20 +94,20 @@ public class PasswordUseCaseImplTest {
                 .resetPasswordExpiresAt(Instant.MIN)
                 .build();
 
-        when(userService.findByResetPasswordToken("passwordResetToken")).thenReturn(Optional.of(user));
+        when(userDataManager.findByResetPasswordToken("passwordResetToken")).thenReturn(Optional.of(user));
 
         assertThrows(ResetPasswordExpiredException.class, () -> underTest.createNewPassword(createPasswordCommand));
     }
 
     @Test
     public void whenPasswordResetTokenNotFound_thenResetPasswordShouldDoNothing() {
-        when(userService.findByEmail("test@example.com")).thenReturn(Optional.empty());
+        when(userDataManager.findByEmail("test@example.com")).thenReturn(Optional.empty());
 
         underTest.resetPassword("test@example.com");
 
-        verify(userService, times(1)).findByEmail("test@example.com");
+        verify(userDataManager, times(1)).findByEmail("test@example.com");
         verify(passwordResetMessageProvider, times(0)).send(any(User.class));
-        verify(userService, times(0)).save(any(User.class));
+        verify(userDataManager, times(0)).save(any(User.class));
     }
 
     @Test
@@ -122,22 +122,22 @@ public class PasswordUseCaseImplTest {
                 .jobs(Collections.emptyList())
                 .build();
         ArgumentCaptor<User> argument = ArgumentCaptor.forClass(User.class);
-        when(userService.findByEmail("test@example.com")).thenReturn(Optional.of(user));
+        when(userDataManager.findByEmail("test@example.com")).thenReturn(Optional.of(user));
         doNothing().when(passwordResetMessageProvider).send(argument.capture());
-        when(userService.save(argument.capture())).thenAnswer(i -> i.<User>getArgument(0));
+        when(userDataManager.save(argument.capture())).thenAnswer(i -> i.<User>getArgument(0));
 
         underTest.resetPassword("test@example.com");
 
-        verify(userService, times(1)).findByEmail("test@example.com");
+        verify(userDataManager, times(1)).findByEmail("test@example.com");
         verify(passwordResetMessageProvider, times(1)).send(argument.capture());
-        verify(userService, times(1)).save(argument.capture());
+        verify(userDataManager, times(1)).save(argument.capture());
     }
 
     @Test
     public void whenUserNotFound_thenChangePasswordShouldUserNotFoundException_() {
         UserId userId = UserId.generate();
         ChangePasswordCommand changePasswordCommand = new ChangePasswordCommand("newPassword", "oldPassword", userId);
-        when(userService.findById(userId)).thenReturn(Optional.empty());
+        when(userDataManager.findById(userId)).thenReturn(Optional.empty());
 
         assertThrows(UserNotFoundException.class, () -> underTest.changePassword(changePasswordCommand));
     }
@@ -154,7 +154,7 @@ public class PasswordUseCaseImplTest {
                 .resetPasswordExpiresAt(Instant.MIN)
                 .build();
         ChangePasswordCommand changePasswordCommand = new ChangePasswordCommand("newPassword", "wrongOldPassword", userId);
-        when(userService.findById(userId)).thenReturn(Optional.of(user));
+        when(userDataManager.findById(userId)).thenReturn(Optional.of(user));
 
         assertThrows(PasswordMatchException.class, () -> underTest.changePassword(changePasswordCommand));
     }
@@ -174,17 +174,17 @@ public class PasswordUseCaseImplTest {
         ArgumentCaptor<User> argument = ArgumentCaptor.forClass(User.class);
 
         ChangePasswordCommand changePasswordCommand = new ChangePasswordCommand("newPassword1!", "OldPassword1!", userId);
-        when(userService.findById(userId)).thenReturn(Optional.of(user));
+        when(userDataManager.findById(userId)).thenReturn(Optional.of(user));
         when(passwordHasher.verifyPassword("OldPassword1!", "OldPassword1!")).thenReturn(true);
         when(passwordHasher.hashPassword("newPassword1!")).thenReturn("hashedNewPassword");
-        when(userService.save(argument.capture())).thenAnswer(i -> i.<User>getArgument(0));
+        when(userDataManager.save(argument.capture())).thenAnswer(i -> i.<User>getArgument(0));
 
         underTest.changePassword(changePasswordCommand);
 
-        verify(userService, times(1)).findById(userId);
+        verify(userDataManager, times(1)).findById(userId);
         verify(passwordHasher, times(1)).verifyPassword("OldPassword1!", "OldPassword1!");
         verify(passwordHasher, times(1)).hashPassword("newPassword1!");
-        verify(userService, times(1)).save(argument.capture());
+        verify(userDataManager, times(1)).save(argument.capture());
         assertEquals("hashedNewPassword", argument.getValue().getPassword());
     }
 }

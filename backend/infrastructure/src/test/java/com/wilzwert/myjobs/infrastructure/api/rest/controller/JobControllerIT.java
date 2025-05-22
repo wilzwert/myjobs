@@ -6,7 +6,7 @@ import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.JobRating;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
-import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobDataManager;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
@@ -53,7 +53,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private JobService jobService;
+    private JobDataManager jobDataManager;
 
     Cookie accessTokenCookie;
 
@@ -331,7 +331,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(jobResponse.getSalary()).isEqualTo("My new job salary");
 
             // let's check the update job is retrievable and consistent
-            Job createdJob = jobService.findById(new JobId(jobResponse.getId())).orElse(null);
+            Job createdJob = jobDataManager.findById(new JobId(jobResponse.getId())).orElse(null);
             assertThat(createdJob).isNotNull();
             assertThat(createdJob.getTitle()).isEqualTo("My new job");
             assertThat(createdJob.getCompany()).isEqualTo("My new company");
@@ -432,7 +432,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
 
 
             // let's check the update job is retrievable and consistent
-            Job updatedJob = jobService.findById(new JobId(UUID.fromString(JOB_FOR_TEST_ID))).orElse(null);
+            Job updatedJob = jobDataManager.findById(new JobId(UUID.fromString(JOB_FOR_TEST_ID))).orElse(null);
             assertThat(updatedJob).isNotNull();
             assertThat(updatedJob.getTitle()).isEqualTo("My job [updated]");
             assertThat(updatedJob.getCompany()).isEqualTo("My company");
@@ -522,7 +522,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(jobResponse.getStatus()).isEqualTo(JobStatus.RELAUNCHED);
 
             // let's check the update job is retrievable and consistent
-            Job updatedJob = jobService.findById(new JobId(UUID.fromString(JOB_FOR_TEST_ID))).orElse(null);
+            Job updatedJob = jobDataManager.findById(new JobId(UUID.fromString(JOB_FOR_TEST_ID))).orElse(null);
             assertThat(updatedJob).isNotNull();
             assertThat(updatedJob.getStatus()).isEqualTo(JobStatus.RELAUNCHED);
         }
@@ -609,7 +609,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(jobResponse.getRating()).isEqualTo(new JobRatingResponse(5));
 
             // let's check the update job is retrievable and consistent
-            Job updatedJob = jobService.findById(new JobId(UUID.fromString(JOB_FOR_TEST_ID))).orElse(null);
+            Job updatedJob = jobDataManager.findById(new JobId(UUID.fromString(JOB_FOR_TEST_ID))).orElse(null);
 
             assertThat(updatedJob).isNotNull();
             assertThat(updatedJob.getRating()).isEqualTo(JobRating.of(5));
@@ -643,7 +643,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
                     .andExpect(status().isNoContent());
 
             // Job was deleted and should not be retrievable
-            Job foundJob = jobService.findById(new JobId(UUID.fromString(JOB_FOR_TEST_ID))).orElse(null);
+            Job foundJob = jobDataManager.findById(new JobId(UUID.fromString(JOB_FOR_TEST_ID))).orElse(null);
             assertThat(foundJob).isNull();
         }
     }

@@ -5,7 +5,7 @@ import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
-import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobDataManager;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
@@ -43,7 +43,7 @@ public class ActivityControllerIT extends AbstractBaseIntegrationTest  {
     private JwtService jwtService;
 
     @Autowired
-    private JobService jobService;
+    private JobDataManager jobDataManager;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -132,7 +132,7 @@ public class ActivityControllerIT extends AbstractBaseIntegrationTest  {
                 .isBeforeOrEqualTo(afterCall);
 
         // activity should be retrievable
-        Job job = jobService.findById(new JobId(UUID.fromString(JOB_FOR_TEST_ID))).orElse(null);
+        Job job = jobDataManager.findById(new JobId(UUID.fromString(JOB_FOR_TEST_ID))).orElse(null);
         assertThat(job).isNotNull();
 
         Activity activity = job.getActivities().stream().filter(a -> a.getId().value().equals(activityResponse.getId())).findFirst().orElse(null);

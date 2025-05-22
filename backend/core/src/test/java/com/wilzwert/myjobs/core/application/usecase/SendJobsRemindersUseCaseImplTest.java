@@ -3,13 +3,13 @@ package com.wilzwert.myjobs.core.application.usecase;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
-import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobDataManager;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.user.batch.UsersJobsRemindersBatchResult;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.JobReminderMessageProvider;
-import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
-import com.wilzwert.myjobs.core.domain.shared.bulk.BulkServiceSaveResult;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
+import com.wilzwert.myjobs.core.domain.shared.bulk.BulkDataSaveResult;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,9 +28,9 @@ import static org.mockito.Mockito.*;
 class SendJobsRemindersUseCaseImplTest {
 
     @Mock
-    private JobService jobService;
+    private JobDataManager jobDataManager;
     @Mock
-    private UserService userService;
+    private UserDataManager userDataManager;
     @Mock
     private JobReminderMessageProvider jobReminderMessageProvider;
 
@@ -93,16 +93,16 @@ class SendJobsRemindersUseCaseImplTest {
                 .statusUpdatedAt(Instant.now().minusSeconds(86400*8)).build()
         );
 
-        // Mock the JobService
-        when(jobService.stream(ArgumentMatchers.<DomainSpecification.JobFollowUpToRemind>any())).thenReturn(testJobs.stream());
+        // Mock the JobDataManager
+        when(jobDataManager.stream(ArgumentMatchers.<DomainSpecification.JobFollowUpToRemind>any())).thenReturn(testJobs.stream());
 
-        underTest = new SendJobsRemindersUseCaseImpl(jobService, userService, jobReminderMessageProvider);
+        underTest = new SendJobsRemindersUseCaseImpl(jobDataManager, userDataManager, jobReminderMessageProvider);
     }
 
     @Test
     void shouldReturnBatchResult() {
-        // Mock the UserService
-        when(userService.findMinimal(any()))
+        // Mock the UserDataManager
+        when(userDataManager.findMinimal(any()))
             .thenReturn(
                     Map.of(testUsers.get(1).getId(), testUsers.get(1))
             )
@@ -110,12 +110,12 @@ class SendJobsRemindersUseCaseImplTest {
                     Map.of(testUsers.getFirst().getId(), testUsers.getFirst())
             );
 
-        when(userService.saveAll(any())).thenReturn(new BulkServiceSaveResult(2, 2, 0, 0));
+        when(userDataManager.saveAll(any())).thenReturn(new BulkDataSaveResult(2, 2, 0, 0));
 
         List<UsersJobsRemindersBatchResult> result = underTest.sendJobsReminders(1);
         assertNotNull(result);
-        verify(userService, times(2)).findMinimal(any());
-        verify(userService, times(2)).saveAll(any());
+        verify(userDataManager, times(2)).findMinimal(any());
+        verify(userDataManager, times(2)).saveAll(any());
         verify(jobReminderMessageProvider, times(2)).send(any(User.class), any());
     }
 }

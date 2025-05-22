@@ -32,7 +32,7 @@ import static org.mockito.Mockito.*;
  * Time:14:10
  */
 @ExtendWith(MockitoExtension.class)
-public class JobServiceAdapterTest {
+public class JobDataManagerAdapterTest {
     @Mock
     private MongoJobRepository mongoJobRepository;
 
@@ -43,7 +43,7 @@ public class JobServiceAdapterTest {
     private AggregationService aggregationService;
 
     @InjectMocks
-    private JobServiceAdapter underTest;
+    private JobDataManagerAdapter underTest;
 
     /**
      * Builds a valid Job to use for tests

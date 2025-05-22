@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
-import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobDataManager;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
@@ -51,7 +51,7 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private JobService jobService;
+    private JobDataManager jobDataManager;
 
     Cookie accessTokenCookie;
 
@@ -153,7 +153,7 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(attachmentResponse.getContentType()).isEqualTo("application/msword");
 
             // attachment should be retrievable
-            Job job = jobService.findById(new JobId(UUID.fromString(JOB_FOR_TEST_ID))).orElse(null);
+            Job job = jobDataManager.findById(new JobId(UUID.fromString(JOB_FOR_TEST_ID))).orElse(null);
 
             assertThat(job).isNotNull();
             Attachment attachment = job.getAttachments().getFirst();
@@ -213,7 +213,7 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
                     .andExpect(status().isNoContent());
 
             // attachment should not be retrievable
-            Job foundJob = jobService.findById(new JobId(UUID.fromString(JOB_FOR_TEST_ID))).orElse(null);
+            Job foundJob = jobDataManager.findById(new JobId(UUID.fromString(JOB_FOR_TEST_ID))).orElse(null);
             assertThat(foundJob).isNotNull();
             Attachment attachment = foundJob.getAttachments().stream().filter(a -> a.getId().value().equals(UUID.fromString(ATTACHMENT_TEST_ID))).findFirst().orElse(null);
             assertThat(attachment).isNull();

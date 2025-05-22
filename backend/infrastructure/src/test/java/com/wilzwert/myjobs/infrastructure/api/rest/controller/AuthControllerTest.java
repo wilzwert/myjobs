@@ -4,7 +4,7 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 import com.wilzwert.myjobs.core.domain.model.user.command.RegisterUserCommand;
 import com.wilzwert.myjobs.core.domain.model.user.exception.UserAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.model.user.*;
-import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.CheckUserAvailabilityUseCase;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.LoginUseCase;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.RegisterUseCase;
@@ -56,7 +56,7 @@ public class AuthControllerTest {
     private AuthController authController;
 
     @Mock
-    private UserService userService;
+    private UserDataManager userDataManager;
 
     @Mock
     private JwtService jwtService;
@@ -284,13 +284,13 @@ public class AuthControllerTest {
 
             when(refreshTokenService.findByToken("refresh_token")).thenReturn(Optional.of(refreshToken));
             when(refreshTokenService.verifyExpiration(refreshToken)).thenReturn(true);
-            when(userService.findById(userIdCaptor.capture())).thenReturn(Optional.empty());
+            when(userDataManager.findById(userIdCaptor.capture())).thenReturn(Optional.empty());
 
             ResponseEntity<?> responseEntity = authController.refreshAccessToken("refresh_token");
             assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
             verify(refreshTokenService, times(1)).findByToken("refresh_token");
             verify(refreshTokenService, times(1)).verifyExpiration(refreshToken);
-            verify(userService, times(1)).findById(userIdCaptor.capture());
+            verify(userDataManager, times(1)).findById(userIdCaptor.capture());
             assertThat(userIdCaptor.getValue().value()).isEqualTo(userUUID);
         }
 
@@ -312,7 +312,7 @@ public class AuthControllerTest {
 
             when(refreshTokenService.findByToken("refresh_token")).thenReturn(Optional.of(refreshToken));
             when(refreshTokenService.verifyExpiration(refreshToken)).thenReturn(true);
-            when(userService.findById(userIdCaptor.capture())).thenReturn(Optional.of(user));
+            when(userDataManager.findById(userIdCaptor.capture())).thenReturn(Optional.of(user));
             doNothing().when(refreshTokenService).deleteRefreshToken(refreshToken);
             when(refreshTokenService.createRefreshToken(user)).thenReturn(newRefreshToken);
             when(jwtService.generateToken(userUUID.toString())).thenReturn("new_access_token");
@@ -325,7 +325,7 @@ public class AuthControllerTest {
 
             verify(refreshTokenService, times(1)).findByToken("refresh_token");
             verify(refreshTokenService, times(1)).verifyExpiration(refreshToken);
-            verify(userService, times(1)).findById(userIdCaptor.capture());
+            verify(userDataManager, times(1)).findById(userIdCaptor.capture());
             verify(refreshTokenService, times(1)).deleteRefreshToken(refreshToken);
             verify(refreshTokenService, times(1)).createRefreshToken(user);
             verify(jwtService, times(1)).generateToken(userUUID.toString());

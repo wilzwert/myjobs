@@ -7,7 +7,7 @@ import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.CheckUserAvailabilityUseCase;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.LoginUseCase;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.RegisterUseCase;
-import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.UserMapper;
 import com.wilzwert.myjobs.infrastructure.security.captcha.RequiresCaptcha;
@@ -47,18 +47,18 @@ public class AuthController {
 
     private final RefreshTokenService refreshTokenService;
 
-    private final UserService userService;
+    private final UserDataManager userDataManager;
 
     private final JwtService jwtService;
 
-    public AuthController(RegisterUseCase registerUseCase, LoginUseCase loginUseCase, CheckUserAvailabilityUseCase checkUserAvailabilityUseCase, UserMapper userMapper, CookieService cookieService, RefreshTokenService refreshTokenService, UserService userService, JwtService jwtService) {
+    public AuthController(RegisterUseCase registerUseCase, LoginUseCase loginUseCase, CheckUserAvailabilityUseCase checkUserAvailabilityUseCase, UserMapper userMapper, CookieService cookieService, RefreshTokenService refreshTokenService, UserDataManager userDataManager, JwtService jwtService) {
         this.registerUseCase = registerUseCase;
         this.loginUseCase = loginUseCase;
         this.checkUserAvailabilityUseCase = checkUserAvailabilityUseCase;
         this.userMapper = userMapper;
         this.cookieService = cookieService;
         this.refreshTokenService = refreshTokenService;
-        this.userService = userService;
+        this.userDataManager = userDataManager;
         this.jwtService = jwtService;
     }
 
@@ -123,7 +123,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        User user = userService.findById(new UserId(foundRefreshToken.getUserId())).orElse(null);
+        User user = userDataManager.findById(new UserId(foundRefreshToken.getUserId())).orElse(null);
         if(user == null) {
             log.debug("Associated user not found for {}", refreshToken);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
