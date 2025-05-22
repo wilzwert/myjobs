@@ -1,4 +1,4 @@
-package com.wilzwert.myjobs.infrastructure.utility;
+package com.wilzwert.myjobs.infrastructure.staging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoJob;
@@ -19,7 +19,7 @@ import java.io.InputStream;
 import java.util.List;
 
 @Configuration
-@Profile({"integration"})
+@Profile({"integration","staging"})
 @Slf4j
 public class TestDataLoader {
 
@@ -36,7 +36,7 @@ public class TestDataLoader {
     }
 
     private <T> void loadData(String fileName, Class<T> clazz, MongoRepository<T, ?> repository) {
-        try (InputStream is = getClass().getResourceAsStream("/test-data/"+fileName)) {
+        try (InputStream is = getClass().getResourceAsStream("/test-data/" +fileName)) {
             if (is != null) {
                 List<T> elements = objectMapper.readValue(is, objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));
                 elements.forEach(e -> System.out.println("Loading "+e));

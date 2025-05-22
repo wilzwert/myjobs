@@ -1,6 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.configuration;
 
-import com.wilzwert.myjobs.infrastructure.utility.TestDataLoader;
+import com.wilzwert.myjobs.infrastructure.staging.TestDataLoader;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Tag;
