@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserServiceAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MyJobsInfra</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.infrastructure.persistence.mongo.service</a> &gt; <span class="el_source">UserServiceAdapter.java</span></div><h1>UserServiceAdapter.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UserDataManagerAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MyJobsInfra</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.infrastructure.persistence.mongo.service</a> &gt; <span class="el_source">UserDataManagerAdapter.java</span></div><h1>UserDataManagerAdapter.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 
 
 import com.mongodb.bulk.BulkWriteResult;
@@ -6,8 +6,8 @@ import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.user.UserView;
-import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
-import com.wilzwert.myjobs.core.domain.shared.bulk.BulkServiceSaveResult;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
+import com.wilzwert.myjobs.core.domain.shared.bulk.BulkDataSaveResult;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoUser;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
  * Time:16:10
  */
 @Component
-public class UserServiceAdapter implements UserService {
+public class UserDataManagerAdapter implements UserDataManager {
     private final MongoUserRepository mongoUserRepository;
     private final MongoJobRepository mongoJobRepository;
     private final AggregationService aggregationService;
@@ -48,7 +48,7 @@ public class UserServiceAdapter implements UserService {
     private final MongoRefreshTokenRepository mongoRefreshTokenRepository;
     private final MongoTemplate mongoTemplate;
 
-<span class="fc" id="L51">    public UserServiceAdapter(final MongoUserRepository mongoUserRepository, final MongoJobRepository mongoJobRepository, final AggregationService aggregationService, final UserMapper userMapper, JobMapper jobMapper, MongoRefreshTokenRepository mongoRefreshTokenRepository, MongoTemplate mongoTemplate) {</span>
+<span class="fc" id="L51">    public UserDataManagerAdapter(final MongoUserRepository mongoUserRepository, final MongoJobRepository mongoJobRepository, final AggregationService aggregationService, final UserMapper userMapper, JobMapper jobMapper, MongoRefreshTokenRepository mongoRefreshTokenRepository, MongoTemplate mongoTemplate) {</span>
 <span class="fc" id="L52">        this.mongoUserRepository = mongoUserRepository;</span>
 <span class="fc" id="L53">        this.mongoJobRepository = mongoJobRepository;</span>
 <span class="fc" id="L54">        this.aggregationService = aggregationService;</span>
@@ -191,7 +191,7 @@ public class UserServiceAdapter implements UserService {
 <span class="fc" id="L191">    }</span>
 
     @Override
-    public BulkServiceSaveResult saveAll(Set&lt;User&gt; users) {
+    public BulkDataSaveResult saveAll(Set&lt;User&gt; users) {
         // we chose to throw an exception because it seems like something went wrong if someone tries to save an empty set
 <span class="fc bfc" id="L196" title="All 2 branches covered.">        if(users.isEmpty()) {</span>
 <span class="fc" id="L197">            throw new IllegalArgumentException(&quot;users must not be empty&quot;);</span>
@@ -207,7 +207,7 @@ public class UserServiceAdapter implements UserService {
 <span class="fc" id="L207">        }</span>
 
 <span class="fc" id="L209">        BulkWriteResult result = bulkOps.execute();</span>
-<span class="fc" id="L210">        return new BulkServiceSaveResult(users.size(), result.getModifiedCount(), result.getInsertedCount(), result.getDeletedCount());</span>
+<span class="fc" id="L210">        return new BulkDataSaveResult(users.size(), result.getModifiedCount(), result.getInsertedCount(), result.getDeletedCount());</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

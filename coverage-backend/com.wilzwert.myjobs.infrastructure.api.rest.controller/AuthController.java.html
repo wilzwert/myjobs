@@ -7,7 +7,7 @@ import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.CheckUserAvailabilityUseCase;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.LoginUseCase;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.RegisterUseCase;
-import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.UserMapper;
 import com.wilzwert.myjobs.infrastructure.security.captcha.RequiresCaptcha;
@@ -47,18 +47,18 @@ public class AuthController {
 
     private final RefreshTokenService refreshTokenService;
 
-    private final UserService userService;
+    private final UserDataManager userDataManager;
 
     private final JwtService jwtService;
 
-<span class="fc" id="L54">    public AuthController(RegisterUseCase registerUseCase, LoginUseCase loginUseCase, CheckUserAvailabilityUseCase checkUserAvailabilityUseCase, UserMapper userMapper, CookieService cookieService, RefreshTokenService refreshTokenService, UserService userService, JwtService jwtService) {</span>
+<span class="fc" id="L54">    public AuthController(RegisterUseCase registerUseCase, LoginUseCase loginUseCase, CheckUserAvailabilityUseCase checkUserAvailabilityUseCase, UserMapper userMapper, CookieService cookieService, RefreshTokenService refreshTokenService, UserDataManager userDataManager, JwtService jwtService) {</span>
 <span class="fc" id="L55">        this.registerUseCase = registerUseCase;</span>
 <span class="fc" id="L56">        this.loginUseCase = loginUseCase;</span>
 <span class="fc" id="L57">        this.checkUserAvailabilityUseCase = checkUserAvailabilityUseCase;</span>
 <span class="fc" id="L58">        this.userMapper = userMapper;</span>
 <span class="fc" id="L59">        this.cookieService = cookieService;</span>
 <span class="fc" id="L60">        this.refreshTokenService = refreshTokenService;</span>
-<span class="fc" id="L61">        this.userService = userService;</span>
+<span class="fc" id="L61">        this.userDataManager = userDataManager;</span>
 <span class="fc" id="L62">        this.jwtService = jwtService;</span>
 <span class="fc" id="L63">    }</span>
 
@@ -123,7 +123,7 @@ public class AuthController {
 <span class="fc" id="L123">            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();</span>
         }
 
-<span class="fc" id="L126">        User user = userService.findById(new UserId(foundRefreshToken.getUserId())).orElse(null);</span>
+<span class="fc" id="L126">        User user = userDataManager.findById(new UserId(foundRefreshToken.getUserId())).orElse(null);</span>
 <span class="fc bfc" id="L127" title="All 2 branches covered.">        if(user == null) {</span>
 <span class="fc" id="L128">            log.debug(&quot;Associated user not found for {}&quot;, refreshToken);</span>
 <span class="fc" id="L129">            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();</span>

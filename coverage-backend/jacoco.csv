@@ -18,6 +18,9 @@ MyJobsInfra,com.wilzwert.myjobs.infrastructure.batch,JobsRemindersScheduler,45,1
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.batch,MongoBatchCollectionsInitializer,0,224,0,8,0,49,0,6,0,2
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.batch,JobsRemindersBatchConfiguration,86,31,4,0,13,10,3,5,1,5
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.batch,BatchConfiguration,11,36,0,0,3,12,1,4,1,4
+MyJobsInfra,com.wilzwert.myjobs.infrastructure.adapter.fetcher,JsHtmlFetcherAdapter,4,3,0,0,1,1,1,1,1,1
+MyJobsInfra,com.wilzwert.myjobs.infrastructure.adapter.fetcher,StaticHtmlFetcherAdapter,0,80,0,0,0,18,0,3,0,3
+MyJobsInfra,com.wilzwert.myjobs.infrastructure.adapter.fetcher,CustomHtmlFetcherService,5,3,0,0,1,2,1,1,1,1
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.security.service,UserDetailsImpl,31,0,6,0,10,0,8,0,5,0
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.security.service,JwtService,0,175,0,16,0,49,0,16,0,8
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.security.service,CookieService,0,62,0,0,0,16,0,6,0,6
@@ -46,13 +49,10 @@ MyJobsInfra,com.wilzwert.myjobs.infrastructure.security.ratelimit,RateLimitingPr
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper,JobMapper,0,12,0,0,0,3,0,1,0,1
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper,PasswordMapper,6,0,0,0,1,0,1,0,1,0
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper,IdMapper,0,24,0,0,0,5,0,5,0,5
-MyJobsInfra,com.wilzwert.myjobs.infrastructure.persistence.mongo.service,UserServiceAdapter,0,330,0,4,0,48,0,25,0,23
-MyJobsInfra,com.wilzwert.myjobs.infrastructure.persistence.mongo.service,JobServiceAdapter,0,295,0,6,0,39,0,17,0,14
+MyJobsInfra,com.wilzwert.myjobs.infrastructure.persistence.mongo.service,JobDataManagerAdapter,0,295,0,6,0,39,0,17,0,14
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.persistence.mongo.service,MongoRefreshTokenService,0,69,0,2,0,16,0,7,0,6
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.persistence.mongo.service,AggregationService,5,110,1,3,1,22,1,9,0,8
+MyJobsInfra,com.wilzwert.myjobs.infrastructure.persistence.mongo.service,UserDataManagerAdapter,0,330,0,4,0,48,0,25,0,23
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.persistence.mongo.service,DomainSpecificationConverter,81,355,6,19,19,72,8,25,2,16
-MyJobsInfra,com.wilzwert.myjobs.infrastructure.adapter,JsHtmlFetcherAdapter,4,3,0,0,1,1,1,1,1,1
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.adapter,DefaultPasswordHasher,0,17,0,0,0,5,0,3,0,3
-MyJobsInfra,com.wilzwert.myjobs.infrastructure.adapter,StaticHtmlFetcherAdapter,0,80,0,0,0,18,0,3,0,3
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.adapter,DefaultHtmlSanitizer,0,69,1,1,0,10,1,3,0,3
-MyJobsInfra,com.wilzwert.myjobs.infrastructure.adapter,CustomHtmlFetcherService,5,3,0,0,1,2,1,1,1,1

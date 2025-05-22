@@ -3,7 +3,7 @@
 
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
-import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserService;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
 import io.jsonwebtoken.lang.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -25,16 +25,16 @@ import java.util.UUID;
 @Service
 <span class="fc" id="L26">@Slf4j</span>
 public class CustomUserDetailsService implements UserDetailsService {
-    private final UserService userService;
+    private final UserDataManager userDataManager;
 
-<span class="fc" id="L30">    public CustomUserDetailsService(final UserService userService) {</span>
-<span class="fc" id="L31">        this.userService = userService;</span>
+<span class="fc" id="L30">    public CustomUserDetailsService(final UserDataManager userDataManager) {</span>
+<span class="fc" id="L31">        this.userDataManager = userDataManager;</span>
 <span class="fc" id="L32">    }</span>
 
     @Override
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException, NumberFormatException {
         // we use the id as jwt token subject, therefore we load the user by its id
-<span class="pc" id="L37">        User foundUser = userService.findById(new UserId(UUID.fromString(id))).orElseThrow(() -&gt; new UsernameNotFoundException(&quot;Cannot load user info&quot;));</span>
+<span class="pc" id="L37">        User foundUser = userDataManager.findById(new UserId(UUID.fromString(id))).orElseThrow(() -&gt; new UsernameNotFoundException(&quot;Cannot load user info&quot;));</span>
 <span class="fc" id="L38">        return new UserDetailsImpl(foundUser.getId(), foundUser.getEmail(), foundUser.getUsername(), foundUser.getRole(), foundUser.getPassword(), Collections.of(new SimpleGrantedAuthority(foundUser.getRole())));</span>
     }
 }
