@@ -1,6 +1,6 @@
 import { JobService } from './job.service';
 import { DataService } from './data.service';
-import { firstValueFrom, lastValueFrom, of } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, lastValueFrom, of, Subject } from 'rxjs';
 import { Job, JobRating, JobStatus } from '../model/job.interface';
 import { CreateJobRequest } from '../model/create-job-request.interface';
 import { UpdateJobStatusRequest } from '../model/update-job-status-request.interface';
@@ -10,10 +10,14 @@ import { JobMetadata } from '../model/job-metadata.interface';
 import { UpdateJobRequest } from '../model/update-job-request.interface';
 import { CreateJobAttachmentRequest } from '../model/create-job-attachment-request.interface';
 import { UpdateJobRatingRequest } from '../model/update-job-rating-request.interface';
+import { SessionService } from './session.service';
 
 describe('JobService', () => {
   let dataServiceMock: jest.Mocked<DataService>;
+  let sessionServiceMock: jest.Mocked<SessionService>;
   let jobService: JobService;
+
+  const isLoggedSubject = new BehaviorSubject<boolean>(true);
 
   beforeEach(() => {
     dataServiceMock = {
@@ -24,7 +28,26 @@ describe('JobService', () => {
       delete: jest.fn()
     } as unknown as jest.Mocked<DataService>;
 
-    jobService = new JobService(dataServiceMock);
+    sessionServiceMock = {
+      $isLogged: jest.fn(() => isLoggedSubject.asObservable()),
+    } as unknown as jest.Mocked<SessionService>;
+
+    jobService = new JobService(dataServiceMock, sessionServiceMock);
+  });
+
+  it('should reset jobsSubject when isLogged emits', done => {
+    const jobsSubject = jobService["jobsSubject"] as BehaviorSubject<any>;
+
+    // spy on jobsSubject next
+    const nextSpy = jest.spyOn(jobsSubject, 'next');
+
+    // trigger change logged status
+    isLoggedSubject.next(true);
+
+    setTimeout(() => {
+      expect(nextSpy).toHaveBeenCalledWith(null);
+      done();
+    }, 0);
   });
 
   it('current page and items per page should be -1 before any call', () => {

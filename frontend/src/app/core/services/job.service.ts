@@ -30,7 +30,6 @@ export class JobService {
     
     this.sessionService.$isLogged().subscribe(l => {
         // reset subject when user logged in status changes
-        console.log('i m cleaning myselfd');
         this.jobsSubject.next(null);
       });
    }
