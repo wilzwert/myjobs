@@ -137,7 +137,7 @@ jobs:
 
       - name: Run Cypress E2E tests
         working-directory: frontend
-        run: npm run e2e:ci
+        run: npm run e2e:staging
         env:
             MOCK_API: false # use the real backend launched in previous step
             API_URL: http://localhost:8080 
