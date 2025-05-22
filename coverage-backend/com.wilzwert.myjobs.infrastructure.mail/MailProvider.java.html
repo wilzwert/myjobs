@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MailProvider.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MyJobsInfra</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.infrastructure.mail</a> &gt; <span class="el_source">MailProvider.java</span></div><h1>MailProvider.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.infrastructure.mail;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Multipart;
@@ -17,8 +18,7 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.util.Locale;
 
 @Component
@@ -38,6 +38,8 @@ public class MailProvider {
 
     private final String defaultLanguage;
 
+    private File logoTempFile;
+
 
 
     public MailProvider(
@@ -48,18 +50,34 @@ public class MailProvider {
             @Value(&quot;${application.mail.from}&quot;) String from,
             @Value(&quot;${application.mail.from-name}&quot;) String fromName,
             @Value(&quot;${application.default-language}&quot;) String defaultLanguage
-<span class="fc" id="L51">    ) {</span>
-<span class="fc" id="L52">        this.mailSender = mailSender;</span>
-<span class="fc" id="L53">        this.templateEngine = templateEngine;</span>
-<span class="fc" id="L54">        this.messageSource = messageSource;</span>
-<span class="fc" id="L55">        this.frontendUrl = frontendUrl;</span>
-<span class="fc" id="L56">        this.from = from;</span>
-<span class="fc" id="L57">        this.fromName = fromName;</span>
-<span class="fc" id="L58">        this.defaultLanguage = defaultLanguage;</span>
-<span class="fc" id="L59">    }</span>
+<span class="fc" id="L53">    ) {</span>
+<span class="fc" id="L54">        this.mailSender = mailSender;</span>
+<span class="fc" id="L55">        this.templateEngine = templateEngine;</span>
+<span class="fc" id="L56">        this.messageSource = messageSource;</span>
+<span class="fc" id="L57">        this.frontendUrl = frontendUrl;</span>
+<span class="fc" id="L58">        this.from = from;</span>
+<span class="fc" id="L59">        this.fromName = fromName;</span>
+<span class="fc" id="L60">        this.defaultLanguage = defaultLanguage;</span>
+<span class="fc" id="L61">    }</span>
+
+    @PostConstruct
+    public void init() throws IOException {
+<span class="fc" id="L65">        log.info(&quot;Copying logo to tmp file&quot;);</span>
+        // copy images to tmp files at startup
+<span class="fc" id="L67">        ClassPathResource imgResource = new ClassPathResource(&quot;static/images/logo_email.png&quot;);</span>
+<span class="fc" id="L68">        logoTempFile = File.createTempFile(&quot;logo_email&quot;, &quot;.png&quot;);</span>
+<span class="fc" id="L69">        logoTempFile.deleteOnExit(); // cleanup on jvm exit</span>
+<span class="fc" id="L70">        try (InputStream in = imgResource.getInputStream(); FileOutputStream out = new FileOutputStream(logoTempFile)) {</span>
+<span class="fc" id="L71">            in.transferTo(out);</span>
+        }
+<span class="fc" id="L73">    }</span>
+
+    File getLogoTempFile() {
+<span class="fc" id="L76">        return logoTempFile;</span>
+    }
 
     public CustomMailMessage createMessage(String template, String recipientMail, String recipientName, String subject, String lang)  {
-<span class="pc bpc" id="L62" title="1 of 2 branches missed.">        return new CustomMailMessage(template, recipientMail, recipientName, subject, (lang != null ? lang : defaultLanguage));</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">        return new CustomMailMessage(template, recipientMail, recipientName, subject, (lang != null ? lang : defaultLanguage));</span>
     }
 
     /**
@@ -73,8 +91,8 @@ public class MailProvider {
      * @return the complete url
      */
     public String createUrl(String uri, Locale locale) {
-<span class="fc" id="L76">        String realUri = messageSource.getMessage(uri, null, locale);</span>
-<span class="fc" id="L77">        return frontendUrl + &quot;/&quot; + locale.toLanguageTag() + &quot;/&quot; + realUri;</span>
+<span class="fc" id="L94">        String realUri = messageSource.getMessage(uri, null, locale);</span>
+<span class="fc" id="L95">        return frontendUrl + &quot;/&quot; + locale.toLanguageTag() + &quot;/&quot; + realUri;</span>
     }
 
     /**
@@ -88,8 +106,8 @@ public class MailProvider {
      * @return the complete url
      */
     public String createUrl(String uri, Locale locale, Object... args) {
-<span class="fc" id="L91">        String realUri = messageSource.getMessage(uri, args, locale);</span>
-<span class="fc" id="L92">        return frontendUrl + &quot;/&quot; + locale.toLanguageTag() + &quot;/&quot; + realUri;</span>
+<span class="fc" id="L109">        String realUri = messageSource.getMessage(uri, args, locale);</span>
+<span class="fc" id="L110">        return frontendUrl + &quot;/&quot; + locale.toLanguageTag() + &quot;/&quot; + realUri;</span>
     }
 
     /**
@@ -98,54 +116,58 @@ public class MailProvider {
      * @return the url to the user account
      */
     public String createMeUrl(Locale locale) {
-<span class="fc" id="L101">        return createUrl(&quot;uri.me&quot;, locale);</span>
+<span class="fc" id="L119">        return createUrl(&quot;uri.me&quot;, locale);</span>
     }
 
     private MimeMessage createMimeMessage(CustomMailMessage messageToSend, Locale locale, String htmlContent) throws MessagingException, UnsupportedEncodingException {
-<span class="fc" id="L105">        MimeMessage message =  mailSender.createMimeMessage();</span>
-<span class="fc" id="L106">        message.setFrom(new InternetAddress(from, fromName));</span>
-<span class="fc" id="L107">        message.setRecipients(Message.RecipientType.TO, new InternetAddress(messageToSend.getRecipientMail(), messageToSend.getRecipientName()).toUnicodeString());</span>
-<span class="fc" id="L108">        message.setSubject(messageSource.getMessage(messageToSend.getSubject(), null, locale), &quot;UTF-8&quot;);</span>
+<span class="fc" id="L123">        MimeMessage message =  mailSender.createMimeMessage();</span>
+<span class="fc" id="L124">        message.setFrom(new InternetAddress(from, fromName));</span>
+<span class="fc" id="L125">        message.setRecipients(Message.RecipientType.TO, new InternetAddress(messageToSend.getRecipientMail(), messageToSend.getRecipientName()).toUnicodeString());</span>
+<span class="fc" id="L126">        message.setSubject(messageSource.getMessage(messageToSend.getSubject(), null, locale), &quot;UTF-8&quot;);</span>
 
         // send a multipart message to allow logo embedding
-<span class="fc" id="L111">        Multipart multipart = new MimeMultipart(&quot;related&quot;);</span>
+<span class="fc" id="L129">        Multipart multipart = new MimeMultipart(&quot;related&quot;);</span>
 
-<span class="fc" id="L113">        MimeBodyPart htmlPart = new MimeBodyPart();</span>
-<span class="fc" id="L114">        htmlPart.setContent(htmlContent, &quot;text/html; charset=UTF-8&quot;);</span>
-<span class="fc" id="L115">        multipart.addBodyPart(htmlPart);</span>
+<span class="fc" id="L131">        MimeBodyPart htmlPart = new MimeBodyPart();</span>
+<span class="fc" id="L132">        htmlPart.setContent(htmlContent, &quot;text/html; charset=UTF-8&quot;);</span>
+<span class="fc" id="L133">        multipart.addBodyPart(htmlPart);</span>
 
         try {
-<span class="fc" id="L118">            MimeBodyPart imgPart = new MimeBodyPart();</span>
-<span class="fc" id="L119">            imgPart.attachFile(new ClassPathResource(&quot;static/images/logo_email.png&quot;).getFile());</span>
-<span class="fc" id="L120">            imgPart.setContentID(&quot;&lt;logoImage&gt;&quot;);</span>
-<span class="fc" id="L121">            multipart.addBodyPart(imgPart);</span>
+<span class="fc" id="L136">            MimeBodyPart imgPart = new MimeBodyPart();</span>
+<span class="fc" id="L137">            imgPart.attachFile(logoTempFile);</span>
+<span class="fc" id="L138">            imgPart.setContentID(&quot;&lt;logoImage&gt;&quot;);</span>
+<span class="fc" id="L139">            multipart.addBodyPart(imgPart);</span>
         }
-<span class="nc" id="L123">        catch (IOException e) {</span>
-<span class="nc" id="L124">            log.error(&quot;Unable to load logo_email.png&quot;, e);</span>
-<span class="fc" id="L125">        }</span>
+<span class="nc" id="L141">        catch (IOException e) {</span>
+<span class="nc" id="L142">            log.error(&quot;Unable to load logo_email.png&quot;, e);</span>
+<span class="fc" id="L143">        }</span>
 
-<span class="fc" id="L127">        message.setContent(multipart);</span>
-<span class="fc" id="L128">        return message;</span>
+<span class="fc" id="L145">        message.setContent(multipart);</span>
+<span class="fc" id="L146">        return message;</span>
     }
 
     // TODO : improve exception handling with custom exceptions
     @Async
     public void send(CustomMailMessage messageToSend) {
         try {
-<span class="fc" id="L135">            log.debug(&quot;MailProvider : begin sending message&quot;);</span>
-<span class="fc" id="L136">            Context context = new Context(messageToSend.getLocale());</span>
-<span class="fc" id="L137">            messageToSend.getVariables().forEach(context::setVariable);</span>
-<span class="fc" id="L138">            String htmlContent = templateEngine.process(messageToSend.getTemplate(), context);</span>
-<span class="fc" id="L139">            log.debug(&quot;Creating Mime Message to send&quot;);</span>
-<span class="fc" id="L140">            MimeMessage mimeMessage = createMimeMessage(messageToSend, messageToSend.getLocale(), htmlContent);</span>
-<span class="fc" id="L141">            log.debug(&quot;Passing the mimeMessage to the mail sender&quot;);</span>
-<span class="fc" id="L142">            mailSender.send(mimeMessage);</span>
-<span class="fc" id="L143">            log.debug(&quot;Mail should have been sent&quot;);</span>
+<span class="fc" id="L153">            log.debug(&quot;MailProvider : begin sending message&quot;);</span>
+<span class="fc" id="L154">            Context context = new Context(messageToSend.getLocale());</span>
+<span class="fc" id="L155">            messageToSend.getVariables().forEach(context::setVariable);</span>
+<span class="fc" id="L156">            String htmlContent = templateEngine.process(messageToSend.getTemplate(), context);</span>
+<span class="fc" id="L157">            log.debug(&quot;Creating Mime Message to send&quot;);</span>
+<span class="fc" id="L158">            MimeMessage mimeMessage = createMimeMessage(messageToSend, messageToSend.getLocale(), htmlContent);</span>
+<span class="fc" id="L159">            log.debug(&quot;Passing the mimeMessage to the mail sender&quot;);</span>
+<span class="fc" id="L160">            mailSender.send(mimeMessage);</span>
+<span class="fc" id="L161">            log.debug(&quot;Mail should have been sent&quot;);</span>
         }
-<span class="nc" id="L145">        catch (MessagingException | UnsupportedEncodingException e) {</span>
-<span class="nc" id="L146">            log.error(&quot;Unable to send message&quot;, e);</span>
-<span class="nc" id="L147">            throw new RuntimeException(e);</span>
-<span class="fc" id="L148">        }</span>
-<span class="fc" id="L149">    }</span>
+<span class="nc" id="L163">        catch (MessagingException | UnsupportedEncodingException e) {</span>
+<span class="nc" id="L164">            log.error(&quot;Unable to send message&quot;, e);</span>
+<span class="nc" id="L165">            throw new RuntimeException(e);</span>
+        }
+<span class="fc" id="L167">        catch (Exception e) {</span>
+<span class="fc" id="L168">            log.error(&quot;Unexpected exception while building or sending the message&quot;, e);</span>
+<span class="fc" id="L169">            throw new RuntimeException(e);</span>
+<span class="fc" id="L170">        }</span>
+<span class="fc" id="L171">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

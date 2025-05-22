@@ -3,7 +3,7 @@ MyJobsInfra,com.wilzwert.myjobs.infrastructure.mapper,MapperMissingImplementatio
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.mapper,EnrichedEntityMapper,5,23,0,0,1,7,1,2,1,2
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.mapper,EntityMapper,0,32,0,0,0,11,0,2,0,2
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.mail,CustomMailMessage,0,45,0,0,0,14,0,3,0,3
-MyJobsInfra,com.wilzwert.myjobs.infrastructure.mail,MailProvider,17,192,1,1,5,42,1,8,0,8
+MyJobsInfra,com.wilzwert.myjobs.infrastructure.mail,MailProvider,17,232,1,1,5,53,1,10,0,10
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.persistence.mongo.entity,JobRatingReadConverter,0,7,0,0,0,2,0,2,0,2
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.persistence.mongo.entity,MongoRefreshToken,0,7,0,0,0,3,0,2,0,2
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.persistence.mongo.entity,JobRatingWriteConverter,0,7,0,0,0,2,0,2,0,2
