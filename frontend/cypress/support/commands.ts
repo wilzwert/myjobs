@@ -58,6 +58,22 @@ Cypress.Commands.add('login', () => {
                   })
             }
         ).as('login');
+
+        cy.intercept(
+            {
+                method: 'GET',
+                url:  '/api/user/me'
+            }, 
+            req => {
+                req.reply({
+                    email: 'user@example.com',
+                    username: 'existinguser',
+                    firstName: 'Existing',
+                    lastName: 'User',
+                    lang: 'FR',
+                  })
+            }
+        ).as('me');
     
         cy.intercept(
             {
@@ -69,7 +85,7 @@ Cypress.Commands.add('login', () => {
         ).as('jobs')
     }
   
-    cy.get('input[formControlName=email]').type("user@example.com");
-    cy.get('input[formControlName=password]').type("password{enter}{enter}");
+    cy.get('input[formControlName=email]').type("existing@example.com");
+    cy.get('input[formControlName=password]').type("abcd1234{enter}");
     cy.url().should('include', '/jobs');
   });

@@ -1,6 +1,6 @@
 name: Backend CI - Tests and analysis
 concurrency:
-  group: ${{ github.ref }}.ci
+  group: ${{ github.ref }}.backend
   cancel-in-progress: true
 on:
   # CI should be able to run manually

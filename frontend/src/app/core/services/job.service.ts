@@ -56,7 +56,6 @@ export class JobService {
       switchMap((jobsPage: Page<Job> | null) => {
         if(jobsPage === null || page != this.currentPage || status != this.currentStatus || filterLate != this.filterLate || sort != this.currentSort) {
           this.currentPage = page;
-          console.log(status);
           this.currentStatus = status;
           this.filterLate = status == null && filterLate;
           this.itemsPerPage = itemsPerPage;

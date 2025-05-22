@@ -1,6 +1,6 @@
 name: Frontend CI - Tests and analysis
 concurrency:
-  group: ${{ github.ref }}.ci
+  group: ${{ github.ref }}.frontend
   cancel-in-progress: true
 on:
   # CI should be able to run manually
@@ -36,6 +36,7 @@ jobs:
         id: install-chrome
         uses: browser-actions/setup-chrome@v1
        
+      # run all tests (including e2e with mocked api) and generate coverage
       - name: Run tests with coverage
         id: run-frontend-tests
         env:

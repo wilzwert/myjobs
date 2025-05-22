@@ -106,8 +106,8 @@
               "customWebpackConfig": {
                 "path": "./cypress/custom-webpack.config.ts"
               },
-              "localize": ["en"],
-              "baseHref": "/en/",
+              "localize": ["fr"],
+              "baseHref": "/fr/",
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -179,7 +179,8 @@
         "serve-coverage": {
           "builder": "@angular-builders/custom-webpack:dev-server",
           "options": {
-            "buildTarget": "myjobs:build:e2e"
+            "buildTarget": "myjobs:build:e2e",
+            "port": 4201
           }
         },
         "extract-i18n": {
@@ -239,11 +240,6 @@
             "devServerTarget": "myjobs:serve-coverage",
             "watch": true,
             "headless": false
-          },
-          "configurations": {
-            "production": {
-              "buildTarget": "myjobs:serve-coverage:production"
-            }
           }
         },
         "e2e-ci": {
@@ -253,11 +249,6 @@
             "devServerTarget": "myjobs:serve-coverage",
             "headless": true,
             "watch": false
-          },
-          "configurations": {
-            "production": {
-              "buildTarget": "myjobs:serve-coverage:production"
-            }
           }
         },
         "lint": {
