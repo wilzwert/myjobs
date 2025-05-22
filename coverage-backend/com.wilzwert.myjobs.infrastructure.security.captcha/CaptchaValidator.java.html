@@ -2,50 +2,63 @@
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
-<span class="fc" id="L11">@Slf4j</span>
+<span class="fc" id="L13">@Slf4j</span>
 public class CaptchaValidator {
 
-    private static final String GOOGLE_RECAPTCHA_ENDPOINT = &quot;https://www.google.com/recaptcha/api/siteverify&quot;;
+    private static final String GOOGLE_RECAPTCHA_ENTERPRISE_ENDPOINT = &quot;https://recaptchaenterprise.googleapis.com/v1/projects/myjobs-454309/assessments?key=&quot;;
 
-    private final String recaptchaSecret;
+    private final String recaptchaSiteKey;
+
+    private final String recaptchaApiKey;
 
     private final boolean recaptchaAlwaysValid;
 
     private final RestTemplate restTemplate;
 
     public CaptchaValidator(
-            @Value(&quot;${google.recaptcha.secret}&quot;) String recaptchaSecret,
+            @Value(&quot;${google.recaptcha.site-key}&quot;) String recaptchaSiteKey,
+            @Value(&quot;${google.recaptcha.api-key}&quot;) String recaptchaApiKey,
             @Value(&quot;${google.recaptcha.always-valid}&quot;) boolean recaptchaAlwaysValid,
             RestTemplate restTemplate
-<span class="fc" id="L26">    ) {</span>
-<span class="fc" id="L27">        this.recaptchaSecret = recaptchaSecret;</span>
-<span class="fc" id="L28">        this.recaptchaAlwaysValid = recaptchaAlwaysValid;</span>
-<span class="fc" id="L29">        this.restTemplate = restTemplate;</span>
-<span class="fc" id="L30">    }</span>
+<span class="fc" id="L31">    ) {</span>
+<span class="fc" id="L32">        this.recaptchaSiteKey = recaptchaSiteKey;</span>
+<span class="fc" id="L33">        this.recaptchaApiKey = recaptchaApiKey;</span>
+<span class="fc" id="L34">        this.recaptchaAlwaysValid = recaptchaAlwaysValid;</span>
+<span class="fc" id="L35">        this.restTemplate = restTemplate;</span>
+<span class="fc" id="L36">    }</span>
 
 
     public boolean validateCaptcha(String captchaResponse){
-<span class="fc bfc" id="L34" title="All 2 branches covered.">        if(recaptchaAlwaysValid) {</span>
-<span class="fc" id="L35">            return true;</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        if(recaptchaAlwaysValid) {</span>
+<span class="fc" id="L41">            log.info(&quot;Recaptcha Always Valid&quot;);</span>
+<span class="fc" id="L42">            return true;</span>
         }
 
-<span class="fc" id="L38">        log.info(&quot;Validating captcha&quot;);</span>
-<span class="fc" id="L39">        MultiValueMap&lt;String, String&gt; requestMap = new LinkedMultiValueMap&lt;&gt;();</span>
-<span class="fc" id="L40">        requestMap.add(&quot;secret&quot;, recaptchaSecret);</span>
-<span class="fc" id="L41">        requestMap.add(&quot;response&quot;, captchaResponse);</span>
+<span class="fc" id="L45">        log.info(&quot;Validating captcha&quot;);</span>
 
-<span class="fc" id="L43">        CaptchaResponse apiResponse = restTemplate.postForObject(GOOGLE_RECAPTCHA_ENDPOINT, requestMap, CaptchaResponse.class);</span>
-<span class="fc bfc" id="L44" title="All 2 branches covered.">        if(apiResponse == null){</span>
-<span class="fc" id="L45">            return false;</span>
+<span class="fc" id="L47">        Map&lt;String, Object&gt; event = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L48">        event.put(&quot;token&quot;, captchaResponse);</span>
+<span class="fc" id="L49">        event.put(&quot;siteKey&quot;, recaptchaSiteKey);</span>
+
+<span class="fc" id="L51">        Map&lt;String, Map&lt;String, Object&gt;&gt; requestBody = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L52">        requestBody.put(&quot;event&quot;, event);</span>
+
+<span class="fc" id="L54">        ResponseEntity&lt;AssessmentResponse&gt; apiResponse = restTemplate.postForEntity(GOOGLE_RECAPTCHA_ENTERPRISE_ENDPOINT +recaptchaApiKey, requestBody, AssessmentResponse.class);</span>
+<span class="fc" id="L55">        AssessmentResponse response = apiResponse.getBody();</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        if(response == null) {</span>
+<span class="fc" id="L57">            return false;</span>
         }
-<span class="fc" id="L47">        log.info(&quot;Captcha validation returned {}&quot;, apiResponse.isSuccess());</span>
-<span class="fc" id="L48">        return apiResponse.isSuccess();</span>
+
+<span class="fc" id="L60">        log.info(&quot;Captcha validation status returned {}&quot;, response.getTokenProperties().isValid());</span>
+<span class="fc" id="L61">        return response.getTokenProperties().isValid();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

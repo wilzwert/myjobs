@@ -6,7 +6,7 @@ import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
-import com.wilzwert.myjobs.core.domain.model.pagination.DomainPage;
+import com.wilzwert.myjobs.core.domain.shared.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobService;
 import com.wilzwert.myjobs.core.domain.shared.bulk.BulkServiceSaveResult;
@@ -109,33 +109,35 @@ public class JobServiceAdapter implements JobService {
 
     @Override
     public void delete(Job job) {
-<span class="fc" id="L112">        mongoJobRepository.delete(jobMapper.toEntity(job));</span>
-<span class="fc" id="L113">    }</span>
+        // attachments, activities are nested mongo collections, so there's nothing more to do that delete the job
+<span class="fc" id="L113">        mongoJobRepository.delete(jobMapper.toEntity(job));</span>
+<span class="fc" id="L114">    }</span>
 
     @Override
-    public Job deleteAttachment(Job job, Attachment attachment, Activity activity) {
-<span class="fc" id="L117">        return jobMapper.toDomain(mongoJobRepository.save(jobMapper.toEntity(job)));</span>
+    public Job deleteAttachmentAndSaveJob(Job job, Attachment attachment, Activity activity) {
+        // attachments and activities are nested collections, nothing more to do
+<span class="fc" id="L119">        return jobMapper.toDomain(mongoJobRepository.save(jobMapper.toEntity(job)));</span>
     }
 
     // TODO : tests (dont forget to test with empty set)
     @Override
     public BulkServiceSaveResult saveAll(Set&lt;Job&gt; jobs) {
         // we chose to throw an exception because it seems like something went wrong if someone tries to save an empty set
-<span class="fc bfc" id="L124" title="All 2 branches covered.">        if(jobs.isEmpty()) {</span>
-<span class="fc" id="L125">            throw new IllegalArgumentException(&quot;jobs must not be empty&quot;);</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">        if(jobs.isEmpty()) {</span>
+<span class="fc" id="L127">            throw new IllegalArgumentException(&quot;jobs must not be empty&quot;);</span>
         }
 
-<span class="fc" id="L128">        BulkOperations bulkOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.ORDERED, MongoJob.class);</span>
+<span class="fc" id="L130">        BulkOperations bulkOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.ORDERED, MongoJob.class);</span>
 
-<span class="fc" id="L130">        List&lt;MongoJob&gt; mongoJobs = jobMapper.toEntity(jobs.stream().toList());</span>
-<span class="fc bfc" id="L131" title="All 2 branches covered.">        for(MongoJob job : mongoJobs) {</span>
-<span class="fc" id="L132">            Update update = new Update();</span>
-<span class="fc" id="L133">            update.set(&quot;followUpReminderSentAt&quot;, job.getFollowUpReminderSentAt());</span>
-<span class="fc" id="L134">            bulkOps.updateOne(Query.query(Criteria.where(&quot;_id&quot;).is(job.getId())), update);</span>
-<span class="fc" id="L135">        }</span>
+<span class="fc" id="L132">        List&lt;MongoJob&gt; mongoJobs = jobMapper.toEntity(jobs.stream().toList());</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">        for(MongoJob job : mongoJobs) {</span>
+<span class="fc" id="L134">            Update update = new Update();</span>
+<span class="fc" id="L135">            update.set(&quot;followUpReminderSentAt&quot;, job.getFollowUpReminderSentAt());</span>
+<span class="fc" id="L136">            bulkOps.updateOne(Query.query(Criteria.where(&quot;_id&quot;).is(job.getId())), update);</span>
+<span class="fc" id="L137">        }</span>
 
-<span class="fc" id="L137">        BulkWriteResult result = bulkOps.execute();</span>
-<span class="fc" id="L138">        return new BulkServiceSaveResult(jobs.size(), result.getModifiedCount(), result.getInsertedCount(), result.getDeletedCount());</span>
+<span class="fc" id="L139">        BulkWriteResult result = bulkOps.execute();</span>
+<span class="fc" id="L140">        return new BulkServiceSaveResult(jobs.size(), result.getModifiedCount(), result.getInsertedCount(), result.getDeletedCount());</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
