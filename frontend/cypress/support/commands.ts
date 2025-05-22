@@ -86,6 +86,6 @@ Cypress.Commands.add('login', () => {
     }
   
     cy.get('input[formControlName=email]').type("existing@example.com");
-    cy.get('input[formControlName=password]').type("abcd1234{enter}");
+    cy.get('input[formControlName=password]').type("Abcd1234!{enter}");
     cy.url().should('include', '/jobs');
   });

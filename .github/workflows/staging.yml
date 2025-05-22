@@ -115,7 +115,7 @@ jobs:
           LOG_LEVEL_BATCH: WARN
           LOG_LEVEL_SECURITY: WARN
 
-      - name: Upload Cypress report
+      - name: Upload backend log
         if: always()
         uses: actions/upload-artifact@v4
         with:
