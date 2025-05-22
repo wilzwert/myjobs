@@ -1,5 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.mail;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.Multipart;
@@ -17,8 +18,7 @@ import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.util.Locale;
 
 @Component
@@ -38,6 +38,8 @@ public class MailProvider {
 
     private final String defaultLanguage;
 
+    private File logoTempFile;
+
 
 
     public MailProvider(
@@ -56,6 +58,17 @@ public class MailProvider {
         this.from = from;
         this.fromName = fromName;
         this.defaultLanguage = defaultLanguage;
+    }
+
+    @PostConstruct
+    public void init() throws IOException {
+        // copy images to tmp files at startup
+        ClassPathResource imgResource = new ClassPathResource("static/images/logo_email.png");
+        logoTempFile = File.createTempFile("logo_email", ".png");
+        logoTempFile.deleteOnExit(); // cleanup on jvm exit
+        try (InputStream in = imgResource.getInputStream(); FileOutputStream out = new FileOutputStream(logoTempFile)) {
+            in.transferTo(out);
+        }
     }
 
     public CustomMailMessage createMessage(String template, String recipientMail, String recipientName, String subject, String lang)  {
@@ -116,7 +129,7 @@ public class MailProvider {
 
         try {
             MimeBodyPart imgPart = new MimeBodyPart();
-            imgPart.attachFile(new ClassPathResource("static/images/logo_email.png").getFile());
+            imgPart.attachFile(logoTempFile);
             imgPart.setContentID("<logoImage>");
             multipart.addBodyPart(imgPart);
         }
