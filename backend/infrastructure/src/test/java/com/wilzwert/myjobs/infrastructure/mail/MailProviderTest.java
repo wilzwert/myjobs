@@ -15,12 +15,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -50,8 +54,26 @@ public class MailProviderTest {
     private MailProvider underTest;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp() throws Exception {
         underTest = new MailProvider(mailSender, templateEngine, messageSource,"http://frontend", "test@myjobs", "MyJobs tests", "EN");
+        underTest.init();
+    }
+
+    @Test
+    void shouldCopyImageToTempFileOnInit() throws Exception {
+        File logoFile = underTest.getLogoTempFile(); // expose un getter temporaire si besoin pour test
+        assertNotNull(logoFile);
+        assertTrue(logoFile.exists());
+        assertTrue(logoFile.length() > 0);
+
+        try (
+                InputStream original = new ClassPathResource("static/images/logo_email.png").getInputStream();
+                InputStream copied = new FileInputStream(logoFile)
+        ) {
+            byte[] originalBytes = original.readAllBytes();
+            byte[] copiedBytes = copied.readAllBytes();
+            assertArrayEquals(originalBytes, copiedBytes);
+        }
     }
 
     @Test
@@ -66,12 +88,14 @@ public class MailProviderTest {
 
     }
 
+
     @Test
     public void shouldSendMail() throws MessagingException, IOException {
         ArgumentCaptor<MimeMessage> argument = ArgumentCaptor.forClass(MimeMessage.class);
         JavaMailSender mockedMailSender = spy(new JavaMailSenderImpl());
 
         underTest = new MailProvider(mockedMailSender, templateEngine, messageSource,"http://frontend", "test@myjobs", "MyJobs tests", "EN");
+        underTest.init();
         doNothing().when(mockedMailSender).send(argument.capture());
 
         when(templateEngine.process(anyString(), any(Context.class))).thenReturn("<html><body>Some html</body></html>");

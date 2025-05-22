@@ -62,6 +62,7 @@ public class MailProvider {
 
     @PostConstruct
     public void init() throws IOException {
+        log.info("Copying logo to tmp file");
         // copy images to tmp files at startup
         ClassPathResource imgResource = new ClassPathResource("static/images/logo_email.png");
         logoTempFile = File.createTempFile("logo_email", ".png");
@@ -69,6 +70,10 @@ public class MailProvider {
         try (InputStream in = imgResource.getInputStream(); FileOutputStream out = new FileOutputStream(logoTempFile)) {
             in.transferTo(out);
         }
+    }
+
+    File getLogoTempFile() {
+        return logoTempFile;
     }
 
     public CustomMailMessage createMessage(String template, String recipientMail, String recipientName, String subject, String lang)  {
@@ -157,6 +162,10 @@ public class MailProvider {
         }
         catch (MessagingException | UnsupportedEncodingException e) {
             log.error("Unable to send message", e);
+            throw new RuntimeException(e);
+        }
+        catch (Exception e) {
+            log.error("Unexpected exception while building or sending the message", e);
             throw new RuntimeException(e);
         }
     }
