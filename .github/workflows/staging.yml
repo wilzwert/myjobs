@@ -133,7 +133,7 @@ jobs:
         run: npm run e2e:ci
         env:
             MOCK_API: false # use the real backend launched in previous step
-            API_TARGET: http://localhost:8080 
+            API_URL: http://localhost:8080 
             API_SECURE: false
             GOOGLE_RECAPTCHA_SITE_KEY: ${{ secrets.GOOGLE_RECAPTCHA_SITE_KEY_INTEGRATION }}
 
