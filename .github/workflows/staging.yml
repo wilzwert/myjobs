@@ -93,7 +93,7 @@ jobs:
             sleep 30
         env:
           MONGODB_PORT: 27019
-          MONGODB_RS_NAME: rs-staging
+          MONGODB_RS_NAME: rs-staging 
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_S3_REGION: ${{ vars.AWS_S3_REGION_INTEGRATION }}
@@ -114,6 +114,13 @@ jobs:
           LOG_LEVEL_CAPTCHA: WARN
           LOG_LEVEL_BATCH: WARN
           LOG_LEVEL_SECURITY: WARN
+
+      - name: Upload Cypress report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-output
+          path: backend.log
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
