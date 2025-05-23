@@ -14,15 +14,14 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
- * A collector for batch operations on Users and Jobs, as in "for each User we have a list of Jobs"
- * This is why the batchProcessing function expects a Map<User, SortedSet<Job>> parameter
- * Please note that the batchSize concerns users, e.g, batchSize users will be handled, whatever number of Jobs they have
- * Warning : Jobs list MUST be sorted by userId BEFORE using this collector.
- * This is very important because otherwise the grouping user -> jobs would not be guaranteed
- *
  * @author Wilhelm Zwertvaegher
  * Date:13/05/2025
  * Time:08:36
+ *  A collector for batch operations on Users and Jobs, as in "for each User we have a list of Jobs"
+ *  This is why the bat chProcessing function expects a Map<User, SortedSet<Job>> parameter
+ *  Please note that the batchSize concerns users, e.g, batchSize users will be handled, whatever number of Jobs each have
+ *  Warning : Jobs list MUST be sorted by userId BEFORE using this collector.
+ *  This is very important because otherwise the appropriate grouping user -> jobs would not be guaranteed
  */
 
 public class UsersJobsBatchCollector<T> implements Collector<Job, Map<UserId, SortedSet<Job>>, List<T>> {
@@ -30,6 +29,7 @@ public class UsersJobsBatchCollector<T> implements Collector<Job, Map<UserId, So
 
     /**
      * The function used to find users based on a list of UserId
+     * This must be passed as a constructor parameter when instantiating this Collector
      */
     private final Function<List<UserId>, Map<UserId, User>> findUsersFunction;
 
