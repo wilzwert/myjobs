@@ -19,6 +19,8 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Locale;
 
 @Component
@@ -69,7 +71,13 @@ public class MailProvider {
         log.info("Copying logo to tmp file");
         // copy images to tmp files at startup
         ClassPathResource imgResource = new ClassPathResource("static/images/logo_email.png");
-        logoTempFile = File.createTempFile("logo_email", ".png");
+        Path temp = Files.createTempDirectory("random-directory");
+        logoTempFile = Files.createTempFile(temp,  null, ".png").toFile();
+        logoTempFile.setReadable(false); //deny for all
+        logoTempFile.setWritable(false);
+        logoTempFile.setExecutable(false);
+        logoTempFile.setReadable(true, true); //allow for owner
+        logoTempFile.setWritable(true, true);
         logoTempFile.deleteOnExit(); // cleanup on jvm exit
         try (InputStream in = imgResource.getInputStream(); FileOutputStream out = new FileOutputStream(logoTempFile)) {
             in.transferTo(out);
