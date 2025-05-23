@@ -12,7 +12,7 @@
 
 
 [![Frontend coverage](https://img.shields.io/codecov/c/github/wilzwert/myjobs?flag=frontend&label=Frontend%20coverage&logo=Jasmine)](https://wilzwert.github.io/myjobs/coverage-frontend/)
-[![Frontend Quality Gate Status](https://img.shields.io/sonar/quality_gate/MyJobs_frontend?server=https%3A%2F%2Fsonarcloud.io&logo=sonarcloud&label=Frontend%20quality%20gate)](https://sonarcloud.io/summary/new_code?id=wilzwert_myjobs_frontend)
+[![Frontend Quality Gate Status](https://img.shields.io/sonar/quality_gate/MyJobs_frontend?server=https%3A%2F%2Fsonarcloud.io&logo=sonarcloud&label=Frontend%20quality%20gate)](https://sonarcloud.io/summary/new_code?id=MyJobs_frontend)
 
 [Backend coverage report](https://wilzwert.github.io/myjobs/coverage-backend/)
 
