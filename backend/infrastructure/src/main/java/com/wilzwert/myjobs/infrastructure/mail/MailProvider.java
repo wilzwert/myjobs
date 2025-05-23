@@ -1,5 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.mail;
 
+import com.wilzwert.myjobs.infrastructure.exception.MailSendException;
 import com.wilzwert.myjobs.infrastructure.storage.SecureTempFileHelper;
 import jakarta.annotation.PostConstruct;
 import jakarta.mail.Message;
@@ -13,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -174,13 +176,15 @@ public class MailProvider {
             mailSender.send(mimeMessage);
             log.debug("Mail should have been sent");
         }
-        catch (MessagingException | UnsupportedEncodingException e) {
-            log.error("Unable to send message", e);
-            throw new RuntimeException(e);
-        }
         catch (Exception e) {
+            System.out.println(e.getClass().getName());
+            if(e instanceof MessagingException || e instanceof MailException) {
+                log.error("Unable to send message", e);
+                throw new MailSendException("Unable to send message", e);
+            }
+            System.out.println(e.getClass().getName());
             log.error("Unexpected exception while building or sending the message", e);
-            throw new RuntimeException(e);
+            throw new MailSendException("Unexpected exception while building or sending the message", e);
         }
     }
 }

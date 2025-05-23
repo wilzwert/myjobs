@@ -1,6 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.mail;
 
 
+import com.wilzwert.myjobs.infrastructure.exception.MailSendException;
 import com.wilzwert.myjobs.infrastructure.storage.SecureTempFileHelper;
 import jakarta.mail.Address;
 import jakarta.mail.Message;
@@ -21,13 +22,11 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.HashMap;
 import java.util.Locale;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -148,4 +147,46 @@ public class MailProviderTest {
 
         assertThrows(RuntimeException.class, () -> underTest.send(message));
     }
+
+    @Test
+    void whenMailSenderThrowsMessagingException_thenShouldThrowMailSendException() throws IOException {
+        JavaMailSender mockedMailSender = spy(new JavaMailSenderImpl());
+
+        underTest = new MailProvider(mockedMailSender, templateEngine, messageSource, secureTempFileHelper, mailProperties, "http://frontend", "EN");
+        underTest.init();
+
+        when(templateEngine.process(anyString(), any(Context.class))).thenReturn("<html><body>Some html</body></html>");
+        when(messageSource.getMessage(anyString(), any(), any(Locale.class))).thenReturn("Subject from message source");
+
+        doThrow(new org.springframework.mail.MailSendException("error", new Exception())).when(mockedMailSender).send(any(MimeMessage.class));
+
+        CustomMailMessage message = underTest.createMessage("template", "recipient@myjobs", "MyJobs recipient", "Test subject", "EN");
+        assertNotNull(message);
+
+        var ex = assertThrows(MailSendException.class, () -> underTest.send(message));
+        assertThat(ex.getMessage()).isEqualTo("Unable to send message");
+        verify(mockedMailSender).send(any(MimeMessage.class));
+    }
+
+    @Test
+    void whenMailSenderThrowsUnsupportedEncodingException_thenShouldThrowMailSendException() throws IOException {
+        JavaMailSender mockedMailSender = spy(new JavaMailSenderImpl());
+
+        underTest = new MailProvider(mockedMailSender, templateEngine, messageSource, secureTempFileHelper, mailProperties, "http://frontend", "EN");
+        underTest.init();
+
+        when(templateEngine.process(anyString(), any(Context.class))).thenReturn("<html><body>Some html</body></html>");
+        when(messageSource.getMessage(anyString(), any(), any(Locale.class))).thenReturn("Subject from message source");
+
+        doThrow(new RuntimeException()).when(mockedMailSender).send(any(MimeMessage.class));
+
+        CustomMailMessage message = underTest.createMessage("template", "recipient@myjobs", "MyJobs recipient", "Test subject", "EN");
+        assertNotNull(message);
+
+        var ex = assertThrows(MailSendException.class, () -> underTest.send(message));
+        assertThat(ex.getMessage()).isEqualTo("Unexpected exception while building or sending the message");
+        verify(mockedMailSender).send(any(MimeMessage.class));
+    }
+
+
 }
