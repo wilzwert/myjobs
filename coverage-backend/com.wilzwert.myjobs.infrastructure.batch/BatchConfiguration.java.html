@@ -8,6 +8,7 @@ import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.explore.support.MongoJobExplorerFactoryBean;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.MongoJobRepositoryFactoryBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.MongoTransactionManager;
@@ -20,32 +21,33 @@ import org.springframework.data.mongodb.core.MongoTemplate;
  * Time:14:20
  */
 @Configuration
+@ConditionalOnProperty(name = &quot;application.batch.enabled&quot;, havingValue = &quot;true&quot;)
 @EnableBatchProcessing
-<span class="fc" id="L24">public class BatchConfiguration {</span>
+<span class="fc" id="L26">public class BatchConfiguration {</span>
     @Bean
     public JobRepository jobRepository(MongoTemplate mongoTemplate, MongoTransactionManager transactionManager) throws Exception {
-<span class="fc" id="L27">        MongoJobRepositoryFactoryBean factory = new MongoJobRepositoryFactoryBean();</span>
-<span class="fc" id="L28">        factory.setMongoOperations(mongoTemplate);</span>
-<span class="fc" id="L29">        factory.setTransactionManager(transactionManager);</span>
-<span class="fc" id="L30">        factory.afterPropertiesSet();</span>
-<span class="fc" id="L31">        return factory.getObject();</span>
+<span class="fc" id="L29">        MongoJobRepositoryFactoryBean factory = new MongoJobRepositoryFactoryBean();</span>
+<span class="fc" id="L30">        factory.setMongoOperations(mongoTemplate);</span>
+<span class="fc" id="L31">        factory.setTransactionManager(transactionManager);</span>
+<span class="fc" id="L32">        factory.afterPropertiesSet();</span>
+<span class="fc" id="L33">        return factory.getObject();</span>
     }
 
     @Bean
     public JobExplorer jobExplorer(MongoTemplate mongoTemplate, MongoTransactionManager transactionManager) throws Exception {
-<span class="fc" id="L36">        MongoJobExplorerFactoryBean factory = new MongoJobExplorerFactoryBean();</span>
-<span class="fc" id="L37">        factory.setMongoOperations(mongoTemplate);</span>
-<span class="fc" id="L38">        factory.setTransactionManager(transactionManager);</span>
-<span class="fc" id="L39">        factory.afterPropertiesSet();</span>
-<span class="fc" id="L40">        return factory.getObject();</span>
+<span class="fc" id="L38">        MongoJobExplorerFactoryBean factory = new MongoJobExplorerFactoryBean();</span>
+<span class="fc" id="L39">        factory.setMongoOperations(mongoTemplate);</span>
+<span class="fc" id="L40">        factory.setTransactionManager(transactionManager);</span>
+<span class="fc" id="L41">        factory.afterPropertiesSet();</span>
+<span class="fc" id="L42">        return factory.getObject();</span>
     }
 
     @Bean
     public JobLauncher jobLauncher(JobRepository jobRepository) {
-<span class="fc" id="L45">        return (job, jobParameters) -&gt; {</span>
-<span class="nc" id="L46">            JobExecution execution = jobRepository.createJobExecution(job.getName(), jobParameters);</span>
-<span class="nc" id="L47">            job.execute(execution);</span>
-<span class="nc" id="L48">            return execution;</span>
+<span class="fc" id="L47">        return (job, jobParameters) -&gt; {</span>
+<span class="nc" id="L48">            JobExecution execution = jobRepository.createJobExecution(job.getName(), jobParameters);</span>
+<span class="nc" id="L49">            job.execute(execution);</span>
+<span class="nc" id="L50">            return execution;</span>
         };
     }
 }

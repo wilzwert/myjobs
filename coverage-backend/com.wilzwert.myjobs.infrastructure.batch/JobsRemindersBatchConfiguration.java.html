@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JobsRemindersBatchConfiguration.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MyJobsInfra</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.infrastructure.batch</a> &gt; <span class="el_source">JobsRemindersBatchConfiguration.java</span></div><h1>JobsRemindersBatchConfiguration.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.infrastructure.batch;
 
 
-import com.wilzwert.myjobs.core.domain.model.user.batch.UsersJobsRemindersBatchResult;
-import com.wilzwert.myjobs.core.domain.model.user.ports.driving.SendJobsRemindersUseCase;
+import com.wilzwert.myjobs.infrastructure.batch.service.SendJobsRemindersBatchRunner;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
@@ -12,11 +11,10 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.MongoTransactionManager;
-
-import java.util.List;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -29,44 +27,30 @@ import java.util.List;
  */
 
 @Configuration
-<span class="fc" id="L32">@Slf4j</span>
-<span class="fc" id="L33">public class JobsRemindersBatchConfiguration {</span>
+<span class="fc" id="L30">@Slf4j</span>
+@ConditionalOnProperty(name = &quot;application.batch.enabled&quot;, havingValue = &quot;true&quot;)
+<span class="fc" id="L32">public class JobsRemindersBatchConfiguration {</span>
     @Bean
     public Job jobReminderJob(Step jobReminderStep, JobRepository jobRepository) {
-<span class="fc" id="L36">        return new JobBuilder(&quot;jobReminderJob&quot;, jobRepository)</span>
-<span class="fc" id="L37">                .start(jobReminderStep)</span>
-<span class="fc" id="L38">                .preventRestart()</span>
-<span class="fc" id="L39">                .build();</span>
+<span class="fc" id="L35">        return new JobBuilder(&quot;jobReminderJob&quot;, jobRepository)</span>
+<span class="fc" id="L36">                .start(jobReminderStep)</span>
+<span class="fc" id="L37">                .preventRestart()</span>
+<span class="fc" id="L38">                .build();</span>
     }
 
     @Bean
     public Step jobReminderStep(Tasklet jobReminderTasklet, JobRepository jobRepository, MongoTransactionManager transactionManager) {
-<span class="fc" id="L44">        return new StepBuilder(&quot;jobReminderStep&quot;, jobRepository)</span>
-<span class="fc" id="L45">                .tasklet(jobReminderTasklet, transactionManager)</span>
-<span class="fc" id="L46">                .build();</span>
+<span class="fc" id="L43">        return new StepBuilder(&quot;jobReminderStep&quot;, jobRepository)</span>
+<span class="fc" id="L44">                .tasklet(jobReminderTasklet, transactionManager)</span>
+<span class="fc" id="L45">                .build();</span>
     }
 
     @Bean
-    public Tasklet jobReminderTasklet(SendJobsRemindersUseCase useCase) {
-<span class="fc" id="L51">        return (contribution, chunkContext) -&gt; {</span>
-            try {
-<span class="nc" id="L53">                List&lt;UsersJobsRemindersBatchResult&gt; results = useCase.sendJobsReminders(1);</span>
-<span class="nc" id="L54">                int totalSendErrors = results.stream().mapToInt(UsersJobsRemindersBatchResult::getSendErrorsCount).sum();</span>
-<span class="nc" id="L55">                int totalSaveErrors = results.stream().mapToInt(UsersJobsRemindersBatchResult::getSaveErrorsCount).sum();</span>
-<span class="nc bnc" id="L56" title="All 4 branches missed.">                if(totalSendErrors &gt; 0 || totalSaveErrors &gt; 0) {</span>
-<span class="nc" id="L57">                    log.warn(&quot;SendJobReminders batch run : {} chunks, {} send errors, {} save errors&quot;, results.size(), totalSaveErrors, totalSendErrors);</span>
-                }
-                else {
-<span class="nc" id="L60">                    int totalUsersReminded = results.stream().mapToInt(UsersJobsRemindersBatchResult::getUsersCount).sum();</span>
-<span class="nc" id="L61">                    int totalJobsReminded = results.stream().mapToInt(UsersJobsRemindersBatchResult::getJobsCount).sum();</span>
-<span class="nc" id="L62">                    log.info(&quot;SendJobReminders batch run : {} chunks, {} users, {} jobs&quot;, results.size(), totalUsersReminded, totalJobsReminded);</span>
-                }
-            }
-<span class="nc" id="L65">            catch (Exception e) {</span>
-<span class="nc" id="L66">                log.error(&quot;SendJobReminders batch throw an exception&quot;, e);</span>
-<span class="nc" id="L67">            }</span>
-<span class="nc" id="L68">            contribution.setExitStatus(ExitStatus.COMPLETED);</span>
-<span class="nc" id="L69">            return RepeatStatus.FINISHED;</span>
+    public Tasklet jobReminderTasklet(SendJobsRemindersBatchRunner runner) {
+<span class="fc" id="L50">        return (contribution, chunkContext) -&gt; {</span>
+<span class="nc" id="L51">            runner.run();</span>
+<span class="nc" id="L52">            contribution.setExitStatus(ExitStatus.COMPLETED);</span>
+<span class="nc" id="L53">            return RepeatStatus.FINISHED;</span>
         };
     }
 }

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SecurityConfiguration.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MyJobsInfra</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.infrastructure.security.configuration</a> &gt; <span class="el_source">SecurityConfiguration.java</span></div><h1>SecurityConfiguration.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.infrastructure.security.configuration;
+
+
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.Authenticator;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.PasswordHasher;
+import com.wilzwert.myjobs.infrastructure.adapter.DefaultPasswordHasher;
+import com.wilzwert.myjobs.infrastructure.security.jwt.JwtAuthenticationFilter;
+import com.wilzwert.myjobs.infrastructure.security.jwt.JwtAuthenticator;
+import com.wilzwert.myjobs.infrastructure.security.ratelimit.RateLimitingFilter;
+import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
+import com.wilzwert.myjobs.infrastructure.security.service.RefreshTokenService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
+
+/**
+ * @author Wilhelm Zwertvaegher
+ * Date:13/03/2025
+ * Time:12:00
+ */
+@Configuration
+public class SecurityConfiguration {
+
+    private final String frontendUrl;
+
+    private final boolean corsAllowAll;
+
+<span class="fc" id="L42">    public SecurityConfiguration(@Value(&quot;${application.frontend.url}&quot;) String frontendUrl, @Value(&quot;${security.cors.allow-all}&quot;) boolean corsAllowAll) {</span>
+<span class="fc" id="L43">        this.frontendUrl = frontendUrl;</span>
+<span class="fc" id="L44">        this.corsAllowAll = corsAllowAll;</span>
+
+<span class="fc" id="L46">    }</span>
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+<span class="fc" id="L50">        CorsConfiguration config = new CorsConfiguration();</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">        if (corsAllowAll) {</span>
+<span class="nc" id="L52">            config.addAllowedOriginPattern(&quot;*&quot;);</span>
+        }
+        else {
+<span class="fc" id="L55">            config.setAllowedOrigins(List.of(frontendUrl));</span>
+        }
+<span class="fc" id="L57">        config.setAllowedMethods(List.of(&quot;GET&quot;, &quot;POST&quot;, &quot;PUT&quot;, &quot;PATCH&quot;, &quot;DELETE&quot;, &quot;OPTIONS&quot;));</span>
+<span class="fc" id="L58">        config.setAllowedHeaders(List.of(&quot;*&quot;));</span>
+<span class="fc" id="L59">        config.setAllowCredentials(true);</span>
+
+<span class="fc" id="L61">        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();</span>
+<span class="fc" id="L62">        source.registerCorsConfiguration(&quot;/api/**&quot;, config);</span>
+<span class="fc" id="L63">        return source;</span>
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+<span class="fc" id="L68">        return new BCryptPasswordEncoder();</span>
+    }
+
+    @Bean
+    public PasswordHasher passwordHasher(PasswordEncoder passwordEncoder) {
+<span class="fc" id="L73">        return new DefaultPasswordHasher(passwordEncoder);</span>
+    }
+
+    @Bean
+    public Authenticator authenticator(JwtService jwtService, RefreshTokenService refreshTokenService) {
+<span class="fc" id="L78">        return new JwtAuthenticator(jwtService, refreshTokenService);</span>
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter, RateLimitingFilter rateLimitingFilter) throws Exception {
+<span class="fc" id="L83">        return http</span>
+<span class="fc" id="L84">                .cors(cors -&gt; cors.configurationSource(corsConfigurationSource()))</span>
+                // disable CSRF protection, as the app is RESTful API
+<span class="fc" id="L86">                .csrf(AbstractHttpConfigurer::disable)</span>
+                // RESTFul API should not use HTTP sessions
+<span class="fc" id="L88">                .sessionManagement(session -&gt; session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))</span>
+<span class="fc" id="L89">                .authorizeHttpRequests(auth -&gt;</span>
+                        // allow publicly accessible paths
+<span class="fc" id="L91">                        auth.requestMatchers(</span>
+                                        &quot;/api/auth/register&quot;,
+                                        &quot;/api/auth/login&quot;,
+                                        &quot;/api/auth/logout&quot;,
+                                        &quot;/api/auth/refresh-token&quot;,
+                                        &quot;/api/auth/email-check&quot;,
+                                        &quot;/api/auth/username-check&quot;,
+                                        &quot;/api/user/password/**&quot;,
+                                        &quot;/api/user/me/email/validation&quot;,
+                                        /*&quot;/&quot;+storageProperties.getUploadDir()+&quot;/**&quot;,
+                                        apiDocProperties.getApiDocsPath()+&quot;/**&quot;,
+                                        apiDocProperties.getSwaggerPath()+&quot;/**&quot;,*/
+                                        // note : we have to add /swagger-ui/** because event if swagger path is set in configuration
+                                        // the ui is redirected to /swagger-ui/index.html
+                                        &quot;/swagger-ui/**&quot;,
+                                        // used for &quot;internal&quot; http calls e.g. manual/scheduled http batch triggering
+                                        &quot;/internal/**&quot;
+<span class="fc" id="L108">                        ).permitAll()</span>
+                        // everything else requires authentication
+<span class="fc" id="L110">                        .anyRequest().authenticated()</span>
+                )
+<span class="fc" id="L112">                .exceptionHandling(exp -&gt; exp.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))</span>
+                // insert our custom filter, which will authenticate user from token if provided in the request
+<span class="fc" id="L114">                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)</span>
+<span class="fc" id="L115">                .addFilterAfter(rateLimitingFilter, JwtAuthenticationFilter.class)</span>
+<span class="fc" id="L116">                .build();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BeanConfiguration.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MyJobsInfra</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.infrastructure.configuration</a> &gt; <span class="el_source">BeanConfiguration.java</span></div><h1>BeanConfiguration.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.infrastructure.configuration;
+
+
+import com.wilzwert.myjobs.core.application.usecase.*;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobDataManager;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.*;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.extractor.JobMetadataExtractorService;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.extractor.impl.DefaultJobMetadataExtractorService;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.extractor.impl.HtmlJobMetadataExtractor;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.extractor.impl.JsonLdJobMetadataExtractor;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.SendJobsRemindersUseCase;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.HtmlSanitizer;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.fetcher.HtmlFetcherService;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.fetcher.JsHtmlFetcher;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.fetcher.StaticHtmlFetcher;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.DeleteAccountUseCase;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driving.ExtractJobMetadataUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.LoginUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.RegisterUseCase;
+import com.wilzwert.myjobs.core.domain.model.job.service.JobMetadataService;
+import com.wilzwert.myjobs.infrastructure.adapter.fetcher.CustomHtmlFetcherService;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+/**
+ * @author Wilhelm Zwertvaegher
+ * Date:13/03/2025
+ * Time:11:46
+ */
+
+@Configuration
+<span class="fc" id="L33">public class BeanConfiguration {</span>
+
+    @Bean
+    RegisterUseCase registerUseCase(UserDataManager userDataManager, PasswordHasher passwordHasher, AccountCreationMessageProvider messageProvider) {
+<span class="fc" id="L37">        return new RegisterUseCaseImpl(userDataManager, passwordHasher, messageProvider);</span>
+    }
+
+    @Bean
+    LoginUseCase loginUseCase(UserDataManager userDataManager, PasswordHasher passwordHasher, Authenticator authenticator) {
+<span class="fc" id="L42">        return new LoginUseCaseImpl(userDataManager, passwordHasher, authenticator);</span>
+    }
+
+    @Bean
+    DeleteAccountUseCase deleteAccountUseCase(UserDataManager userDataManager, FileStorage fileStorage) {
+<span class="fc" id="L47">        return new DeleteAccountUseCaseImpl(userDataManager, fileStorage);</span>
+    }
+
+    @Bean
+    JobUseCaseImpl jobUseCase(JobDataManager jobDataManager, UserDataManager userDataManager, FileStorage fileStorage, HtmlSanitizer htmlSanitizer) {
+<span class="fc" id="L52">        return new JobUseCaseImpl(jobDataManager, userDataManager, fileStorage, htmlSanitizer);</span>
+    }
+
+    @Bean
+    PasswordUseCaseImpl passwordUseCase(UserDataManager userDataManager, PasswordResetMessageProvider passwordResetMessageProvider, PasswordHasher passwordHasher) {
+<span class="fc" id="L57">        return new PasswordUseCaseImpl(userDataManager, passwordResetMessageProvider, passwordHasher);</span>
+    }
+
+    @Bean
+    UserUseCaseImpl userUseCase(UserDataManager userDataManager, EmailVerificationMessageProvider emailVerificationMessageProvider) {
+<span class="fc" id="L62">        return new UserUseCaseImpl(userDataManager, emailVerificationMessageProvider);</span>
+    }
+
+    @Bean
+    public HtmlFetcherService htmlFetcher(JsHtmlFetcher jsHtmlFetcher, StaticHtmlFetcher staticHtmlFetcher) {
+<span class="fc" id="L67">        return new CustomHtmlFetcherService()</span>
+<span class="fc" id="L68">                .with(jsHtmlFetcher)</span>
+<span class="fc" id="L69">                .with(staticHtmlFetcher)</span>
+                ;
+    }
+
+    @Bean
+    public JobMetadataExtractorService jobMetadataExtractor() {
+<span class="fc" id="L75">        return new DefaultJobMetadataExtractorService()</span>
+                // use concrete extractors provided by domain for simplicity
+<span class="fc" id="L77">                .with(new JsonLdJobMetadataExtractor())</span>
+<span class="fc" id="L78">                .with(new HtmlJobMetadataExtractor())</span>
+                ;
+    }
+
+    @Bean
+    public JobMetadataService jobMetadataExtractorService(HtmlFetcherService htmlFetcherService, JobMetadataExtractorService jobMetadataExtractorService) {
+<span class="fc" id="L84">        return new JobMetadataService(htmlFetcherService, jobMetadataExtractorService);</span>
+    }
+
+    @Bean
+    ExtractJobMetadataUseCase extractJobMetadataUseCase(JobMetadataService jobMetadataService) {
+<span class="fc" id="L89">        return new ExtractJobMetadataUseCaseImpl(jobMetadataService);</span>
+    }
+
+    @Bean
+    SendJobsRemindersUseCase sendJobsRemindersUseCase(JobDataManager jobDataManager, UserDataManager userDataManager, JobReminderMessageProvider messageProvider) {
+<span class="fc" id="L94">        return new SendJobsRemindersUseCaseImpl(jobDataManager, userDataManager, messageProvider);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
