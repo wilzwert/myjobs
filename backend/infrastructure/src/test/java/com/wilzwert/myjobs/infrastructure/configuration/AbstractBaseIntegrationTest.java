@@ -33,7 +33,7 @@ public abstract class AbstractBaseIntegrationTest {
     private TestDataLoader testDataLoader;
 
     @AfterEach
-    public void tearDown() {
+    void tearDown() {
         // reload all test data to ensure further tests consistency
         // we could e.g. manually delete the created entities but this would be unreliable
         // because for all we know, domain could trigger other data creation / update

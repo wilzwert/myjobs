@@ -58,7 +58,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
         private RegisterUserRequest registerUserRequest;
 
         @BeforeEach
-        public void setup() {
+        void setup() {
             // setup a default valid signup request
             registerUserRequest = new RegisterUserRequest();
             registerUserRequest.setEmail("test@example.com");
@@ -70,19 +70,19 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
         }
 
         @Test
-        public void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
+        void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
             mockMvc.perform(post(REGISTER_URL))
                     .andExpect(status().isBadRequest());
         }
         @Test
-        public void whenEmailEmpty_thenShouldReturnBadRequestWhenEmailEmpty() throws Exception {
+        void whenEmailEmpty_thenShouldReturnBadRequestWhenEmailEmpty() throws Exception {
             registerUserRequest.setEmail("");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
                     .andExpect(status().isBadRequest());
         }
 
         @Test
-        public void whenEmailInvalid_thenShouldReturnBadRequest() throws Exception {
+        void whenEmailInvalid_thenShouldReturnBadRequest() throws Exception {
             registerUserRequest.setEmail("test");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
                     .andExpect(status().isBadRequest())
@@ -90,7 +90,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
         }
 
         @Test
-        public void whenFirstNameEmpty_thenShouldReturnBadRequest() throws Exception {
+        void whenFirstNameEmpty_thenShouldReturnBadRequest() throws Exception {
             registerUserRequest.setFirstName("");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
                     .andExpect(status().isBadRequest())
@@ -98,7 +98,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
         }
 
         @Test
-        public void whenLastNameEmpty_thenShouldReturnBadRequest() throws Exception {
+        void whenLastNameEmpty_thenShouldReturnBadRequest() throws Exception {
             registerUserRequest.setLastName("");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
                     .andExpect(status().isBadRequest())
@@ -106,7 +106,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
         }
 
         @Test
-        public void whenUsernameTooShort_thenShouldReturnBadRequest() throws Exception {
+        void whenUsernameTooShort_thenShouldReturnBadRequest() throws Exception {
             registerUserRequest.setUsername("T");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
                     .andExpect(status().isBadRequest())
@@ -114,7 +114,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
         }
 
         @Test
-        public void whenUsernameTooLong_thenShouldReturnBadRequest() throws Exception {
+        void whenUsernameTooLong_thenShouldReturnBadRequest() throws Exception {
             registerUserRequest.setUsername("thisisafartoolongusernamethatshouldtriggeravalidationerror");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
                     .andExpect(status().isBadRequest())
@@ -122,7 +122,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
         }
 
         @Test
-        public void whenPasswordEmpty_thenShouldReturnBadRequest() throws Exception {
+        void whenPasswordEmpty_thenShouldReturnBadRequest() throws Exception {
             registerUserRequest.setPassword("");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
                     .andExpect(status().isBadRequest())
@@ -130,7 +130,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
         }
 
         @Test
-        public void whenPasswordInvalid_thenShouldReturnBadRequest() throws Exception {
+        void whenPasswordInvalid_thenShouldReturnBadRequest() throws Exception {
             registerUserRequest.setPassword("pass");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
                     .andExpect(status().isBadRequest())
@@ -138,7 +138,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
         }
 
         @Test
-        public void whenEmailAlreadyExists_thenShouldReturnBadRequest() throws Exception {
+        void whenEmailAlreadyExists_thenShouldReturnBadRequest() throws Exception {
             // we know we already have a User with the email 'existing@example.com' (see resources/test-data/user.json
             registerUserRequest.setEmail("existing@example.com");
 
@@ -148,7 +148,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
         }
 
         @Test
-        public void whenUsernameAlreadyExists_thenShouldReturnBadRequest() throws Exception {
+        void whenUsernameAlreadyExists_thenShouldReturnBadRequest() throws Exception {
             // we know we already have a User with the username 'existinguser' (see resources/test-data/user.json
             registerUserRequest.setUsername("existinguser");
 
@@ -158,7 +158,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
         }
 
         @Test
-        public void shouldRegisterUser() throws Exception {
+        void shouldRegisterUser() throws Exception {
 
             Instant beforeCall = Instant.now();
             MvcResult result = mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
@@ -198,7 +198,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
         private static final String LOGIN_URL = "/api/auth/login";
 
         @Test
-        public void whenLoginFailed_thenShouldReturnUnauthorized() throws Exception {
+        void whenLoginFailed_thenShouldReturnUnauthorized() throws Exception {
             LoginRequest loginRequest = new LoginRequest();
             loginRequest.setEmail("existing@example.com");
             loginRequest.setPassword("abcd1234");
@@ -208,7 +208,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
         }
 
         @Test
-        public void whenLoginSucceeded_thenShouldSetCookiesAndReturnAuthResponse() throws Exception {
+        void whenLoginSucceeded_thenShouldSetCookiesAndReturnAuthResponse() throws Exception {
             LoginRequest loginRequest = new LoginRequest();
             loginRequest.setEmail("existing@example.com");
             loginRequest.setPassword("Abcd1234!");
@@ -236,37 +236,37 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
     class AuthControllerEmailAndUsernameCheckIT {
 
         @Test
-        public void whenNoEmail_thenShouldReturnBadRequest() throws Exception {
+        void whenNoEmail_thenShouldReturnBadRequest() throws Exception {
             mockMvc.perform(get("/api/auth/email-check"))
                     .andExpect(status().isBadRequest());
         }
 
         @Test
-        public void whenEmailTaken_thenShouldReturnUnprocessableEntity() throws Exception {
+        void whenEmailTaken_thenShouldReturnUnprocessableEntity() throws Exception {
             mockMvc.perform(get("/api/auth/email-check").param("email", "existing@example.com"))
                             .andExpect(status().isUnprocessableEntity());
         }
 
         @Test
-        public void whenEmailAvailable_thenShouldReturnOk() throws Exception {
+        void whenEmailAvailable_thenShouldReturnOk() throws Exception {
             mockMvc.perform(get("/api/auth/email-check").param("email", "notexisting@example.com"))
                     .andExpect(status().isOk());
         }
 
         @Test
-        public void whenNoUsername_thenShouldReturnBadRequest() throws Exception {
+        void whenNoUsername_thenShouldReturnBadRequest() throws Exception {
             mockMvc.perform(get("/api/auth/username-check"))
                     .andExpect(status().isBadRequest());
         }
 
         @Test
-        public void whenUsernameTaken_thenShouldReturnUnprocessableEntity() throws Exception {
+        void whenUsernameTaken_thenShouldReturnUnprocessableEntity() throws Exception {
             mockMvc.perform(get("/api/auth/username-check").param("username", "existinguser"))
                     .andExpect(status().isUnprocessableEntity());
         }
 
         @Test
-        public void whenUsernameAvailable_thenShouldReturnOk() throws Exception {
+        void whenUsernameAvailable_thenShouldReturnOk() throws Exception {
             mockMvc.perform(get("/api/auth/username-check").param("username", "notexisting"))
                     .andExpect(status().isOk());
         }
@@ -281,12 +281,12 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
 
 
         @Test
-        public void whenRefreshTokenEmpty_thenShouldReturnUnauthorized() throws Exception {
+        void whenRefreshTokenEmpty_thenShouldReturnUnauthorized() throws Exception {
             mockMvc.perform(post(REFRESH_TOKEN_URL))
                     .andExpect(status().isUnauthorized());
         }
         @Test
-        public void whenRefreshTokenNotFound_thenShouldReturnUnauthorized() throws Exception {
+        void whenRefreshTokenNotFound_thenShouldReturnUnauthorized() throws Exception {
             Cookie cookie = new Cookie("refresh_token", "notExisting");
             mockMvc.perform(
                         post(REFRESH_TOKEN_URL).cookie(cookie)
@@ -295,7 +295,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
         }
 
         @Test
-        public void whenRefreshTokenExpired_thenShouldReturnUnauthorized() throws Exception {
+        void whenRefreshTokenExpired_thenShouldReturnUnauthorized() throws Exception {
             Cookie cookie = new Cookie("refresh_token", "expiredRefreshToken");
             mockMvc.perform(
                     post(REFRESH_TOKEN_URL).cookie(cookie)
@@ -304,7 +304,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
         }
 
         @Test
-        public void whenUserNotFound_thenShouldReturnUnauthorized() throws Exception {
+        void whenUserNotFound_thenShouldReturnUnauthorized() throws Exception {
             Cookie cookie = new Cookie("refresh_token", "unknownUserRefreshToken");
             mockMvc.perform(
                             post(REFRESH_TOKEN_URL).cookie(cookie)
@@ -313,7 +313,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
         }
 
         @Test
-        public void whenRefreshSuccess_thenShouldSetCookiesAndReturnAuthResponse() throws Exception {
+        void whenRefreshSuccess_thenShouldSetCookiesAndReturnAuthResponse() throws Exception {
             Cookie cookie = new Cookie("refresh_token", "validRefreshToken");
             MvcResult mvcResult = mockMvc.perform(post(REFRESH_TOKEN_URL).cookie(cookie))
                     .andExpect(status().isOk())
@@ -346,7 +346,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
         private JwtService jwtService;
 
         @Test
-        public void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
+        void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
             Cookie accessTokenCookie = new Cookie("access_token", "accessToken");
             Cookie refreshTokenCookie = new Cookie("refresh_token", "refreshToken");
             mockMvc.perform(post("/api/auth/logout").cookie(accessTokenCookie, refreshTokenCookie))
@@ -354,7 +354,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
         }
 
         @Test
-        public void shouldLogout() throws Exception {
+        void shouldLogout() throws Exception {
             // generates a token for our "existinguser"
             String token = jwtService.generateToken("abcd1234-1234-1234-1234-123456789012");
             Cookie accessTokenCookie = new Cookie("access_token", token);

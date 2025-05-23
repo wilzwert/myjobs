@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
 
 public class AsyncConfigTest {
     @Test
-    public void shouldConfigureExecutor() {
+    void shouldConfigureExecutor() {
         AsyncConfig asyncConfig = new AsyncConfig();
         var executor = asyncConfig.getAsyncExecutor();
         assertNotNull(executor);
@@ -38,7 +38,7 @@ public class AsyncConfigTest {
     }
 
     @Test
-    public void shouldProvideAsyncUncaughtExceptionHandler() {
+    void shouldProvideAsyncUncaughtExceptionHandler() {
         Logger logger = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
         var memoryAppender = new MemoryAppender();
         memoryAppender.setContext((LoggerContext) org.slf4j.LoggerFactory.getILoggerFactory());

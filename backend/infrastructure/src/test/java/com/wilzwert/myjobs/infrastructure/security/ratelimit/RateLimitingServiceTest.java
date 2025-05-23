@@ -69,7 +69,7 @@ public class RateLimitingServiceTest {
         "'/api/auth/email-check', 'anonymous', '/api/auth/email-check', 'anonymous' , 10, 60",
         "'/api/auth/email-check', '', '/api',  , 10, 60"
     })
-    public void shouldReturnMostSpecificRateLimitRuleBasedOnPathAndScope(String path, String scope, String expectedPath, String expectedScope, int expectedLimit, long expectedDuration ) {
+    void shouldReturnMostSpecificRateLimitRuleBasedOnPathAndScope(String path, String scope, String expectedPath, String expectedScope, int expectedLimit, long expectedDuration ) {
         when(rateLimitingProperties.getRules()).thenReturn(rules);
         Optional<RateLimitingProperties.RateLimitConfig> found = underTest.findBestMatchingRule(path, scope);
         assertThat(found.isPresent()).isTrue();
@@ -80,21 +80,21 @@ public class RateLimitingServiceTest {
     }
 
     @Test
-    public void whenNoMatchingRuleFound_thenShouldReturnEmpty() {
+    void whenNoMatchingRuleFound_thenShouldReturnEmpty() {
         when(rateLimitingProperties.getRules()).thenReturn(rules);
         assertThat(underTest.findBestMatchingRule("/something", "authenticated").isPresent()).isFalse();
         assertThat(underTest.findBestMatchingRule("/something", "anonymous").isPresent()).isFalse();
     }
 
     @Test
-    public void whenNoRulesExist_thenShouldReturnEmpty() {
+    void whenNoRulesExist_thenShouldReturnEmpty() {
         when(rateLimitingProperties.getRules()).thenReturn(Collections.emptyList());
         assertThat(underTest.findBestMatchingRule("/something", "authenticated").isPresent()).isFalse();
         assertThat(underTest.findBestMatchingRule("/something", "anonymous").isPresent()).isFalse();
     }
 
     @Test
-    public void shouldBuildAnonymousKey() {
+    void shouldBuildAnonymousKey() {
         var config = new RateLimitingProperties.RateLimitConfig("/api", "anonymous", 50, Duration.ofSeconds(30));
         when(request.getRemoteAddr()).thenReturn("127.0.0.1");
 
@@ -103,7 +103,7 @@ public class RateLimitingServiceTest {
     }
 
     @Test
-    public void shouldBuildAuthenticatedKey() {
+    void shouldBuildAuthenticatedKey() {
         UUID id = UUID.randomUUID();
         var config = new RateLimitingProperties.RateLimitConfig("/api", "authenticated", 50, Duration.ofSeconds(30));
         SecurityContextHolder.getContext().setAuthentication(
@@ -127,7 +127,7 @@ public class RateLimitingServiceTest {
     }
 
     @Test
-    public void shouldBuildBucket() {
+    void shouldBuildBucket() {
         var config = new RateLimitingProperties.RateLimitConfig("/api", "authenticated", 50, Duration.ofSeconds(30));
         var key = "test-bucket";
 

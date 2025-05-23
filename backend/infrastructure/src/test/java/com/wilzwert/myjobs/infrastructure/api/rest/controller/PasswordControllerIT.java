@@ -40,7 +40,7 @@ public class PasswordControllerIT extends AbstractBaseIntegrationTest {
         private static final String RESET_PASSWORD_URL = "/api/user/password/reset";
 
         @Test
-        public void whenEmailInvalid_thenShouldReturnBadRequest() throws Exception {
+        void whenEmailInvalid_thenShouldReturnBadRequest() throws Exception {
             ResetPasswordRequest resetPasswordRequest = new ResetPasswordRequest();
             resetPasswordRequest.setEmail("test");
 
@@ -51,7 +51,7 @@ public class PasswordControllerIT extends AbstractBaseIntegrationTest {
         }
 
         @Test
-        public void whenEmailExists_thenShouldUpdateResetPasswordToken() throws Exception {
+        void whenEmailExists_thenShouldUpdateResetPasswordToken() throws Exception {
             ResetPasswordRequest resetPasswordRequest = new ResetPasswordRequest();
             resetPasswordRequest.setEmail("changepassword@example.com");
 
@@ -68,7 +68,7 @@ public class PasswordControllerIT extends AbstractBaseIntegrationTest {
         }
 
         @Test
-        public void whenEmailDoesntExist_thenShouldReturnOk() throws Exception {
+        void whenEmailDoesntExist_thenShouldReturnOk() throws Exception {
             ResetPasswordRequest resetPasswordRequest = new ResetPasswordRequest();
             resetPasswordRequest.setEmail("test@test.com");
 
@@ -86,7 +86,7 @@ public class PasswordControllerIT extends AbstractBaseIntegrationTest {
         private NewPasswordRequest changePasswordRequest;
 
         @BeforeEach
-        public void setUp()  {
+        void setUp()  {
             // this is a valid password request
             // it should be changed per case for testing
             changePasswordRequest = new NewPasswordRequest();
@@ -95,13 +95,13 @@ public class PasswordControllerIT extends AbstractBaseIntegrationTest {
         }
 
         @Test
-        public void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
+        void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
             mockMvc.perform(post(CREATE_PASSWORD_URL))
                     .andExpect(status().isBadRequest());
         }
 
         @Test
-        public void whenTokenEmpty_thenShouldReturnBadRequest() throws Exception {
+        void whenTokenEmpty_thenShouldReturnBadRequest() throws Exception {
             changePasswordRequest.setToken("");
             mockMvc.perform(post(CREATE_PASSWORD_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
                     .andExpect(status().isBadRequest())
@@ -110,7 +110,7 @@ public class PasswordControllerIT extends AbstractBaseIntegrationTest {
         }
 
         @Test
-        public void whenNewPasswordEmpty_thenShouldReturnBadRequest() throws Exception {
+        void whenNewPasswordEmpty_thenShouldReturnBadRequest() throws Exception {
             changePasswordRequest.setPassword("");
             mockMvc.perform(post(CREATE_PASSWORD_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
                     .andExpect(status().isBadRequest())
@@ -119,7 +119,7 @@ public class PasswordControllerIT extends AbstractBaseIntegrationTest {
         }
 
         @Test
-        public void whenNewPasswordWeak_thenShouldReturnBadRequest() throws Exception {
+        void whenNewPasswordWeak_thenShouldReturnBadRequest() throws Exception {
             changePasswordRequest.setPassword("abcd1234!");
             mockMvc.perform(post(CREATE_PASSWORD_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
                     .andExpect(status().isBadRequest())
@@ -128,7 +128,7 @@ public class PasswordControllerIT extends AbstractBaseIntegrationTest {
         }
 
         @Test
-        public void whenTokenExpired_thenShouldReturnBadRequest() throws Exception {
+        void whenTokenExpired_thenShouldReturnBadRequest() throws Exception {
             changePasswordRequest.setToken("44a41127-a212-45e5-8170-3c57d2dc0caf");
             mockMvc.perform(post(CREATE_PASSWORD_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
                     .andExpect(status().isBadRequest())
@@ -136,7 +136,7 @@ public class PasswordControllerIT extends AbstractBaseIntegrationTest {
         }
 
         @Test
-        public void ShouldUpdatePassword() throws Exception {
+        void ShouldUpdatePassword() throws Exception {
             mockMvc.perform(post(CREATE_PASSWORD_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
                     .andExpect(status().isOk());
         }

@@ -50,7 +50,7 @@ public class AccountCreationMessageProviderAdapterIT extends AbstractBaseIntegra
             "'EN', 'Account creation', 'Thank you for signing up for MyJobs'",
             "'FR', 'Création de votre compte', 'Merci de vous être inscrit à MyJobs'"
     })
-    public void shouldSendMail(String lang, String expectedSubject, String expectedHtml) throws Exception {
+    void shouldSendMail(String lang, String expectedSubject, String expectedHtml) throws Exception {
         User user = User.builder()
                 .id(UserId.generate())
                 .email("user@example.com")

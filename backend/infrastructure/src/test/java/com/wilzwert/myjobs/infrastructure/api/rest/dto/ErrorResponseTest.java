@@ -65,7 +65,7 @@ public class ErrorResponseTest {
 
 
     @Test
-    public void whenException_thenShouldBuildErrorResponse() {
+    void whenException_thenShouldBuildErrorResponse() {
         ErrorResponse response = ErrorResponse.fromException(new Exception());
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getHttpStatusCode());
         assertEquals("500", response.getStatus());
@@ -74,7 +74,7 @@ public class ErrorResponseTest {
     }
 
     @Test
-    public void whenEntityAlreadyExistsException_thenShouldBuildErrorResponse() {
+    void whenEntityAlreadyExistsException_thenShouldBuildErrorResponse() {
         ErrorResponse response = ErrorResponse.fromException(new UserAlreadyExistsException());
         assertEquals(HttpStatus.CONFLICT, response.getHttpStatusCode());
         assertEquals("409", response.getStatus());
@@ -83,7 +83,7 @@ public class ErrorResponseTest {
     }
 
     @Test
-    public void whenEntityNotFoundException_thenShouldBuildErrorResponse_() {
+    void whenEntityNotFoundException_thenShouldBuildErrorResponse_() {
         ErrorResponse response = ErrorResponse.fromException(new UserNotFoundException());
         assertEquals(HttpStatus.NOT_FOUND, response.getHttpStatusCode());
         assertEquals("404", response.getStatus());
@@ -92,7 +92,7 @@ public class ErrorResponseTest {
     }
 
     @Test
-    public void whenResponseStatusException_thenShouldBuildErrorResponse() {
+    void whenResponseStatusException_thenShouldBuildErrorResponse() {
         ErrorResponse response = ErrorResponse.fromException(new ResponseStatusException(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "unsupported"));
         assertEquals(HttpStatus.UNSUPPORTED_MEDIA_TYPE, response.getHttpStatusCode());
         assertEquals("415", response.getStatus());
@@ -101,7 +101,7 @@ public class ErrorResponseTest {
     }
 
     @Test
-    public void whenMethodArgumentNotValidException_thenShouldBuildErrorResponse() {
+    void whenMethodArgumentNotValidException_thenShouldBuildErrorResponse() {
         // trigger "fake" validation to check ErrorResponse
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
@@ -133,7 +133,7 @@ public class ErrorResponseTest {
     }
 
     @Test
-    public void whenLoginException_thenShouldBuildErrorResponse() {
+    void whenLoginException_thenShouldBuildErrorResponse() {
         ErrorResponse response = ErrorResponse.fromException(new LoginException());
         assertEquals(HttpStatus.UNAUTHORIZED, response.getHttpStatusCode());
         assertEquals("401", response.getStatus());
@@ -142,7 +142,7 @@ public class ErrorResponseTest {
     }
 
     @Test
-    public void whenAccessDeniedException_thenShouldBuildErrorResponse() {
+    void whenAccessDeniedException_thenShouldBuildErrorResponse() {
         ErrorResponse response = ErrorResponse.fromException(new AccessDeniedException("some message"));
         assertEquals(HttpStatus.UNAUTHORIZED, response.getHttpStatusCode());
         assertEquals("401", response.getStatus());
@@ -151,7 +151,7 @@ public class ErrorResponseTest {
     }
 
     @Test
-    public void whenHttpRequestMethodNotSupportedException_thenShouldBuildErrorResponse() {
+    void whenHttpRequestMethodNotSupportedException_thenShouldBuildErrorResponse() {
         ErrorResponse response = ErrorResponse.fromException(new HttpRequestMethodNotSupportedException("some message"));
         assertEquals(HttpStatus.METHOD_NOT_ALLOWED, response.getHttpStatusCode());
         assertEquals("405", response.getStatus());
@@ -160,7 +160,7 @@ public class ErrorResponseTest {
     }
 
     @Test
-    public void whenNumberFormatException_thenShouldBuildErrorResponse() {
+    void whenNumberFormatException_thenShouldBuildErrorResponse() {
         ErrorResponse response = ErrorResponse.fromException(new NumberFormatException("some message"));
         assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatusCode());
         assertEquals("400", response.getStatus());
@@ -169,7 +169,7 @@ public class ErrorResponseTest {
     }
 
     @Test
-    public void whenBadRequestException_thenShouldBuildErrorResponse() {
+    void whenBadRequestException_thenShouldBuildErrorResponse() {
         ErrorResponse response = ErrorResponse.fromException(new BadRequestException("some message"));
         assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatusCode());
         assertEquals("400", response.getStatus());
@@ -178,7 +178,7 @@ public class ErrorResponseTest {
     }
 
     @Test
-    public void whenHttpMessageNotReadableException_thenShouldBuildErrorResponse() {
+    void whenHttpMessageNotReadableException_thenShouldBuildErrorResponse() {
         ErrorResponse response = ErrorResponse.fromException(new HttpMessageNotReadableException("cannot read", new MockHttpInputMessage("input message".getBytes(StandardCharsets.UTF_8))));
         assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatusCode());
         assertEquals("400", response.getStatus());
@@ -187,7 +187,7 @@ public class ErrorResponseTest {
     }
 
     @Test
-    public void whenHttpMediaTypeException_thenShouldBuildErrorResponse() {
+    void whenHttpMediaTypeException_thenShouldBuildErrorResponse() {
         ErrorResponse response = ErrorResponse.fromException(new HttpMediaTypeNotAcceptableException("unsupported media type"));
         assertEquals(HttpStatus.UNSUPPORTED_MEDIA_TYPE, response.getHttpStatusCode());
         assertEquals("415", response.getStatus());
@@ -196,7 +196,7 @@ public class ErrorResponseTest {
     }
 
     @Test
-    public void whenHttpClientErrorException_thenShouldBuildErrorResponse() {
+    void whenHttpClientErrorException_thenShouldBuildErrorResponse() {
         ErrorResponse response = ErrorResponse.fromException(new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Client error"));
         assertEquals(HttpStatus.UNAUTHORIZED, response.getHttpStatusCode());
         assertEquals("401", response.getStatus());
@@ -205,7 +205,7 @@ public class ErrorResponseTest {
     }
 
     @Test
-    public void whenPasswordMatchException_thenShouldBuildErrorResponse() {
+    void whenPasswordMatchException_thenShouldBuildErrorResponse() {
         ErrorResponse response = ErrorResponse.fromException(new PasswordMatchException());
         assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatusCode());
         assertEquals("400", response.getStatus());
@@ -214,7 +214,7 @@ public class ErrorResponseTest {
     }
 
     @Test
-    public void whenValidationException_thenShouldBuildErrorResponse() {
+    void whenValidationException_thenShouldBuildErrorResponse() {
         ValidationErrors errors = new ValidationErrors();
         errors.add(new ValidationError("param", ErrorCode.FIELD_CANNOT_BE_EMPTY));
         ErrorResponse response = ErrorResponse.fromException(new ValidationException(errors));

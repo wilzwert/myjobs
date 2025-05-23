@@ -32,12 +32,12 @@ public class CaptchaValidatorTest {
     private CaptchaValidator underTest;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         underTest = new CaptchaValidator("siteKey", "apiKey", false, restTemplate);
     }
 
     @Test
-    public void shouldReturnTrue_whenAlwaysTrue() {
+    void shouldReturnTrue_whenAlwaysTrue() {
         underTest = new CaptchaValidator( "siteKey", "apiKey", true, restTemplate);
 
         assertTrue(underTest.validateCaptcha("response"));
@@ -45,7 +45,7 @@ public class CaptchaValidatorTest {
     }
 
     @Test
-    public void shouldReturnTrue_whenCaptchaIsValid() {
+    void shouldReturnTrue_whenCaptchaIsValid() {
         ArgumentCaptor<Object> argument = ArgumentCaptor.forClass(Object.class);
         AssessmentResponse response = new AssessmentResponse();
         AssessmentResponse.TokenProperties properties = new AssessmentResponse.TokenProperties();
@@ -65,7 +65,7 @@ public class CaptchaValidatorTest {
     }
 
     @Test
-    public void shouldReturnFalse_whenCaptchaIsNotValid() {
+    void shouldReturnFalse_whenCaptchaIsNotValid() {
         ArgumentCaptor<Object> argument = ArgumentCaptor.forClass(Object.class);
         AssessmentResponse response = new AssessmentResponse();
         AssessmentResponse.TokenProperties properties = new AssessmentResponse.TokenProperties();
@@ -85,7 +85,7 @@ public class CaptchaValidatorTest {
     }
 
     @Test
-    public void shouldReturnFalse_whenEmptyResponseFromRecaptchaApi() {
+    void shouldReturnFalse_whenEmptyResponseFromRecaptchaApi() {
         ArgumentCaptor<Object> argument = ArgumentCaptor.forClass(Object.class);
         when(restTemplate.postForEntity(anyString(), argument.capture(), eq(AssessmentResponse.class))).thenReturn(ResponseEntity.ok(null));
 
@@ -101,7 +101,7 @@ public class CaptchaValidatorTest {
     }
 
     @Test
-    public void shouldReturnFalse_whenResponseFromRecaptchaApiNotOk() {
+    void shouldReturnFalse_whenResponseFromRecaptchaApiNotOk() {
         ArgumentCaptor<Object> argument = ArgumentCaptor.forClass(Object.class);
         when(restTemplate.postForEntity(anyString(), argument.capture(), eq(AssessmentResponse.class))).thenReturn(ResponseEntity.badRequest().build());
 

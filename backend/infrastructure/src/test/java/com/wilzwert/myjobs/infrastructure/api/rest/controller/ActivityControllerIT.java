@@ -51,31 +51,31 @@ public class ActivityControllerIT extends AbstractBaseIntegrationTest  {
     Cookie accessTokenCookie;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         accessTokenCookie = new Cookie("access_token", jwtService.generateToken(USER_FOR_JOBS_TEST_ID));
     }
 
     @Test
-    public void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
+    void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
         mockMvc.perform(post(TEST_URL))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    public void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
+    void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
         mockMvc.perform(post(TEST_URL).cookie(accessTokenCookie))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void whenJobIdInvalid_thenShouldReturnBadRequest() throws Exception {
+    void whenJobIdInvalid_thenShouldReturnBadRequest() throws Exception {
         CreateActivityRequest createActivityRequest = new CreateActivityRequest();
         mockMvc.perform(post("/api/jobs/invalid/activities").cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(createActivityRequest)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    public void whenJobNotFound_thenShouldReturnBadRequest() throws Exception {
+    void whenJobNotFound_thenShouldReturnBadRequest() throws Exception {
         // we need a fully valid request, because data validation occurs before use case call
         CreateActivityRequest createActivityRequest = new CreateActivityRequest();
         createActivityRequest.setType(ActivityType.IN_PERSON_INTERVIEW);
@@ -85,7 +85,7 @@ public class ActivityControllerIT extends AbstractBaseIntegrationTest  {
     }
 
     @Test
-    public void whenRequestInvalid_thenShouldReturnBadRequestWithErrors() throws Exception {
+    void whenRequestInvalid_thenShouldReturnBadRequestWithErrors() throws Exception {
         String invalidJson = """
                 {
                     "type": "NOT_A_VALID_ACTIVITY_TYPE"
@@ -105,7 +105,7 @@ public class ActivityControllerIT extends AbstractBaseIntegrationTest  {
     }
 
     @Test
-    public void shouldCreateActivity() throws Exception {
+    void shouldCreateActivity() throws Exception {
         // we need a fully valid request, because data validation occurs before use case call
         CreateActivityRequest createActivityRequest = new CreateActivityRequest();
         createActivityRequest.setType(ActivityType.IN_PERSON_INTERVIEW);

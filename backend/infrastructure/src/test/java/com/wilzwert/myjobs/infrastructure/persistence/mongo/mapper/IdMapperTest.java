@@ -18,7 +18,7 @@ public class IdMapperTest {
     private final IdMapper underTest = new IdMapper() {};
 
     @Test
-    public void shouldConvertEntityIdToUUID() {
+    void shouldConvertEntityIdToUUID() {
         UUID uuid = UUID.randomUUID();
         UserId userId = new UserId(uuid);
 
@@ -26,25 +26,25 @@ public class IdMapperTest {
     }
 
     @Test
-    public void shouldConvertUUIDToUserId() {
+    void shouldConvertUUIDToUserId() {
         UUID uuid = UUID.randomUUID();
         assertEquals(uuid, underTest.mapUserId(uuid).value());
     }
 
     @Test
-    public void shouldConvertUUIDToJobId() {
+    void shouldConvertUUIDToJobId() {
         UUID uuid = UUID.randomUUID();
         assertEquals(uuid, underTest.mapJobId(uuid).value());
     }
 
     @Test
-    public void shouldConvertUUIDToActivityId() {
+    void shouldConvertUUIDToActivityId() {
         UUID uuid = UUID.randomUUID();
         assertEquals(uuid, underTest.mapActivityId(uuid).value());
     }
 
     @Test
-    public void shouldConvertUUIDToAttachmentId() {
+    void shouldConvertUUIDToAttachmentId() {
         UUID uuid = UUID.randomUUID();
         assertEquals(uuid, underTest.mapAttachmentId(uuid).value());
     }

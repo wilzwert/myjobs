@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class CustomMailMessageTest {
 
     @Test
-    public void shouldPushVariable() {
+    void shouldPushVariable() {
         CustomMailMessage message = new CustomMailMessage("template", "recipiant@myjobs", "MyJobs", "Test subject", "EN");
 
         assertEquals(0, message.getVariables().size());

@@ -58,20 +58,20 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
     Cookie accessTokenCookie;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         accessTokenCookie = new Cookie("access_token", jwtService.generateToken(USER_FOR_JOBS_TEST_ID));
     }
 
     @Nested
     class JobControllerGetIt {
         @Test
-        public void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
+        void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
             mockMvc.perform(post(JOBS_URL))
                     .andExpect(status().isUnauthorized());
         }
 
         @Test
-        public void shouldGetJobs() throws Exception {
+        void shouldGetJobs() throws Exception {
             MvcResult mvcResult = mockMvc.perform(get(JOBS_URL).cookie(accessTokenCookie))
                     .andExpect(status().isOk())
                     .andReturn();
@@ -92,7 +92,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void shouldGetJobsWithUserPagination() throws Exception {
+        void shouldGetJobsWithUserPagination() throws Exception {
             MvcResult mvcResult = mockMvc.perform(
                     get(JOBS_URL).cookie(accessTokenCookie)
                             .param("page", "2") // third page
@@ -117,7 +117,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void shouldGetJobsSortedByRatingDesc() throws Exception {
+        void shouldGetJobsSortedByRatingDesc() throws Exception {
             MvcResult mvcResult = mockMvc.perform(
                             get(JOBS_URL).cookie(accessTokenCookie)
                                     .param("sort", "rating,desc")
@@ -139,7 +139,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void shouldGetJobsSortedByCreatedAtAsc() throws Exception {
+        void shouldGetJobsSortedByCreatedAtAsc() throws Exception {
             MvcResult mvcResult = mockMvc.perform(
                             get(JOBS_URL).cookie(accessTokenCookie)
                                     .param("sort", "createdAt,asc")
@@ -161,7 +161,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void shouldGetJobsFilteredByStatus() throws Exception {
+        void shouldGetJobsFilteredByStatus() throws Exception {
             MvcResult mvcResult = mockMvc.perform(
                             get(JOBS_URL).cookie(accessTokenCookie)
                                     .param("status", "PENDING")
@@ -183,7 +183,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void whenJobIdInvalid_thenShouldReturnBadRequest() throws Exception {
+        void whenJobIdInvalid_thenShouldReturnBadRequest() throws Exception {
             mockMvc.perform(
                     get(JOBS_URL+"/invalid").cookie(accessTokenCookie)
                 )
@@ -191,7 +191,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void whenJobNotFound_thenShouldReturnNotfound() throws Exception {
+        void whenJobNotFound_thenShouldReturnNotfound() throws Exception {
             mockMvc.perform(
                             get(JOBS_URL+"/11111111-1111-1111-1111-111111111111").cookie(accessTokenCookie)
                     )
@@ -199,7 +199,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void shouldGetJob() throws Exception {
+        void shouldGetJob() throws Exception {
             // get the second job, not the one used for almost all other tests
             // we need to check status, activities size
             MvcResult mvcResult = mockMvc.perform(
@@ -220,19 +220,19 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
     class JobControllerCreateIt {
 
         @Test
-        public void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
+        void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
             mockMvc.perform(post(JOBS_URL))
                     .andExpect(status().isUnauthorized());
         }
 
         @Test
-        public void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
+        void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
             mockMvc.perform(post(JOBS_URL).cookie(accessTokenCookie))
                     .andExpect(status().isBadRequest());
         }
 
         @Test
-        public void whenRequestBodyInvalidJson_thenShouldReturnBadRequest() throws Exception {
+        void whenRequestBodyInvalidJson_thenShouldReturnBadRequest() throws Exception {
             String invalidJson = """
                 {
                     "nonexistent": "this field does not exist",
@@ -246,7 +246,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void whenRequestBodyInvalid_thenShouldReturnBadRequest() throws Exception {
+        void whenRequestBodyInvalid_thenShouldReturnBadRequest() throws Exception {
             String invalidJson = """
                 {
                     "nonexistent": "this field does not exist",
@@ -260,7 +260,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void whenJobUrlExists_thenShouldReturnConflict() throws Exception {
+        void whenJobUrlExists_thenShouldReturnConflict() throws Exception {
             CreateJobRequest createJobRequest = new CreateJobRequest();
             createJobRequest.setUrl("http://www.example.com/my-job");
             createJobRequest.setTitle("My new job");
@@ -274,7 +274,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void whenRequestInvalid_thenShouldReturnBadRequestWithErrors() throws Exception {
+        void whenRequestInvalid_thenShouldReturnBadRequestWithErrors() throws Exception {
             CreateJobRequest createJobRequest = new CreateJobRequest();
             createJobRequest.setUrl("invalid-url");
 
@@ -295,7 +295,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void shouldCreateJob() throws Exception {
+        void shouldCreateJob() throws Exception {
             CreateJobRequest createJobRequest = new CreateJobRequest();
             createJobRequest.setUrl("http://www.example.com/new-job");
             createJobRequest.setTitle("My new job");
@@ -345,26 +345,26 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
     class JobControllerUpdateIt {
 
         @Test
-        public void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
+        void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
             mockMvc.perform(patch(JOB_FOR_TEST_URL))
                     .andExpect(status().isUnauthorized());
         }
 
         @Test
-        public void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
+        void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
             mockMvc.perform(patch(JOB_FOR_TEST_URL).cookie(accessTokenCookie))
                     .andExpect(status().isBadRequest());
         }
 
         @Test
-        public void whenJobIdInvalid_thenShouldReturnBadRequest() throws Exception {
+        void whenJobIdInvalid_thenShouldReturnBadRequest() throws Exception {
             UpdateJobRequest updateJobRequest = new UpdateJobRequest();
             mockMvc.perform(patch(JOBS_URL+"/invalid").cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateJobRequest)))
                     .andExpect(status().isBadRequest());
         }
 
         @Test
-        public void whenJobNotFound_thenShouldReturnBadRequest() throws Exception {
+        void whenJobNotFound_thenShouldReturnBadRequest() throws Exception {
             // we need a fully valid request, because data validation occurs before use case call
             UpdateJobRequest updateJobRequest = new UpdateJobRequest();
             updateJobRequest.setUrl("http://www.example.com/updated");
@@ -378,7 +378,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void whenRequestInvalid_thenShouldReturnBadRequestWithErrors() throws Exception {
+        void whenRequestInvalid_thenShouldReturnBadRequestWithErrors() throws Exception {
             UpdateJobRequest updateJobRequest = new UpdateJobRequest();
             updateJobRequest.setUrl("invalid-url");
 
@@ -399,7 +399,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void shouldUpdateJob() throws Exception {
+        void shouldUpdateJob() throws Exception {
             UpdateJobRequest updateJobRequest = new UpdateJobRequest();
             updateJobRequest.setUrl("http://www.example.com/updated");
             updateJobRequest.setTitle("My job [updated]");
@@ -448,19 +448,19 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
         private static final String JOB_STATUS_UPDATE_URL = JOB_FOR_TEST_URL+"/status";
 
         @Test
-        public void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
+        void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
             mockMvc.perform(put(JOB_STATUS_UPDATE_URL))
                     .andExpect(status().isUnauthorized());
         }
 
         @Test
-        public void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
+        void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
             mockMvc.perform(put(JOB_STATUS_UPDATE_URL).cookie(accessTokenCookie))
                     .andExpect(status().isBadRequest());
         }
 
         @Test
-        public void whenJobIdInvalid_thenShouldReturnBadRequest() throws Exception {
+        void whenJobIdInvalid_thenShouldReturnBadRequest() throws Exception {
             UpdateJobStatusRequest updateJobStatusRequest = new UpdateJobStatusRequest();
             updateJobStatusRequest.setStatus(JobStatus.PENDING);
             mockMvc.perform(put(JOBS_URL+"/invalid/status").cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateJobStatusRequest)))
@@ -468,7 +468,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void whenJobNotFound_thenShouldReturnNotFound() throws Exception {
+        void whenJobNotFound_thenShouldReturnNotFound() throws Exception {
             // we need a fully valid request, because data validation occurs before use case call
             UpdateJobStatusRequest updateJobStatusRequest = new UpdateJobStatusRequest();
             updateJobStatusRequest.setStatus(JobStatus.PENDING);
@@ -477,7 +477,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void whenRequestInvalid_thenShouldReturnBadRequestWithErrors() throws Exception {
+        void whenRequestInvalid_thenShouldReturnBadRequestWithErrors() throws Exception {
             String invalidJson = """
                 {
                     "status": "NOT_A_VALID_JOB_STATUS"
@@ -498,7 +498,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void shouldUpdateJobStatus() throws Exception {
+        void shouldUpdateJobStatus() throws Exception {
             // we need a fully valid request, because data validation occurs before use case call
             UpdateJobStatusRequest updateJobStatusRequest = new UpdateJobStatusRequest();
             updateJobStatusRequest.setStatus(JobStatus.RELAUNCHED);
@@ -534,19 +534,19 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
         private static final String JOB_RATING_UPDATE_URL = JOB_FOR_TEST_URL+"/rating";
 
         @Test
-        public void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
+        void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
             mockMvc.perform(put(JOB_RATING_UPDATE_URL))
                     .andExpect(status().isUnauthorized());
         }
 
         @Test
-        public void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
+        void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
             mockMvc.perform(put(JOB_RATING_UPDATE_URL).cookie(accessTokenCookie))
                     .andExpect(status().isBadRequest());
         }
 
         @Test
-        public void whenJobIdInvalid_thenShouldReturnBadRequest() throws Exception {
+        void whenJobIdInvalid_thenShouldReturnBadRequest() throws Exception {
             // we need a fully valid request, because data validation occurs before use case call
             UpdateJobRatingRequest updateJobRatingRequest = new UpdateJobRatingRequest();
             updateJobRatingRequest.setRating(JobRating.of(5));
@@ -555,7 +555,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void whenJobNotFound_thenShouldReturnNotFound() throws Exception {
+        void whenJobNotFound_thenShouldReturnNotFound() throws Exception {
             // we need a fully valid request, because data validation occurs before use case call
             UpdateJobRatingRequest updateJobRatingRequest = new UpdateJobRatingRequest();
             updateJobRatingRequest.setRating(JobRating.of(5));
@@ -564,7 +564,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void whenRequestInvalid_thenShouldReturnBadRequestWithErrors() throws Exception {
+        void whenRequestInvalid_thenShouldReturnBadRequestWithErrors() throws Exception {
             String invalidJson = """
                 {
                     "rating": "NAN"
@@ -585,7 +585,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void shouldUpdateJobRating() throws Exception {
+        void shouldUpdateJobRating() throws Exception {
             // we need a fully valid request, because data validation occurs before use case call
             UpdateJobRatingRequest updateJobRatingRequest = new UpdateJobRatingRequest();
             updateJobRatingRequest.setRating(JobRating.of(5));
@@ -620,25 +620,25 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
     class JobControllerDeleteIt {
 
         @Test
-        public void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
+        void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
             mockMvc.perform(delete(JOB_FOR_TEST_URL))
                     .andExpect(status().isUnauthorized());
         }
 
         @Test
-        public void whenJobIdInvalid_thenShouldReturnBadRequest() throws Exception {
+        void whenJobIdInvalid_thenShouldReturnBadRequest() throws Exception {
             mockMvc.perform(delete(JOBS_URL+"/invalid").cookie(accessTokenCookie))
                     .andExpect(status().isBadRequest());
         }
 
         @Test
-        public void whenJobNotFound_thenShouldReturnNotFound() throws Exception {
+        void whenJobNotFound_thenShouldReturnNotFound() throws Exception {
             mockMvc.perform(delete(JOBS_URL+"/11111111-1111-1111-1111-111111111111").cookie(accessTokenCookie))
                     .andExpect(status().isNotFound());
         }
 
         @Test
-        public void shouldDeleteJob() throws Exception {
+        void shouldDeleteJob() throws Exception {
             mockMvc.perform(delete(JOB_FOR_TEST_URL).cookie(accessTokenCookie))
                     .andExpect(status().isNoContent());
 

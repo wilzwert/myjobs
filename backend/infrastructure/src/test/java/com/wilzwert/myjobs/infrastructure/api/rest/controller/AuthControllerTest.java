@@ -83,7 +83,7 @@ public class AuthControllerTest {
     class RegisterTest {
 
         @Test
-        public void whenUserAlreadyExists_thenShouldThrowConflictResponseStatusExceptionOnRegister() {
+        void whenUserAlreadyExists_thenShouldThrowConflictResponseStatusExceptionOnRegister() {
             RegisterUserRequest registerUserRequest = new RegisterUserRequest();
             registerUserRequest.setUsername("test");
             registerUserRequest.setEmail("test@example.com");
@@ -100,7 +100,7 @@ public class AuthControllerTest {
         }
 
         @Test
-        public void whenRegistrationSucceeded_thenShouldReturnUserResponse() {
+        void whenRegistrationSucceeded_thenShouldReturnUserResponse() {
             RegisterUserRequest registerUserRequest = new RegisterUserRequest();
             registerUserRequest.setUsername("test");
             registerUserRequest.setEmail("test@example.com");
@@ -141,7 +141,7 @@ public class AuthControllerTest {
     @Nested
     class LogoutTest {
         @Test
-        public void shouldLogout() {
+        void shouldLogout() {
             when(cookieService.revokeAccessTokenCookie()).thenReturn(ResponseCookie.from("access_token", "").build());
             when(cookieService.revokeRefreshTokenCookie()).thenReturn(ResponseCookie.from("refresh_token", "").build());
 
@@ -156,7 +156,7 @@ public class AuthControllerTest {
     class LoginTest {
 
         @Test
-        public void whenLoginFailed_thenShouldThrowUnauthorizedResponseStatusException() {
+        void whenLoginFailed_thenShouldThrowUnauthorizedResponseStatusException() {
             LoginRequest loginRequest = new LoginRequest();
             loginRequest.setEmail("test@example.com");
             loginRequest.setPassword("Abcd!1234");
@@ -173,7 +173,7 @@ public class AuthControllerTest {
         }
 
         @Test
-        public void whenLoginSucceeded_thenShouldSetCookiesAndReturnAuthResponse() {
+        void whenLoginSucceeded_thenShouldSetCookiesAndReturnAuthResponse() {
             LoginRequest loginRequest = new LoginRequest();
             loginRequest.setEmail("test@example.com");
             loginRequest.setPassword("Abcd!1234");
@@ -206,7 +206,7 @@ public class AuthControllerTest {
     @Nested
     class EmailAndUsernameCheckTest {
         @Test
-        public void whenEmailTaken_thenShouldReturnUnprocessableEntity() {
+        void whenEmailTaken_thenShouldReturnUnprocessableEntity() {
             when(checkUserAvailabilityUseCase.isEmailTaken("test@example.com")).thenReturn(true);
 
             ResponseEntity<?> responseEntity = authController.emailCheck("test@example.com");
@@ -216,7 +216,7 @@ public class AuthControllerTest {
         }
 
         @Test
-        public void whenUsernameTaken_thenShouldReturnUnprocessableEntity() {
+        void whenUsernameTaken_thenShouldReturnUnprocessableEntity() {
             when(checkUserAvailabilityUseCase.isUsernameTaken("test")).thenReturn(true);
 
             ResponseEntity<?> responseEntity = authController.usernameCheck("test");
@@ -226,7 +226,7 @@ public class AuthControllerTest {
         }
 
         @Test
-        public void whenEmailAvailable_thenShouldReturnOk() {
+        void whenEmailAvailable_thenShouldReturnOk() {
             when(checkUserAvailabilityUseCase.isEmailTaken("test@example.com")).thenReturn(false);
 
             ResponseEntity<?> responseEntity = authController.emailCheck("test@example.com");
@@ -236,7 +236,7 @@ public class AuthControllerTest {
         }
 
         @Test
-        public void whenUsernameAvailable_thenShouldReturnOk() {
+        void whenUsernameAvailable_thenShouldReturnOk() {
             when(checkUserAvailabilityUseCase.isUsernameTaken("test")).thenReturn(false);
 
             ResponseEntity<?> responseEntity = authController.usernameCheck("test");
@@ -250,13 +250,13 @@ public class AuthControllerTest {
     class RefreshTokenTest {
 
         @Test
-        public void whenRefreshTokenEmpty_thenShouldReturnUnauthorizedResponse() {
+        void whenRefreshTokenEmpty_thenShouldReturnUnauthorizedResponse() {
             ResponseEntity<?> responseEntity = authController.refreshAccessToken(null);
             assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         }
 
         @Test
-        public void whenRefreshTokenNotFound_thenShouldThrowUnauthorizedResponseStatusException() {
+        void whenRefreshTokenNotFound_thenShouldThrowUnauthorizedResponseStatusException() {
             when(refreshTokenService.findByToken("refresh_token")).thenReturn(Optional.empty());
 
             ResponseEntity<?> responseEntity = authController.refreshAccessToken("refresh_token");
@@ -265,7 +265,7 @@ public class AuthControllerTest {
         }
 
         @Test
-        public void whenRefreshTokenExpired_thenShouldThrowUnauthorizedResponseStatusException() {
+        void whenRefreshTokenExpired_thenShouldThrowUnauthorizedResponseStatusException() {
             RefreshToken refreshToken = new MongoRefreshToken().setToken("refresh_token");
             when(refreshTokenService.findByToken("refresh_token")).thenReturn(Optional.of(refreshToken));
             when(refreshTokenService.verifyExpiration(refreshToken)).thenReturn(false);
@@ -277,7 +277,7 @@ public class AuthControllerTest {
         }
 
         @Test
-        public void whenUserNotFound_thenShouldThrowUnauthorizedResponseStatusException() {
+        void whenUserNotFound_thenShouldThrowUnauthorizedResponseStatusException() {
             UUID userUUID = UUID.randomUUID();
             ArgumentCaptor<UserId> userIdCaptor = ArgumentCaptor.forClass(UserId.class);
             RefreshToken refreshToken = new MongoRefreshToken().setToken("refresh_token").setUserId(userUUID);
@@ -295,7 +295,7 @@ public class AuthControllerTest {
         }
 
         @Test
-        public void whenRefreshSuccess_thenShouldSetCookiesAndReturnAuthResponse() {
+        void whenRefreshSuccess_thenShouldSetCookiesAndReturnAuthResponse() {
             UUID userUUID = UUID.randomUUID();
             User user = User.builder()
                     .id(new UserId(userUUID))

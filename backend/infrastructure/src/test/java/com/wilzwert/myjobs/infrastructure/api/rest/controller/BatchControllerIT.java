@@ -36,25 +36,25 @@ public class BatchControllerIT extends AbstractBaseIntegrationTest {
     private static final String JOBS_REMINDERS_BATCH_URL = "/internal/jobs-reminders-batch";
 
     @Test
-    public void whenSecretIsEmpty_thenShouldReturnUnauthorized() throws Exception {
+    void whenSecretIsEmpty_thenShouldReturnUnauthorized() throws Exception {
         mockMvc.perform(get(JOBS_REMINDERS_BATCH_URL))
                 .andExpect(status().isForbidden());
     }
 
     @Test
-    public void whenSecretIsInvalid_thenShouldReturnUnauthorized() throws Exception {
+    void whenSecretIsInvalid_thenShouldReturnUnauthorized() throws Exception {
         mockMvc.perform(get(JOBS_REMINDERS_BATCH_URL).header("X-Internal-Secret", "invalid"))
                 .andExpect(status().isForbidden());
     }
 
     @Test
-    public void whenSecretIsValidAndMethodIsNotPost_thenShouldReturnMethod() throws Exception {
+    void whenSecretIsValidAndMethodIsNotPost_thenShouldReturnMethod() throws Exception {
         mockMvc.perform(get(JOBS_REMINDERS_BATCH_URL).header("X-Internal-Secret", "secret"))
                 .andExpect(status().isMethodNotAllowed());
     }
 
     @Test
-    public void shouldRunAndReturnResultResponse() throws Exception {
+    void shouldRunAndReturnResultResponse() throws Exception {
 
         MvcResult result = mockMvc.perform(post(JOBS_REMINDERS_BATCH_URL).header("X-Internal-Secret", "secret"))
                 .andExpect(status().isOk())

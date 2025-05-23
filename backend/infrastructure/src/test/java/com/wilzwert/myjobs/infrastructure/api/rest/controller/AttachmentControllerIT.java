@@ -56,7 +56,7 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
     Cookie accessTokenCookie;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         accessTokenCookie = new Cookie("access_token", jwtService.generateToken(USER_FOR_JOBS_TEST_ID));
     }
 
@@ -64,19 +64,19 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
     class AttachmentControllerCreateIt {
 
         @Test
-        public void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
+        void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
             mockMvc.perform(post(JOB_ATTACHMENTS_TEST_URL))
                     .andExpect(status().isUnauthorized());
         }
 
         @Test
-        public void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
+        void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
             mockMvc.perform(post(JOB_ATTACHMENTS_TEST_URL).cookie(accessTokenCookie))
                     .andExpect(status().isBadRequest());
         }
 
         @Test
-        public void whenRequestBodyInvalidJson_thenShouldReturnBadRequest() throws Exception {
+        void whenRequestBodyInvalidJson_thenShouldReturnBadRequest() throws Exception {
             String invalidJson = """
                 {
                     "nonexistent": "this field does not exist",
@@ -90,7 +90,7 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void whenRequestBodyInvalid_thenShouldReturnBadRequest() throws Exception {
+        void whenRequestBodyInvalid_thenShouldReturnBadRequest() throws Exception {
             String invalidJson = """
                 {
                     "nonexistent": "this field does not exist",
@@ -104,7 +104,7 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void whenRequestInvalid_thenShouldReturnBadRequestWithErrors() throws Exception {
+        void whenRequestInvalid_thenShouldReturnBadRequestWithErrors() throws Exception {
             CreateAttachmentRequest createAttachmentRequest = new CreateAttachmentRequest();
             MvcResult mvcResult = mockMvc.perform(post(JOB_ATTACHMENTS_TEST_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(createAttachmentRequest)))
                     .andExpect(status().isBadRequest())
@@ -123,7 +123,7 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void shouldCreateAttachment() throws Exception {
+        void shouldCreateAttachment() throws Exception {
             CreateAttachmentRequest createAttachmentRequest = new CreateAttachmentRequest();
             File fileToSend = new File("src/test/resources/cv_test.doc");
             byte[] fileContent = Files.readAllBytes(fileToSend.toPath());
@@ -178,37 +178,37 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
         private static final String JOB_ATTACHMENT_TEST_URL = JOB_ATTACHMENTS_TEST_URL+"/b7777777-7777-7777-7770-123456789012";
 
         @Test
-        public void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
+        void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
             mockMvc.perform(delete(JOB_ATTACHMENT_TEST_URL))
                     .andExpect(status().isUnauthorized());
         }
 
         @Test
-        public void whenJobIdInvalid_thenShouldReturnBadRequest() throws Exception {
+        void whenJobIdInvalid_thenShouldReturnBadRequest() throws Exception {
             mockMvc.perform(delete(JOBS_URL+"/invalid/attachments/"+ATTACHMENT_TEST_ID).cookie(accessTokenCookie))
                     .andExpect(status().isBadRequest());
         }
 
         @Test
-        public void whenAttachmentIdInvalid_thenShouldReturnBadRequest() throws Exception {
+        void whenAttachmentIdInvalid_thenShouldReturnBadRequest() throws Exception {
             mockMvc.perform(delete(JOB_ATTACHMENTS_TEST_URL+"/invalid").cookie(accessTokenCookie))
                     .andExpect(status().isBadRequest());
         }
 
         @Test
-        public void whenJobNotFound_thenShouldReturnNotFound() throws Exception {
+        void whenJobNotFound_thenShouldReturnNotFound() throws Exception {
             mockMvc.perform(delete(JOBS_URL+"/11111111-1111-1111-1111-111111111111/attachments/"+ATTACHMENT_TEST_ID).cookie(accessTokenCookie))
                     .andExpect(status().isNotFound());
         }
 
         @Test
-        public void whenAttachmentNotFound_thenShouldReturnNotFound() throws Exception {
+        void whenAttachmentNotFound_thenShouldReturnNotFound() throws Exception {
             mockMvc.perform(delete(JOB_ATTACHMENTS_TEST_URL+"/11111111-1111-1111-1111-111111111111").cookie(accessTokenCookie))
                     .andExpect(status().isNotFound());
         }
 
         @Test
-        public void shouldDeleteAttachment() throws Exception {
+        void shouldDeleteAttachment() throws Exception {
             mockMvc.perform(delete(JOB_ATTACHMENT_TEST_URL).cookie(accessTokenCookie))
                     .andExpect(status().isNoContent());
 

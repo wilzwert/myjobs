@@ -76,14 +76,14 @@ public class JwtAuthenticationFilterTest {
 
     }
     @Test
-    public void shouldReturnTrueWhenFilteringNotNecessaryOnEmptyRequest() {
+    void shouldReturnTrueWhenFilteringNotNecessaryOnEmptyRequest() {
         assertThrows(NullPointerException.class, () -> underTest.shouldNotFilter(null));
     }
 
 
     /*
     @Test
-    public void shouldReturnTrueWhenFilteringNotNecessaryForApi() {
+    void shouldReturnTrueWhenFilteringNotNecessaryForApi() {
         when(apiDocProperties.getApiDocsPath()).thenReturn("/api/doc");
         when(request.getRequestURI()).thenReturn("/api/doc");
 
@@ -91,14 +91,14 @@ public class JwtAuthenticationFilterTest {
     }*/
 
     @Test
-    public void shouldReturnTrueWhenFilteringNotNecessaryForAuth() {
+    void shouldReturnTrueWhenFilteringNotNecessaryForAuth() {
         when(request.getRequestURI()).thenReturn("/api/auth/register");
 
         assertThat(underTest.shouldNotFilter(request)).isTrue();
     }
 
     @Test
-    public void shouldReturnTrueWhenFilteringNotNecessaryForInternal() {
+    void shouldReturnTrueWhenFilteringNotNecessaryForInternal() {
         when(request.getRequestURI()).thenReturn("/internal/jobs-reminders-batch");
 
         assertThat(underTest.shouldNotFilter(request)).isTrue();
@@ -107,7 +107,7 @@ public class JwtAuthenticationFilterTest {
 
     /*
     @Test
-    public void shouldReturnTrueWhenFilteringNotNecessaryForSwagger() {
+    void shouldReturnTrueWhenFilteringNotNecessaryForSwagger() {
         when(apiDocProperties.getApiDocsPath()).thenReturn("/api/doc");
         when(apiDocProperties.getSwaggerPath()).thenReturn("/api/swagger");
         when(request.getRequestURI()).thenReturn("/api/swagger");
@@ -116,21 +116,21 @@ public class JwtAuthenticationFilterTest {
     }*/
 
     @Test
-    public void shouldReturnTrueWhenFilteringNotNecessaryForSwaggerUi() {
+    void shouldReturnTrueWhenFilteringNotNecessaryForSwaggerUi() {
         when(request.getRequestURI()).thenReturn("/swagger-ui/");
 
         assertThat(underTest.shouldNotFilter(request)).isTrue();
     }
 
     @Test
-    public void shouldReturnFalseWhenFilteringNecessary() {
+    void shouldReturnFalseWhenFilteringNecessary() {
         when(request.getRequestURI()).thenReturn("/api/jobs/");
 
         assertThat(underTest.shouldNotFilter(request)).isFalse();
     }
 
     @Test
-    public void shouldAuthenticateUser() throws Exception {
+    void shouldAuthenticateUser() throws Exception {
         when(customUserDetailsService.loadUserByUsername("1")).thenReturn(new User("1", "password", Collections.emptyList()));
 
         Claims claims = Jwts.claims().subject("1").build();
@@ -144,7 +144,7 @@ public class JwtAuthenticationFilterTest {
     }
 
     @Test
-    public void shouldNotAuthenticateUserWhenAuthenticationNotNull() throws Exception {
+    void shouldNotAuthenticateUserWhenAuthenticationNotNull() throws Exception {
         Claims claims = Jwts.claims().subject("1").build();
         JwtToken jwtToken = new JwtToken("1", claims);
         when(jwtService.extractTokenFromRequest(request)).thenReturn(Optional.of(jwtToken));
@@ -193,7 +193,7 @@ public class JwtAuthenticationFilterTest {
     }
 
     @Test
-    public void shouldNotAuthenticateUserWhenUserNotFoundInClaims() throws Exception {
+    void shouldNotAuthenticateUserWhenUserNotFoundInClaims() throws Exception {
         Claims claims = Jwts.claims().subject(null).build();
         JwtToken jwtToken = new JwtToken("", claims);
         when(jwtService.extractTokenFromRequest(request)).thenReturn(Optional.of(jwtToken));
@@ -205,7 +205,7 @@ public class JwtAuthenticationFilterTest {
     }
 
     @Test
-    public void shouldNotAuthenticateUserWhenTokenExtractionThrowsException() throws Exception {
+    void shouldNotAuthenticateUserWhenTokenExtractionThrowsException() throws Exception {
         when(jwtService.extractTokenFromRequest(request)).thenThrow(JwtException.class);
         doNothing().when(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         PrintWriter writer = mock(PrintWriter.class);
@@ -225,7 +225,7 @@ public class JwtAuthenticationFilterTest {
     }
 
     @Test
-    public void shouldNotAuthenticateUserWhenTokenInvalid() throws Exception {
+    void shouldNotAuthenticateUserWhenTokenInvalid() throws Exception {
         when(jwtService.extractTokenFromRequest(request)).thenReturn(Optional.empty());
 
         underTest.doFilterInternal(request, response, filterChain);

@@ -51,7 +51,7 @@ public class EmailVerificationMessageProviderAdapterIT extends AbstractBaseInteg
             "'EN', 'Email verification', 'Please click on the link below to validate your email address'",
             "'FR', 'Vérification de votre email', 'Pour valider votre adresse email, merci de suivre le lien ci-dessous'"
     })
-    public void shouldSendMail(String lang, String expectedSubject, String expectedHtml) throws Exception {
+    void shouldSendMail(String lang, String expectedSubject, String expectedHtml) throws Exception {
         User user = User.builder()
                 .id(UserId.generate())
                 .email("user@example.com")

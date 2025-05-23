@@ -58,20 +58,20 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
     Cookie accessTokenCookie;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         accessTokenCookie = new Cookie("access_token", jwtService.generateToken(USER_FOR_GET_TEST_ID));
     }
 
     @Nested
     class UserControllerGetIt {
         @Test
-        public void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
+        void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
             mockMvc.perform(post(USER_URL))
                     .andExpect(status().isUnauthorized());
         }
 
         @Test
-        public void shouldGetUser() throws Exception {
+        void shouldGetUser() throws Exception {
             MvcResult mvcResult = mockMvc.perform(get(USER_URL).cookie(accessTokenCookie))
                     .andExpect(status().isOk())
                     .andReturn();
@@ -91,13 +91,13 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
     class UserControllerDeleteIt {
 
         @Test
-        public void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
+        void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
             mockMvc.perform(delete(USER_URL))
                     .andExpect(status().isUnauthorized());
         }
 
         @Test
-        public void shouldDeleteUser() throws Exception {
+        void shouldDeleteUser() throws Exception {
             Cookie cookie = new Cookie("access_token", jwtService.generateToken(USER_FOR_DELETE_TEST_ID));
             mockMvc.perform(delete(USER_URL).cookie(cookie))
                     .andExpect(status().isNoContent());
@@ -114,7 +114,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
         private UpdateUserRequest updateUserRequest;
 
         @BeforeEach
-        public void setup() {
+        void setup() {
             // setup a default valid signup request
             updateUserRequest = new UpdateUserRequest();
             updateUserRequest.setEmail("otherexisting-updated@example.com");
@@ -125,25 +125,25 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
+        void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
             mockMvc.perform(patch(UPDATE_URL))
                     .andExpect(status().isUnauthorized());
         }
 
         @Test
-        public void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
+        void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
             mockMvc.perform(patch(UPDATE_URL).cookie(accessTokenCookie))
                     .andExpect(status().isBadRequest());
         }
         @Test
-        public void whenEmailEmpty_thenShouldReturnBadRequestWhenEmailEmpty() throws Exception {
+        void whenEmailEmpty_thenShouldReturnBadRequestWhenEmailEmpty() throws Exception {
                 updateUserRequest.setEmail("");
             mockMvc.perform(patch(UPDATE_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateUserRequest)))
                     .andExpect(status().isBadRequest());
         }
 
         @Test
-        public void whenEmailInvalid_thenShouldReturnBadRequest() throws Exception {
+        void whenEmailInvalid_thenShouldReturnBadRequest() throws Exception {
             updateUserRequest.setEmail("test");
             mockMvc.perform(patch(UPDATE_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateUserRequest)))
                     .andExpect(status().isBadRequest())
@@ -151,7 +151,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void whenFirstNameEmpty_thenShouldReturnBadRequest() throws Exception {
+        void whenFirstNameEmpty_thenShouldReturnBadRequest() throws Exception {
             updateUserRequest.setFirstName("");
             mockMvc.perform(patch(UPDATE_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateUserRequest)))
                     .andExpect(status().isBadRequest())
@@ -159,7 +159,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void whenLastNameEmpty_thenShouldReturnBadRequest() throws Exception {
+        void whenLastNameEmpty_thenShouldReturnBadRequest() throws Exception {
             updateUserRequest.setLastName("");
             mockMvc.perform(patch(UPDATE_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateUserRequest)))
                     .andExpect(status().isBadRequest())
@@ -167,7 +167,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void whenUsernameTooShort_thenShouldReturnBadRequest() throws Exception {
+        void whenUsernameTooShort_thenShouldReturnBadRequest() throws Exception {
             updateUserRequest.setUsername("T");
             mockMvc.perform(patch(UPDATE_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateUserRequest)))
                     .andExpect(status().isBadRequest())
@@ -175,7 +175,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void whenUsernameTooLong_thenShouldReturnBadRequest() throws Exception {
+        void whenUsernameTooLong_thenShouldReturnBadRequest() throws Exception {
             updateUserRequest.setUsername("thisisafartoolongusernamethatshouldtriggeravalidationerror");
             mockMvc.perform(patch(UPDATE_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateUserRequest)))
                     .andExpect(status().isBadRequest())
@@ -183,7 +183,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void whenEmailAlreadyExists_thenShouldReturnBadRequest() throws Exception {
+        void whenEmailAlreadyExists_thenShouldReturnBadRequest() throws Exception {
             // we know we already have a User with the email 'existing@example.com' (see resources/test-data/user.json
             updateUserRequest.setEmail("existing@example.com");
 
@@ -193,7 +193,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void whenUsernameAlreadyExists_thenShouldReturnBadRequest() throws Exception {
+        void whenUsernameAlreadyExists_thenShouldReturnBadRequest() throws Exception {
             // we know we already have a User with the username 'existinguser' (see resources/test-data/user.json
             updateUserRequest.setUsername("existinguser");
 
@@ -203,7 +203,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void shouldUpdateUser() throws Exception {
+        void shouldUpdateUser() throws Exception {
             MvcResult mvcResult = mockMvc.perform(patch(UPDATE_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateUserRequest)))
                     .andExpect(status().isOk())
                     .andReturn();
@@ -229,19 +229,19 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
         private static final String UPDATE_URL = USER_URL+"/lang";
 
         @Test
-        public void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
+        void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
             mockMvc.perform(put(UPDATE_URL))
                     .andExpect(status().isUnauthorized());
         }
 
         @Test
-        public void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
+        void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
             mockMvc.perform(put(UPDATE_URL).cookie(accessTokenCookie))
                     .andExpect(status().isBadRequest());
         }
 
         @Test
-        public void shouldUpdateUserLang() throws Exception {
+        void shouldUpdateUserLang() throws Exception {
             mockMvc.perform(put(UPDATE_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(new UpdateUserLangRequest(Lang.FR))))
                     .andExpect(status().isOk());
 
@@ -264,7 +264,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
         private PasswordHasher passwordHasher;
 
         @BeforeEach
-        public void setUp()  {
+        void setUp()  {
             // this is a valid password request
             // it should be changed per case for testing
             changePasswordRequest = new ChangePasswordRequest();
@@ -275,19 +275,19 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void whenNoAuth_thenShouldReturnUnauthorized() throws Exception {
+        void whenNoAuth_thenShouldReturnUnauthorized() throws Exception {
             mockMvc.perform(put(CHANGE_PASSWORD_URL))
                     .andExpect(status().isUnauthorized());
         }
 
         @Test
-        public void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
+        void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
             mockMvc.perform(put(CHANGE_PASSWORD_URL).cookie(accessTokenCookie))
                     .andExpect(status().isBadRequest());
         }
 
         @Test
-        public void whenOldPasswordEmpty_thenShouldReturnBadRequest() throws Exception {
+        void whenOldPasswordEmpty_thenShouldReturnBadRequest() throws Exception {
             changePasswordRequest.setOldPassword("");
             mockMvc.perform(put(CHANGE_PASSWORD_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
                     .andExpect(status().isBadRequest())
@@ -296,7 +296,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void whenNewPasswordEmpty_thenShouldReturnBadRequest() throws Exception {
+        void whenNewPasswordEmpty_thenShouldReturnBadRequest() throws Exception {
             changePasswordRequest.setPassword("");
             mockMvc.perform(put(CHANGE_PASSWORD_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
                     .andExpect(status().isBadRequest())
@@ -305,7 +305,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void whenOldPasswordDoesntMatch_thenShouldReturnBadRequest() throws Exception {
+        void whenOldPasswordDoesntMatch_thenShouldReturnBadRequest() throws Exception {
             changePasswordRequest.setOldPassword("Pqrs4321!");
             mockMvc.perform(put(CHANGE_PASSWORD_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
                     .andExpect(status().isBadRequest())
@@ -313,7 +313,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void whenNewPasswordWeak_thenShouldReturnBadRequest() throws Exception {
+        void whenNewPasswordWeak_thenShouldReturnBadRequest() throws Exception {
             changePasswordRequest.setPassword("abcd1234!");
             mockMvc.perform(put(CHANGE_PASSWORD_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
                     .andExpect(status().isBadRequest())
@@ -322,7 +322,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        public void shouldUpdatePassword() throws Exception {
+        void shouldUpdatePassword() throws Exception {
             mockMvc.perform(put(CHANGE_PASSWORD_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
                     .andExpect(status().isOk());
 

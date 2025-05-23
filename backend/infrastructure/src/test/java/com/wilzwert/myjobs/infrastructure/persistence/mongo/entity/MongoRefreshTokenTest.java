@@ -16,14 +16,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class MongoRefreshTokenTest {
 
     @Test
-    public void tokenShouldEqual() {
+    void tokenShouldEqual() {
         MongoRefreshToken token = new MongoRefreshToken().setToken("myToken");
 
         assertEquals("myToken", token.getToken());
     }
 
     @Test
-    public void expiresAtShouldEqual() {
+    void expiresAtShouldEqual() {
         Instant now =  Instant.now();
         MongoRefreshToken token = new MongoRefreshToken().setToken("myToken");
         token.setExpiresAt(now);

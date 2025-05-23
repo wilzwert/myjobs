@@ -36,10 +36,10 @@ public class JobDataManagerAdapterIT extends AbstractBaseIntegrationTest {
     @Autowired
     private JobDataManagerAdapter underTest;
 
-    // public void shouldReturn
+    // void shouldReturn
 
     @Test
-    public void shouldReturnMappedJob_whenJobFound() {
+    void shouldReturnMappedJob_whenJobFound() {
         /*
         JobId jobId = JobId.generate();
         Job job = Job.builder().id(jobId).title("title").url("https://www.example.com").build();
@@ -61,7 +61,7 @@ public class JobDataManagerAdapterIT extends AbstractBaseIntegrationTest {
     }
 
     @Test
-    public void shouldCreateJob_andRetrieveCreatedJob() {
+    void shouldCreateJob_andRetrieveCreatedJob() {
         JobId jobId = JobId.generate();
         UserId userId = UserId.generate();
         Job jobToSave = Job.builder()
@@ -91,14 +91,14 @@ public class JobDataManagerAdapterIT extends AbstractBaseIntegrationTest {
     }
 
     @Test
-    public void shouldRetrieveJobToBeReminded() {
+    void shouldRetrieveJobToBeReminded() {
         Map<JobId, Job> jobs = underTest.findMinimal(DomainSpecification.JobFollowUpToRemind(Instant.now()));
         assertNotNull(jobs);
         assertThat(jobs.size()).isEqualTo(3);
     }
 
     @Test
-    public void shouldRetrieveMinimalJobs() {
+    void shouldRetrieveMinimalJobs() {
         // get 2 known jobs
         JobId jobId1 = new JobId(UUID.fromString("77777777-7777-7777-7777-123456789012"));
         JobId jobId2 = new JobId(UUID.fromString("88888888-8888-8888-8888-123456789012"));
@@ -119,7 +119,7 @@ public class JobDataManagerAdapterIT extends AbstractBaseIntegrationTest {
 
 
     @Test
-    public void shouldSaveAllJobs() {
+    void shouldSaveAllJobs() {
         // get 2 known jobs
         JobId jobId1 = new JobId(UUID.fromString("77777777-7777-7777-7777-123456789012"));
         JobId jobId2 = new JobId(UUID.fromString("88888888-8888-8888-8888-123456789012"));

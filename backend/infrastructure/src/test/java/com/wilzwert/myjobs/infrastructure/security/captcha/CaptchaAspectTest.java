@@ -33,7 +33,7 @@ public class CaptchaAspectTest {
     private CaptchaAspect underTest;
 
     @Test
-    public void shouldThrowAuthorizationDeniedException_whenCaptchaInvalid() {
+    void shouldThrowAuthorizationDeniedException_whenCaptchaInvalid() {
         ProceedingJoinPoint joinPoint = mock(ProceedingJoinPoint.class);
         when(captchaValidator.validateCaptcha("response")).thenReturn(false);
         when(request.getHeader(CAPTCHA_HEADER_NAME)).thenReturn("response");
@@ -42,7 +42,7 @@ public class CaptchaAspectTest {
     }
 
     @Test
-    public void shouldProceed_whenCaptchaIsValid() throws Throwable {
+    void shouldProceed_whenCaptchaIsValid() throws Throwable {
         ProceedingJoinPoint joinPoint = mock(ProceedingJoinPoint.class);
         when(joinPoint.proceed()).thenReturn(new Object());
         when(captchaValidator.validateCaptcha("response")).thenReturn(true);

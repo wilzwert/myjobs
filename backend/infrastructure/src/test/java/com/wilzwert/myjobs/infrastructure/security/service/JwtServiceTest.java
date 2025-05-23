@@ -52,18 +52,18 @@ public class JwtServiceTest {
     private static final String SECRET_KEY = "testSecretWithEnoughBytesToGenerateKeyWithoutThrowingWeakKeyException";
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         when(jwtProperties.getSecretKey()).thenReturn(SECRET_KEY);
     }
 
     @Test
-    public void shouldThrowWeakKeyException() {
+    void shouldThrowWeakKeyException() {
         when(jwtProperties.getSecretKey()).thenReturn("weakKey");
         assertThrows(WeakKeyException.class, () -> jwtService.generateToken(UUID.randomUUID().toString()));
     }
 
     @Test
-    public void shouldGenerateToken() {
+    void shouldGenerateToken() {
         String token = jwtService.generateToken(UUID.randomUUID().toString());
 
         assertThat(token).isNotBlank();
@@ -72,7 +72,7 @@ public class JwtServiceTest {
     }
 
     @Test
-    public void shouldExtractJwtToken() {
+    void shouldExtractJwtToken() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         Key key = Keys.hmacShaKeyFor(keyBytes);
         long timeMs = System.currentTimeMillis();
@@ -93,7 +93,7 @@ public class JwtServiceTest {
     }
 
     @Test
-    public void shouldExtractFromGeneratedToken() {
+    void shouldExtractFromGeneratedToken() {
         when(jwtProperties.getExpirationTime()).thenReturn(600L);
         UserId userId = UserId.generate();
         String idValue = userId.value().toString();
@@ -111,7 +111,7 @@ public class JwtServiceTest {
     }
 
     @Test
-    public void shouldReturnEmptyOptionalWhenNoCookieAndNotAuthHeader() {
+    void shouldReturnEmptyOptionalWhenNoCookieAndNotAuthHeader() {
         reset(jwtProperties);
         when(request.getCookies()).thenReturn(new Cookie[0]);
         when(request.getHeader("Authorization")).thenReturn(null);
@@ -121,7 +121,7 @@ public class JwtServiceTest {
     @Nested
     class GetTokenTest {
         @Test
-        public void shouldGetTokenFromCookie() {
+        void shouldGetTokenFromCookie() {
             reset(jwtProperties);
             when(request.getCookies()).thenReturn(new Cookie[]{new Cookie("access_token", "token_string")});
             Optional<String> token = jwtService.getToken(request);
@@ -129,7 +129,7 @@ public class JwtServiceTest {
         }
 
         @Test
-        public void shouldGetTokenFromHeader() {
+        void shouldGetTokenFromHeader() {
             reset(jwtProperties);
             when(request.getCookies()).thenReturn(new Cookie[]{new Cookie("access_token", "")});
             when(request.getHeader("Authorization")).thenReturn("Bearer token_string");
@@ -138,7 +138,7 @@ public class JwtServiceTest {
         }
 
         @Test
-        public void shouldGetTokenFromParam() {
+        void shouldGetTokenFromParam() {
             reset(jwtProperties);
             when(request.getCookies()).thenReturn(new Cookie[]{new Cookie("access_token", "")});
             when(request.getHeader("Authorization")).thenReturn("Bearer");
@@ -148,7 +148,7 @@ public class JwtServiceTest {
         }
 
         @Test
-        public void shouldGetNoTokenFromRequest() {
+        void shouldGetNoTokenFromRequest() {
             reset(jwtProperties);
             when(request.getCookies()).thenReturn(new Cookie[]{new Cookie("access_token", "")});
             when(request.getHeader("Authorization")).thenReturn("Bearer");
@@ -162,7 +162,7 @@ public class JwtServiceTest {
     class ParseTokenTest {
 
         @Test
-        public void shouldThrowSignatureException() {
+        void shouldThrowSignatureException() {
             byte[] keyBytes = Decoders.BASE64.decode("differentTestSecretWithEnoughBytesToGenerateKeyWithoutThrowingWeakKeyException");
             Key key = Keys.hmacShaKeyFor(keyBytes);
             String invalidSignatureToken = Jwts.builder()
@@ -175,7 +175,7 @@ public class JwtServiceTest {
         }
 
         @Test
-        public void shouldThrowMalformedJwtException() {
+        void shouldThrowMalformedJwtException() {
             reset(jwtProperties);
             when(jwtProperties.getSecretKey()).thenReturn(SECRET_KEY);
             String malformedToken = "yJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJicGF3YW4";
@@ -184,7 +184,7 @@ public class JwtServiceTest {
         }
 
         @Test
-        public void shouldThrowExpiredJwtException() {
+        void shouldThrowExpiredJwtException() {
             reset(jwtProperties);
             when(jwtProperties.getSecretKey()).thenReturn(SECRET_KEY);
             byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
@@ -200,19 +200,19 @@ public class JwtServiceTest {
         }
 
         @Test
-        public void shouldThrowIllegalArgumentExceptionWhenNull() {
+        void shouldThrowIllegalArgumentExceptionWhenNull() {
             reset(jwtProperties);
             assertThrows(IllegalArgumentException.class, () -> jwtService.parseToken(null));
         }
 
         @Test
-        public void shouldThrowIllegalArgumentException() {
+        void shouldThrowIllegalArgumentException() {
             reset(jwtProperties);
             assertThrows(IllegalArgumentException.class, () -> jwtService.parseToken(""));
         }
 
         @Test
-        public void shouldThrowUnsupportedJwtException() {
+        void shouldThrowUnsupportedJwtException() {
             String unsupportedToken = Jwts.builder()
                     .subject("testUser")
                     .compact();
@@ -221,7 +221,7 @@ public class JwtServiceTest {
         }
 
         @Test
-        public void shouldParseJwtToken() {
+        void shouldParseJwtToken() {
             byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
             Key key = Keys.hmacShaKeyFor(keyBytes);
             String validToken = Jwts.builder()
@@ -238,7 +238,7 @@ public class JwtServiceTest {
         }
 
         @Test
-        public void shouldParseGeneratedToken() {
+        void shouldParseGeneratedToken() {
             when(jwtProperties.getExpirationTime()).thenReturn(600L);
             UserId userId = UserId.generate();
             String idValue = userId.toString();

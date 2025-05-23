@@ -58,7 +58,7 @@ public class MailProviderTest {
     private MailProvider underTest;
 
     @BeforeEach
-    public void setUp() throws Exception {
+    void setUp() throws Exception {
         secureTempFileHelper = new SecureTempFileHelper();
         mailProperties = new MailProperties();
         mailProperties.setFrom("test@myjobs");
@@ -85,7 +85,7 @@ public class MailProviderTest {
     }
 
     @Test
-    public void shouldCreateCustomMail() {
+    void shouldCreateCustomMail() {
         CustomMailMessage message = underTest.createMessage("template", "recipient@myjobs", "MyJobs recipient", "Test subject", "EN");
         assertNotNull(message);
         assertEquals("template", message.getTemplate());
@@ -98,7 +98,7 @@ public class MailProviderTest {
 
 
     @Test
-    public void shouldSendMail() throws MessagingException, IOException {
+    void shouldSendMail() throws MessagingException, IOException {
         ArgumentCaptor<MimeMessage> argument = ArgumentCaptor.forClass(MimeMessage.class);
         JavaMailSender mockedMailSender = spy(new JavaMailSenderImpl());
 

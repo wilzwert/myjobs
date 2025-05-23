@@ -64,7 +64,7 @@ public class JobDataManagerAdapterTest {
 
 
     @Test
-    public void whenJobFound_thenShouldReturnMappedJob() {
+    void whenJobFound_thenShouldReturnMappedJob() {
         JobId jobId = JobId.generate();
         UserId userId = UserId.generate();
         Job job = getValidTestJob(userId, jobId);
@@ -87,7 +87,7 @@ public class JobDataManagerAdapterTest {
     }
 
     @Test
-    public void whenJobNotFound_thenShouldReturnEmpty() {
+    void whenJobNotFound_thenShouldReturnEmpty() {
         JobId jobId = JobId.generate();
         when(mongoJobRepository.findById(jobId.value())).thenReturn(Optional.empty());
 
@@ -95,7 +95,7 @@ public class JobDataManagerAdapterTest {
     }
 
     @Test
-    public void whenJobNotFoundByUrlAndUserId_thenShouldReturnEmpty() {
+    void whenJobNotFoundByUrlAndUserId_thenShouldReturnEmpty() {
         UserId userId = UserId.generate();
         when(mongoJobRepository.findByUrlAndUserId("url", userId.value())).thenReturn(Optional.empty());
 
@@ -103,7 +103,7 @@ public class JobDataManagerAdapterTest {
     }
 
     @Test
-    public void whenJobFoundByUrlAndUserId_thenShouldReturnJob() {
+    void whenJobFoundByUrlAndUserId_thenShouldReturnJob() {
         UserId userId = UserId.generate();
         JobId jobId = JobId.generate();
         Job job = getValidTestJob(userId, jobId);
@@ -128,7 +128,7 @@ public class JobDataManagerAdapterTest {
     }
 
     @Test
-    public void whenJobNotFoundByIdAndUserId_thenShouldReturnEmpty() {
+    void whenJobNotFoundByIdAndUserId_thenShouldReturnEmpty() {
         JobId jobId = JobId.generate();
         UserId userId = UserId.generate();
         when(mongoJobRepository.findByIdAndUserId(jobId.value(), userId.value())).thenReturn(Optional.empty());
@@ -137,7 +137,7 @@ public class JobDataManagerAdapterTest {
     }
 
     @Test
-    public void whenJobFoundByIdAndUserId_thenShouldReturnJob_() {
+    void whenJobFoundByIdAndUserId_thenShouldReturnJob_() {
         UserId userId = UserId.generate();
         JobId jobId = JobId.generate();
         Job job = getValidTestJob(userId, jobId);
@@ -160,7 +160,7 @@ public class JobDataManagerAdapterTest {
     }
 
     @Test
-    public void whenUserHasNoJob_thenShouldReturnDomainPageWithoutContent_withDefaultArgs() {
+    void whenUserHasNoJob_thenShouldReturnDomainPageWithoutContent_withDefaultArgs() {
         UserId userId = UserId.generate();
         List<MongoJob> mongoJobs = new ArrayList<>();
         List<Job> jobList = Collections.emptyList();
@@ -181,7 +181,7 @@ public class JobDataManagerAdapterTest {
     }
 
     @Test
-    public void whenUserHasJobs_thenShouldReturnDomainPageWithContent_withArgs() {
+    void whenUserHasJobs_thenShouldReturnDomainPageWithContent_withArgs() {
         UserId userId = UserId.generate();
         List<MongoJob> mongoJobs = List.of(
                 new MongoJob().setTitle("title"),
@@ -215,7 +215,7 @@ public class JobDataManagerAdapterTest {
     }
 
     @Test
-    public void whenSaved_thenShouldReturnJob() {
+    void whenSaved_thenShouldReturnJob() {
         JobId jobId = JobId.generate();
         Job jobToSave = getValidTestJob(UserId.generate(), jobId);
         MongoJob mongoJob = new MongoJob().setId(jobId.value()).setTitle("title").setUrl("https://www.example.com");
@@ -238,7 +238,7 @@ public class JobDataManagerAdapterTest {
     }
 
     @Test
-    public void shouldReturnJob_whenJobAndActivitySaved() {
+    void shouldReturnJob_whenJobAndActivitySaved() {
         JobId jobId = JobId.generate();
         Job jobToSave = getValidTestJob(UserId.generate(), jobId);
         Activity activity = Activity.builder().type(ActivityType.APPLICATION).comment("application").build();
@@ -261,7 +261,7 @@ public class JobDataManagerAdapterTest {
     }
 
     @Test
-    public void shouldReturnJob_whenJobAndAttachmentSaved() {
+    void shouldReturnJob_whenJobAndAttachmentSaved() {
         JobId jobId = JobId.generate();
         Job jobToSave = getValidTestJob(UserId.generate(), jobId);
         Attachment attachment = Attachment.builder().name("attachment").fileId("fileId").filename("file.jpg").contentType("image/jpg").build();
@@ -285,7 +285,7 @@ public class JobDataManagerAdapterTest {
     }
 
     @Test
-    public void shouldDeleteJob() {
+    void shouldDeleteJob() {
         JobId jobId = JobId.generate();
         Job jobToDelete = getValidTestJob(UserId.generate(), jobId);
         MongoJob mongoJob = new MongoJob().setId(jobId.value()).setTitle("title").setUrl("https://www.example.com");
@@ -300,7 +300,7 @@ public class JobDataManagerAdapterTest {
     }
 
     @Test
-    public void shouldDeleteAttachmentAndSaveJob() {
+    void shouldDeleteAttachmentAndSaveJob() {
         JobId jobId = JobId.generate();
         Job job = getValidTestJob(UserId.generate(), jobId);
         MongoJob mongoJob = new MongoJob().setId(jobId.value()).setTitle("title").setUrl("https://www.example.com");

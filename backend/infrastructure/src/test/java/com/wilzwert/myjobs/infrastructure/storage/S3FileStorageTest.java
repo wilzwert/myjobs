@@ -44,13 +44,13 @@ public class S3FileStorageTest {
     private S3FileStorage underTest;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
         underTest = new S3FileStorage(s3Client, s3Presigner, "test");
     }
 
     @Test
-    public void shouldReturnContentType() {
+    void shouldReturnContentType() {
         assertThat(underTest.getContentType("document.doc")).isEqualTo("application/msword");
         assertThat(underTest.getContentType("document.pdf.jpg")).isEqualTo("image/jpeg");
         assertThat(underTest.getContentType("document.pdf")).isEqualTo("application/pdf");

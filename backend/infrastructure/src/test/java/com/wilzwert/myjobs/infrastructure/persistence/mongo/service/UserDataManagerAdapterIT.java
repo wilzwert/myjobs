@@ -36,7 +36,7 @@ public class UserDataManagerAdapterIT extends AbstractBaseIntegrationTest {
     private UserDataManagerAdapter underTest;
 
     @Test
-    public void shouldReturnAllsUsersMinimalByEmail() {
+    void shouldReturnAllsUsersMinimalByEmail() {
         Map<UserId, User> users = underTest.findMinimal(DomainSpecification.In("email", List.of("existing@example.com", "otherexisting@example.com")));
         assertThat(users.size()).isEqualTo(2);
         assertThat(users.values().stream().toList().getFirst().getEmail()).isEqualTo("existing@example.com");
@@ -46,7 +46,7 @@ public class UserDataManagerAdapterIT extends AbstractBaseIntegrationTest {
     }
 
     @Test
-    public void shouldReturnAllsUsersMinimalById() {
+    void shouldReturnAllsUsersMinimalById() {
         Map<UserId, User> users = underTest.findMinimal(
                 DomainSpecification.applySort(
                     DomainSpecification.In("id",
@@ -69,7 +69,7 @@ public class UserDataManagerAdapterIT extends AbstractBaseIntegrationTest {
     }
 
     @Test
-    public void shouldReturnUserViewById() {
+    void shouldReturnUserViewById() {
         assertThat(underTest.findViewById(new UserId(UUID.fromString("abcd1234-1234-1234-1234-123456789012"))))
                 .get()
                 .hasFieldOrPropertyWithValue("email", "existing@example.com");
@@ -77,7 +77,7 @@ public class UserDataManagerAdapterIT extends AbstractBaseIntegrationTest {
     }
 
     @Test
-    public void shouldReturnUserMinimalById() {
+    void shouldReturnUserMinimalById() {
         Optional<User> user = underTest.findMinimalById(new UserId(UUID.fromString("abcd1234-1234-1234-1234-123456789012")));
         assertThat(user.isPresent()).isTrue();
         var u  =user.get();
@@ -86,7 +86,7 @@ public class UserDataManagerAdapterIT extends AbstractBaseIntegrationTest {
     }
 
     @Test
-    public void shouldReturnUserMinimalByEmail() {
+    void shouldReturnUserMinimalByEmail() {
         Optional<User> user = underTest.findMinimalByEmail("existing@example.com");
         assertThat(user.isPresent()).isTrue();
         var u = user.get();
@@ -95,7 +95,7 @@ public class UserDataManagerAdapterIT extends AbstractBaseIntegrationTest {
     }
 
     @Test
-    public void shouldReturnUserMinimalByEmailValidationCode() {
+    void shouldReturnUserMinimalByEmailValidationCode() {
         Optional<User> user = underTest.findMinimalByEmailValidationCode("existing-email-validation-code");
         assertThat(user.isPresent()).isTrue();
         var u = user.get();
@@ -104,7 +104,7 @@ public class UserDataManagerAdapterIT extends AbstractBaseIntegrationTest {
     }
 
     @Test
-    public void shouldReturnUserMinimalByUsername() {
+    void shouldReturnUserMinimalByUsername() {
         Optional<User> user = underTest.findMinimalByUsername("existinguser");
         assertThat(user.isPresent()).isTrue();
         var u = user.get();
@@ -113,7 +113,7 @@ public class UserDataManagerAdapterIT extends AbstractBaseIntegrationTest {
     }
 
     @Test
-    public void shouldReturnUserViews() {
+    void shouldReturnUserViews() {
         List<UserView> userViews = underTest.findView(
                 DomainSpecification.applySort(
                         DomainSpecification.In("id",
@@ -132,13 +132,13 @@ public class UserDataManagerAdapterIT extends AbstractBaseIntegrationTest {
     }
 
     @Test
-    public void shouldReturnUserById() {
+    void shouldReturnUserById() {
         Optional<User> user = underTest.findById(new UserId(UUID.fromString("abcd1234-1234-1234-1234-123456789012")));
         assertThat(user).get().hasFieldOrPropertyWithValue("email", "existing@example.com");
     }
 
     @Test
-    public void shouldReturnUserByEmailOfUsername() {
+    void shouldReturnUserByEmailOfUsername() {
         Optional<User> user = underTest.findByEmailOrUsername("existing@example.com", "nonexistentUsername");
         assertThat(user.get().getId()).isEqualTo(new UserId(UUID.fromString("abcd1234-1234-1234-1234-123456789012")));
 
@@ -147,7 +147,7 @@ public class UserDataManagerAdapterIT extends AbstractBaseIntegrationTest {
     }
 
     @Test
-    public void shouldSaveAllUsers() {
+    void shouldSaveAllUsers() {
         // get 2 known users
         UserId userId1 = new UserId(UUID.fromString("abcd1234-1234-1234-1234-123456789012"));
         UserId userId2 = new UserId(UUID.fromString("abcd4321-4321-4321-4321-123456789012"));

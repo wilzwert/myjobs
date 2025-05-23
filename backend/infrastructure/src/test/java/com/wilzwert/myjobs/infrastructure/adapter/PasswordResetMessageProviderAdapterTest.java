@@ -31,12 +31,12 @@ public class PasswordResetMessageProviderAdapterTest {
     private MailProvider mailProvider;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         underTest = new PasswordResetMessageProviderAdapter(mailProvider);
     }
 
     @Test
-    public void testSendEmail() throws MessagingException, UnsupportedEncodingException {
+    void testSendEmail() throws MessagingException, UnsupportedEncodingException {
         Locale locale = Locale.of(Lang.EN.name());
         CustomMailMessage mailMessage = new CustomMailMessage("mail/reset_password", "user@example.com", "John", "email.password_reset.subject", "EN");
         when(mailProvider.createMessage("mail/reset_password", "user@example.com", "John", "email.password_reset.subject", "EN")).thenReturn(mailMessage);

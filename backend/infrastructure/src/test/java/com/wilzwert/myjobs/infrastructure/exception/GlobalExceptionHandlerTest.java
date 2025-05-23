@@ -39,7 +39,7 @@ public class GlobalExceptionHandlerTest {
     private GlobalExceptionHandler handler;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         handler = new GlobalExceptionHandler();
     }
 

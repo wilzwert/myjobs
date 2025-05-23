@@ -57,7 +57,7 @@ public class JobsReminderMessageProviderAdapterIT extends AbstractBaseIntegratio
             "'EN', 'Late follow-up jobs', 'Some jobs require your attention, as they had no activity in the past 7 days'",
             "'FR', 'Jobs à mettre à jour', 'Certains jobs demandent votre attention : il n&#39;ont eu aucune activité depuis 7 jours ou plus.'"
     })
-    public void shouldSendMail(String lang, String expectedSubject, String expectedHtml) throws Exception {
+    void shouldSendMail(String lang, String expectedSubject, String expectedHtml) throws Exception {
         UserId userId = UserId.generate();
         Set<Job> jobs = new HashSet<>(List.of(
             Job.builder()

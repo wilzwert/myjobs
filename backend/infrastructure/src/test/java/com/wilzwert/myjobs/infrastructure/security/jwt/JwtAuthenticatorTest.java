@@ -36,7 +36,7 @@ public class JwtAuthenticatorTest {
     private JwtAuthenticator underTest;
 
     @Test
-    public void shoudAuthenticate() {
+    void shoudAuthenticate() {
         UserId userId = UserId.generate();
         User user = User.builder().id(userId).email("test@example.com").username("test").password("password").firstName("firstName").lastName("lastName").role("USER").build();
         when(jwtService.generateToken(userId.value().toString())).thenReturn("token");

@@ -51,7 +51,7 @@ public class PasswordResetMessageProviderAdapterIT extends AbstractBaseIntegrati
             "'EN', 'Password reset', 'To reset your password, please follow the link below'",
             "'FR', 'Réinitialisation de votre mot de passe', 'Pour réinitialiser votre mot de passe, merci de suivre le lien ci-dessous'"
     })
-    public void shouldSendMail(String lang, String expectedSubject, String expectedHtml) throws Exception {
+    void shouldSendMail(String lang, String expectedSubject, String expectedHtml) throws Exception {
         User user = User.builder()
                 .id(UserId.generate())
                 .email("user@example.com")
