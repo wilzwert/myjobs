@@ -1,6 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.mail;
 
 
+import com.wilzwert.myjobs.infrastructure.storage.SecureTempFileHelper;
 import jakarta.mail.Address;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
@@ -11,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
@@ -41,6 +41,10 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class MailProviderTest {
 
+    private MailProperties mailProperties;
+
+    private SecureTempFileHelper secureTempFileHelper;
+
     @Mock
     private JavaMailSender mailSender;
 
@@ -50,18 +54,23 @@ public class MailProviderTest {
     @Mock
     private MessageSource messageSource;
 
-    @InjectMocks
+
+
     private MailProvider underTest;
 
     @BeforeEach
     public void setUp() throws Exception {
-        underTest = new MailProvider(mailSender, templateEngine, messageSource,"http://frontend", "test@myjobs", "MyJobs tests", "EN");
+        secureTempFileHelper = new SecureTempFileHelper();
+        mailProperties = new MailProperties();
+        mailProperties.setFrom("test@myjobs");
+        mailProperties.setFromName("MyJobs tests");
+        underTest = new MailProvider(mailSender, templateEngine, messageSource, secureTempFileHelper, mailProperties, "http://frontend",  "EN");
         underTest.init();
     }
 
     @Test
     void shouldCopyImageToTempFileOnInit() throws Exception {
-        File logoFile = underTest.getLogoTempFile(); // expose un getter temporaire si besoin pour test
+        File logoFile = underTest.getLogoTempFile();
         assertNotNull(logoFile);
         assertTrue(logoFile.exists());
         assertTrue(logoFile.length() > 0);
@@ -94,7 +103,7 @@ public class MailProviderTest {
         ArgumentCaptor<MimeMessage> argument = ArgumentCaptor.forClass(MimeMessage.class);
         JavaMailSender mockedMailSender = spy(new JavaMailSenderImpl());
 
-        underTest = new MailProvider(mockedMailSender, templateEngine, messageSource,"http://frontend", "test@myjobs", "MyJobs tests", "EN");
+        underTest = new MailProvider(mockedMailSender, templateEngine, messageSource, secureTempFileHelper, mailProperties, "http://frontend", "EN");
         underTest.init();
         doNothing().when(mockedMailSender).send(argument.capture());
 

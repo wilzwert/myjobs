@@ -1,5 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.mail;
 
+import com.wilzwert.myjobs.infrastructure.storage.SecureTempFileHelper;
 import jakarta.annotation.PostConstruct;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
@@ -20,7 +21,6 @@ import org.thymeleaf.context.Context;
 
 import java.io.*;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Locale;
 
 @Component
@@ -35,6 +35,8 @@ public class MailProvider {
      * This includes frontend URIs which could become localized in a near future
      */
     private final MessageSource messageSource;
+
+    private final SecureTempFileHelper secureTempFileHelper;
 
     private final String frontendUrl;
 
@@ -52,17 +54,18 @@ public class MailProvider {
             final JavaMailSender mailSender,
             final TemplateEngine templateEngine,
             final MessageSource messageSource,
+            final SecureTempFileHelper secureTempFileHelper,
+            final MailProperties mailProperties,
             @Value("${application.frontend.url}") String frontendUrl,
-            @Value("${application.mail.from}") String from,
-            @Value("${application.mail.from-name}") String fromName,
             @Value("${application.default-language}") String defaultLanguage
     ) {
         this.mailSender = mailSender;
         this.templateEngine = templateEngine;
         this.messageSource = messageSource;
+        this.secureTempFileHelper = secureTempFileHelper;
         this.frontendUrl = frontendUrl;
-        this.from = from;
-        this.fromName = fromName;
+        this.from = mailProperties.getFrom();
+        this.fromName = mailProperties.getFromName();
         this.defaultLanguage = defaultLanguage;
     }
 
@@ -71,13 +74,11 @@ public class MailProvider {
         log.info("Copying logo to tmp file");
         // copy images to tmp files at startup
         ClassPathResource imgResource = new ClassPathResource("static/images/logo_email.png");
-        Path temp = Files.createTempDirectory("random-directory");
-        logoTempFile = Files.createTempFile(temp,  null, ".png").toFile();
-        logoTempFile.setReadable(false); //deny for all
-        logoTempFile.setWritable(false);
-        logoTempFile.setExecutable(false);
-        logoTempFile.setReadable(true, true); //allow for owner
-        logoTempFile.setWritable(true, true);
+        logoTempFile = Files.createTempFile("temp", ".png", secureTempFileHelper.getFileAttribute()).toFile();
+        if(!logoTempFile.exists()) {
+            throw new IOException("Could not find logo");
+        }
+
         logoTempFile.deleteOnExit(); // cleanup on jvm exit
         try (InputStream in = imgResource.getInputStream(); FileOutputStream out = new FileOutputStream(logoTempFile)) {
             in.transferTo(out);

@@ -19,6 +19,12 @@ public class UsersJobsRemindersBulkResult extends UsersJobsBulkResult {
 
     public UsersJobsRemindersBulkResult(int usersCount, int jobsCount, List<String> errors, int sendErrorsCount, int saveErrorsCount) {
         super(usersCount, jobsCount, errors);
+        if(sendErrorsCount < 0) {
+            throw new IllegalArgumentException("sendErrorsCount < 0");
+        }
+        if(saveErrorsCount < 0) {
+            throw new IllegalArgumentException("saveErrorsCount < 0");
+        }
         this.sendErrorsCount = sendErrorsCount;
         this.saveErrorsCount = saveErrorsCount;
     }

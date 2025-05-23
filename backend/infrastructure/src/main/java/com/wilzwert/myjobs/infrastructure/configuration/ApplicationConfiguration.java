@@ -1,6 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.configuration;
 
 
+import com.wilzwert.myjobs.infrastructure.mail.MailProperties;
 import com.wilzwert.myjobs.infrastructure.security.configuration.CookieProperties;
 import com.wilzwert.myjobs.infrastructure.security.configuration.JwtProperties;
 import com.wilzwert.myjobs.infrastructure.security.ratelimit.RateLimitingProperties;
@@ -13,6 +14,6 @@ import org.springframework.context.annotation.Configuration;
  * Time:16:05
  */
 @Configuration
-@EnableConfigurationProperties({ CookieProperties.class, JwtProperties.class, RateLimitingProperties.class})
+@EnableConfigurationProperties({ CookieProperties.class, JwtProperties.class, RateLimitingProperties.class, MailProperties.class })
 public class ApplicationConfiguration {
 }
