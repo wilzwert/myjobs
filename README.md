@@ -20,6 +20,9 @@
 
 
 This project has several goals : 
-- help me handle my job search by keeping track of jobs statuses and applications
-- learn as much and as fast as possible about Spring Boot, Hexagonal Architecture, Clean Architecture, MongoDB and Domain-Driven Design (DDD)
-- allow me to try, fail, misunderstand, try again, fail again, succeed, do better, wishing I knew more and better, refactor, unlearn, relearn, and fail again 
+1. help me manage my job search by keeping track of jobs statuses and applications
+2. learn as much and as fast as possible about Spring Boot, Hexagonal Architecture, Clean Architecture, MongoDB and Domain-Driven Design (DDD), and lots of other things I will forget (or not)
+3. Make me scream "Man, TDD is so cool and efficient" then  go to 5. or 6., each with a 50% probability
+4. Make me scream "Man, TDD si so counterintuitive and inefficient" then go to 5. or 6., each with a 50% probabilty
+5. Go back to 3. or 4., each with a 50% probability
+6. Try, fail, misunderstand, try again, fail again, succeed, do better, wish I knew more and better, refactor, unlearn, relearn, fail again, succeed, question everything, go to sleep
