@@ -1,6 +1,6 @@
 package com.wilzwert.myjobs.core.domain.model.user.ports.driving;
 
-import com.wilzwert.myjobs.core.domain.model.user.batch.UsersJobsRemindersBatchResult;
+import com.wilzwert.myjobs.core.domain.model.user.batch.UsersJobsRemindersBulkResult;
 
 import java.util.List;
 
@@ -10,5 +10,5 @@ import java.util.List;
  * Time:10:19
  */
 public interface SendJobsRemindersUseCase {
-    List<UsersJobsRemindersBatchResult> sendJobsReminders(int batchSize);
+    List<UsersJobsRemindersBulkResult> sendJobsReminders(int batchSize);
 }

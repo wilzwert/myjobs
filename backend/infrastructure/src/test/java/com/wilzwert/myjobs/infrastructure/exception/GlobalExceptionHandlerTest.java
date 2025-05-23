@@ -1,4 +1,4 @@
-package com.wilzwert.myjobs.infrastructure.api.rest.exception;
+package com.wilzwert.myjobs.infrastructure.exception;
 
 
 import com.wilzwert.myjobs.core.domain.model.user.exception.LoginException;

@@ -1,5 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.mail;
 
+import com.wilzwert.myjobs.infrastructure.exception.MailSendException;
+import com.wilzwert.myjobs.infrastructure.storage.SecureTempFileHelper;
 import jakarta.annotation.PostConstruct;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
@@ -12,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -19,6 +22,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.Locale;
 
 @Component
@@ -28,7 +32,13 @@ public class MailProvider {
 
     private final TemplateEngine templateEngine;
 
+    /**
+     * The MessageSource used for translations
+     * This includes frontend URIs which could become localized in a near future
+     */
     private final MessageSource messageSource;
+
+    private final SecureTempFileHelper secureTempFileHelper;
 
     private final String frontendUrl;
 
@@ -46,17 +56,18 @@ public class MailProvider {
             final JavaMailSender mailSender,
             final TemplateEngine templateEngine,
             final MessageSource messageSource,
+            final SecureTempFileHelper secureTempFileHelper,
+            final MailProperties mailProperties,
             @Value("${application.frontend.url}") String frontendUrl,
-            @Value("${application.mail.from}") String from,
-            @Value("${application.mail.from-name}") String fromName,
             @Value("${application.default-language}") String defaultLanguage
     ) {
         this.mailSender = mailSender;
         this.templateEngine = templateEngine;
         this.messageSource = messageSource;
+        this.secureTempFileHelper = secureTempFileHelper;
         this.frontendUrl = frontendUrl;
-        this.from = from;
-        this.fromName = fromName;
+        this.from = mailProperties.getFrom();
+        this.fromName = mailProperties.getFromName();
         this.defaultLanguage = defaultLanguage;
     }
 
@@ -65,7 +76,11 @@ public class MailProvider {
         log.info("Copying logo to tmp file");
         // copy images to tmp files at startup
         ClassPathResource imgResource = new ClassPathResource("static/images/logo_email.png");
-        logoTempFile = File.createTempFile("logo_email", ".png");
+        logoTempFile = Files.createTempFile("temp", ".png", secureTempFileHelper.getFileAttribute()).toFile();
+        if(!logoTempFile.exists()) {
+            throw new IOException("Could not find logo");
+        }
+
         logoTempFile.deleteOnExit(); // cleanup on jvm exit
         try (InputStream in = imgResource.getInputStream(); FileOutputStream out = new FileOutputStream(logoTempFile)) {
             in.transferTo(out);
@@ -83,11 +98,12 @@ public class MailProvider {
     /**
      *
      * Creates a URL based on the uri and the locale provided
+     * URI MUST be an entry in the MessageSource (i.e. resources/localization/messages[_lang].properties
+     * otherwise it will become unpredictable, should the frontend urls be localized
      * Locale is used as is because it is based on the Lang enum,
      * therefore we know its language tag will be either 'en' or 'fr'
-     *
      * @param uri the uri
-     * @param locale the locale which will be used as a uri prefix
+     * @param locale the locale which will be used as uri prefix
      * @return the complete url
      */
     public String createUrl(String uri, Locale locale) {
@@ -101,7 +117,7 @@ public class MailProvider {
      * Locale is used as is because it is based on the Lang enum,
      * therefore we know its language tag will be either 'en' or 'fr'
      *
-     * @param uri the uri
+     * @param uri the uri as a th
      * @param locale the locale which will be used as a uri prefix
      * @return the complete url
      */
@@ -112,7 +128,7 @@ public class MailProvider {
 
     /**
      * Shortcut to generate /lang/me urls
-     * @param locale the local to use to create the url
+     * @param locale the locale to use to create the url
      * @return the url to the user account
      */
     public String createMeUrl(Locale locale) {
@@ -160,13 +176,15 @@ public class MailProvider {
             mailSender.send(mimeMessage);
             log.debug("Mail should have been sent");
         }
-        catch (MessagingException | UnsupportedEncodingException e) {
-            log.error("Unable to send message", e);
-            throw new RuntimeException(e);
-        }
         catch (Exception e) {
+            System.out.println(e.getClass().getName());
+            if(e instanceof MessagingException || e instanceof MailException) {
+                log.error("Unable to send message", e);
+                throw new MailSendException("Unable to send message", e);
+            }
+            System.out.println(e.getClass().getName());
             log.error("Unexpected exception while building or sending the message", e);
-            throw new RuntimeException(e);
+            throw new MailSendException("Unexpected exception while building or sending the message", e);
         }
     }
 }

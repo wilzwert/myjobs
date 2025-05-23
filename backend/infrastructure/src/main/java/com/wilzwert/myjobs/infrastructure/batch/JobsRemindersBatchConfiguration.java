@@ -1,8 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.batch;
 
 
-import com.wilzwert.myjobs.core.domain.model.user.batch.UsersJobsRemindersBatchResult;
-import com.wilzwert.myjobs.core.domain.model.user.ports.driving.SendJobsRemindersUseCase;
+import com.wilzwert.myjobs.infrastructure.batch.service.SendJobsRemindersBatchRunner;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.core.Job;
@@ -12,11 +11,10 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.MongoTransactionManager;
-
-import java.util.List;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -30,6 +28,7 @@ import java.util.List;
 
 @Configuration
 @Slf4j
+@ConditionalOnProperty(name = "application.batch.enabled", havingValue = "true")
 public class JobsRemindersBatchConfiguration {
     @Bean
     public Job jobReminderJob(Step jobReminderStep, JobRepository jobRepository) {
@@ -47,24 +46,9 @@ public class JobsRemindersBatchConfiguration {
     }
 
     @Bean
-    public Tasklet jobReminderTasklet(SendJobsRemindersUseCase useCase) {
+    public Tasklet jobReminderTasklet(SendJobsRemindersBatchRunner runner) {
         return (contribution, chunkContext) -> {
-            try {
-                List<UsersJobsRemindersBatchResult> results = useCase.sendJobsReminders(1);
-                int totalSendErrors = results.stream().mapToInt(UsersJobsRemindersBatchResult::getSendErrorsCount).sum();
-                int totalSaveErrors = results.stream().mapToInt(UsersJobsRemindersBatchResult::getSaveErrorsCount).sum();
-                if(totalSendErrors > 0 || totalSaveErrors > 0) {
-                    log.warn("SendJobReminders batch run : {} chunks, {} send errors, {} save errors", results.size(), totalSaveErrors, totalSendErrors);
-                }
-                else {
-                    int totalUsersReminded = results.stream().mapToInt(UsersJobsRemindersBatchResult::getUsersCount).sum();
-                    int totalJobsReminded = results.stream().mapToInt(UsersJobsRemindersBatchResult::getJobsCount).sum();
-                    log.info("SendJobReminders batch run : {} chunks, {} users, {} jobs", results.size(), totalUsersReminded, totalJobsReminded);
-                }
-            }
-            catch (Exception e) {
-                log.error("SendJobReminders batch throw an exception", e);
-            }
+            runner.run();
             contribution.setExitStatus(ExitStatus.COMPLETED);
             return RepeatStatus.FINISHED;
         };

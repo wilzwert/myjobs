@@ -333,10 +333,7 @@
                 <configuration>
                     <excludes>
                         <exclude>**/*MapperImpl*</exclude>
-                        <exclude>**/config/*</exclude>
-                        <exclude>**/configuration/*</exclude>
                         <exclude>**/MyJobsApplication*</exclude>
-                        <exclude>**/exception/GlobalExceptionHandler*</exclude>
                     </excludes>
                 </configuration>
                 <executions>
