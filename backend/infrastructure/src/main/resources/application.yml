@@ -15,7 +15,7 @@ spring:
       mime:
         charset: UTF-8
       mail:
-        debug: true
+        debug: false
         smtp:
           auth: ${MAIL_SMTP_AUTH:false}
           starttls:
@@ -89,8 +89,8 @@ aws:
     secret-access-key: ${AWS_SECRET_ACCESS_KEY}
 
 application:
-  scheduler:
-    secret: ${SCHEDULER_SECRET:secret}
+  internal:
+    secret: ${INTERNAL_SECRET:secret}
   async:
     enabled: ${ASYNC_ENABLED:true}
   batch:

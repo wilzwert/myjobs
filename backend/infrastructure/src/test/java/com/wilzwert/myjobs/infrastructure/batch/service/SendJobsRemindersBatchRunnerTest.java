@@ -3,8 +3,9 @@ package com.wilzwert.myjobs.infrastructure.batch.service;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
-import com.wilzwert.myjobs.core.domain.model.user.batch.UsersJobsRemindersBatchResult;
+import com.wilzwert.myjobs.core.domain.model.user.batch.UsersJobsRemindersBulkResult;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.SendJobsRemindersUseCase;
+import com.wilzwert.myjobs.infrastructure.exception.BatchRunException;
 import com.wilzwert.myjobs.infrastructure.utility.MemoryAppender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class SendJobsRemindersBatchRunnerTest {
@@ -37,7 +39,7 @@ class SendJobsRemindersBatchRunnerTest {
 
     @Test
     void shouldLogInfoWhenNoErrors() {
-        var result = mock(UsersJobsRemindersBatchResult.class);
+        var result = mock(UsersJobsRemindersBulkResult.class);
         when(result.getSendErrorsCount()).thenReturn(0);
         when(result.getSaveErrorsCount()).thenReturn(0);
         when(result.getUsersCount()).thenReturn(3);
@@ -53,7 +55,7 @@ class SendJobsRemindersBatchRunnerTest {
 
     @Test
     void shouldLogWarningWhenErrors() {
-        var result = mock(UsersJobsRemindersBatchResult.class);
+        var result = mock(UsersJobsRemindersBulkResult.class);
         when(result.getSendErrorsCount()).thenReturn(2);
         when(result.getSaveErrorsCount()).thenReturn(1);
 
@@ -69,7 +71,7 @@ class SendJobsRemindersBatchRunnerTest {
     void shouldLogErrorWhenExceptionThrown() {
         when(sendJobsRemindersUseCase.sendJobsReminders(1)).thenThrow(new RuntimeException("boom"));
 
-        runner.run();
+        assertThrows(BatchRunException.class, runner::run);
 
         verify(sendJobsRemindersUseCase, times(1)).sendJobsReminders(1);
         assertThat(memoryAppender.contains("SendJobReminders batch threw an exception", Level.ERROR)).isTrue();

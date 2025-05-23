@@ -28,6 +28,10 @@ public class MailProvider {
 
     private final TemplateEngine templateEngine;
 
+    /**
+     * The MessageSource used for translations
+     * This includes frontend URIs which could become localized in a near future
+     */
     private final MessageSource messageSource;
 
     private final String frontendUrl;
@@ -83,11 +87,12 @@ public class MailProvider {
     /**
      *
      * Creates a URL based on the uri and the locale provided
+     * URI MUST be an entry in the MessageSource (i.e. resources/localization/messages[_lang].properties
+     * otherwise it will become unpredictable, should the frontend urls be localized
      * Locale is used as is because it is based on the Lang enum,
      * therefore we know its language tag will be either 'en' or 'fr'
-     *
      * @param uri the uri
-     * @param locale the locale which will be used as a uri prefix
+     * @param locale the locale which will be used as uri prefix
      * @return the complete url
      */
     public String createUrl(String uri, Locale locale) {
@@ -101,7 +106,7 @@ public class MailProvider {
      * Locale is used as is because it is based on the Lang enum,
      * therefore we know its language tag will be either 'en' or 'fr'
      *
-     * @param uri the uri
+     * @param uri the uri as a th
      * @param locale the locale which will be used as a uri prefix
      * @return the complete url
      */
@@ -112,7 +117,7 @@ public class MailProvider {
 
     /**
      * Shortcut to generate /lang/me urls
-     * @param locale the local to use to create the url
+     * @param locale the locale to use to create the url
      * @return the url to the user account
      */
     public String createMeUrl(Locale locale) {

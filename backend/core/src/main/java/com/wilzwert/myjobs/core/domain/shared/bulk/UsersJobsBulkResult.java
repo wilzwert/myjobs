@@ -1,4 +1,4 @@
-package com.wilzwert.myjobs.core.domain.shared.batch;
+package com.wilzwert.myjobs.core.domain.shared.bulk;
 
 
 import java.util.List;
@@ -8,12 +8,12 @@ import java.util.List;
  * Date:15/05/2025
  * Time:12:01
  */
-public class UsersJobsBatchResult {
+public class UsersJobsBulkResult {
     private final int usersCount;
     private final int jobsCount;
     private final List<String> errors;
 
-    public UsersJobsBatchResult(int usersCount, int jobsCount, List<String> errors) {
+    public UsersJobsBulkResult(int usersCount, int jobsCount, List<String> errors) {
         this.usersCount = usersCount;
         this.jobsCount = jobsCount;
         this.errors = errors;

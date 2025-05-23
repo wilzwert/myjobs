@@ -97,6 +97,13 @@ public class JwtAuthenticationFilterTest {
         assertThat(underTest.shouldNotFilter(request)).isTrue();
     }
 
+    @Test
+    public void shouldReturnTrueWhenFilteringNotNecessaryForInternal() {
+        when(request.getRequestURI()).thenReturn("/internal/jobs-reminders-batch");
+
+        assertThat(underTest.shouldNotFilter(request)).isTrue();
+    }
+
 
     /*
     @Test

@@ -6,7 +6,7 @@ import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobDataManager;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
-import com.wilzwert.myjobs.core.domain.model.user.batch.UsersJobsRemindersBatchResult;
+import com.wilzwert.myjobs.core.domain.model.user.batch.UsersJobsRemindersBulkResult;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.JobReminderMessageProvider;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
 import com.wilzwert.myjobs.core.domain.shared.bulk.BulkDataSaveResult;
@@ -112,7 +112,7 @@ class SendJobsRemindersUseCaseImplTest {
 
         when(userDataManager.saveAll(any())).thenReturn(new BulkDataSaveResult(2, 2, 0, 0));
 
-        List<UsersJobsRemindersBatchResult> result = underTest.sendJobsReminders(1);
+        List<UsersJobsRemindersBulkResult> result = underTest.sendJobsReminders(1);
         assertNotNull(result);
         verify(userDataManager, times(2)).findMinimal(any());
         verify(userDataManager, times(2)).saveAll(any());

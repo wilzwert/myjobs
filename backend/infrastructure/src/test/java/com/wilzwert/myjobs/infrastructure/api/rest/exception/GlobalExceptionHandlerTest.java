@@ -9,6 +9,7 @@ import com.wilzwert.myjobs.core.domain.shared.exception.ValidationException;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.core.domain.shared.validation.ValidationErrors;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.ErrorResponse;
+import com.wilzwert.myjobs.infrastructure.exception.GlobalExceptionHandler;
 import org.apache.coyote.BadRequestException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

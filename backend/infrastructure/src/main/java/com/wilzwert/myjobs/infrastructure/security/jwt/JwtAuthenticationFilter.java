@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -28,6 +29,7 @@ import java.util.Optional;
  * Date:14/03/2025
  * Time:13:46
  */
+@Component
 @Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -87,6 +89,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return path.matches("/api/auth/(login|register|refresh-token)")
                 // || path.matches(apiDocProperties.getApiDocsPath()+"/?.*")
                 // || path.matches(apiDocProperties.getSwaggerPath()+"/?.*")
-                || path.matches("/swagger-ui/.*");
+                || path.matches("/swagger-ui/.*")
+                || path.matches("/internal/.*");
     }
 }
