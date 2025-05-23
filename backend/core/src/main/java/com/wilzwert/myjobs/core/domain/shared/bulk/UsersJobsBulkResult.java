@@ -14,11 +14,11 @@ public class UsersJobsBulkResult {
     private final List<String> errors;
 
     public UsersJobsBulkResult(int usersCount, int jobsCount, List<String> errors) {
-        if(usersCount < 1) {
-            throw new IllegalArgumentException("usersCount must be greater than 0");
+        if(usersCount < 0) {
+            throw new IllegalArgumentException("users count must be greater than or equal to 0");
         }
-        if(jobsCount < 1) {
-            throw new IllegalArgumentException("jobsCount must be greater than 0");
+        if(jobsCount < 0) {
+            throw new IllegalArgumentException("jobs count must be greater than or equal to 0");
         }
         if(errors == null) {
             throw new IllegalArgumentException("errors must not be null");

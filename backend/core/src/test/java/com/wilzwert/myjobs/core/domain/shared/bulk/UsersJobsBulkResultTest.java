@@ -19,18 +19,20 @@ public class UsersJobsBulkResultTest {
 
     @Test
     public void whenUsersCountLessThanZero_thenShouldThrowIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> new UsersJobsBulkResult(-1, 0, Collections.emptyList()));
+        var ex = assertThrows(IllegalArgumentException.class, () -> new UsersJobsBulkResult(-1, 0, Collections.emptyList()));
+        assertEquals("users count must be greater than or equal to 0", ex.getMessage());
     }
 
     @Test
     public void whenJobsCountLessThanZero_thenShouldThrowIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> new UsersJobsBulkResult(0, -1, Collections.emptyList()));
+        var ex = assertThrows(IllegalArgumentException.class, () -> new UsersJobsBulkResult(0, -1, Collections.emptyList()));
+        assertEquals("jobs count must be greater than or equal to 0", ex.getMessage());
     }
 
     @Test
     public void whenErrorsListEmpty_thenShouldThrowIllegalArgumentException() {
-        assertThrows(IllegalArgumentException.class, () -> new UsersJobsBulkResult(0, 0, null
-        ));
+        var ex = assertThrows(IllegalArgumentException.class, () -> new UsersJobsBulkResult(0, 0, null));
+        assertEquals("errors must not be null", ex.getMessage());
     }
 
     @Test
