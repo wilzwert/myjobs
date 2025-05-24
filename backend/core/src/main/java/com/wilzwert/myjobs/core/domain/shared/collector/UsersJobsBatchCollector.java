@@ -15,8 +15,6 @@ import java.util.stream.Collectors;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:13/05/2025
- * Time:08:36
  *  A collector for batch operations on Users and Jobs, as in "for each User we have a list of Jobs"
  *  This is why the bat chProcessing function expects a Map<User, SortedSet<Job>> parameter
  *  Please note that the batchSize concerns users, e.g, batchSize users will be handled, whatever number of Jobs each have
