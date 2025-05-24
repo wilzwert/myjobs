@@ -8,20 +8,18 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:06/05/2025
- * Time:09:59
  */
 @Configuration
-<span class="fc" id="L15">public class MessagesConfiguration {</span>
+<span class="fc" id="L13">public class MessagesConfiguration {</span>
     @Bean
     public MessageSource messageSource() {
-<span class="fc" id="L18">        ReloadableResourceBundleMessageSource messageSource</span>
+<span class="fc" id="L16">        ReloadableResourceBundleMessageSource messageSource</span>
                 = new ReloadableResourceBundleMessageSource();
 
-<span class="fc" id="L21">        messageSource.setBasename(&quot;classpath:localization/messages&quot;);</span>
-<span class="fc" id="L22">        messageSource.setDefaultEncoding(&quot;UTF-8&quot;);</span>
-<span class="fc" id="L23">        messageSource.setUseCodeAsDefaultMessage(true);</span>
-<span class="fc" id="L24">        return messageSource;</span>
+<span class="fc" id="L19">        messageSource.setBasename(&quot;classpath:localization/messages&quot;);</span>
+<span class="fc" id="L20">        messageSource.setDefaultEncoding(&quot;UTF-8&quot;);</span>
+<span class="fc" id="L21">        messageSource.setUseCodeAsDefaultMessage(true);</span>
+<span class="fc" id="L22">        return messageSource;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

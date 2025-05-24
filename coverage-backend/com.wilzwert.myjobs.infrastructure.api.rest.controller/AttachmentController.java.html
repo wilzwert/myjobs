@@ -14,6 +14,7 @@ import com.wilzwert.myjobs.core.domain.model.attachment.ports.driving.DownloadAt
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.AttachmentMapper;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
+import com.wilzwert.myjobs.infrastructure.storage.StorageException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
@@ -26,13 +27,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.Base64;
 import java.util.UUID;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:13/03/2025
- * Time:11:43
  */
 @RestController
 <span class="fc" id="L38">@Slf4j</span>
@@ -75,10 +75,10 @@ public class AttachmentController {
 
 <span class="fc" id="L76">            CreateAttachmentCommand command = attachmentMapper.toCommand(createAttachmentRequest, userDetails.getId(), new JobId(UUID.fromString(jobId)), tempFile);</span>
 <span class="fc" id="L77">            Attachment attachment = addAttachmentToJobUseCase.addAttachmentToJob(command);</span>
-<span class="fc" id="L78">            tempFile.delete();</span>
+<span class="fc" id="L78">            Files.delete(tempFile.toPath());</span>
 <span class="fc" id="L79">            return attachmentMapper.toResponse(attachment);</span>
 <span class="nc" id="L80">        } catch (IOException e) {</span>
-<span class="nc" id="L81">            throw new RuntimeException(e);</span>
+<span class="nc" id="L81">            throw new StorageException(&quot;an io exception occurred&quot;, e);</span>
         }
     }
 

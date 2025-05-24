@@ -16,8 +16,6 @@ import org.mapstruct.Mapper;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:12/03/2025
- * Time:15:48
  */
 @Mapper(componentModel = &quot;spring&quot;, uses = {IdMapper.class, ActivityMapper.class, JobRatingMapper.class})
 public interface JobMapper extends EnrichedEntityMapper&lt;Job, MongoJob, CreateJobRequest, CreateJobCommand, UpdateJobRequest, UpdateJobCommand, JobResponse, EnrichedJob&gt; {
@@ -32,9 +30,9 @@ public interface JobMapper extends EnrichedEntityMapper&lt;Job, MongoJob, Create
 
     @Override
     default JobResponse toEnrichedResponse(EnrichedJob extended) {
-<span class="fc" id="L35">        JobResponse jobResponse = toResponse(extended.job());</span>
-<span class="fc" id="L36">        jobResponse.setFollowUpLate(extended.isFollowUpLate());</span>
-<span class="fc" id="L37">        return jobResponse;</span>
+<span class="fc" id="L33">        JobResponse jobResponse = toResponse(extended.job());</span>
+<span class="fc" id="L34">        jobResponse.setFollowUpLate(extended.isFollowUpLate());</span>
+<span class="fc" id="L35">        return jobResponse;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

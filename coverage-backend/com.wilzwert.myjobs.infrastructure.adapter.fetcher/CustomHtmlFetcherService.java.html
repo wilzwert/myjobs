@@ -7,19 +7,17 @@ import java.util.Optional;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:02/04/2025
- * Time:14:53
  * This adapter has no other than to allow caching of fetched html which is not the domain responsibility
  */
 public class CustomHtmlFetcherService extends DefaultHtmlFetcherService {
 
     public CustomHtmlFetcherService() {
-<span class="fc" id="L17">        super();</span>
-<span class="fc" id="L18">    }</span>
+<span class="fc" id="L15">        super();</span>
+<span class="fc" id="L16">    }</span>
     @Override
     @Cacheable(value = &quot;urlMetadataExists&quot;, key = &quot;#url&quot;)
     public Optional&lt;String&gt; fetchHtml(String domain, String url) {
-<span class="nc" id="L22">        return super.fetchHtml(domain, url);</span>
+<span class="nc" id="L20">        return super.fetchHtml(domain, url);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -14,49 +14,47 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:20/03/2025
- * Time:08:56
  */
 @Configuration
 @EnableCaching
-<span class="fc" id="L22">public class CacheConfiguration {</span>
+<span class="fc" id="L20">public class CacheConfiguration {</span>
 
     @Bean
     public CacheManager cacheManager() {
-<span class="fc" id="L26">        SimpleCacheManager cacheManager = new SimpleCacheManager();</span>
+<span class="fc" id="L24">        SimpleCacheManager cacheManager = new SimpleCacheManager();</span>
 
-<span class="fc" id="L28">        CaffeineCache emailCache = new CaffeineCache(&quot;emailExists&quot;,</span>
-<span class="fc" id="L29">                Caffeine.newBuilder().expireAfterWrite(60, TimeUnit.MINUTES) // expires after 1 hour</span>
-<span class="fc" id="L30">                .maximumSize(1000)</span>
-<span class="fc" id="L31">                .build()</span>
+<span class="fc" id="L26">        CaffeineCache emailCache = new CaffeineCache(&quot;emailExists&quot;,</span>
+<span class="fc" id="L27">                Caffeine.newBuilder().expireAfterWrite(60, TimeUnit.MINUTES) // expires after 1 hour</span>
+<span class="fc" id="L28">                .maximumSize(1000)</span>
+<span class="fc" id="L29">                .build()</span>
         );
 
-<span class="fc" id="L34">        CaffeineCache usernameCache = new CaffeineCache(&quot;usernameExists&quot;,</span>
-<span class="fc" id="L35">                Caffeine.newBuilder().expireAfterWrite(60, TimeUnit.MINUTES) // expires after 1 hour</span>
-<span class="fc" id="L36">                        .maximumSize(1000)</span>
-<span class="fc" id="L37">                        .build()</span>
+<span class="fc" id="L32">        CaffeineCache usernameCache = new CaffeineCache(&quot;usernameExists&quot;,</span>
+<span class="fc" id="L33">                Caffeine.newBuilder().expireAfterWrite(60, TimeUnit.MINUTES) // expires after 1 hour</span>
+<span class="fc" id="L34">                        .maximumSize(1000)</span>
+<span class="fc" id="L35">                        .build()</span>
         );
 
-<span class="fc" id="L40">        CaffeineCache urlMetadataCache = new CaffeineCache(&quot;urlMetadataExists&quot;,</span>
-<span class="fc" id="L41">                Caffeine.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES) // expires after 10 minutes</span>
-<span class="fc" id="L42">                        .maximumSize(1000)</span>
-<span class="fc" id="L43">                        .build()</span>
+<span class="fc" id="L38">        CaffeineCache urlMetadataCache = new CaffeineCache(&quot;urlMetadataExists&quot;,</span>
+<span class="fc" id="L39">                Caffeine.newBuilder().expireAfterWrite(10, TimeUnit.MINUTES) // expires after 10 minutes</span>
+<span class="fc" id="L40">                        .maximumSize(1000)</span>
+<span class="fc" id="L41">                        .build()</span>
         );
 
-<span class="fc" id="L46">        CaffeineCache rulesCache = new CaffeineCache(&quot;rateLimitingRules&quot;,</span>
-<span class="fc" id="L47">                Caffeine.newBuilder().expireAfterWrite(60, TimeUnit.MINUTES) // expires after 10 minutes</span>
-<span class="fc" id="L48">                        .maximumSize(1000)</span>
-<span class="fc" id="L49">                        .build()</span>
+<span class="fc" id="L44">        CaffeineCache rulesCache = new CaffeineCache(&quot;rateLimitingRules&quot;,</span>
+<span class="fc" id="L45">                Caffeine.newBuilder().expireAfterWrite(60, TimeUnit.MINUTES) // expires after 10 minutes</span>
+<span class="fc" id="L46">                        .maximumSize(1000)</span>
+<span class="fc" id="L47">                        .build()</span>
         );
 
-<span class="fc" id="L52">        CaffeineCache bucketCache = new CaffeineCache(&quot;rateLimitingBucket&quot;,</span>
-<span class="fc" id="L53">                Caffeine.newBuilder().expireAfterWrite(60, TimeUnit.MINUTES) // expires after 10 minutes</span>
-<span class="fc" id="L54">                        .maximumSize(1000)</span>
-<span class="fc" id="L55">                        .build()</span>
+<span class="fc" id="L50">        CaffeineCache bucketCache = new CaffeineCache(&quot;rateLimitingBucket&quot;,</span>
+<span class="fc" id="L51">                Caffeine.newBuilder().expireAfterWrite(60, TimeUnit.MINUTES) // expires after 10 minutes</span>
+<span class="fc" id="L52">                        .maximumSize(1000)</span>
+<span class="fc" id="L53">                        .build()</span>
         );
 
-<span class="fc" id="L58">        cacheManager.setCaches(Arrays.asList(emailCache, usernameCache, urlMetadataCache, rulesCache, bucketCache));</span>
-<span class="fc" id="L59">        return cacheManager;</span>
+<span class="fc" id="L56">        cacheManager.setCaches(Arrays.asList(emailCache, usernameCache, urlMetadataCache, rulesCache, bucketCache));</span>
+<span class="fc" id="L57">        return cacheManager;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

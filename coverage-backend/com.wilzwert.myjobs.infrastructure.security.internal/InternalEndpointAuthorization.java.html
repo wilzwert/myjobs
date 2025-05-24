@@ -14,7 +14,6 @@ import java.io.IOException;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:05/23/2025
  * Filter used to authorize HTTP requests to the internal controller(s) (/internal/**)
  * Calls to these endpoints are used when local scheduler / batch cannot be used
  * These endpoints are for &quot;private&quot; use only
@@ -22,35 +21,35 @@ import java.io.IOException;
  * that must match the application.internal.secret property
  */
 @Component
-<span class="fc" id="L25">@Slf4j</span>
+<span class="fc" id="L24">@Slf4j</span>
 public class InternalEndpointAuthorization extends OncePerRequestFilter {
 
     private static final String HEADER_NAME = &quot;X-Internal-Secret&quot;;
 
     private final String internalSecret;
 
-<span class="fc" id="L32">    public InternalEndpointAuthorization(@Value(&quot;${application.internal.secret}&quot;) String internalSecret) {</span>
-<span class="fc" id="L33">        this.internalSecret = internalSecret;</span>
-<span class="fc" id="L34">    }</span>
+<span class="fc" id="L31">    public InternalEndpointAuthorization(@Value(&quot;${application.internal.secret}&quot;) String internalSecret) {</span>
+<span class="fc" id="L32">        this.internalSecret = internalSecret;</span>
+<span class="fc" id="L33">    }</span>
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-<span class="fc" id="L38">        String apiKey = request.getHeader(HEADER_NAME);</span>
+<span class="fc" id="L37">        String apiKey = request.getHeader(HEADER_NAME);</span>
 
-<span class="fc bfc" id="L40" title="All 2 branches covered.">        if (!internalSecret.equals(apiKey)) {</span>
-<span class="fc" id="L41">            response.setStatus(HttpServletResponse.SC_FORBIDDEN);</span>
-<span class="fc" id="L42">            response.getWriter().write(&quot;Unauthorized access&quot;);</span>
-<span class="fc" id="L43">            return;</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        if (!internalSecret.equals(apiKey)) {</span>
+<span class="fc" id="L40">            response.setStatus(HttpServletResponse.SC_FORBIDDEN);</span>
+<span class="fc" id="L41">            response.getWriter().write(&quot;Unauthorized access&quot;);</span>
+<span class="fc" id="L42">            return;</span>
         }
 
-<span class="fc" id="L46">        filterChain.doFilter(request, response);</span>
-<span class="fc" id="L47">    }</span>
+<span class="fc" id="L45">        filterChain.doFilter(request, response);</span>
+<span class="fc" id="L46">    }</span>
 
     @Override
-<span class="pc bpc" id="L50" title="1 of 2 branches missed.">    public boolean shouldNotFilter(@NonNull HttpServletRequest request) {</span>
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">    public boolean shouldNotFilter(@NonNull HttpServletRequest request) {</span>
         // bypass filter if path should not be handled by this filter
-<span class="fc" id="L52">        String path = request.getRequestURI();</span>
-<span class="fc bfc" id="L53" title="All 2 branches covered.">        return !path.matches(&quot;/internal/.*&quot;);</span>
+<span class="fc" id="L51">        String path = request.getRequestURI();</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        return !path.matches(&quot;/internal/.*&quot;);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

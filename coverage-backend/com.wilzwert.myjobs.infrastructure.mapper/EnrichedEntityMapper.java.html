@@ -7,27 +7,25 @@ import java.util.List;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:14/03/2025
- * Time:22:46
  X for the enriched domain class
  */
 public interface EnrichedEntityMapper&lt;D, E, R, C, A, U, S, X&gt; extends EntityMapper&lt;D, E, R, C, A, U, S&gt; {
 
     default S toEnrichedResponse(X extended) {
-<span class="nc" id="L17">        throw new MapperMissingImplementation(&quot;enriched entity mapping must be implemented in actual mapper before use&quot;);</span>
+<span class="nc" id="L15">        throw new MapperMissingImplementation(&quot;enriched entity mapping must be implemented in actual mapper before use&quot;);</span>
     }
 
     default  List&lt;S&gt; toEnrichedResponse(List&lt;X&gt; extended) {
-<span class="fc" id="L21">        return extended.stream().map(this::toEnrichedResponse).toList();</span>
+<span class="fc" id="L19">        return extended.stream().map(this::toEnrichedResponse).toList();</span>
     }
 
     default RestPage&lt;S&gt; toEnrichedResponse(DomainPage&lt;X&gt; domain) {
-<span class="fc" id="L25">        return new RestPage&lt;&gt;(</span>
-<span class="fc" id="L26">                toEnrichedResponse(domain.getContent()),</span>
-<span class="fc" id="L27">                domain.getCurrentPage(),</span>
-<span class="fc" id="L28">                domain.getPageSize(),</span>
-<span class="fc" id="L29">                domain.getTotalElementsCount(),</span>
-<span class="fc" id="L30">                domain.getPageCount()</span>
+<span class="fc" id="L23">        return new RestPage&lt;&gt;(</span>
+<span class="fc" id="L24">                toEnrichedResponse(domain.getContent()),</span>
+<span class="fc" id="L25">                domain.getCurrentPage(),</span>
+<span class="fc" id="L26">                domain.getPageSize(),</span>
+<span class="fc" id="L27">                domain.getTotalElementsCount(),</span>
+<span class="fc" id="L28">                domain.getPageCount()</span>
         );
     }
 }

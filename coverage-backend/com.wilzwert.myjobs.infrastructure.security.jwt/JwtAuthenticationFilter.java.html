@@ -26,11 +26,9 @@ import java.util.Optional;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:14/03/2025
- * Time:13:46
  */
 @Component
-<span class="fc" id="L33">@Slf4j</span>
+<span class="fc" id="L31">@Slf4j</span>
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
@@ -39,58 +37,58 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final CookieService cookieService;
 
-<span class="fc" id="L42">    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService, CookieService cookieService) {</span>
-<span class="fc" id="L43">        this.jwtService = jwtService;</span>
-<span class="fc" id="L44">        this.userDetailsService = userDetailsService;</span>
-<span class="fc" id="L45">        this.cookieService = cookieService;</span>
-<span class="fc" id="L46">    }</span>
+<span class="fc" id="L40">    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService, CookieService cookieService) {</span>
+<span class="fc" id="L41">        this.jwtService = jwtService;</span>
+<span class="fc" id="L42">        this.userDetailsService = userDetailsService;</span>
+<span class="fc" id="L43">        this.cookieService = cookieService;</span>
+<span class="fc" id="L44">    }</span>
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
-<span class="fc" id="L51">            Optional&lt;JwtToken&gt; token = jwtService.extractTokenFromRequest(request);</span>
-<span class="fc bfc" id="L52" title="All 2 branches covered.">            if(token.isPresent()) {</span>
+<span class="fc" id="L49">            Optional&lt;JwtToken&gt; token = jwtService.extractTokenFromRequest(request);</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">            if(token.isPresent()) {</span>
                 // extract JWT Token with embedded email and try to authenticate the user
-<span class="fc" id="L54">                JwtToken jwtToken = token.get();</span>
-<span class="fc" id="L55">                String uid = jwtToken.getClaims().getSubject();</span>
-<span class="fc" id="L56">                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();</span>
-<span class="fc bfc" id="L57" title="All 4 branches covered.">                if (uid != null &amp;&amp; authentication == null) {</span>
+<span class="fc" id="L52">                JwtToken jwtToken = token.get();</span>
+<span class="fc" id="L53">                String uid = jwtToken.getClaims().getSubject();</span>
+<span class="fc" id="L54">                Authentication authentication = SecurityContextHolder.getContext().getAuthentication();</span>
+<span class="fc bfc" id="L55" title="All 4 branches covered.">                if (uid != null &amp;&amp; authentication == null) {</span>
                     // actually our user details services is based on the user id, not the username
                     // because username is subject to changes
-<span class="fc" id="L60">                    UserDetails userDetails = this.userDetailsService.loadUserByUsername(uid);</span>
-<span class="fc" id="L61">                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(</span>
+<span class="fc" id="L58">                    UserDetails userDetails = this.userDetailsService.loadUserByUsername(uid);</span>
+<span class="fc" id="L59">                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(</span>
                             userDetails,
                             null,
-<span class="fc" id="L64">                            userDetails.getAuthorities()</span>
+<span class="fc" id="L62">                            userDetails.getAuthorities()</span>
                     );
 
-<span class="fc" id="L67">                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));</span>
+<span class="fc" id="L65">                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));</span>
                     // pass authentication to the security context
-<span class="fc" id="L69">                    log.info(&quot;Token handled, set security context authentication&quot;);</span>
-<span class="fc" id="L70">                    SecurityContextHolder.getContext().setAuthentication(authToken);</span>
+<span class="fc" id="L67">                    log.info(&quot;Token handled, set security context authentication&quot;);</span>
+<span class="fc" id="L68">                    SecurityContextHolder.getContext().setAuthentication(authToken);</span>
                 }
             }
             // security filter chain continues
-<span class="fc" id="L74">            filterChain.doFilter(request, response);</span>
+<span class="fc" id="L72">            filterChain.doFilter(request, response);</span>
         }
-<span class="fc" id="L76">        catch (UsernameNotFoundException | JwtException | IllegalArgumentException e) {</span>
-<span class="fc" id="L77">            log.warn(&quot;JWT authentication filter : token or user exception {}&quot;, e.getMessage());</span>
-<span class="fc" id="L78">            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);</span>
-<span class="fc" id="L79">            response.getWriter().print(&quot;auth_error&quot;);</span>
-<span class="fc" id="L80">            response.addHeader(HttpHeaders.SET_COOKIE, cookieService.revokeAccessTokenCookie().toString());</span>
-<span class="fc" id="L81">            response.addHeader(HttpHeaders.SET_COOKIE, cookieService.revokeRefreshTokenCookie().toString());</span>
-<span class="fc" id="L82">        }</span>
-<span class="fc" id="L83">    }</span>
+<span class="fc" id="L74">        catch (UsernameNotFoundException | JwtException | IllegalArgumentException e) {</span>
+<span class="fc" id="L75">            log.warn(&quot;JWT authentication filter : token or user exception {}&quot;, e.getMessage());</span>
+<span class="fc" id="L76">            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);</span>
+<span class="fc" id="L77">            response.getWriter().print(&quot;auth_error&quot;);</span>
+<span class="fc" id="L78">            response.addHeader(HttpHeaders.SET_COOKIE, cookieService.revokeAccessTokenCookie().toString());</span>
+<span class="fc" id="L79">            response.addHeader(HttpHeaders.SET_COOKIE, cookieService.revokeRefreshTokenCookie().toString());</span>
+<span class="fc" id="L80">        }</span>
+<span class="fc" id="L81">    }</span>
 
     @Override
-<span class="fc bfc" id="L86" title="All 2 branches covered.">    public boolean shouldNotFilter(@NonNull HttpServletRequest request) {</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">    public boolean shouldNotFilter(@NonNull HttpServletRequest request) {</span>
         // bypass filter if path should remain publicly accessible
-<span class="fc" id="L88">        String path = request.getRequestURI();</span>
-<span class="fc bfc" id="L89" title="All 2 branches covered.">        return path.matches(&quot;/api/auth/(login|register|refresh-token)&quot;)</span>
+<span class="fc" id="L86">        String path = request.getRequestURI();</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">        return path.matches(&quot;/api/auth/(login|register|refresh-token)&quot;)</span>
                 // || path.matches(apiDocProperties.getApiDocsPath()+&quot;/?.*&quot;)
                 // || path.matches(apiDocProperties.getSwaggerPath()+&quot;/?.*&quot;)
-<span class="fc bfc" id="L92" title="All 2 branches covered.">                || path.matches(&quot;/swagger-ui/.*&quot;)</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">                || path.matches(&quot;/internal/.*&quot;);</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">                || path.matches(&quot;/swagger-ui/.*&quot;)</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">                || path.matches(&quot;/internal/.*&quot;);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -2,6 +2,7 @@
 
 
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
+import com.wilzwert.myjobs.core.domain.model.job.JobMetadata;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.model.job.command.*;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driving.*;
@@ -21,11 +22,9 @@ import java.util.UUID;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:13/03/2025
- * Time:11:43
  */
 @RestController
-<span class="fc" id="L28">@Slf4j</span>
+<span class="fc" id="L27">@Slf4j</span>
 @RequestMapping(&quot;/api/jobs&quot;)
 public class JobController {
 
@@ -39,86 +38,86 @@ public class JobController {
     private final ExtractJobMetadataUseCase extractJobMetadataUseCase;
     private final JobMapper jobMapper;
 
-<span class="fc" id="L42">    public JobController(CreateJobUseCase createJobUseCase, GetUserJobUseCase getUserJobUseCase,  UpdateJobUseCase updateJobUseCase, DeleteJobUseCase deleteJobUseCase, GetUserJobsUseCase getUserJobsUseCase, UpdateJobStatusUseCase updateJobStatusUseCase, UpdateJobRatingUseCase updateJobRatingUseCase, ExtractJobMetadataUseCase extractJobMetadataUseCase, JobMapper jobMapper) {</span>
-<span class="fc" id="L43">        this.createJobUseCase = createJobUseCase;</span>
-<span class="fc" id="L44">        this.getUserJobUseCase = getUserJobUseCase;</span>
-<span class="fc" id="L45">        this.updateJobUseCase = updateJobUseCase;</span>
-<span class="fc" id="L46">        this.deleteJobUseCase = deleteJobUseCase;</span>
-<span class="fc" id="L47">        this.getUserJobsUseCase = getUserJobsUseCase;</span>
-<span class="fc" id="L48">        this.updateJobStatusUseCase = updateJobStatusUseCase;</span>
-<span class="fc" id="L49">        this.updateJobRatingUseCase = updateJobRatingUseCase;</span>
-<span class="fc" id="L50">        this.extractJobMetadataUseCase = extractJobMetadataUseCase;</span>
-<span class="fc" id="L51">        this.jobMapper = jobMapper;</span>
-<span class="fc" id="L52">    }</span>
+<span class="fc" id="L41">    public JobController(CreateJobUseCase createJobUseCase, GetUserJobUseCase getUserJobUseCase,  UpdateJobUseCase updateJobUseCase, DeleteJobUseCase deleteJobUseCase, GetUserJobsUseCase getUserJobsUseCase, UpdateJobStatusUseCase updateJobStatusUseCase, UpdateJobRatingUseCase updateJobRatingUseCase, ExtractJobMetadataUseCase extractJobMetadataUseCase, JobMapper jobMapper) {</span>
+<span class="fc" id="L42">        this.createJobUseCase = createJobUseCase;</span>
+<span class="fc" id="L43">        this.getUserJobUseCase = getUserJobUseCase;</span>
+<span class="fc" id="L44">        this.updateJobUseCase = updateJobUseCase;</span>
+<span class="fc" id="L45">        this.deleteJobUseCase = deleteJobUseCase;</span>
+<span class="fc" id="L46">        this.getUserJobsUseCase = getUserJobsUseCase;</span>
+<span class="fc" id="L47">        this.updateJobStatusUseCase = updateJobStatusUseCase;</span>
+<span class="fc" id="L48">        this.updateJobRatingUseCase = updateJobRatingUseCase;</span>
+<span class="fc" id="L49">        this.extractJobMetadataUseCase = extractJobMetadataUseCase;</span>
+<span class="fc" id="L50">        this.jobMapper = jobMapper;</span>
+<span class="fc" id="L51">    }</span>
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public JobResponse create(@RequestBody @Valid final CreateJobRequest createJobRequest, Authentication authentication) {
-<span class="fc" id="L57">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
-<span class="fc" id="L58">        CreateJobCommand createJobCommand = jobMapper.toCommand(createJobRequest, userDetails.getId());</span>
-<span class="fc" id="L59">        return jobMapper.toResponse(createJobUseCase.createJob(createJobCommand));</span>
+<span class="fc" id="L56">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L57">        CreateJobCommand createJobCommand = jobMapper.toCommand(createJobRequest, userDetails.getId());</span>
+<span class="fc" id="L58">        return jobMapper.toResponse(createJobUseCase.createJob(createJobCommand));</span>
     }
 
     @GetMapping(&quot;/metadata&quot;)
-    public ResponseEntity&lt;?&gt; extract(@RequestParam() String url) {
-<span class="nc" id="L64">        return ResponseEntity.ok(extractJobMetadataUseCase.extract(url));</span>
+    public ResponseEntity&lt;JobMetadata&gt; extract(@RequestParam() String url) {
+<span class="nc" id="L63">        return ResponseEntity.ok(extractJobMetadataUseCase.extract(url));</span>
     }
 
     @GetMapping(&quot;/{id}&quot;)
     public JobResponse get(@PathVariable(&quot;id&quot;) String id,Authentication authentication) {
-<span class="fc" id="L69">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
-<span class="fc" id="L70">        return jobMapper.toResponse(getUserJobUseCase.getUserJob(userDetails.getId(), new JobId(UUID.fromString(id))));</span>
+<span class="fc" id="L68">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L69">        return jobMapper.toResponse(getUserJobUseCase.getUserJob(userDetails.getId(), new JobId(UUID.fromString(id))));</span>
     }
 
     @PatchMapping(&quot;/{id}&quot;)
     public JobResponse patch(@PathVariable(&quot;id&quot;) String id, @RequestBody @Valid final UpdateJobRequest updateJobRequest, Authentication authentication) {
-<span class="fc" id="L75">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
-<span class="fc" id="L76">        UpdateJobCommand updateJobCommand = jobMapper.toCommand(updateJobRequest, userDetails.getId(), new JobId(UUID.fromString(id)));</span>
-<span class="fc" id="L77">        return jobMapper.toResponse(updateJobUseCase.updateJob(updateJobCommand));</span>
+<span class="fc" id="L74">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L75">        UpdateJobCommand updateJobCommand = jobMapper.toCommand(updateJobRequest, userDetails.getId(), new JobId(UUID.fromString(id)));</span>
+<span class="fc" id="L76">        return jobMapper.toResponse(updateJobUseCase.updateJob(updateJobCommand));</span>
     }
 
     @PutMapping(&quot;/{id}/status&quot;)
     public JobResponse updateStatus(@PathVariable(&quot;id&quot;) String id, @RequestBody @Valid final UpdateJobStatusRequest updateJobStatusRequest, Authentication authentication) {
-<span class="fc" id="L82">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
-<span class="fc" id="L83">        UpdateJobStatusCommand updateJobStatusCommand = jobMapper.toCommand(updateJobStatusRequest, userDetails.getId(), new JobId(UUID.fromString(id)));</span>
-<span class="fc" id="L84">        return jobMapper.toResponse(updateJobStatusUseCase.updateJobStatus(updateJobStatusCommand));</span>
+<span class="fc" id="L81">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L82">        UpdateJobStatusCommand updateJobStatusCommand = jobMapper.toCommand(updateJobStatusRequest, userDetails.getId(), new JobId(UUID.fromString(id)));</span>
+<span class="fc" id="L83">        return jobMapper.toResponse(updateJobStatusUseCase.updateJobStatus(updateJobStatusCommand));</span>
     }
 
     @PutMapping(&quot;/{id}/rating&quot;)
     public JobResponse updateRating(@PathVariable(&quot;id&quot;) String id, @RequestBody @Valid final UpdateJobRatingRequest updateJobRatingRequest, Authentication authentication) {
-<span class="fc" id="L89">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
-<span class="fc" id="L90">        UpdateJobRatingCommand updateJobRatingCommand = jobMapper.toCommand(updateJobRatingRequest, userDetails.getId(), new JobId(UUID.fromString(id)));</span>
-<span class="fc" id="L91">        return jobMapper.toResponse(updateJobRatingUseCase.updateJobRating(updateJobRatingCommand));</span>
+<span class="fc" id="L88">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L89">        UpdateJobRatingCommand updateJobRatingCommand = jobMapper.toCommand(updateJobRatingRequest, userDetails.getId(), new JobId(UUID.fromString(id)));</span>
+<span class="fc" id="L90">        return jobMapper.toResponse(updateJobRatingUseCase.updateJobRating(updateJobRatingCommand));</span>
     }
 
     @DeleteMapping(&quot;/{id}&quot;)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable(&quot;id&quot;) String id, Authentication authentication) {
-<span class="fc" id="L97">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
-<span class="fc" id="L98">        DeleteJobCommand deleteJobCommand = new DeleteJobCommand(new JobId(UUID.fromString(id)), userDetails.getId());</span>
-<span class="fc" id="L99">        deleteJobUseCase.deleteJob(deleteJobCommand);</span>
-<span class="fc" id="L100">    }</span>
+<span class="fc" id="L96">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L97">        DeleteJobCommand deleteJobCommand = new DeleteJobCommand(new JobId(UUID.fromString(id)), userDetails.getId());</span>
+<span class="fc" id="L98">        deleteJobUseCase.deleteJob(deleteJobCommand);</span>
+<span class="fc" id="L99">    }</span>
 
     @GetMapping()
     public RestPage&lt;JobResponse&gt; getUserJobs(Authentication authentication, @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer itemsPerPage, @RequestParam(required = false) String status, @RequestParam(required = false) Boolean filterLate, @RequestParam(required = false) String sort) {
-<span class="fc" id="L104">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">        if(page == null) {</span>
-<span class="fc" id="L106">            page = 0;</span>
+<span class="fc" id="L103">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">        if(page == null) {</span>
+<span class="fc" id="L105">            page = 0;</span>
         }
-<span class="fc bfc" id="L108" title="All 2 branches covered.">        if(itemsPerPage == null) {</span>
-<span class="fc" id="L109">            itemsPerPage = 10;</span>
-        }
-
-<span class="fc" id="L112">        JobStatus jobStatus = null;</span>
-<span class="fc bfc" id="L113" title="All 2 branches covered.">        if(status != null) {</span>
-<span class="fc" id="L114">            jobStatus = JobStatus.valueOf(status);</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        if(itemsPerPage == null) {</span>
+<span class="fc" id="L108">            itemsPerPage = 10;</span>
         }
 
-<span class="pc bpc" id="L117" title="1 of 2 branches missed.">        if(filterLate == null) {</span>
-<span class="fc" id="L118">            filterLate = false;</span>
+<span class="fc" id="L111">        JobStatus jobStatus = null;</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">        if(status != null) {</span>
+<span class="fc" id="L113">            jobStatus = JobStatus.valueOf(status);</span>
         }
 
-<span class="fc" id="L121">        return jobMapper.toEnrichedResponse(getUserJobsUseCase.getUserJobs(userDetails.getId(), page, itemsPerPage, jobStatus, filterLate, sort));</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">        if(filterLate == null) {</span>
+<span class="fc" id="L117">            filterLate = false;</span>
+        }
+
+<span class="fc" id="L120">        return jobMapper.toEnrichedResponse(getUserJobsUseCase.getUserJobs(userDetails.getId(), page, itemsPerPage, jobStatus, filterLate, sort));</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

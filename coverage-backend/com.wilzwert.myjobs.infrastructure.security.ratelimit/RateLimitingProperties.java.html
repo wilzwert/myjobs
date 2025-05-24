@@ -7,20 +7,19 @@ import java.util.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:05/09/2025
  */
 
 @ConfigurationProperties(prefix = &quot;rate-limiting&quot;)
-<span class="fc" id="L14">public class RateLimitingProperties {</span>
-<span class="fc" id="L15">    private List&lt;RateLimitConfig&gt; rules = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L13">public class RateLimitingProperties {</span>
+<span class="fc" id="L14">    private List&lt;RateLimitConfig&gt; rules = new ArrayList&lt;&gt;();</span>
 
     public List&lt;RateLimitConfig&gt; getRules() {
-<span class="fc" id="L18">        return rules;</span>
+<span class="fc" id="L17">        return rules;</span>
     }
 
     public void setRules(List&lt;RateLimitConfig&gt; rules) {
-<span class="fc" id="L22">        this.rules = rules;</span>
-<span class="fc" id="L23">    }</span>
+<span class="fc" id="L21">        this.rules = rules;</span>
+<span class="fc" id="L22">    }</span>
 
     public static class RateLimitConfig {
         private String path;
@@ -28,22 +27,22 @@ import java.util.*;
         private int limit;
         private Duration duration;
 
-<span class="fc" id="L31">        public RateLimitConfig(String path, String scope, int limit, Duration duration) {</span>
-<span class="fc" id="L32">            this.path = path;</span>
-<span class="fc" id="L33">            this.scope = scope;</span>
-<span class="fc" id="L34">            this.limit = limit;</span>
-<span class="fc" id="L35">            this.duration = duration;</span>
-<span class="fc" id="L36">        }</span>
+<span class="fc" id="L30">        public RateLimitConfig(String path, String scope, int limit, Duration duration) {</span>
+<span class="fc" id="L31">            this.path = path;</span>
+<span class="fc" id="L32">            this.scope = scope;</span>
+<span class="fc" id="L33">            this.limit = limit;</span>
+<span class="fc" id="L34">            this.duration = duration;</span>
+<span class="fc" id="L35">        }</span>
 
         // Getters and setters
-<span class="fc" id="L39">        public String getPath() { return path; }</span>
-<span class="nc" id="L40">        public void setPath(String path) { this.path = path; }</span>
-<span class="fc" id="L41">        public String getScope() { return scope; }</span>
-<span class="nc" id="L42">        public void setScope(String scope) { this.scope = scope; }</span>
-<span class="fc" id="L43">        public int getLimit() { return limit; }</span>
-<span class="nc" id="L44">        public void setLimit(int limit) { this.limit = limit; }</span>
-<span class="fc" id="L45">        public Duration getDuration() { return duration; }</span>
-<span class="nc" id="L46">        public void setDuration(Duration duration) { this.duration = duration; }</span>
+<span class="fc" id="L38">        public String getPath() { return path; }</span>
+<span class="nc" id="L39">        public void setPath(String path) { this.path = path; }</span>
+<span class="fc" id="L40">        public String getScope() { return scope; }</span>
+<span class="nc" id="L41">        public void setScope(String scope) { this.scope = scope; }</span>
+<span class="fc" id="L42">        public int getLimit() { return limit; }</span>
+<span class="nc" id="L43">        public void setLimit(int limit) { this.limit = limit; }</span>
+<span class="fc" id="L44">        public Duration getDuration() { return duration; }</span>
+<span class="nc" id="L45">        public void setDuration(Duration duration) { this.duration = duration; }</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -8,8 +8,6 @@ import org.springframework.stereotype.Service;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:31/03/2025
- * Time:11:00
  */
 @Service
 public class CookieService {
@@ -17,36 +15,36 @@ public class CookieService {
 
     private final JwtProperties jwtProperties;
 
-<span class="fc" id="L20">    public CookieService(CookieProperties cookieProperties, JwtProperties jwtProperties) {</span>
-<span class="fc" id="L21">        this.cookieProperties = cookieProperties;</span>
-<span class="fc" id="L22">        this.jwtProperties = jwtProperties;</span>
-<span class="fc" id="L23">    }</span>
+<span class="fc" id="L18">    public CookieService(CookieProperties cookieProperties, JwtProperties jwtProperties) {</span>
+<span class="fc" id="L19">        this.cookieProperties = cookieProperties;</span>
+<span class="fc" id="L20">        this.jwtProperties = jwtProperties;</span>
+<span class="fc" id="L21">    }</span>
 
     public ResponseCookie createAccessTokenCookie(String accessToken) {
-<span class="fc" id="L26">        return createCookie(&quot;access_token&quot;, accessToken, jwtProperties.getExpirationTime());</span>
+<span class="fc" id="L24">        return createCookie(&quot;access_token&quot;, accessToken, jwtProperties.getExpirationTime());</span>
     }
 
     public ResponseCookie createRefreshTokenCookie(String refreshToken) {
-<span class="fc" id="L30">        return createCookie(&quot;refresh_token&quot;, refreshToken, jwtProperties.getRefreshExpirationTime());</span>
+<span class="fc" id="L28">        return createCookie(&quot;refresh_token&quot;, refreshToken, jwtProperties.getRefreshExpirationTime());</span>
     }
 
     public ResponseCookie revokeAccessTokenCookie() {
-<span class="fc" id="L34">        return createCookie(&quot;access_token&quot;, &quot;&quot;, 0);</span>
+<span class="fc" id="L32">        return createCookie(&quot;access_token&quot;, &quot;&quot;, 0);</span>
     }
 
     public ResponseCookie revokeRefreshTokenCookie() {
-<span class="fc" id="L38">        return createCookie(&quot;refresh_token&quot;, &quot;&quot;, 0);</span>
+<span class="fc" id="L36">        return createCookie(&quot;refresh_token&quot;, &quot;&quot;, 0);</span>
     }
 
     private ResponseCookie createCookie(String name, String value, long maxAge) {
-<span class="fc" id="L42">        return ResponseCookie.from(name, value)</span>
-<span class="fc" id="L43">                .httpOnly(true)</span>
-<span class="fc" id="L44">                .secure(cookieProperties.isSecure())</span>
-<span class="fc" id="L45">                .sameSite(cookieProperties.getSameSite())</span>
-<span class="fc" id="L46">                .domain(cookieProperties.getDomain())</span>
-<span class="fc" id="L47">                .path(cookieProperties.getPath())</span>
-<span class="fc" id="L48">                .maxAge(maxAge)</span>
-<span class="fc" id="L49">                .build();</span>
+<span class="fc" id="L40">        return ResponseCookie.from(name, value)</span>
+<span class="fc" id="L41">                .httpOnly(true)</span>
+<span class="fc" id="L42">                .secure(cookieProperties.isSecure())</span>
+<span class="fc" id="L43">                .sameSite(cookieProperties.getSameSite())</span>
+<span class="fc" id="L44">                .domain(cookieProperties.getDomain())</span>
+<span class="fc" id="L45">                .path(cookieProperties.getPath())</span>
+<span class="fc" id="L46">                .maxAge(maxAge)</span>
+<span class="fc" id="L47">                .build();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

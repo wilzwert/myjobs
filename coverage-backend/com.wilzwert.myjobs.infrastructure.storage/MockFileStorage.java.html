@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
 <span class="fc" id="L30">            storage.put(fakedTargetFilename, content);</span>
 <span class="fc" id="L31">            return new DownloadableFile(fakedTargetFilename, fakedTargetFilename, getContentType(file.toPath().toString(), originalFilename), &quot;faked_&quot;+originalFilename);</span>
 <span class="nc" id="L32">        } catch (Exception e) {</span>
-<span class="nc" id="L33">            throw new RuntimeException(&quot;Mock storage failed&quot;, e);</span>
+<span class="nc" id="L33">            throw new StorageException(&quot;Mock storage failed&quot;, e);</span>
         }
     }
 
@@ -42,7 +42,7 @@ import java.util.concurrent.ConcurrentHashMap;
     @Override
     public DownloadableFile retrieve(String fileId, String originalFilename) {
 <span class="nc" id="L44">        byte[] content = storage.get(fileId);</span>
-<span class="nc bnc" id="L45" title="All 2 branches missed.">        if (content == null) throw new RuntimeException(&quot;File not found in mock storage&quot;);</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">        if (content == null) throw new StorageException(&quot;File not found in mock storage&quot;);</span>
 
         try {
 <span class="nc" id="L48">            return new DownloadableFile(fileId, originalFilename, getContentType(originalFilename, originalFilename), originalFilename);</span>

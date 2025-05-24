@@ -21,48 +21,46 @@ import java.util.Optional;
 /**
  * Provides JWT token generation and validation
  * @author Wilhelm Zwertvaegher
- * Date:02/16/2025
- * Time:16:06
  */
 
 
 @Service
-<span class="fc" id="L30">@Slf4j</span>
+<span class="fc" id="L28">@Slf4j</span>
 public class JwtService {
     private final JwtProperties jwtProperties;
 
-<span class="fc" id="L34">    public JwtService(final JwtProperties jwtProperties) {</span>
-<span class="fc" id="L35">        this.jwtProperties = jwtProperties;</span>
-<span class="fc" id="L36">    }</span>
+<span class="fc" id="L32">    public JwtService(final JwtProperties jwtProperties) {</span>
+<span class="fc" id="L33">        this.jwtProperties = jwtProperties;</span>
+<span class="fc" id="L34">    }</span>
 
     public Optional&lt;String&gt; getToken(HttpServletRequest request) {
         String token;
-<span class="fc" id="L40">        Cookie[] cookies = request.getCookies();</span>
+<span class="fc" id="L38">        Cookie[] cookies = request.getCookies();</span>
 
-<span class="fc bfc" id="L42" title="All 2 branches covered.">        if(cookies != null) {</span>
-<span class="fc" id="L43">            Cookie jwtCookie = Arrays.stream(cookies)</span>
-<span class="fc" id="L44">                    .filter(cookie -&gt; &quot;access_token&quot;.equals(cookie.getName()))</span>
-<span class="fc" id="L45">                    .findFirst()</span>
-<span class="fc" id="L46">                    .orElse(null);</span>
-<span class="fc bfc" id="L47" title="All 2 branches covered.">            token = jwtCookie != null ? jwtCookie.getValue() : null;</span>
-<span class="fc bfc" id="L48" title="All 4 branches covered.">            if(token != null &amp;&amp; !token.isEmpty()) {</span>
-<span class="fc" id="L49">                return Optional.of(token);</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        if(cookies != null) {</span>
+<span class="fc" id="L41">            Cookie jwtCookie = Arrays.stream(cookies)</span>
+<span class="fc" id="L42">                    .filter(cookie -&gt; &quot;access_token&quot;.equals(cookie.getName()))</span>
+<span class="fc" id="L43">                    .findFirst()</span>
+<span class="fc" id="L44">                    .orElse(null);</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">            token = jwtCookie != null ? jwtCookie.getValue() : null;</span>
+<span class="fc bfc" id="L46" title="All 4 branches covered.">            if(token != null &amp;&amp; !token.isEmpty()) {</span>
+<span class="fc" id="L47">                return Optional.of(token);</span>
             }
         }
 
-<span class="fc" id="L53">        String authHeader = request.getHeader(&quot;Authorization&quot;);</span>
-<span class="fc bfc" id="L54" title="All 4 branches covered.">        if (authHeader == null || !authHeader.startsWith(&quot;Bearer &quot;)) {</span>
-<span class="fc" id="L55">            token = request.getParameter(&quot;token&quot;);</span>
-<span class="fc bfc" id="L56" title="All 4 branches covered.">            if(token == null || token.isEmpty()) {</span>
+<span class="fc" id="L51">        String authHeader = request.getHeader(&quot;Authorization&quot;);</span>
+<span class="fc bfc" id="L52" title="All 4 branches covered.">        if (authHeader == null || !authHeader.startsWith(&quot;Bearer &quot;)) {</span>
+<span class="fc" id="L53">            token = request.getParameter(&quot;token&quot;);</span>
+<span class="fc bfc" id="L54" title="All 4 branches covered.">            if(token == null || token.isEmpty()) {</span>
                 // log.info(&quot;Authorization header not found or not compatible with Bearer token&quot;);
-<span class="fc" id="L58">                return Optional.empty();</span>
+<span class="fc" id="L56">                return Optional.empty();</span>
             }
         }
         else {
-<span class="fc" id="L62">            token = authHeader.substring(7);</span>
+<span class="fc" id="L60">            token = authHeader.substring(7);</span>
         }
 
-<span class="fc" id="L65">        return Optional.of(token);</span>
+<span class="fc" id="L63">        return Optional.of(token);</span>
     }
 
     /**
@@ -76,38 +74,38 @@ public class JwtService {
      * @throws SignatureException when JWT token's signature is invalid
      */
     public Optional&lt;JwtToken&gt; extractTokenFromRequest(HttpServletRequest request) throws ExpiredJwtException, MalformedJwtException, IllegalArgumentException, UnsupportedJwtException, SignatureException {
-<span class="fc" id="L79">        return getToken(request).flatMap(this::parseToken);</span>
+<span class="fc" id="L77">        return getToken(request).flatMap(this::parseToken);</span>
     }
 
     public Optional&lt;JwtToken&gt; parseToken(String token) {
         try {
             Jwt&lt;?, ?&gt; parsedToken = Jwts
-<span class="fc" id="L85">                    .parser().verifyWith(getSignInKey()).build().parse(token);</span>
-<span class="fc" id="L86">            Claims claims = (Claims) parsedToken.getPayload();</span>
-<span class="fc" id="L87">            JwtToken jwtToken = new JwtToken(claims.getSubject(), claims);</span>
-<span class="fc" id="L88">            return Optional.of(jwtToken);</span>
+<span class="fc" id="L83">                    .parser().verifyWith(getSignInKey()).build().parse(token);</span>
+<span class="fc" id="L84">            Claims claims = (Claims) parsedToken.getPayload();</span>
+<span class="fc" id="L85">            JwtToken jwtToken = new JwtToken(claims.getSubject(), claims);</span>
+<span class="fc" id="L86">            return Optional.of(jwtToken);</span>
         }
         // we only catch different JwtException types to log warning messages
         // the exceptions are then thrown again to be handled by the authentication filter
-<span class="fc" id="L92">        catch (ExpiredJwtException e) {</span>
-<span class="fc" id="L93">            log.warn(&quot;Expired JWT token: {}&quot;, e.getMessage());</span>
-<span class="fc" id="L94">            throw e;</span>
+<span class="fc" id="L90">        catch (ExpiredJwtException e) {</span>
+<span class="fc" id="L91">            log.warn(&quot;Expired JWT token: {}&quot;, e.getMessage());</span>
+<span class="fc" id="L92">            throw e;</span>
         }
-<span class="fc" id="L96">        catch (MalformedJwtException e) {</span>
-<span class="fc" id="L97">            log.warn(&quot;Malformed JWT token: {}&quot;, e.getMessage());</span>
-<span class="fc" id="L98">            throw e;</span>
+<span class="fc" id="L94">        catch (MalformedJwtException e) {</span>
+<span class="fc" id="L95">            log.warn(&quot;Malformed JWT token: {}&quot;, e.getMessage());</span>
+<span class="fc" id="L96">            throw e;</span>
         }
-<span class="fc" id="L100">        catch (SignatureException e) {</span>
-<span class="fc" id="L101">            log.warn(&quot;Invalid JWT signature: {}&quot;, e.getMessage());</span>
-<span class="fc" id="L102">            throw e;</span>
+<span class="fc" id="L98">        catch (SignatureException e) {</span>
+<span class="fc" id="L99">            log.warn(&quot;Invalid JWT signature: {}&quot;, e.getMessage());</span>
+<span class="fc" id="L100">            throw e;</span>
         }
-<span class="fc" id="L104">        catch (UnsupportedJwtException e) {</span>
-<span class="fc" id="L105">            log.warn(&quot;Unsupported JWT token: {}&quot;, e.getMessage());</span>
-<span class="fc" id="L106">            throw e;</span>
+<span class="fc" id="L102">        catch (UnsupportedJwtException e) {</span>
+<span class="fc" id="L103">            log.warn(&quot;Unsupported JWT token: {}&quot;, e.getMessage());</span>
+<span class="fc" id="L104">            throw e;</span>
         }
-<span class="fc" id="L108">        catch (IllegalArgumentException e) {</span>
-<span class="fc" id="L109">            log.warn(&quot;Empty JWT claims: {}&quot;, e.getMessage());</span>
-<span class="fc" id="L110">            throw e;</span>
+<span class="fc" id="L106">        catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L107">            log.warn(&quot;Empty JWT claims: {}&quot;, e.getMessage());</span>
+<span class="fc" id="L108">            throw e;</span>
         }
     }
 
@@ -117,14 +115,14 @@ public class JwtService {
      * @return the JWT Token
      */
     public String generateToken(String subject) {
-<span class="fc" id="L120">        return Jwts</span>
-<span class="fc" id="L121">                .builder()</span>
-<span class="fc" id="L122">                .subject(subject)</span>
+<span class="fc" id="L118">        return Jwts</span>
+<span class="fc" id="L119">                .builder()</span>
+<span class="fc" id="L120">                .subject(subject)</span>
                 // .claim(&quot;authType&quot;, authType)
-<span class="fc" id="L124">                .issuedAt(new Date(System.currentTimeMillis()))</span>
-<span class="fc" id="L125">                .expiration(new Date(System.currentTimeMillis() + jwtProperties.getExpirationTime()*1000))</span>
-<span class="fc" id="L126">                .signWith(getSignInKey())</span>
-<span class="fc" id="L127">                .compact();</span>
+<span class="fc" id="L122">                .issuedAt(new Date(System.currentTimeMillis()))</span>
+<span class="fc" id="L123">                .expiration(new Date(System.currentTimeMillis() + jwtProperties.getExpirationTime()*1000))</span>
+<span class="fc" id="L124">                .signWith(getSignInKey())</span>
+<span class="fc" id="L125">                .compact();</span>
     }
 
     /**
@@ -132,8 +130,8 @@ public class JwtService {
      * @return the signin key
      */
     private SecretKey getSignInKey() {
-<span class="fc" id="L135">        byte[] keyBytes = Decoders.BASE64.decode(jwtProperties.getSecretKey());</span>
-<span class="fc" id="L136">        return Keys.hmacShaKeyFor(keyBytes);</span>
+<span class="fc" id="L133">        byte[] keyBytes = Decoders.BASE64.decode(jwtProperties.getSecretKey());</span>
+<span class="fc" id="L134">        return Keys.hmacShaKeyFor(keyBytes);</span>
     }
 }
 

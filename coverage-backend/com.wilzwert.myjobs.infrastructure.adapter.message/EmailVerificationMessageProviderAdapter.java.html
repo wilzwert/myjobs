@@ -3,37 +3,38 @@
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.EmailVerificationMessageProvider;
 import com.wilzwert.myjobs.infrastructure.mail.MailProvider;
+import com.wilzwert.myjobs.infrastructure.mail.MailSendException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
-<span class="fc" id="L10">@Slf4j</span>
+<span class="fc" id="L11">@Slf4j</span>
 public class EmailVerificationMessageProviderAdapter implements EmailVerificationMessageProvider {
 
     private final MailProvider mailProvider;
 
-<span class="fc" id="L15">    public EmailVerificationMessageProviderAdapter(final MailProvider mailProvider) {</span>
-<span class="fc" id="L16">        this.mailProvider = mailProvider;</span>
-<span class="fc" id="L17">    }</span>
+<span class="fc" id="L16">    public EmailVerificationMessageProviderAdapter(final MailProvider mailProvider) {</span>
+<span class="fc" id="L17">        this.mailProvider = mailProvider;</span>
+<span class="fc" id="L18">    }</span>
 
     @Override
     public void send(User user) {
         try {
-<span class="fc" id="L22">            var message = mailProvider.createMessage(&quot;mail/email_verification&quot;, user.getEmail(), user.getFirstName(), &quot;email.email_verification.subject&quot;, user.getLang().toString());</span>
-<span class="fc" id="L23">            message.setVariable(&quot;url&quot;, mailProvider.createMeUrl(message.getLocale()));</span>
-<span class="fc" id="L24">            message.setVariable(&quot;firstName&quot;, user.getFirstName());</span>
-<span class="fc" id="L25">            message.setVariable(&quot;lastName&quot;, user.getLastName());</span>
-<span class="fc" id="L26">            message.setVariable(&quot;validationUrl&quot;, mailProvider.createUrl(&quot;uri.email_validation&quot;, message.getLocale(), user.getEmailValidationCode()));</span>
-<span class="fc" id="L27">            log.debug(&quot;Sending email verification message : {}&quot;, user.getEmail());</span>
-<span class="fc" id="L28">            log.debug(&quot;Class of mailProvider: {}&quot;, mailProvider.getClass());</span>
-<span class="fc" id="L29">            mailProvider.send(message);</span>
-<span class="fc" id="L30">            log.debug(&quot;Email verification message should have been send&quot;);</span>
+<span class="fc" id="L23">            var message = mailProvider.createMessage(&quot;mail/email_verification&quot;, user.getEmail(), user.getFirstName(), &quot;email.email_verification.subject&quot;, user.getLang().toString());</span>
+<span class="fc" id="L24">            message.setVariable(&quot;url&quot;, mailProvider.createMeUrl(message.getLocale()));</span>
+<span class="fc" id="L25">            message.setVariable(&quot;firstName&quot;, user.getFirstName());</span>
+<span class="fc" id="L26">            message.setVariable(&quot;lastName&quot;, user.getLastName());</span>
+<span class="fc" id="L27">            message.setVariable(&quot;validationUrl&quot;, mailProvider.createUrl(&quot;uri.email_validation&quot;, message.getLocale(), user.getEmailValidationCode()));</span>
+<span class="fc" id="L28">            log.debug(&quot;Sending email verification message : {}&quot;, user.getEmail());</span>
+<span class="fc" id="L29">            log.debug(&quot;Class of mailProvider: {}&quot;, mailProvider.getClass());</span>
+<span class="fc" id="L30">            mailProvider.send(message);</span>
+<span class="fc" id="L31">            log.debug(&quot;Email verification message should have been send&quot;);</span>
         }
         // TODO : improve exception handling
-<span class="nc" id="L33">        catch (Exception e) {</span>
-<span class="nc" id="L34">            log.error(&quot;Sending email verification message failed.&quot;, e);</span>
-<span class="nc" id="L35">            throw new RuntimeException(e);</span>
-<span class="fc" id="L36">        }</span>
-<span class="fc" id="L37">    }</span>
+<span class="nc" id="L34">        catch (Exception e) {</span>
+<span class="nc" id="L35">            log.error(&quot;Sending email verification message failed.&quot;, e);</span>
+<span class="nc" id="L36">            throw new MailSendException(&quot;Sending email verification message failed&quot;, e);</span>
+<span class="fc" id="L37">        }</span>
+<span class="fc" id="L38">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -7,16 +7,14 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:13/03/2025
- * Time:11:45
  */
 
 @Component
-<span class="fc" id="L15">class LangConverter extends StdConverter&lt;String, Lang&gt; {</span>
+<span class="fc" id="L13">class LangConverter extends StdConverter&lt;String, Lang&gt; {</span>
 
     @Override
     public Lang convert(String s) throws NumberFormatException {
-<span class="fc" id="L19">        return Lang.valueOf(s.toUpperCase());</span>
+<span class="fc" id="L17">        return Lang.valueOf(s.toUpperCase());</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

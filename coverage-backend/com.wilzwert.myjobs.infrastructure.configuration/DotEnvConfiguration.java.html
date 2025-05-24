@@ -14,50 +14,48 @@ import java.util.Properties;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:08/04/2025
- * Time:13:41
  * Loads .env before application context is refreshed
  * Mostly useful to configure log levels with a .env file in dev environment
  */
-<span class="fc" id="L22">public class DotEnvConfiguration implements EnvironmentPostProcessor {</span>
+<span class="fc" id="L20">public class DotEnvConfiguration implements EnvironmentPostProcessor {</span>
     private static final String ENV_FILE_NAME = &quot;.env&quot;;
     private static final String DOT_ENV_PATH_KEY = &quot;DOT_ENV_PATH&quot;;
 
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
         try {
-<span class="fc" id="L29">            File baseEnv = getEnvFile();</span>
-<span class="fc bfc" id="L30" title="All 2 branches covered.">            if (baseEnv.exists()) {</span>
-<span class="fc" id="L31">                handleLocalEnv(baseEnv, environment);</span>
+<span class="fc" id="L27">            File baseEnv = getEnvFile();</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">            if (baseEnv.exists()) {</span>
+<span class="fc" id="L29">                handleLocalEnv(baseEnv, environment);</span>
             }
 
-<span class="nc" id="L34">        } catch (IOException e) {</span>
-<span class="nc" id="L35">            throw new UncheckedIOException(&quot;❌ Failed to load .env file.&quot;, e);</span>
-<span class="fc" id="L36">        }</span>
-<span class="fc" id="L37">    }</span>
+<span class="nc" id="L32">        } catch (IOException e) {</span>
+<span class="nc" id="L33">            throw new UncheckedIOException(&quot;❌ Failed to load .env file.&quot;, e);</span>
+<span class="fc" id="L34">        }</span>
+<span class="fc" id="L35">    }</span>
 
     protected File getEnvFile() {
-<span class="fc" id="L40">        return new File(ENV_FILE_NAME);</span>
+<span class="fc" id="L38">        return new File(ENV_FILE_NAME);</span>
     }
 
     private void handleLocalEnv(File envFile, ConfigurableEnvironment environment) throws IOException {
-<span class="fc" id="L44">        Properties props = new Properties();</span>
-<span class="fc" id="L45">        try(FileInputStream fis = new FileInputStream(envFile)) {</span>
-<span class="fc" id="L46">            props.load(fis);</span>
+<span class="fc" id="L42">        Properties props = new Properties();</span>
+<span class="fc" id="L43">        try(FileInputStream fis = new FileInputStream(envFile)) {</span>
+<span class="fc" id="L44">            props.load(fis);</span>
         }
 
-<span class="fc" id="L49">        String overridePath = props.getProperty(DOT_ENV_PATH_KEY);</span>
+<span class="fc" id="L47">        String overridePath = props.getProperty(DOT_ENV_PATH_KEY);</span>
 
-<span class="pc bpc" id="L51" title="3 of 4 branches missed.">        if (overridePath != null &amp;&amp; !overridePath.isBlank()) {</span>
-<span class="nc" id="L52">            loadEnvFile(new File(overridePath), environment, &quot;DOT_ENV_PATH&quot;);</span>
+<span class="pc bpc" id="L49" title="3 of 4 branches missed.">        if (overridePath != null &amp;&amp; !overridePath.isBlank()) {</span>
+<span class="nc" id="L50">            loadEnvFile(new File(overridePath), environment, &quot;DOT_ENV_PATH&quot;);</span>
         } else {
-<span class="fc" id="L54">            loadEnvFile(envFile, environment, &quot;local .env&quot;);</span>
+<span class="fc" id="L52">            loadEnvFile(envFile, environment, &quot;local .env&quot;);</span>
         }
-<span class="fc" id="L56">    }</span>
+<span class="fc" id="L54">    }</span>
 
     private void loadEnvFile(File file, ConfigurableEnvironment environment, String origin) throws IOException {
-<span class="fc" id="L59">        ResourcePropertySource source = new ResourcePropertySource(new FileSystemResource(file));</span>
-<span class="fc" id="L60">        environment.getPropertySources().addLast(source);</span>
-<span class="fc" id="L61">    }</span>
+<span class="fc" id="L57">        ResourcePropertySource source = new ResourcePropertySource(new FileSystemResource(file));</span>
+<span class="fc" id="L58">        environment.getPropertySources().addLast(source);</span>
+<span class="fc" id="L59">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

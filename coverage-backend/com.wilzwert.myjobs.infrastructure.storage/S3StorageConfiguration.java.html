@@ -14,13 +14,11 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:08/04/2025
- * Time:09:18
  */
 
 @Configuration
 @Profile({&quot;integration&quot;, &quot;staging&quot;, &quot;prod&quot;})
-<span class="fc" id="L23">public class S3StorageConfiguration {</span>
+<span class="fc" id="L21">public class S3StorageConfiguration {</span>
 
     @Value(&quot;${aws.s3.bucket-name}&quot;)
     private String bucketName;
@@ -36,28 +34,28 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
     @Bean
     AwsBasicCredentials awsBasicCredentials() {
-<span class="fc" id="L39">        return AwsBasicCredentials.create(accessKeyId, accessKeySecret);</span>
+<span class="fc" id="L37">        return AwsBasicCredentials.create(accessKeyId, accessKeySecret);</span>
     }
 
     @Bean
     public S3Client s3Client(AwsBasicCredentials awsBasicCredentials) {
-<span class="fc" id="L44">        return S3Client.builder()</span>
-<span class="fc" id="L45">                .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials))</span>
-<span class="fc" id="L46">                .region(Region.of(region))</span>
-<span class="fc" id="L47">                .build();</span>
+<span class="fc" id="L42">        return S3Client.builder()</span>
+<span class="fc" id="L43">                .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials))</span>
+<span class="fc" id="L44">                .region(Region.of(region))</span>
+<span class="fc" id="L45">                .build();</span>
     }
 
     @Bean
     public S3Presigner s3Presigner(AwsBasicCredentials awsBasicCredentials) {
-<span class="fc" id="L52">        return S3Presigner.builder()</span>
-<span class="fc" id="L53">                .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials))</span>
-<span class="fc" id="L54">                .region(Region.of(region))</span>
-<span class="fc" id="L55">                .build();</span>
+<span class="fc" id="L50">        return S3Presigner.builder()</span>
+<span class="fc" id="L51">                .credentialsProvider(StaticCredentialsProvider.create(awsBasicCredentials))</span>
+<span class="fc" id="L52">                .region(Region.of(region))</span>
+<span class="fc" id="L53">                .build();</span>
     }
 
     @Bean
     public FileStorage fileStorage(S3Client s3Client, S3Presigner s3Presigner) {
-<span class="fc" id="L60">        return new S3FileStorage(s3Client, s3Presigner, bucketName);</span>
+<span class="fc" id="L58">        return new S3FileStorage(s3Client, s3Presigner, bucketName);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

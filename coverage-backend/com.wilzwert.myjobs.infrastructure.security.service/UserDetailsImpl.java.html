@@ -63,6 +63,12 @@ public class UserDetailsImpl implements UserDetails {
 <span class="nc" id="L63">      return false;</span>
 <span class="nc" id="L64">    UserDetailsImpl user = (UserDetailsImpl) o;</span>
 <span class="nc" id="L65">    return Objects.equals(id, user.id);</span>
-  } 
+  }
+
+  @Override
+  public int hashCode() {
+<span class="nc" id="L70">    return Objects.hash(id);</span>
+  }
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

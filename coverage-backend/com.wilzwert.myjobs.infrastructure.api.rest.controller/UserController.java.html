@@ -16,12 +16,10 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:13/03/2025
- * Time:11:43
  * TODO : add rate limiting on public endpoints
  */
 @RestController
-<span class="fc" id="L24">@Slf4j</span>
+<span class="fc" id="L22">@Slf4j</span>
 @RequestMapping(&quot;/api/user/me&quot;)
 public class UserController {
     private final ValidateEmailUseCase validateEmailUseCase;
@@ -40,61 +38,61 @@ public class UserController {
 
     private final UserMapper userMapper;
 
-<span class="fc" id="L43">    public UserController(ValidateEmailUseCase validateEmailUseCase, ChangePasswordUseCase changePasswordUseCase, SendVerificationEmailUseCase sendVerificationEmailUseCase, GetUserViewUseCase getUserViewUseCase, UpdateUserUseCase updateUserUseCase, UpdateUserLangUseCase updateUserLangUseCase, DeleteAccountUseCase deleteAccountUseCase, UserMapper userMapper) {</span>
-<span class="fc" id="L44">        this.validateEmailUseCase = validateEmailUseCase;</span>
-<span class="fc" id="L45">        this.changePasswordUseCase = changePasswordUseCase;</span>
-<span class="fc" id="L46">        this.sendVerificationEmailUseCase = sendVerificationEmailUseCase;</span>
-<span class="fc" id="L47">        this.getUserViewUseCase = getUserViewUseCase;</span>
-<span class="fc" id="L48">        this.updateUserUseCase = updateUserUseCase;</span>
-<span class="fc" id="L49">        this.updateUserLangUseCase = updateUserLangUseCase;</span>
-<span class="fc" id="L50">        this.deleteAccountUseCase = deleteAccountUseCase;</span>
-<span class="fc" id="L51">        this.userMapper = userMapper;</span>
-<span class="fc" id="L52">    }</span>
+<span class="fc" id="L41">    public UserController(ValidateEmailUseCase validateEmailUseCase, ChangePasswordUseCase changePasswordUseCase, SendVerificationEmailUseCase sendVerificationEmailUseCase, GetUserViewUseCase getUserViewUseCase, UpdateUserUseCase updateUserUseCase, UpdateUserLangUseCase updateUserLangUseCase, DeleteAccountUseCase deleteAccountUseCase, UserMapper userMapper) {</span>
+<span class="fc" id="L42">        this.validateEmailUseCase = validateEmailUseCase;</span>
+<span class="fc" id="L43">        this.changePasswordUseCase = changePasswordUseCase;</span>
+<span class="fc" id="L44">        this.sendVerificationEmailUseCase = sendVerificationEmailUseCase;</span>
+<span class="fc" id="L45">        this.getUserViewUseCase = getUserViewUseCase;</span>
+<span class="fc" id="L46">        this.updateUserUseCase = updateUserUseCase;</span>
+<span class="fc" id="L47">        this.updateUserLangUseCase = updateUserLangUseCase;</span>
+<span class="fc" id="L48">        this.deleteAccountUseCase = deleteAccountUseCase;</span>
+<span class="fc" id="L49">        this.userMapper = userMapper;</span>
+<span class="fc" id="L50">    }</span>
 
     @DeleteMapping
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAccount(Authentication authentication) {
-<span class="fc" id="L57">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
-<span class="fc" id="L58">        deleteAccountUseCase.deleteAccount(userDetails.getId());</span>
-<span class="fc" id="L59">    }</span>
+<span class="fc" id="L55">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L56">        deleteAccountUseCase.deleteAccount(userDetails.getId());</span>
+<span class="fc" id="L57">    }</span>
 
     @GetMapping()
     public UserResponse me(Authentication authentication) {
-<span class="fc" id="L63">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
-<span class="fc" id="L64">        return userMapper.toResponseFromView(getUserViewUseCase.getUser(userDetails.getId()));</span>
+<span class="fc" id="L61">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L62">        return userMapper.toResponseFromView(getUserViewUseCase.getUser(userDetails.getId()));</span>
     }
 
     @PatchMapping()
     public UserResponse update(@RequestBody @Valid UpdateUserRequest updateUserRequest, Authentication authentication) {
-<span class="fc" id="L69">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
-<span class="fc" id="L70">        return userMapper.toResponse(updateUserUseCase.updateUser(userMapper.toUpdateCommand(updateUserRequest, userDetails.getId())));</span>
+<span class="fc" id="L67">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L68">        return userMapper.toResponse(updateUserUseCase.updateUser(userMapper.toUpdateCommand(updateUserRequest, userDetails.getId())));</span>
     }
 
     @PutMapping(&quot;/lang&quot;)
     @ResponseStatus(HttpStatus.OK)
     public void changeLang(@RequestBody @Valid UpdateUserLangRequest updateUserLangRequest, Authentication authentication) {
-<span class="fc" id="L76">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
-<span class="fc" id="L77">        updateUserLangUseCase.updateUserLang(new UpdateUserLangCommand(updateUserLangRequest.getLang(), userDetails.getId()));</span>
-<span class="fc" id="L78">    }</span>
+<span class="fc" id="L74">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L75">        updateUserLangUseCase.updateUserLang(new UpdateUserLangCommand(updateUserLangRequest.getLang(), userDetails.getId()));</span>
+<span class="fc" id="L76">    }</span>
 
     @PutMapping(&quot;/password&quot;)
     @ResponseStatus(HttpStatus.OK)
     public void changePassword(@RequestBody @Valid ChangePasswordRequest changePasswordRequest, Authentication authentication) {
-<span class="fc" id="L83">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
-<span class="fc" id="L84">        changePasswordUseCase.changePassword(new ChangePasswordCommand(changePasswordRequest.getPassword(), changePasswordRequest.getOldPassword(), userDetails.getId()));</span>
-<span class="fc" id="L85">    }</span>
+<span class="fc" id="L81">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L82">        changePasswordUseCase.changePassword(new ChangePasswordCommand(changePasswordRequest.getPassword(), changePasswordRequest.getOldPassword(), userDetails.getId()));</span>
+<span class="fc" id="L83">    }</span>
 
     @PostMapping(&quot;/email/validation&quot;)
     @ResponseStatus(HttpStatus.OK)
     public void validateEmail(@RequestBody @Valid ValidateEmailRequest validateEmailRequest) {
-<span class="nc" id="L90">        validateEmailUseCase.validateEmail(new ValidateEmailCommand(validateEmailRequest.getCode()));</span>
-<span class="nc" id="L91">    }</span>
+<span class="nc" id="L88">        validateEmailUseCase.validateEmail(new ValidateEmailCommand(validateEmailRequest.getCode()));</span>
+<span class="nc" id="L89">    }</span>
 
     @PostMapping(&quot;/email/verification&quot;)
     @ResponseStatus(HttpStatus.OK)
     public void sendVerificationEmail(Authentication authentication) {
-<span class="nc" id="L96">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
-<span class="nc" id="L97">        sendVerificationEmailUseCase.sendVerificationEmail(userDetails.getId());</span>
-<span class="nc" id="L98">    }</span>
+<span class="nc" id="L94">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="nc" id="L95">        sendVerificationEmailUseCase.sendVerificationEmail(userDetails.getId());</span>
+<span class="nc" id="L96">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

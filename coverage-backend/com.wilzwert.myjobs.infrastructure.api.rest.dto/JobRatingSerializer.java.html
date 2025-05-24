@@ -7,16 +7,14 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:13/03/2025
- * Time:11:45
  */
 
 @Component
-<span class="fc" id="L15">class JobRatingSerializer extends StdConverter&lt;JobRating, String&gt; {</span>
+<span class="fc" id="L13">class JobRatingSerializer extends StdConverter&lt;JobRating, String&gt; {</span>
 
     @Override
     public String convert(JobRating jr) throws NumberFormatException {
-<span class="fc" id="L19">        return String.valueOf(jr.getValue());</span>
+<span class="fc" id="L17">        return String.valueOf(jr.getValue());</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

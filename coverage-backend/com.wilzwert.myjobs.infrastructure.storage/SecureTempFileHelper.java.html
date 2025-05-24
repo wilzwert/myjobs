@@ -6,26 +6,25 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.attribute.*;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:23/05/2025
- * Time:14:13
  */
 @Component
 public class SecureTempFileHelper {
 
     private final boolean supportsPosix;
 
-<span class="fc" id="L23">    public SecureTempFileHelper() {</span>
-<span class="fc" id="L24">        supportsPosix = FileSystems.getDefault().supportedFileAttributeViews().contains(&quot;posix&quot;);</span>
-<span class="fc" id="L25">    }</span>
+<span class="fc" id="L22">    public SecureTempFileHelper() {</span>
+<span class="fc" id="L23">        supportsPosix = FileSystems.getDefault().supportedFileAttributeViews().contains(&quot;posix&quot;);</span>
+<span class="fc" id="L24">    }</span>
 
     public boolean supportsPosix() {
-<span class="fc" id="L28">        return supportsPosix;</span>
+<span class="fc" id="L27">        return supportsPosix;</span>
     }
 
     /**
@@ -34,33 +33,33 @@ public class SecureTempFileHelper {
      * @return a FileAttribute for a temp file
      * @throws IOException en exception FileAttribute cannot be created
      */
-    public FileAttribute&lt;?&gt; getFileAttribute() throws IOException {
-<span class="pc bpc" id="L38" title="1 of 2 branches missed.">        if(supportsPosix) {</span>
-<span class="fc" id="L39">            return PosixFilePermissions</span>
-<span class="fc" id="L40">                    .asFileAttribute(PosixFilePermissions.fromString(&quot;rwx------&quot;));</span>
+    public FileAttribute&lt;? extends Collection&lt;?&gt;&gt; getFileAttribute() throws IOException {
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">        if(supportsPosix) {</span>
+<span class="fc" id="L38">            return PosixFilePermissions</span>
+<span class="fc" id="L39">                    .asFileAttribute(PosixFilePermissions.fromString(&quot;rwx------&quot;));</span>
         }
         else {
             UserPrincipal user =
-<span class="nc" id="L44">                    FileSystems.getDefault()</span>
-<span class="nc" id="L45">                            .getUserPrincipalLookupService()</span>
-<span class="nc" id="L46">                            .lookupPrincipalByName(System.getProperty(&quot;user.name&quot;));</span>
+<span class="nc" id="L43">                    FileSystems.getDefault()</span>
+<span class="nc" id="L44">                            .getUserPrincipalLookupService()</span>
+<span class="nc" id="L45">                            .lookupPrincipalByName(System.getProperty(&quot;user.name&quot;));</span>
             List&lt;AclEntry&gt; acl =
-<span class="nc" id="L48">                    Collections.singletonList(AclEntry.newBuilder()</span>
-<span class="nc" id="L49">                            .setType(AclEntryType.ALLOW)</span>
-<span class="nc" id="L50">                            .setPrincipal(user)</span>
-<span class="nc" id="L51">                            .setPermissions(EnumSet.allOf(AclEntryPermission.class))</span>
-<span class="nc" id="L52">                            .setFlags(AclEntryFlag.DIRECTORY_INHERIT, AclEntryFlag.FILE_INHERIT)</span>
-<span class="nc" id="L53">                            .build());</span>
-<span class="nc" id="L54">            return</span>
-<span class="nc" id="L55">                    new FileAttribute&lt;List&lt;AclEntry&gt;&gt;() {</span>
+<span class="nc" id="L47">                    Collections.singletonList(AclEntry.newBuilder()</span>
+<span class="nc" id="L48">                            .setType(AclEntryType.ALLOW)</span>
+<span class="nc" id="L49">                            .setPrincipal(user)</span>
+<span class="nc" id="L50">                            .setPermissions(EnumSet.allOf(AclEntryPermission.class))</span>
+<span class="nc" id="L51">                            .setFlags(AclEntryFlag.DIRECTORY_INHERIT, AclEntryFlag.FILE_INHERIT)</span>
+<span class="nc" id="L52">                            .build());</span>
+<span class="nc" id="L53">            return</span>
+<span class="nc" id="L54">                    new FileAttribute&lt;List&lt;AclEntry&gt;&gt;() {</span>
                         @Override
                         public String name() {
-<span class="nc" id="L58">                            return &quot;acl:acl&quot;;</span>
+<span class="nc" id="L57">                            return &quot;acl:acl&quot;;</span>
                         }
 
                         @Override
                         public List&lt;AclEntry&gt; value() {
-<span class="nc" id="L63">                            return acl;</span>
+<span class="nc" id="L62">                            return acl;</span>
                         }
                     };
         }

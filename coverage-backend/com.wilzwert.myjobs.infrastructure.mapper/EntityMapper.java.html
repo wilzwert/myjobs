@@ -8,8 +8,6 @@ import java.util.List;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:14/03/2025
- * Time:22:46
  * D for Domain aggregate / entity
  * E for persisted Entity
  * R for creation Request DTO
@@ -36,20 +34,20 @@ public interface EntityMapper&lt;D, E, R, C, A, U, S&gt; {
     U toUpdateCommand(A request);
 
     default RestPage&lt;S&gt; toResponse(DomainPage&lt;D&gt; domain) {
-<span class="fc" id="L39">        return new RestPage&lt;&gt;(</span>
-<span class="fc" id="L40">            toResponse(domain.getContent()),</span>
-<span class="fc" id="L41">            domain.getCurrentPage(),</span>
-<span class="fc" id="L42">            domain.getPageSize(),</span>
-<span class="fc" id="L43">            domain.getTotalElementsCount(),</span>
-<span class="fc" id="L44">            domain.getPageCount()</span>
+<span class="fc" id="L37">        return new RestPage&lt;&gt;(</span>
+<span class="fc" id="L38">            toResponse(domain.getContent()),</span>
+<span class="fc" id="L39">            domain.getCurrentPage(),</span>
+<span class="fc" id="L40">            domain.getPageSize(),</span>
+<span class="fc" id="L41">            domain.getTotalElementsCount(),</span>
+<span class="fc" id="L42">            domain.getPageCount()</span>
         );
     }
     default DomainPage&lt;D&gt; toDomain(Page&lt;E&gt; entity) {
-<span class="fc" id="L48">        return DomainPage.builder(toDomain(entity.getContent()))</span>
-<span class="fc" id="L49">                    .currentPage(entity.getNumber())</span>
-<span class="fc" id="L50">                    .pageSize(entity.getSize())</span>
-<span class="fc" id="L51">                    .totalElementsCount(entity.getTotalElements())</span>
-<span class="fc" id="L52">                .build();</span>
+<span class="fc" id="L46">        return DomainPage.builder(toDomain(entity.getContent()))</span>
+<span class="fc" id="L47">                    .currentPage(entity.getNumber())</span>
+<span class="fc" id="L48">                    .pageSize(entity.getSize())</span>
+<span class="fc" id="L49">                    .totalElementsCount(entity.getTotalElements())</span>
+<span class="fc" id="L50">                .build();</span>
     }
 
 }

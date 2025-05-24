@@ -17,7 +17,6 @@ import java.util.Optional;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:09/05/2025
  *
  */
 
@@ -26,40 +25,40 @@ public class RateLimitingFilter extends OncePerRequestFilter {
 
     private final RateLimitingService rateLimitingService;
 
-<span class="fc" id="L29">    public RateLimitingFilter(RateLimitingService rateLimitingService) {</span>
-<span class="fc" id="L30">        this.rateLimitingService = rateLimitingService;</span>
-<span class="fc" id="L31">    }</span>
+<span class="fc" id="L28">    public RateLimitingFilter(RateLimitingService rateLimitingService) {</span>
+<span class="fc" id="L29">        this.rateLimitingService = rateLimitingService;</span>
+<span class="fc" id="L30">    }</span>
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-<span class="fc" id="L37">        String path = request.getRequestURI();</span>
-<span class="fc" id="L38">        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();</span>
-<span class="pc bpc" id="L39" title="1 of 4 branches missed.">        String scope = (authentication == null || !authentication.isAuthenticated()) ? &quot;anonymous&quot; : &quot;authenticated&quot;;</span>
-<span class="fc" id="L40">        Optional&lt;RateLimitingProperties.RateLimitConfig&gt; configOpt = rateLimitingService.findBestMatchingRule(path, scope);</span>
+<span class="fc" id="L36">        String path = request.getRequestURI();</span>
+<span class="fc" id="L37">        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();</span>
+<span class="pc bpc" id="L38" title="1 of 4 branches missed.">        String scope = (authentication == null || !authentication.isAuthenticated()) ? &quot;anonymous&quot; : &quot;authenticated&quot;;</span>
+<span class="fc" id="L39">        Optional&lt;RateLimitingProperties.RateLimitConfig&gt; configOpt = rateLimitingService.findBestMatchingRule(path, scope);</span>
 
-<span class="fc bfc" id="L42" title="All 2 branches covered.">        if (configOpt.isPresent()) {</span>
-<span class="fc" id="L43">            RateLimitingProperties.RateLimitConfig config = configOpt.get();</span>
-<span class="fc" id="L44">            String key = rateLimitingService.buildKey(request, config);</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        if (configOpt.isPresent()) {</span>
+<span class="fc" id="L42">            RateLimitingProperties.RateLimitConfig config = configOpt.get();</span>
+<span class="fc" id="L43">            String key = rateLimitingService.buildKey(request, config);</span>
             // retrieve or build bucket for that key
-<span class="fc" id="L46">            Bucket bucket = rateLimitingService.getBucket(key, config);</span>
-<span class="fc" id="L47">            ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);</span>
+<span class="fc" id="L45">            Bucket bucket = rateLimitingService.getBucket(key, config);</span>
+<span class="fc" id="L46">            ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);</span>
 
             // add headers to  inform of rate limit status
-<span class="fc" id="L50">            response.setHeader(&quot;X-Rate-Limit-Limit&quot;, String.valueOf(bucket.getAvailableTokens()));</span>
-<span class="fc" id="L51">            response.setHeader(&quot;X-Rate-Limit-Remaining&quot;, String.valueOf(probe.getRemainingTokens()));</span>
-<span class="fc" id="L52">            response.setHeader(&quot;X-Rate-Limit-Reset&quot;, String.valueOf(probe.getNanosToWaitForRefill()/ 1_000_000_000));</span>
+<span class="fc" id="L49">            response.setHeader(&quot;X-Rate-Limit-Limit&quot;, String.valueOf(bucket.getAvailableTokens()));</span>
+<span class="fc" id="L50">            response.setHeader(&quot;X-Rate-Limit-Remaining&quot;, String.valueOf(probe.getRemainingTokens()));</span>
+<span class="fc" id="L51">            response.setHeader(&quot;X-Rate-Limit-Reset&quot;, String.valueOf(probe.getNanosToWaitForRefill()/ 1_000_000_000));</span>
 
-<span class="fc bfc" id="L54" title="All 2 branches covered.">            if(!probe.isConsumed()) {</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">            if(!probe.isConsumed()) {</span>
                 // too many requests
-<span class="fc" id="L56">                response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());</span>
-<span class="fc" id="L57">                response.getWriter().write(&quot;Too many requests&quot;);</span>
-<span class="fc" id="L58">                return;</span>
+<span class="fc" id="L55">                response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());</span>
+<span class="fc" id="L56">                response.getWriter().write(&quot;Too many requests&quot;);</span>
+<span class="fc" id="L57">                return;</span>
             }
         }
 
-<span class="fc" id="L62">        filterChain.doFilter(request, response);</span>
-<span class="fc" id="L63">    }</span>
+<span class="fc" id="L61">        filterChain.doFilter(request, response);</span>
+<span class="fc" id="L62">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

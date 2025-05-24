@@ -12,8 +12,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:13/03/2025
- * Time:20:18
  */
 
 @Component
@@ -23,16 +21,16 @@ public class JwtAuthenticator implements Authenticator {
 
     private final RefreshTokenService refreshTokenService;
 
-<span class="fc" id="L26">    public JwtAuthenticator(final JwtService jwtService, final RefreshTokenService refreshTokenService) {</span>
-<span class="fc" id="L27">        this.jwtService = jwtService;</span>
-<span class="fc" id="L28">        this.refreshTokenService = refreshTokenService;</span>
-<span class="fc" id="L29">    }</span>
+<span class="fc" id="L24">    public JwtAuthenticator(final JwtService jwtService, final RefreshTokenService refreshTokenService) {</span>
+<span class="fc" id="L25">        this.jwtService = jwtService;</span>
+<span class="fc" id="L26">        this.refreshTokenService = refreshTokenService;</span>
+<span class="fc" id="L27">    }</span>
 
     @Override
     public AuthenticatedUser authenticate(User user) throws AuthenticationException {
-<span class="fc" id="L33">        String token = jwtService.generateToken(user.getId().value().toString());</span>
-<span class="fc" id="L34">        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);</span>
-<span class="fc" id="L35">        return new JwtAuthenticatedUser(user.getEmail(), user.getUsername(), token, refreshToken.getToken(), user.getRole());</span>
+<span class="fc" id="L31">        String token = jwtService.generateToken(user.getId().value().toString());</span>
+<span class="fc" id="L32">        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);</span>
+<span class="fc" id="L33">        return new JwtAuthenticatedUser(user.getEmail(), user.getUsername(), token, refreshToken.getToken(), user.getRole());</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
