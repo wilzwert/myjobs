@@ -17,17 +17,17 @@ public class HtmlJobMetadataExtractorTest {
     private final HtmlJobMetadataExtractor extractor = new HtmlJobMetadataExtractor();
 
     @Test
-    public void testEmptyHtmlExtraction() {
+    void testEmptyHtmlExtraction() {
         assertTrue(extractor.extractJobMetadata("").isEmpty());
     }
 
     @Test
-    public void testIncorrectHtmlExtraction() {
+    void testIncorrectHtmlExtraction() {
         assertTrue(extractor.extractJobMetadata("this is not HTML").isEmpty());
     }
 
     @Test
-    public void testHtmlWithoutTitleWithH1Extraction() {
+    void testHtmlWithoutTitleWithH1Extraction() {
         JobMetadata expectedMetadata = new JobMetadata.Builder()
                 .title("job title")
                 .description("this is a description")
@@ -39,7 +39,7 @@ public class HtmlJobMetadataExtractorTest {
         );
     }
     @Test
-    public void testHtmlWithTitleWithH1Extraction() {
+    void testHtmlWithTitleWithH1Extraction() {
         JobMetadata expectedMetadata = new JobMetadata.Builder()
                 .title("job title in head")
                 .description("this is a description")

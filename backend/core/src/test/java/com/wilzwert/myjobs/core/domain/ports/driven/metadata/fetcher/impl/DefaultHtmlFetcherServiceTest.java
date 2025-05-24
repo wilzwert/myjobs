@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class DefaultHtmlFetcherServiceTest {
     @Test
-    public void fetchWithNoFetcher_throwsNoHtmlFetcherException() {
+    void fetchWithNoFetcher_throwsNoHtmlFetcherException() {
         DefaultHtmlFetcherService underTest = new DefaultHtmlFetcherService();
         assertThrows(NoHtmlFetcherException.class, () -> underTest.fetchHtml("example.com", "some html"));
     }

@@ -18,25 +18,25 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class UsersJobsBulkResultTest {
 
     @Test
-    public void whenUsersCountLessThanZero_thenShouldThrowIllegalArgumentException() {
+    void whenUsersCountLessThanZero_thenShouldThrowIllegalArgumentException() {
         var ex = assertThrows(IllegalArgumentException.class, () -> new UsersJobsBulkResult(-1, 0, Collections.emptyList()));
         assertEquals("users count must be greater than or equal to 0", ex.getMessage());
     }
 
     @Test
-    public void whenJobsCountLessThanZero_thenShouldThrowIllegalArgumentException() {
+    void whenJobsCountLessThanZero_thenShouldThrowIllegalArgumentException() {
         var ex = assertThrows(IllegalArgumentException.class, () -> new UsersJobsBulkResult(0, -1, Collections.emptyList()));
         assertEquals("jobs count must be greater than or equal to 0", ex.getMessage());
     }
 
     @Test
-    public void whenErrorsListEmpty_thenShouldThrowIllegalArgumentException() {
+    void whenErrorsListEmpty_thenShouldThrowIllegalArgumentException() {
         var ex = assertThrows(IllegalArgumentException.class, () -> new UsersJobsBulkResult(0, 0, null));
         assertEquals("errors must not be null", ex.getMessage());
     }
 
     @Test
-    public void shouldCreateUsersJobsBulkResult() {
+    void shouldCreateUsersJobsBulkResult() {
         var result = new UsersJobsBulkResult(10, 10, List.of("test error"));
         assertEquals(10, result.getUsersCount());
         assertEquals(10, result.getJobsCount());

@@ -45,7 +45,7 @@ public class PasswordUseCaseImplTest {
     private PasswordUseCaseImpl underTest;
 
     @Test
-    public void whenPasswordResetTokenNotFound_thenCreateNewPasswordShouldDoNothing_() {
+    void whenPasswordResetTokenNotFound_thenCreateNewPasswordShouldDoNothing_() {
         CreatePasswordCommand createPasswordCommand = new CreatePasswordCommand("newPassword", "passwordResetToken");
         when(userDataManager.findByResetPasswordToken("passwordResetToken")).thenReturn(Optional.empty());
 
@@ -59,7 +59,7 @@ public class PasswordUseCaseImplTest {
     }
 
     @Test
-    public void whenPasswordResetTokenFound_thenCreateNewPasswordShouldSaveUser_() {
+    void whenPasswordResetTokenFound_thenCreateNewPasswordShouldSaveUser_() {
         CreatePasswordCommand createPasswordCommand = new CreatePasswordCommand("newPassword1!", "passwordResetToken");
         User user = User.builder()
                 .email("test@example.com")
@@ -83,7 +83,7 @@ public class PasswordUseCaseImplTest {
     }
 
     @Test
-    public void whenPasswordTokenExpired_thenCreateNewPasswordShouldThrowResetPasswordExpiredException_() {
+    void whenPasswordTokenExpired_thenCreateNewPasswordShouldThrowResetPasswordExpiredException_() {
         CreatePasswordCommand createPasswordCommand = new CreatePasswordCommand("NewPassword1!", "passwordResetToken");
         User user = User.builder()
                 .email("test@example.com")
@@ -100,7 +100,7 @@ public class PasswordUseCaseImplTest {
     }
 
     @Test
-    public void whenPasswordResetTokenNotFound_thenResetPasswordShouldDoNothing() {
+    void whenPasswordResetTokenNotFound_thenResetPasswordShouldDoNothing() {
         when(userDataManager.findByEmail("test@example.com")).thenReturn(Optional.empty());
 
         underTest.resetPassword("test@example.com");
@@ -111,7 +111,7 @@ public class PasswordUseCaseImplTest {
     }
 
     @Test
-    public void whenPasswordResetTokenFound_thenResetPasswordShouldSendEmailAndSave_() {
+    void whenPasswordResetTokenFound_thenResetPasswordShouldSendEmailAndSave_() {
         User user = User.builder()
                 .email("test@example.com")
                 .username("username")
@@ -134,7 +134,7 @@ public class PasswordUseCaseImplTest {
     }
 
     @Test
-    public void whenUserNotFound_thenChangePasswordShouldUserNotFoundException_() {
+    void whenUserNotFound_thenChangePasswordShouldUserNotFoundException_() {
         UserId userId = UserId.generate();
         ChangePasswordCommand changePasswordCommand = new ChangePasswordCommand("newPassword", "oldPassword", userId);
         when(userDataManager.findById(userId)).thenReturn(Optional.empty());
@@ -143,7 +143,7 @@ public class PasswordUseCaseImplTest {
     }
 
     @Test
-    public void whenOldPasswordDoesntMatch_thenChangePasswordShouldThrowPasswordMatchException_() {
+    void whenOldPasswordDoesntMatch_thenChangePasswordShouldThrowPasswordMatchException_() {
         UserId userId = UserId.generate();
         User user = User.builder()
                 .email("test@example.com")
@@ -160,7 +160,7 @@ public class PasswordUseCaseImplTest {
     }
 
     @Test
-    public void whenOldPasswordMatches_thenChangePasswordShouldSaveUser() {
+    void whenOldPasswordMatches_thenChangePasswordShouldSaveUser() {
         UserId userId = UserId.generate();
         User user = User.builder()
                 .email("test@example.com")

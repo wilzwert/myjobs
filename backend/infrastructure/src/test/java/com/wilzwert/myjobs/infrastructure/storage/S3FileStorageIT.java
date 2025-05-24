@@ -25,12 +25,12 @@ public class S3FileStorageIT extends AbstractBaseIntegrationTest {
         /*
         File file = new File("src/test/resources/cv_test.doc");
 
-        // Test du store
+        // testing storage
         DownloadableFile uploadedFile = fileStorage.store(file, "uploads/cv.doc", "testfile.doc");
         assertNotNull(uploadedFile);
         assertEquals("testfile.doc", uploadedFile.filename());
 
-        // Test de la récupération
+        // testing retrieval
         String fileId = uploadedFile.path(); // Utilise le fileId retourné
         String url = fileStorage.generateProtectedUrl(fileId);
         assertNotNull(url);

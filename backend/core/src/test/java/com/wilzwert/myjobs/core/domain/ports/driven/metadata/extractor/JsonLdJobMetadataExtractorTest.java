@@ -31,28 +31,28 @@ public class JsonLdJobMetadataExtractorTest {
     }
 
     @Test
-    public void shouldBeEmpty() {
+    void shouldBeEmpty() {
         assertTrue(extractor.extractJobMetadata("").isEmpty());
     }
 
     @Test
-    public void whenJsonIncorrect_thenShouldBeEmpty() {
+    void whenJsonIncorrect_thenShouldBeEmpty() {
         assertTrue(extractor.extractJobMetadata("this is not json").isEmpty());
     }
 
     @Test
-    public void whenNotJson_thenShouldBeEmpty() {
+    void whenNotJson_thenShouldBeEmpty() {
         assertTrue(extractor.extractJobMetadata("{\"field\":\"value\"}").isEmpty());
     }
 
     @Test
-    public void whenNotJobPosting_thenShouldBeEmpty() throws IOException {
+    void whenNotJobPosting_thenShouldBeEmpty() throws IOException {
         String html  = TestFileLoader.loadFileAsString("product.jsonld.html");
         assertTrue(extractor.extractJobMetadata(html ).isEmpty());
     }
 
     @Test
-    public void whenNoSalary_thenShouldHaveEmptySalary() throws IOException {
+    void whenNoSalary_thenShouldHaveEmptySalary() throws IOException {
         String html  = TestFileLoader.loadFileAsString("jobposting.jsonld.nosalary.html");
 
         JobMetadata expectedMetadata = new JobMetadata.Builder()
@@ -71,7 +71,7 @@ public class JsonLdJobMetadataExtractorTest {
     }
 
     @Test
-    public void whenPartialAddress_thenShouldHavePartialAddress() throws IOException {
+    void whenPartialAddress_thenShouldHavePartialAddress() throws IOException {
         String html  = TestFileLoader.loadFileAsString("jobposting.jsonld.partialaddress.html");
         extractor.extractJobMetadata(html).ifPresentOrElse(
                 extractedMetadata -> assertEquals("Responsable contrôle interne et qualité H/F", extractedMetadata.title()),
@@ -80,7 +80,7 @@ public class JsonLdJobMetadataExtractorTest {
     }
 
     @Test
-    public void whenMonetaryAmountSalary_thenShouldHaveSalary() throws IOException {
+    void whenMonetaryAmountSalary_thenShouldHaveSalary() throws IOException {
         String html  = TestFileLoader.loadFileAsString("jobposting.jsonld.salary.monetaryamount.html");
 
         JobMetadata expectedMetadata = new JobMetadata.Builder()
@@ -99,7 +99,7 @@ public class JsonLdJobMetadataExtractorTest {
     }
 
     @Test
-    public void whenNumberSalary_thenShouldHaveSalary() throws IOException {
+    void whenNumberSalary_thenShouldHaveSalary() throws IOException {
         String html  = TestFileLoader.loadFileAsString("jobposting.jsonld.salary.number.html");
 
         JobMetadata expectedMetadata = new JobMetadata.Builder()
@@ -143,7 +143,7 @@ public class JsonLdJobMetadataExtractorTest {
     }
 
     @Test
-    public void whenL4mJsonLd_thenShouldReturnMetadata() throws IOException {
+    void whenL4mJsonLd_thenShouldReturnMetadata() throws IOException {
         String html  = TestFileLoader.loadFileAsString("jobposting.l4m.jsonld.html");
 
         JobMetadata expectedMetadata = new JobMetadata.Builder()
@@ -162,7 +162,7 @@ public class JsonLdJobMetadataExtractorTest {
     }
 
     @Test
-    public void whenHelloWorkHtml_thenShouldReturnMetadata() throws IOException {
+    void whenHelloWorkHtml_thenShouldReturnMetadata() throws IOException {
         String html  = TestFileLoader.loadFileAsString("jobposting.hellowork.html");
         /* TODO
         JobMetadata expectedMetadata = new JobMetadata.Builder()

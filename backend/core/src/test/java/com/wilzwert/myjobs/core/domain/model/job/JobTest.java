@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class JobTest {
 
     @Test
-    public void whenInvalid_thenJobBuildShouldThrowValidationException() {
+    void whenInvalid_thenJobBuildShouldThrowValidationException() {
         ValidationException exception = assertThrows(ValidationException.class, () -> Job.builder().build());
         assertNotNull(exception);
         assertEquals(5, exception.getErrors().getErrors().entrySet().size());
@@ -39,7 +39,7 @@ public class JobTest {
     }
 
     @Test
-    public void shouldCreateJobWithDefaultValues() {
+    void shouldCreateJobWithDefaultValues() {
         UserId userId = new UserId(UUID.randomUUID());
         JobId jobId = new JobId(UUID.randomUUID());
         Instant before = Instant.now();
@@ -77,7 +77,7 @@ public class JobTest {
     }
 
     @Test
-    public void shouldCreateJob() {
+    void shouldCreateJob() {
         UserId userId = new UserId(UUID.randomUUID());
         JobId jobId = new JobId(UUID.randomUUID());
         Instant now = Instant.now();
@@ -157,7 +157,7 @@ public class JobTest {
     }
 
     @Test
-    public void shouldUpdateJob() {
+    void shouldUpdateJob() {
         UserId userId = new UserId(UUID.randomUUID());
         JobId jobId = new JobId(UUID.randomUUID());
         Instant jobCreatedAt = Instant.parse("2025-03-09T13:45:30Z");
@@ -222,7 +222,7 @@ public class JobTest {
     }
 
     @Test
-    public void shouldAddActivity() {
+    void shouldAddActivity() {
         UserId userId = new UserId(UUID.randomUUID());
         JobId jobId = new JobId(UUID.randomUUID());
         Instant now = Instant.now();
@@ -277,7 +277,7 @@ public class JobTest {
     }
 
     @Test
-    public void shouldAddAttachment() {
+    void shouldAddAttachment() {
         UserId userId = new UserId(UUID.randomUUID());
         JobId jobId = new JobId(UUID.randomUUID());
         Instant now = Instant.now();
@@ -331,7 +331,7 @@ public class JobTest {
     }
 
     @Test
-    public void shouldRemoveAttachment() {
+    void shouldRemoveAttachment() {
         UserId userId = new UserId(UUID.randomUUID());
         JobId jobId = new JobId(UUID.randomUUID());
         Instant now = Instant.now();
@@ -386,7 +386,7 @@ public class JobTest {
     }
 
     @Test
-    public void whenUpdateStatusToSameStatus_thenShouldDoNothing() {
+    void whenUpdateStatusToSameStatus_thenShouldDoNothing() {
         UserId userId = new UserId(UUID.randomUUID());
         JobId jobId = new JobId(UUID.randomUUID());
         Instant jobCreatedAt = Instant.parse("2025-03-09T13:45:30Z");
@@ -413,7 +413,7 @@ public class JobTest {
     }
 
     @Test
-    public void shouldUpdateStatus() {
+    void shouldUpdateStatus() {
         UserId userId = new UserId(UUID.randomUUID());
         JobId jobId = new JobId(UUID.randomUUID());
         Instant jobCreatedAt = Instant.parse("2025-03-09T13:45:30Z");
@@ -450,7 +450,7 @@ public class JobTest {
     }
 
     @Test
-    public void whenUpdateRatingToSameRating_thenShouldDoNothing() {
+    void whenUpdateRatingToSameRating_thenShouldDoNothing() {
         UserId userId = new UserId(UUID.randomUUID());
         JobId jobId = new JobId(UUID.randomUUID());
         Instant now = Instant.now();
@@ -475,7 +475,7 @@ public class JobTest {
     }
 
     @Test
-    public void shouldUpdateRating() {
+    void shouldUpdateRating() {
         UserId userId = new UserId(UUID.randomUUID());
         JobId jobId = new JobId(UUID.randomUUID());
         Instant now = Instant.now();

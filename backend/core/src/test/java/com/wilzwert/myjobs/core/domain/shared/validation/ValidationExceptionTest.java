@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ValidationExceptionTest {
     @Test
-    public void shouldReturnFlatErrorsAsAList() {
+    void shouldReturnFlatErrorsAsAList() {
         // create some validation errors
         Validator validator = new Validator();
         validator.requireValidUrl("url", "http://example");

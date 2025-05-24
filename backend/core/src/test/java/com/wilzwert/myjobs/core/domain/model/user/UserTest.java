@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UserTest {
 
     @Test
-    public void whenInvalid_thenUserBuildShouldThrowValidationException() {
+    void whenInvalid_thenUserBuildShouldThrowValidationException() {
         User.Builder builder = User.builder();
         ValidationException exception = assertThrows(ValidationException.class, builder::build);
         assertNotNull(exception);
@@ -36,7 +36,7 @@ public class UserTest {
     }
 
     @Test
-    public void whenEmailAndUsernameInvalid_thenUserBuildShouldThrowValidationException() {
+    void whenEmailAndUsernameInvalid_thenUserBuildShouldThrowValidationException() {
         User.Builder builder = User.builder().username("T").email("invalid");
         ValidationException exception = assertThrows(ValidationException.class, builder::build);
         assertNotNull(exception);
@@ -49,7 +49,7 @@ public class UserTest {
     }
 
     @Test
-    public void whenFieldErrors_thenUserBuildShouldThrowValidationException() {
+    void whenFieldErrors_thenUserBuildShouldThrowValidationException() {
         User.Builder builder = User.builder().username("T").email("invalid").jobFollowUpReminderDays(45);
         ValidationException exception = assertThrows(ValidationException.class, builder::build);
         assertNotNull(exception);
@@ -63,7 +63,7 @@ public class UserTest {
     }
 
     @Test
-    public void shouldCreateUserWithDefaultValues() {
+    void shouldCreateUserWithDefaultValues() {
         UserId userId = new UserId(UUID.randomUUID());
         Instant before = Instant.now();
         User user = User.builder()
@@ -99,7 +99,7 @@ public class UserTest {
     }
 
     @Test
-    public void shouldCreateUser() {
+    void shouldCreateUser() {
         UserId userId = new UserId(UUID.randomUUID());
         Instant now = Instant.now();
         List<Job> jobs = List.of(Job.builder()
@@ -151,7 +151,7 @@ public class UserTest {
     }
 
     @Test
-    public void whenPasswordWeak_thenCreateUserShouldThrowValidationException() {
+    void whenPasswordWeak_thenCreateUserShouldThrowValidationException() {
         ValidationException exception = assertThrows(ValidationException.class, () ->  {
             User.Builder builder = User.builder().email("test@example.com").password("password").username("username").firstName("firstName").lastName("lastName").jobFollowUpReminderDays(7);
             User.create(builder,"weakPassword");
@@ -163,7 +163,7 @@ public class UserTest {
     }
 
     @Test
-    public void shouldCreateNewUser() {
+    void shouldCreateNewUser() {
         Instant before = Instant.now();
         User user = User.create(
                 User.builder()
@@ -200,7 +200,7 @@ public class UserTest {
     }
 
     @Test
-    public void shouldUpdateUser() {
+    void shouldUpdateUser() {
         UserId userId = UserId.generate();
         User user = User.builder()
                 .id(userId)
@@ -233,7 +233,7 @@ public class UserTest {
     }
 
     @Test
-    public void shouldUpdateUserLang() {
+    void shouldUpdateUserLang() {
         UserId userId = UserId.generate();
         User user = User.builder()
                 .id(userId)

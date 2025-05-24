@@ -43,37 +43,37 @@ public class JobMetadataServiceTest {
     }
 
     @Test
-    public void testGetDomainFromInvalidUrl() {
+    void testGetDomainFromInvalidUrl() {
         assertThrows(MalformedUrlException.class, () -> jobMetadataService.getUrlDomain("not_an_url"));
     }
 
     @Test
-    public void testGetDomainFromIncompatibleUrl() {
+    void testGetDomainFromIncompatibleUrl() {
         assertThrows(MalformedUrlException.class, () -> jobMetadataService.getUrlDomain("ftp://my.ftp.example.com"));
     }
 
     @Test
-    public void testGetUrlDomainWithoutSubdomain() {
+    void testGetUrlDomainWithoutSubdomain() {
         assertEquals("example.com", jobMetadataService.getUrlDomain("http://example.com/uri"));
     }
 
     @Test
-    public void testGetUrlDomainWithOneSubdomain() {
+    void testGetUrlDomainWithOneSubdomain() {
         assertEquals("www.example.com", jobMetadataService.getUrlDomain("https://www.example.com/uri"));
     }
 
     @Test
-    public void testGetUrlDomainWithMultipleSubdomain() {
+    void testGetUrlDomainWithMultipleSubdomain() {
         assertEquals("w3.www.fr.example.com", jobMetadataService.getUrlDomain("https://w3.www.fr.example.com/uri"));
     }
 
     @Test
-    public void testGetUrlDomainWithSubdomain() {
+    void testGetUrlDomainWithSubdomain() {
         assertEquals("emploi.fhf.fr", jobMetadataService.getUrlDomain("https://emploi.fhf.fr/emploi/414440"));
     }
 
     @Test
-    public void testEmptyHtmlExtraction() {
+    void testEmptyHtmlExtraction() {
         when(fetcherService.fetchHtml(anyString(), anyString())).thenReturn(Optional.empty());
 
         JobMetadata expectedJobMetadata = new JobMetadata.Builder()
@@ -84,7 +84,7 @@ public class JobMetadataServiceTest {
     }
 
     @Test
-    public void testCompatibleHtmlExtraction() throws IOException {
+    void testCompatibleHtmlExtraction() throws IOException {
         when(fetcherService.fetchHtml(anyString(), anyString())).thenReturn(Optional.ofNullable(TestFileLoader.loadFileAsString("jobposting.jsonld.salary.monetaryamount.html")));
         when(jobMetadataExtractorService.extractJobMetadata(anyString(), anyString())).thenReturn(Optional.of(new JobMetadata.Builder()
                 .title("Formateur equipes commerciales h/f")

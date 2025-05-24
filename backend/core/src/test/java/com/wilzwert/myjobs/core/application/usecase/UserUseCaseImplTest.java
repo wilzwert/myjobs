@@ -49,7 +49,7 @@ public class UserUseCaseImplTest {
     }
 
     @Test
-    public void whenUserExists_thenShouldSendVerificationEmail() {
+    void whenUserExists_thenShouldSendVerificationEmail() {
         UserId userId = UserId.generate();
         User user = getValidTestUser(userId);
         when(userDataManager.findMinimalById(userId)).thenReturn(Optional.of(user));
@@ -62,7 +62,7 @@ public class UserUseCaseImplTest {
     }
 
     @Test
-    public void whenEmailDoesntChange_thenShouldUpdateUserAndNotSendVerificationEmail() {
+    void whenEmailDoesntChange_thenShouldUpdateUserAndNotSendVerificationEmail() {
         UserId userId = UserId.generate();
         User user = getValidTestUser(userId);
 
@@ -81,7 +81,7 @@ public class UserUseCaseImplTest {
     }
 
     @Test
-    public void whenEmailChanges_thenShouldUpdateUserAndSendVerificationEmail() {
+    void whenEmailChanges_thenShouldUpdateUserAndSendVerificationEmail() {
         UserId userId = UserId.generate();
         User user = getValidTestUser(userId);
 

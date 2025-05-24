@@ -36,30 +36,6 @@ public class JobDataManagerAdapterIT extends AbstractBaseIntegrationTest {
     @Autowired
     private JobDataManagerAdapter underTest;
 
-    // void shouldReturn
-
-    @Test
-    void shouldReturnMappedJob_whenJobFound() {
-        /*
-        JobId jobId = JobId.generate();
-        Job job = Job.builder().id(jobId).title("title").url("https://www.example.com").build();
-        MongoJob mongoJob = new MongoJob().setId(jobId.value()).setTitle("title").setUrl("https://www.example.com");
-
-        when(mongoJobRepository.findById(jobId.value())).thenReturn(Optional.of(mongoJob));
-        when(jobMapper.toDomain(mongoJob)).thenReturn(job);
-
-        var foundJob = underTest.findById(jobId);
-
-        assert(foundJob.isPresent());
-        verify(mongoJobRepository, times(1)).findById(jobId.value());
-        verify(jobMapper, times(1)).toDomain(mongoJob);
-
-        Job result = foundJob.get();
-        assertEquals(jobId, result.getId());
-        assertEquals("https://www.example.com", result.getUrl());
-        assertEquals("title", result.getTitle());*/
-    }
-
     @Test
     void shouldCreateJob_andRetrieveCreatedJob() {
         JobId jobId = JobId.generate();

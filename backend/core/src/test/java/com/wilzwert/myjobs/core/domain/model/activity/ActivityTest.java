@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class ActivityTest {
 
     @Test
-    public void shouldCreateActivity() {
+    void shouldCreateActivity() {
         Instant now = Instant.now();
         ActivityId activityId = ActivityId.generate();
         Activity activity = Activity.builder()

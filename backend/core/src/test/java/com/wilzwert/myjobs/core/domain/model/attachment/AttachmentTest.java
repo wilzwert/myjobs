@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class AttachmentTest {
 
     @Test
-    public void shouldCreateAttachment() {
+    void shouldCreateAttachment() {
         AttachmentId attachmentId = AttachmentId.generate();
         Attachment attachment = Attachment.builder()
                 .id(attachmentId)

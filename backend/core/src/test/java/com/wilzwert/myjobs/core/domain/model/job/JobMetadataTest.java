@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 public class JobMetadataTest {
 
     @Test
-    public void testJobMetadataEquals() {
+    void testJobMetadataEquals() {
         JobMetadata expected = new JobMetadata.Builder()
                 .title("Title")
                 .build();
@@ -28,7 +28,7 @@ public class JobMetadataTest {
     }
 
     @Test
-    public void testJobMetadataNotEquals() {
+    void testJobMetadataNotEquals() {
         JobMetadata expected = new JobMetadata.Builder()
                 .title("Title")
                 .build();

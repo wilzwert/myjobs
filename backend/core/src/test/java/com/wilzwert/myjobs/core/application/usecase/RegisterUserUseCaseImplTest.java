@@ -41,7 +41,7 @@ public class RegisterUserUseCaseImplTest {
     private RegisterUseCaseImpl underTest;
 
     @Test
-    public void whenUsernameOrEmailAlreadyExists_thenShouldThrowUserAlreadyExistsException() {
+    void whenUsernameOrEmailAlreadyExists_thenShouldThrowUserAlreadyExistsException() {
         User user = User.builder().email("test@example.com").username("username").firstName("firstName").lastName("lastName").password("Password1!").build();
         RegisterUserCommand registerUserCommand = new RegisterUserCommand("test@example.com", "password", "username",  "firstName", "lastName", null);
         when(userDataManager.findByEmailOrUsername("test@example.com", "username")).thenReturn(Optional.of(user));
@@ -50,7 +50,7 @@ public class RegisterUserUseCaseImplTest {
     }
 
     @Test
-    public void whenRegistrationSuccessful_thenShouldRegisterUserAndSendAccountCreationEmail() {
+    void whenRegistrationSuccessful_thenShouldRegisterUserAndSendAccountCreationEmail() {
         RegisterUserCommand registerUserCommand = new RegisterUserCommand("test@example.com", "Password1!", "username",  "firstName", "lastName", Lang.FR);
         when(userDataManager.findByEmailOrUsername(anyString(), anyString())).thenReturn(Optional.empty());
         when(passwordHasher.hashPassword("Password1!")).thenReturn("hashedPassword");
@@ -74,14 +74,14 @@ public class RegisterUserUseCaseImplTest {
     }
 
     @Test
-    public void whenEmailIsTaken_thenShouldReturnTrue() {
+    void whenEmailIsTaken_thenShouldReturnTrue() {
         when(userDataManager.emailExists(anyString())).thenReturn(true);
 
         assertTrue(underTest.isEmailTaken("test@example.com"));
     }
 
     @Test
-    public void whenEmailIsAvailable_thenShouldReturnFalse() {
+    void whenEmailIsAvailable_thenShouldReturnFalse() {
         when(userDataManager.emailExists(anyString())).thenReturn(false);
 
         assertFalse(underTest.isEmailTaken("test@example.com"));
@@ -89,7 +89,7 @@ public class RegisterUserUseCaseImplTest {
 
 
     @Test
-    public void whenUsernameIsTaken_thenShouldReturnTrue() {
+    void whenUsernameIsTaken_thenShouldReturnTrue() {
         when(userDataManager.usernameExists(anyString())).thenReturn(true);
 
         assertTrue(underTest.isUsernameTaken("test"));
@@ -97,7 +97,7 @@ public class RegisterUserUseCaseImplTest {
     }
 
     @Test
-    public void whenUsernameIsAvailable_thenShouldReturnFalse() {
+    void whenUsernameIsAvailable_thenShouldReturnFalse() {
         when(userDataManager.usernameExists(anyString())).thenReturn(false);
 
         assertFalse(underTest.isUsernameTaken("test"));

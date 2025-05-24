@@ -124,7 +124,7 @@ class DomainPageTest {
             "1, 3, 6, false",   // page 1 of 2 → last
             "0, 10, 5, false"   // page 0, but only one page
     })
-    public void shouldCorrectlyDetectIfNotLast(int currentPage, int pageSize, int totalElementsCount, boolean expectedIsNotLast) {
+    void shouldCorrectlyDetectIfNotLast(int currentPage, int pageSize, int totalElementsCount, boolean expectedIsNotLast) {
         List<String> content = List.of("A", "B");
 
         DomainPage<String> page = DomainPage.builder(content)

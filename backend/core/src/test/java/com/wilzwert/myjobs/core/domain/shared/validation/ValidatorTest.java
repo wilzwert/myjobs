@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class ValidatorTest {
 
     @Test
-    public void whenEmpty_thenShouldAddValidationError() {
+    void whenEmpty_thenShouldAddValidationError() {
         Validator validator = new Validator();
         validator.requireNotEmpty("field", "");
         assertEquals(1, validator.getErrors().getErrors().size());
@@ -23,14 +23,14 @@ public class ValidatorTest {
     }
 
     @Test
-    public void whenNotEmpty_thenShouldNotAddValidationError() {
+    void whenNotEmpty_thenShouldNotAddValidationError() {
         Validator validator = new Validator();
         validator.requireNotEmpty("field", "not empty");
         assertEquals(0, validator.getErrors().getErrors().size());
     }
 
     @Test
-    public void whenInvalidEmail_thenShouldAddValidationError() {
+    void whenInvalidEmail_thenShouldAddValidationError() {
         Validator validator = new Validator();
         validator.requireValidEmail("field", "invalid");
         assertEquals(1, validator.getErrors().getErrors().size());
@@ -38,14 +38,14 @@ public class ValidatorTest {
     }
 
     @Test
-    public void whenValidEmail_thenShouldNotAddValidationError() {
+    void whenValidEmail_thenShouldNotAddValidationError() {
         Validator validator = new Validator();
         validator.requireValidEmail("field", "email@example.com");
         assertEquals(0, validator.getErrors().getErrors().size());
     }
 
     @Test
-    public void whenInvalidUrl_thenShouldAddValidationError() {
+    void whenInvalidUrl_thenShouldAddValidationError() {
         Validator validator = new Validator();
         validator.requireValidUrl("field", "http://invalid");
         assertEquals(1, validator.getErrors().getErrors().size());
@@ -53,20 +53,20 @@ public class ValidatorTest {
     }
 
     @Test
-    public void whenValidUrl_thenShouldNotAddValidationError() {
+    void whenValidUrl_thenShouldNotAddValidationError() {
         Validator validator = new Validator();
         validator.requireValidUrl("field", "https://example.com");
         assertEquals(0, validator.getErrors().getErrors().size());
     }
 
     @Test
-    public void whenMinLengthLessThan1_thenShouldThrowAssertionError() {
+    void whenMinLengthLessThan1_thenShouldThrowAssertionError() {
         Validator validator = new Validator();
         assertThrows(AssertionError.class, () -> validator.requireMinLength("field", "value", 0));
     }
 
     @Test
-    public void whenMinLengthNotMet_thenShouldAddValidationError() {
+    void whenMinLengthNotMet_thenShouldAddValidationError() {
         Validator validator = new Validator();
         validator.requireMinLength("field", "value", 6);
         assertEquals(1, validator.getErrors().getErrors().size());
@@ -74,20 +74,20 @@ public class ValidatorTest {
     }
 
     @Test
-    public void whenMinLengthMet_thenShouldNotAddValidationError() {
+    void whenMinLengthMet_thenShouldNotAddValidationError() {
         Validator validator = new Validator();
         validator.requireMinLength("field", "value", 4);
         assertEquals(0, validator.getErrors().getErrors().size());
     }
 
     @Test
-    public void whenMaxLengthLessThan1_thenShouldThrowAssertionError() {
+    void whenMaxLengthLessThan1_thenShouldThrowAssertionError() {
         Validator validator = new Validator();
         assertThrows(AssertionError.class, () -> validator.requireMaxLength("field", "value", 0));
     }
 
     @Test
-    public void whenMaxLengthNotMet_thenShouldAddValidationError() {
+    void whenMaxLengthNotMet_thenShouldAddValidationError() {
         Validator validator = new Validator();
         validator.requireMaxLength("field", "value", 2);
         assertEquals(1, validator.getErrors().getErrors().size());
@@ -95,14 +95,14 @@ public class ValidatorTest {
     }
 
     @Test
-    public void whenMaxLengthMet_thenShouldNotAddValidationError() {
+    void whenMaxLengthMet_thenShouldNotAddValidationError() {
         Validator validator = new Validator();
         validator.requireMaxLength("field", "value", 6);
         assertEquals(0, validator.getErrors().getErrors().size());
     }
 
     @Test
-    public void whenMaxNotMet_thenShouldAddValidationError() {
+    void whenMaxNotMet_thenShouldAddValidationError() {
         Validator validator = new Validator();
         validator.requireMax("field", 3, 2);
         assertEquals(1, validator.getErrors().getErrors().size());
@@ -110,14 +110,14 @@ public class ValidatorTest {
     }
 
     @Test
-    public void whenMaxMet_thenShouldNotAddValidationError() {
+    void whenMaxMet_thenShouldNotAddValidationError() {
         Validator validator = new Validator();
         validator.requireMax("field", 3, 3);
         assertEquals(0, validator.getErrors().getErrors().size());
     }
 
     @Test
-    public void whenMinNotMet_thenShouldAddValidationError() {
+    void whenMinNotMet_thenShouldAddValidationError() {
         Validator validator = new Validator();
         validator.requireMin("field", 2, 3);
         assertEquals(1, validator.getErrors().getErrors().size());
@@ -125,28 +125,28 @@ public class ValidatorTest {
     }
 
     @Test
-    public void whenMinMet_thenShouldNotAddValidationError() {
+    void whenMinMet_thenShouldNotAddValidationError() {
         Validator validator = new Validator();
         validator.requireMin("field", 7, 6);
         assertEquals(0, validator.getErrors().getErrors().size());
     }
 
     @Test
-    public void whenValueIsNull_thenMinIfNotNullShouldNotAddValidationError() {
+    void whenValueIsNull_thenMinIfNotNullShouldNotAddValidationError() {
         Validator validator = new Validator();
         validator.requireMinIfNotNull("field", null, 2);
         assertEquals(0, validator.getErrors().getErrors().size());
     }
 
     @Test
-    public void whenMinMet_thenMinIfNotNullShouldNotAddValidationError() {
+    void whenMinMet_thenMinIfNotNullShouldNotAddValidationError() {
         Validator validator = new Validator();
         validator.requireMinIfNotNull("field", 6, 6);
         assertEquals(0, validator.getErrors().getErrors().size());
     }
 
     @Test
-    public void whenMinNotMet_thenMinIfNotNullShouldAddValidationError() {
+    void whenMinNotMet_thenMinIfNotNullShouldAddValidationError() {
         Validator validator = new Validator();
         validator.requireMinIfNotNull("field", 6, 7);
         assertEquals(1, validator.getErrors().getErrors().size());
@@ -154,21 +154,21 @@ public class ValidatorTest {
     }
 
     @Test
-    public void whenValueIsNull_thenMaxIfNotNullShouldNotAddValidationError() {
+    void whenValueIsNull_thenMaxIfNotNullShouldNotAddValidationError() {
         Validator validator = new Validator();
         validator.requireMaxIfNotNull("field", null, 2);
         assertEquals(0, validator.getErrors().getErrors().size());
     }
 
     @Test
-    public void whenMaxMet_thenMaxIfNotNullShouldNotAddValidationError() {
+    void whenMaxMet_thenMaxIfNotNullShouldNotAddValidationError() {
         Validator validator = new Validator();
         validator.requireMaxIfNotNull("field", 6, 6);
         assertEquals(0, validator.getErrors().getErrors().size());
     }
 
     @Test
-    public void whenMaxNotMet_thenMaxIfNotNullShouldAddValidationError() {
+    void whenMaxNotMet_thenMaxIfNotNullShouldAddValidationError() {
         Validator validator = new Validator();
         validator.requireMaxIfNotNull("field", 7, 6);
         assertEquals(1, validator.getErrors().getErrors().size());
@@ -176,7 +176,7 @@ public class ValidatorTest {
     }
 
     @Test
-    public void whenRequireSupplierIsFalse_thenShouldAddValidationErrorWithProvidedErrorCode() {
+    void whenRequireSupplierIsFalse_thenShouldAddValidationErrorWithProvidedErrorCode() {
         Validator validator = new Validator();
         validator.require("field", () -> false, ErrorCode.UNEXPECTED_ERROR);
         assertEquals(1, validator.getErrors().getErrors().size());
@@ -184,7 +184,7 @@ public class ValidatorTest {
     }
 
     @Test
-    public void whenRequireSupplierIsTrue_thenShouldNotAddValidationError() {
+    void whenRequireSupplierIsTrue_thenShouldNotAddValidationError() {
         Validator validator = new Validator();
         validator.require("field", () -> true, ErrorCode.UNEXPECTED_ERROR);
         assertEquals(0, validator.getErrors().getErrors().size());
