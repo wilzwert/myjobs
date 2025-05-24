@@ -85,7 +85,7 @@ jobs:
       # we only update pages if code has actually been pushed to main branch, or if workflow is run manually
       # because we want coverage reports in pages to reflect the actual main branch coverage state
       - name: Publish backend coverage report to Github Pages
-        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+        if: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master' }}
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -95,7 +95,7 @@ jobs:
       # we only update codecov if code has actually been pushed to main branch, or if workflow is run manually
       # because codecov is only used to show actual main branch coverage with a bagde in project READM
       - name: Upload backend coverage report to Codecov
-        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+        if: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master' }}
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

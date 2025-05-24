@@ -40,3 +40,5 @@ It allows to get Sonar feedback without having to trigger CI. If your Sonar targ
 This can be done in 2 different environments by providing an arg to the script, e.g. : `./sonar-scan.bat dev`
 At this time only 2 environments exist : 'dev' and 'non dev' i.e. no arg.
 You can configure the run by providing some vars in the .env file. See .env.example for more information.
+
+> **_NOTE:_** a shell version of this script should be written 

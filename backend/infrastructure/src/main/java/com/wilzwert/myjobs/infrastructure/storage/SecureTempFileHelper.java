@@ -13,6 +13,12 @@ import java.util.List;
 
 /**
  * @author Wilhelm Zwertvaegher
+ * Helper for temp files creation
+ * Temp files are by default world readable, as they are created in a common temp dir
+ * To secure those files we need to make them readable and writable only by the current system user
+ * It is pretty easy when the project is run on posix compatible systems (e.g. Linux)
+ * but it gets a bit more complicated on Windows systems
+ * The getFileAttribute generates a FileAttribute based on posix support
  */
 @Component
 public class SecureTempFileHelper {
@@ -30,6 +36,8 @@ public class SecureTempFileHelper {
     /**
      * Creates a FileAttribute to be passed in the temp file creation
      * based on posix support
+     * At this time we have no choice but to use wildcard generics in the method return type because return types
+     * differ whether system is posix compatible of not
      * @return a FileAttribute for a temp file
      * @throws IOException en exception FileAttribute cannot be created
      */
