@@ -64,25 +64,25 @@ jobs:
           path: ./frontend/coverage/merged
           retention-days: 7
 
-      # we only update pages if code has actually been pushed to main branch, or if workflow is run manually
+      # we only update pages if code has actually been pushed to main branch, or if workflow is run manually on main branch
       - name: Publish frontend coverage report to Github Pages
-        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+        if: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master' }}
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./frontend/coverage/merged
           destination_dir: ./coverage-frontend
 
-      # we only update codecov if code has actually been pushed to main branch, or if workflow is run manually
+      # we only update codecov if code has actually been pushed to main branch, or if workflow is run manually on main branc
       - name: Upload frontend coverage report to Codecov
-        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
+        if: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master' }}
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./frontend/coverage/merged-coverage.json
           flags: frontend
 
-      # Run SonarQube analysis on push to main branch, or if workflow is run manually
+      # Run SonarQube analysis on push, or if workflow is run manually
       - name: SonarQube Scan on push to main
         if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
         # it may be interesting to prevent SonarQube from running if requirements have not been met
@@ -94,7 +94,7 @@ jobs:
           args: >
            -Dsonar.organization=wilzwert
            -Dsonar.projectKey=MyJobs_frontend
-           -Dproject.settings=./frontend/sonar-project.properties
+           -Dproject.settings=./sonar-project.properties
 
       # Run SonarQube analysis on pull request
       - name: SonarQube Scan on pull request
@@ -108,7 +108,7 @@ jobs:
           args: >
             -Dsonar.organization=wilzwert
             -Dsonar.projectKey=MyJobs_frontend
-            -Dproject.settings=./frontend/sonar-project.properties
+            -Dproject.settings=./sonar-project.properties
             -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
             -Dsonar.pullrequest.branch=${{ github.head_ref }}
             -Dsonar.pullrequest.base=${{ github.base_ref }}
