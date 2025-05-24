@@ -34,3 +34,13 @@ Used for staging tests run in the staging Githbub Action ; not intended to be ru
 ### Prod
 
 Used for production. In that environment, no need for .env, as the environment variables are set on the hosting provider. This is where the BATCH_ENABLED and ASYNC_ENABLED may be useful. As a side note : in production, logs are written in Json to allow external parsing.
+
+
+## Sonar
+To manually run a Sonar analysis while developing, you can use the script provided : `./sonar-scan.bat`.
+It allows to get Sonar feedback without having to trigger CI. If your Sonar target supports branches, the git branch is auto detected.
+This can be done in 2 different environments by providing an arg to the script, e.g. : `./sonar-scan.bat dev`
+At this time only 2 environments exist : 'dev' and 'non dev' i.e. no arg.
+You can configure the run by providing some vars in the .env file. See .env.example for more information.
+
+> **_NOTE:_** a shell version of this script should be written 
