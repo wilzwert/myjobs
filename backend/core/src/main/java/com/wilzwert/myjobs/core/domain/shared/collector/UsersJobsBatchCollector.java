@@ -21,8 +21,6 @@ import java.util.stream.Collectors;
  * This is very important because otherwise the grouping user -> jobs would not be guaranteed
  *
  * @author Wilhelm Zwertvaegher
- * Date:13/05/2025
- * Time:08:36
  */
 
 public class UsersJobsBatchCollector<T> implements Collector<Job, Map<UserId, SortedSet<Job>>, List<T>> {

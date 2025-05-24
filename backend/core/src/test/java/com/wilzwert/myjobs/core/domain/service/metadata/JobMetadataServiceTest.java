@@ -23,12 +23,10 @@ import static org.mockito.Mockito.when;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:04/04/2025
- * Time:15:14
  */
 
 @ExtendWith(MockitoExtension.class)
-public class JobMetadataServiceTest {
+class JobMetadataServiceTest {
     @Mock
     private HtmlFetcherService fetcherService;
 

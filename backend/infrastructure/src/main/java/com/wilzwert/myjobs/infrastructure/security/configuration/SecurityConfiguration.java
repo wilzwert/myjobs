@@ -29,8 +29,6 @@ import java.util.List;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:13/03/2025
- * Time:12:00
  */
 @Configuration
 public class SecurityConfiguration {

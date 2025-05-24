@@ -27,11 +27,9 @@ import static org.mockito.Mockito.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:09/04/2025
- * Time:10:31
  */
 @ExtendWith(MockitoExtension.class)
-public class PasswordUseCaseImplTest {
+class PasswordUseCaseImplTest {
     @Mock
     private UserDataManager userDataManager;
 

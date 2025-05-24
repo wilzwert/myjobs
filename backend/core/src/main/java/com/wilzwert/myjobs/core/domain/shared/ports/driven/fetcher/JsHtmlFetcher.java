@@ -5,8 +5,6 @@ import java.util.List;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:02/04/2025
- * Time:12:37
  */
 
 public interface JsHtmlFetcher extends HtmlFetcher {

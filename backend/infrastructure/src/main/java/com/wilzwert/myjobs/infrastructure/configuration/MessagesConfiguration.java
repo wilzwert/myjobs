@@ -8,8 +8,6 @@ import org.springframework.context.support.ReloadableResourceBundleMessageSource
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:06/05/2025
- * Time:09:59
  */
 @Configuration
 public class MessagesConfiguration {

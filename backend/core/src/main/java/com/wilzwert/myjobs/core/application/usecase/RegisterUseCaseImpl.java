@@ -18,8 +18,6 @@ import java.util.Optional;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:13/03/2025
- * Time:09:07
  */
 
 public class RegisterUseCaseImpl implements RegisterUseCase, CheckUserAvailabilityUseCase, ValidateEmailUseCase {

@@ -37,7 +37,7 @@ public class AccountCreationMessageProviderAdapterTest {
     }
 
     @Test
-    void testSendEmail() throws MessagingException, UnsupportedEncodingException {
+    void testSendEmail()  {
         Locale locale = Locale.of(Lang.EN.name());
         CustomMailMessage mailMessage = new CustomMailMessage("mail/account_creation", "user@example.com", "John", "email.account_creation.subject", "EN");
         when(mailProvider.createMessage("mail/account_creation", "user@example.com", "John", "email.account_creation.subject", "EN")).thenReturn(mailMessage);

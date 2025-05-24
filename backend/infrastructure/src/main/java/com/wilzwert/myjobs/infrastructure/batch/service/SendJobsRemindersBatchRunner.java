@@ -4,7 +4,7 @@ package com.wilzwert.myjobs.infrastructure.batch.service;
 import com.wilzwert.myjobs.core.domain.model.user.batch.UsersJobsRemindersBulkResult;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.SendJobsRemindersUseCase;
 import com.wilzwert.myjobs.infrastructure.batch.UsersJobsBatchExecutionResult;
-import com.wilzwert.myjobs.infrastructure.exception.BatchRunException;
+import com.wilzwert.myjobs.infrastructure.batch.BatchRunException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -12,8 +12,6 @@ import java.util.List;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:22/05/2025
- * Time:17:38
  */
 @Component
 @Slf4j

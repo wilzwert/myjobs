@@ -3,6 +3,7 @@ package com.wilzwert.myjobs.infrastructure.adapter.message;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.EmailVerificationMessageProvider;
 import com.wilzwert.myjobs.infrastructure.mail.MailProvider;
+import com.wilzwert.myjobs.infrastructure.mail.MailSendException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -32,7 +33,7 @@ public class EmailVerificationMessageProviderAdapter implements EmailVerificatio
         // TODO : improve exception handling
         catch (Exception e) {
             log.error("Sending email verification message failed.", e);
-            throw new RuntimeException(e);
+            throw new MailSendException("Sending email verification message failed", e);
         }
     }
 }

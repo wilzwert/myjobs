@@ -19,8 +19,6 @@ import java.util.stream.Stream;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:14/03/2025
- * Time:16:55
  */
 
 public class SendJobsRemindersUseCaseImpl implements SendJobsRemindersUseCase {
@@ -91,7 +89,7 @@ public class SendJobsRemindersUseCaseImpl implements SendJobsRemindersUseCase {
         Stream<Job> jobsToRemind = jobDataManager.stream(DomainSpecification.JobFollowUpToRemind(Instant.now()));
         return jobsToRemind.collect(
                 new UsersJobsBatchCollector<>(
-                        userIds -> userDataManager.findMinimal(DomainSpecification.In("id", userIds)),
+                        userIds -> userDataManager.findMinimal(DomainSpecification.in("id", userIds)),
                         this::doSend,
                         batchSize
                 )

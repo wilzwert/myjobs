@@ -13,8 +13,6 @@ import java.util.UUID;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:14/03/2025
- * Time:10:37
  */
 
 @Data

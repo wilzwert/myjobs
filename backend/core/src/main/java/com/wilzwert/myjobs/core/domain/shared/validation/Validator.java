@@ -11,8 +11,6 @@ import java.util.regex.Pattern;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:25/04/2025
- * Time:15:26
  */
 
 public class Validator {
@@ -78,7 +76,9 @@ public class Validator {
     }
 
     public Validator requireMinLength(String fieldName, String fieldValue, int minLength) {
-        assert(minLength > 0);
+        if(minLength < 1) {
+            throw new IllegalArgumentException("minLength must be greater than 0");
+        }
         if(notEmpty(fieldName, fieldValue) && fieldValue.length() < minLength) {
             validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_TOO_SHORT));
         }
@@ -86,7 +86,9 @@ public class Validator {
     }
 
     public Validator requireMaxLength(String fieldName, String fieldValue, int maxLength) {
-        assert(maxLength > 0);
+        if(maxLength < 1) {
+            throw new IllegalArgumentException("maxLength must be greater than 0");
+        }
         if(notEmpty(fieldName, fieldValue) && fieldValue.length() > maxLength) {
             validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_TOO_LONG));
         }

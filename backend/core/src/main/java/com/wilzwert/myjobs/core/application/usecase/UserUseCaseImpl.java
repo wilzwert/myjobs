@@ -17,8 +17,6 @@ import com.wilzwert.myjobs.core.domain.model.user.ports.driving.UpdateUserUseCas
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:31/03/2025
- * Time:16:55
  */
 
 public class UserUseCaseImpl implements SendVerificationEmailUseCase, GetUserViewUseCase, UpdateUserUseCase, UpdateUserLangUseCase {

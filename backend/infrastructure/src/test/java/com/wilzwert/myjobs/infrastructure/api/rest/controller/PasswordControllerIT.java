@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -63,7 +63,7 @@ public class PasswordControllerIT extends AbstractBaseIntegrationTest {
                 fail("User should be retrievable");
             }
             else {
-                assertThat(!foundUser.get().getResetPasswordToken().isEmpty());
+                assertThat(foundUser.get().getResetPasswordToken()).isNotEmpty();
             }
         }
 

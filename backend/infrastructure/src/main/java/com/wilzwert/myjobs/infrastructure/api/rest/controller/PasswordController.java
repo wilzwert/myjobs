@@ -12,9 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:13/03/2025
- * Time:11:43
- * TODO : add rate limiting on public endpoints
  */
 @RestController
 @Slf4j
@@ -31,14 +28,12 @@ public class PasswordController {
     }
 
     @PostMapping("/password/reset")
-    public ResponseEntity<?> resetPassword(@RequestBody @Valid ResetPasswordRequest resetPasswordRequest) {
+    public void resetPassword(@RequestBody @Valid ResetPasswordRequest resetPasswordRequest) {
         resetPasswordUseCase.resetPassword(resetPasswordRequest.getEmail());
-        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/password")
-    public ResponseEntity<?> newPassword(@RequestBody @Valid NewPasswordRequest newPasswordRequest) {
+    public void newPassword(@RequestBody @Valid NewPasswordRequest newPasswordRequest) {
         createNewPasswordUseCase.createNewPassword(new CreatePasswordCommand(newPasswordRequest.getPassword(), newPasswordRequest.getToken()));
-        return ResponseEntity.ok().build();
     }
 }

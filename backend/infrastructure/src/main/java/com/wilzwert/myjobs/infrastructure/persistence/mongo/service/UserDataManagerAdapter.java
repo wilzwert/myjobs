@@ -35,8 +35,6 @@ import java.util.stream.Collectors;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:12/03/2025
- * Time:16:10
  */
 @Component
 public class UserDataManagerAdapter implements UserDataManager {

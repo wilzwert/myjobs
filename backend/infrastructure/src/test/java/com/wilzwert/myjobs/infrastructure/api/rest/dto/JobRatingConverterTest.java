@@ -9,8 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:10/04/2025
- * Time:09:57
  */
 
 public class JobRatingConverterTest {

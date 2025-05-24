@@ -35,8 +35,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:10/04/2025
- * Time:10:07
  */
 
 public class ErrorResponseTest {

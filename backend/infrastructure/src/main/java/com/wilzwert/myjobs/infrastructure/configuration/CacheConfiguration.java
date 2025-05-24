@@ -14,8 +14,6 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:20/03/2025
- * Time:08:56
  */
 @Configuration
 @EnableCaching

@@ -14,8 +14,6 @@ import org.mapstruct.Mapping;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:12/03/2025
- * Time:15:48
  */
 
 @Mapper(componentModel = "spring", uses = IdMapper.class)

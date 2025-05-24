@@ -14,8 +14,6 @@ import java.util.Properties;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:08/04/2025
- * Time:13:41
  * Loads .env before application context is refreshed
  * Mostly useful to configure log levels with a .env file in dev environment
  */

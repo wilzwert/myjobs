@@ -8,8 +8,6 @@ import java.util.List;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:14/03/2025
- * Time:22:46
  * D for Domain aggregate / entity
  * E for persisted Entity
  * R for creation Request DTO

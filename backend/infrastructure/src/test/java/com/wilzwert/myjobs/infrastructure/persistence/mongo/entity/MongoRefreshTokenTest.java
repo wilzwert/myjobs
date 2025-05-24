@@ -9,8 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:09/04/2025
- * Time:13:45
  */
 
 public class MongoRefreshTokenTest {

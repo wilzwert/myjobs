@@ -7,8 +7,6 @@ import ch.qos.logback.core.read.ListAppender;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:05/22/2024
- * Time:17:48
  */
 
 public class MemoryAppender extends ListAppender<ILoggingEvent> {

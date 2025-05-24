@@ -27,8 +27,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:13/03/2025
- * Time:11:43
  */
 @RestController
 @Slf4j
@@ -101,14 +99,14 @@ public class AuthController {
 
     @GetMapping("/email-check")
     @RequiresCaptcha
-    public ResponseEntity<?> emailCheck(@RequestParam("email") String email) {
-        return checkUserAvailabilityUseCase.isEmailTaken(email) ? new ResponseEntity<Void>(HttpStatus.UNPROCESSABLE_ENTITY) : new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<Void> emailCheck(@RequestParam("email") String email) {
+        return checkUserAvailabilityUseCase.isEmailTaken(email) ? new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY) : new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/username-check")
     @RequiresCaptcha
-    public ResponseEntity<?> usernameCheck(@RequestParam("username") String username) {
-        return checkUserAvailabilityUseCase.isUsernameTaken(username) ? new ResponseEntity<Void>(HttpStatus.UNPROCESSABLE_ENTITY) : new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<Void> usernameCheck(@RequestParam("username") String username) {
+        return checkUserAvailabilityUseCase.isUsernameTaken(username) ? new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY) : new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/refresh-token")

@@ -14,7 +14,6 @@ import java.io.IOException;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:05/23/2025
  * Filter used to authorize HTTP requests to the internal controller(s) (/internal/**)
  * Calls to these endpoints are used when local scheduler / batch cannot be used
  * These endpoints are for "private" use only

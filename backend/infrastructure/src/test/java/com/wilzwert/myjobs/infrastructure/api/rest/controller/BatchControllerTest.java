@@ -3,12 +3,12 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.UsersJobsBatchExecutionResultResponse;
 import com.wilzwert.myjobs.infrastructure.batch.UsersJobsBatchExecutionResult;
 import com.wilzwert.myjobs.infrastructure.batch.service.SendJobsRemindersBatchRunner;
-import com.wilzwert.myjobs.infrastructure.exception.BatchRunException;
+import com.wilzwert.myjobs.infrastructure.batch.BatchRunException;
 import com.wilzwert.myjobs.infrastructure.mapper.UsersJobsBatchResultMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 

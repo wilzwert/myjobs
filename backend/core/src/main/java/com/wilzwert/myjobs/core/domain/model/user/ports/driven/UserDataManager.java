@@ -15,8 +15,6 @@ import java.util.Set;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:12/03/2025
- * Time:15:29
  * Method findMinimal* allow the infra to define ways of loading a user without its related entities / aggregates
  * It is useful when we need to perform an action only the user (i.e. with no side effects on related aggregates)
  * In some cases, it may improve performance as Infra will be able e.g. in a relational DB to load the user with no joins on jobs,

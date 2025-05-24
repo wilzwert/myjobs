@@ -2,8 +2,6 @@ package com.wilzwert.myjobs.core.domain.model.job;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:13/03/2025
- * Time:11:10
  */
 
 public record JobMetadata(String title, String company, String url, String description, String profile, String salary) {

@@ -7,8 +7,6 @@ import com.wilzwert.myjobs.core.domain.model.user.UserId;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:13/03/2025
- * Time:11:10
  */
 
 public record UpdateJobCommand(JobId jobId, UserId userId, String title, String company, String url, String description, String profile, String salary) {

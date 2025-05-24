@@ -5,8 +5,6 @@ import lombok.Data;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:05/23/2025
- * Time:10:41
  */
 @Data
 public class UsersJobsBatchExecutionResult {

@@ -14,8 +14,6 @@ import java.util.Map;
 /**
  * Configure Spring Batch to use mongo repo and explorer
  * @author Wilhelm Zwertvaegher
- * Date:16/05/2025
- * Time:14:20
  */
 @Component
 public class MongoBatchCollectionsInitializer {

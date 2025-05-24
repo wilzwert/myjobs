@@ -15,8 +15,6 @@ import java.util.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:12/03/2025
- * Time:15:32
  */
 public class Job extends DomainEntity<JobId> {
     private final JobId id;

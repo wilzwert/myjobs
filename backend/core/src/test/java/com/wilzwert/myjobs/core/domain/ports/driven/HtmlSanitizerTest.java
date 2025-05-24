@@ -10,11 +10,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:08/04/2025
- * Time:17:12
  */
 
-public class HtmlSanitizerTest {
+class HtmlSanitizerTest {
 
     HtmlSanitizer sanitizer = html -> html.replaceAll("<script>", "").replaceAll("</script>", "");
 

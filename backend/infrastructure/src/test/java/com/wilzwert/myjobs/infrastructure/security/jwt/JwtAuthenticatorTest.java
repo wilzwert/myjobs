@@ -19,8 +19,6 @@ import static org.mockito.Mockito.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:09/04/2025
- * Time:17:10
  */
 @ExtendWith(MockitoExtension.class)
 @Tag("Security")

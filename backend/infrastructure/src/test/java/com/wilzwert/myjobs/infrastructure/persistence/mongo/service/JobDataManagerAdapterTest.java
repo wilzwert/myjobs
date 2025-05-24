@@ -22,14 +22,12 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 
 import java.util.*;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:09/04/2025
- * Time:14:10
  */
 @ExtendWith(MockitoExtension.class)
 public class JobDataManagerAdapterTest {
@@ -166,16 +164,16 @@ public class JobDataManagerAdapterTest {
         List<Job> jobList = Collections.emptyList();
         Aggregation aggregation = mock(Aggregation.class);
 
-        var spec = DomainSpecification.Eq("userId", userId);
+        var spec = DomainSpecification.eq("userId", userId);
 
-        when(aggregationService.createAggregationPaginated(eq(spec), eq(1), eq(10))).thenReturn(aggregation);
+        when(aggregationService.createAggregationPaginated(spec, 1, 10)).thenReturn(aggregation);
         when(aggregationService.aggregate(aggregation, "jobs", MongoJob.class)).thenReturn(mongoJobs);
         when(jobMapper.toDomain(anyList())).thenReturn(jobList);
 
         DomainPage<Job> result = underTest.findPaginated(spec, 1, 10);
 
         assertEquals(0, result.getContent().size());
-        verify(aggregationService, times(1)).createAggregationPaginated(eq(spec), eq(1), eq(10));
+        verify(aggregationService, times(1)).createAggregationPaginated(spec, 1, 10);
         verify(aggregationService, times(1)).aggregate(aggregation, "jobs", MongoJob.class);
         verify(jobMapper, times(1)).toDomain(mongoJobs);
     }
@@ -205,9 +203,9 @@ public class JobDataManagerAdapterTest {
         when(jobMapper.toDomain(eq(mongoJobs))).thenReturn(jobs);
 
         DomainPage<Job> result = underTest.findPaginated(
-            DomainSpecification.And(List.of(
-                DomainSpecification.Eq("userId", userId, UserId.class),
-                DomainSpecification.Eq("status", JobStatus.CREATED, JobStatus.class))
+            DomainSpecification.and(List.of(
+                DomainSpecification.eq("userId", userId, UserId.class),
+                DomainSpecification.eq("status", JobStatus.CREATED, JobStatus.class))
             ), 1, 10);
 
         assertEquals(2, result.getContent().size());

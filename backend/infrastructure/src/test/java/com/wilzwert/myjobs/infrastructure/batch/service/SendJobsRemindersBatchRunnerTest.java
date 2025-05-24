@@ -5,7 +5,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import com.wilzwert.myjobs.core.domain.model.user.batch.UsersJobsRemindersBulkResult;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.SendJobsRemindersUseCase;
-import com.wilzwert.myjobs.infrastructure.exception.BatchRunException;
+import com.wilzwert.myjobs.infrastructure.batch.BatchRunException;
 import com.wilzwert.myjobs.infrastructure.utility.MemoryAppender;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

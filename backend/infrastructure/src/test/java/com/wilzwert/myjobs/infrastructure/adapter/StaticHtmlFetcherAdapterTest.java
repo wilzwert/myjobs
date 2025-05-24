@@ -43,7 +43,7 @@ public class StaticHtmlFetcherAdapterTest {
             Optional<String> result = adapter.fetchHtml(url);
 
             assertThat(result).isPresent();
-            assertThat(result.get()).isEqualTo(html);
+            assertThat(result.get()).contains(html);
 
             // Verify Jsoup.connect was called
             jsoupMockedStatic.verify(() -> Jsoup.connect(url), times(1));

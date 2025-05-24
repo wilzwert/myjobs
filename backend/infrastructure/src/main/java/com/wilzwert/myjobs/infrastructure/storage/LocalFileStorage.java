@@ -20,8 +20,6 @@ import java.util.Optional;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:21/03/2025
- * Time:16:07
  */
 @Profile("dev")
 @Component
@@ -35,7 +33,7 @@ public class LocalFileStorage implements FileStorage {
                 Files.createDirectories(storageLocation); // Crée le répertoire s'il n'existe pas
             }
         } catch (IOException e) {
-            throw new RuntimeException("Failed to initialize local storage", e);
+            throw new StorageException("Failed to initialize local storage", e);
         }
     }
 
@@ -51,7 +49,7 @@ public class LocalFileStorage implements FileStorage {
             // we use the targetlocation as fileid
             return new DownloadableFile(targetLocation.toString(), targetLocation.toString(), getContentType(originalFilename, targetLocation.toString()), "");
         } catch (IOException e) {
-            throw new RuntimeException("Failed to store file", e);
+            throw new StorageException("Failed to store file", e);
         }
     }
 
@@ -60,7 +58,7 @@ public class LocalFileStorage implements FileStorage {
         try {
             Files.delete(Paths.get(fileId));
         } catch (IOException e) {
-            throw new RuntimeException("Failed to delete file", e);
+            throw new StorageException("Failed to delete file", e);
         }
     }
 

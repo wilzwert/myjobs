@@ -21,13 +21,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:09/04/2025
- * Time:14:10
  */
 @SpringBootTest
 @EnabledIfSystemProperty(named = "spring.profiles.active", matches = "integration")
@@ -70,7 +68,7 @@ public class JobDataManagerAdapterIT extends AbstractBaseIntegrationTest {
     void shouldRetrieveJobToBeReminded() {
         Map<JobId, Job> jobs = underTest.findMinimal(DomainSpecification.JobFollowUpToRemind(Instant.now()));
         assertNotNull(jobs);
-        assertThat(jobs.size()).isEqualTo(3);
+        assertThat(jobs).hasSize(3);
     }
 
     @Test
@@ -80,12 +78,12 @@ public class JobDataManagerAdapterIT extends AbstractBaseIntegrationTest {
         JobId jobId2 = new JobId(UUID.fromString("88888888-8888-8888-8888-123456789012"));
 
         DomainSpecification spec = DomainSpecification.applySort(
-                DomainSpecification.In("id", List.of(jobId1, jobId2)),
-                DomainSpecification.Sort("id", DomainSpecification.SortDirection.ASC)
+                DomainSpecification.in("id", List.of(jobId1, jobId2)),
+                DomainSpecification.sort("id", DomainSpecification.SortDirection.ASC)
         );
         Map<JobId, Job> jobs = underTest.findMinimal(spec);
         assertNotNull(jobs);
-        assertThat(jobs.size()).isEqualTo(2);
+        assertThat(jobs).hasSize(2);
 
         // we know that for the jobs collection, we always load complete aggregates because
         // needed "relations" in domain are implemented as nested collections in infra with mongo
@@ -101,12 +99,12 @@ public class JobDataManagerAdapterIT extends AbstractBaseIntegrationTest {
         JobId jobId2 = new JobId(UUID.fromString("88888888-8888-8888-8888-123456789012"));
 
         DomainSpecification spec = DomainSpecification.applySort(
-                DomainSpecification.In("id", List.of(jobId1, jobId2)),
-                DomainSpecification.Sort("id", DomainSpecification.SortDirection.ASC)
+                DomainSpecification.in("id", List.of(jobId1, jobId2)),
+                DomainSpecification.sort("id", DomainSpecification.SortDirection.ASC)
         );
 
         Map<JobId, Job> jobs = underTest.findMinimal(spec);
-        assertThat(jobs.size()).isEqualTo(2);
+        assertThat(jobs).hasSize(2);
 
         String stringDate = "09:15:30, 10/05/2025";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss, dd/MM/yyyy");
@@ -132,7 +130,7 @@ public class JobDataManagerAdapterIT extends AbstractBaseIntegrationTest {
         // job1 "followUpReminderSentAt": "2025-05-04T15:25:31.162Z" | My job,
         // job2 null | My second job
         Map<JobId, Job> usersReloaded = underTest.findMinimal(spec);
-        assertThat(usersReloaded.size()).isEqualTo(2);
+        assertThat(usersReloaded).hasSize(2);
         assertThat(usersReloaded.get(jobId1).getTitle()).isEqualTo("My job");
         assertThat(usersReloaded.get(jobId1).getFollowUpReminderSentAt()).isEqualTo(newInstant);
         assertThat(usersReloaded.get(jobId2).getTitle()).isEqualTo("My second job");
@@ -170,15 +168,15 @@ public class JobDataManagerAdapterIT extends AbstractBaseIntegrationTest {
         JobId jobId2 = new JobId(UUID.fromString("88888888-8888-8888-8888-123456789012"));
 
         DomainSpecification spec = DomainSpecification.applySort(
-                DomainSpecification.In("id", List.of(jobId1, jobId2)),
-                DomainSpecification.Sort("id", DomainSpecification.SortDirection.ASC)
+                DomainSpecification.in("id", List.of(jobId1, jobId2)),
+                DomainSpecification.sort("id", DomainSpecification.SortDirection.ASC)
         );
 
         Stream<Job> stream = underTest.stream(spec);
 
         // collect the Stream into a Map to be able to check contents
         Map<JobId, Job> result = stream.collect(Collectors.toMap(Job::getId, e -> e));
-        assertThat(result.size()).isEqualTo(2);
+        assertThat(result).hasSize(2);
         assertThat(result.get(jobId1).getTitle()).isEqualTo("My job");
         assertThat(result.get(jobId2).getTitle()).isEqualTo("My second job");
     }

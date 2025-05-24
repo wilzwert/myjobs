@@ -7,8 +7,6 @@ import com.wilzwert.myjobs.core.domain.model.job.service.JobMetadataService;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:12/03/2025
- * Time:15:27
  */
 public class ExtractJobMetadataUseCaseImpl implements ExtractJobMetadataUseCase {
 

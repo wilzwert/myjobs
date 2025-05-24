@@ -15,6 +15,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -36,8 +38,6 @@ import static org.mockito.Mockito.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:04/11/2024
- * Time:11:08
  */
 
 @ExtendWith(MockitoExtension.class)
@@ -90,20 +90,13 @@ public class JwtAuthenticationFilterTest {
         assertThat(underTest.shouldNotFilter(request)).isTrue();
     }*/
 
-    @Test
-    void shouldReturnTrueWhenFilteringNotNecessaryForAuth() {
-        when(request.getRequestURI()).thenReturn("/api/auth/register");
+    @ParameterizedTest
+    @ValueSource(strings = {"/api/auth/register", "/internal/jobs-reminders-batch", "/swagger-ui/"})
+    void shouldReturnTrueWhenFilteringNotNecessary(String uri) {
+        when(request.getRequestURI()).thenReturn(uri);
 
         assertThat(underTest.shouldNotFilter(request)).isTrue();
     }
-
-    @Test
-    void shouldReturnTrueWhenFilteringNotNecessaryForInternal() {
-        when(request.getRequestURI()).thenReturn("/internal/jobs-reminders-batch");
-
-        assertThat(underTest.shouldNotFilter(request)).isTrue();
-    }
-
 
     /*
     @Test
@@ -115,12 +108,7 @@ public class JwtAuthenticationFilterTest {
         assertThat(underTest.shouldNotFilter(request)).isTrue();
     }*/
 
-    @Test
-    void shouldReturnTrueWhenFilteringNotNecessaryForSwaggerUi() {
-        when(request.getRequestURI()).thenReturn("/swagger-ui/");
 
-        assertThat(underTest.shouldNotFilter(request)).isTrue();
-    }
 
     @Test
     void shouldReturnFalseWhenFilteringNecessary() {
@@ -150,6 +138,8 @@ public class JwtAuthenticationFilterTest {
         when(jwtService.extractTokenFromRequest(request)).thenReturn(Optional.of(jwtToken));
 
         SecurityContextHolder.getContext().setAuthentication(new Authentication() {
+            private boolean isAuthenticated = false;
+
              @Override
              public Collection<? extends GrantedAuthority> getAuthorities() {
                  return List.of();
@@ -172,12 +162,12 @@ public class JwtAuthenticationFilterTest {
 
              @Override
              public boolean isAuthenticated() {
-                 return false;
+                 return isAuthenticated;
              }
 
              @Override
              public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
-
+                 this.isAuthenticated = isAuthenticated;
              }
 
              @Override

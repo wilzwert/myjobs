@@ -11,8 +11,6 @@ import java.net.URL;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:02/04/2025
- * Time:12:58
  */
 
 public class JobMetadataService {

@@ -84,7 +84,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(jobResponseRestPage.getTotalElementsCount()).isEqualTo(3);
             assertThat(jobResponseRestPage.getPageSize()).isEqualTo(10);
             assertThat(jobResponseRestPage.getPagesCount()).isEqualTo(1);
-            assertThat(jobResponseRestPage.getCurrentPage()).isEqualTo(0);
+            assertThat(jobResponseRestPage.getCurrentPage()).isZero();
 
             List<String> titles = jobResponseRestPage.getContent().stream().map(JobResponse::getTitle).toList();
             // by default, we expect jobs sorted by creation date desc
@@ -104,7 +104,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             RestPage<JobResponse> jobResponseRestPage = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<RestPage<JobResponse>>() {});
             assertThat(jobResponseRestPage).isNotNull();
             assertThat(jobResponseRestPage.getContent()).isNotNull();
-            assertThat(jobResponseRestPage.getContent().size()).isEqualTo(1);
+            assertThat(jobResponseRestPage.getContent()).hasSize(1);
             assertThat(jobResponseRestPage.getTotalElementsCount()).isEqualTo(3);
             assertThat(jobResponseRestPage.getPageSize()).isEqualTo(1);
             assertThat(jobResponseRestPage.getCurrentPage()).isEqualTo(2);
@@ -132,7 +132,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(jobResponseRestPage.getTotalElementsCount()).isEqualTo(3);
             assertThat(jobResponseRestPage.getPageSize()).isEqualTo(10);
             assertThat(jobResponseRestPage.getPagesCount()).isEqualTo(1);
-            assertThat(jobResponseRestPage.getCurrentPage()).isEqualTo(0);
+            assertThat(jobResponseRestPage.getCurrentPage()).isZero();
 
             List<String> titles = jobResponseRestPage.getContent().stream().map(JobResponse::getTitle).toList();
             assertThat(titles).containsExactly("My third job", "My job", "My second job");
@@ -154,7 +154,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(jobResponseRestPage.getTotalElementsCount()).isEqualTo(3);
             assertThat(jobResponseRestPage.getPageSize()).isEqualTo(10);
             assertThat(jobResponseRestPage.getPagesCount()).isEqualTo(1);
-            assertThat(jobResponseRestPage.getCurrentPage()).isEqualTo(0);
+            assertThat(jobResponseRestPage.getCurrentPage()).isZero();
 
             List<String> titles = jobResponseRestPage.getContent().stream().map(JobResponse::getTitle).toList();
             assertThat(titles).containsExactly("My job", "My second job", "My third job");
@@ -176,7 +176,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(jobResponseRestPage.getTotalElementsCount()).isEqualTo(1);
             assertThat(jobResponseRestPage.getPageSize()).isEqualTo(10);
             assertThat(jobResponseRestPage.getPagesCount()).isEqualTo(1);
-            assertThat(jobResponseRestPage.getCurrentPage()).isEqualTo(0);
+            assertThat(jobResponseRestPage.getCurrentPage()).isZero();
 
             List<String> titles = jobResponseRestPage.getContent().stream().map(JobResponse::getTitle).toList();
             assertThat(titles).containsExactly("My second job");

@@ -21,17 +21,16 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequ
 
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:08/04/2025
- * Time:09:44
  */
 @EnabledIfSystemProperty(named = "spring.profiles.active", matches = "dev|test")
 @ExtendWith(MockitoExtension.class)
@@ -84,7 +83,7 @@ public class S3FileStorageTest {
     @Test
     void shouldGenerateProtectedUrl() throws MalformedURLException {
         PresignedGetObjectRequest presignedRequest = mock(PresignedGetObjectRequest.class);
-        when(presignedRequest.url()).thenReturn(new URL("https://example.com/fake-url"));
+        when(presignedRequest.url()).thenReturn(URI.create("https://example.com/fake-url").toURL());
         when(s3Presigner.presignGetObject(any(GetObjectPresignRequest.class))).thenReturn(presignedRequest);
 
         String url = underTest.generateProtectedUrl("fileId");

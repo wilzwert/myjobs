@@ -25,8 +25,6 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:13/03/2025
- * Time:11:46
  */
 
 @Configuration

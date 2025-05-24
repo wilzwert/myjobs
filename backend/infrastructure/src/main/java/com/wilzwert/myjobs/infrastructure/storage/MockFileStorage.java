@@ -30,7 +30,7 @@ public class MockFileStorage implements FileStorage {
             storage.put(fakedTargetFilename, content);
             return new DownloadableFile(fakedTargetFilename, fakedTargetFilename, getContentType(file.toPath().toString(), originalFilename), "faked_"+originalFilename);
         } catch (Exception e) {
-            throw new RuntimeException("Mock storage failed", e);
+            throw new StorageException("Mock storage failed", e);
         }
     }
 
@@ -42,7 +42,7 @@ public class MockFileStorage implements FileStorage {
     @Override
     public DownloadableFile retrieve(String fileId, String originalFilename) {
         byte[] content = storage.get(fileId);
-        if (content == null) throw new RuntimeException("File not found in mock storage");
+        if (content == null) throw new StorageException("File not found in mock storage");
 
         try {
             return new DownloadableFile(fileId, originalFilename, getContentType(originalFilename, originalFilename), originalFilename);

@@ -236,7 +236,7 @@ class JobUseCaseImplTest {
             when(fileStorage.store(eq(file), any(String.class), eq("test.pdf"))).thenReturn(
                     new DownloadableFile("newFileId", "stored/newFileId.pdf", "application/pdf", "test.pdf")
             );
-            when(jobDataManager.saveJobAndAttachment(jobArg.capture(), attachmentArg.capture(), activityArg.capture())).thenAnswer((i) -> i.getArgument(0));
+            when(jobDataManager.saveJobAndAttachment(jobArg.capture(), attachmentArg.capture(), activityArg.capture())).thenAnswer(i -> i.getArgument(0));
 
 
 
@@ -279,12 +279,12 @@ class JobUseCaseImplTest {
         void whenAttachmentNotReadable_thenShouldThrowAttachmentFileNotReadableException() {
             reset(userDataManager);
             when(jobDataManager.findByIdAndUserId(any(), any())).thenReturn(Optional.of(testJobWithAttachment));
-            when(fileStorage.retrieve(eq("notReadable"), eq("notReadable.doc"))).thenThrow(AttachmentFileNotReadableException.class);
+            when(fileStorage.retrieve("notReadable", "notReadable.doc")).thenThrow(AttachmentFileNotReadableException.class);
             var command = new DownloadAttachmentCommand(attachment.getId().value().toString(), testJobWithAttachment.getUserId(), testJobWithAttachment.getId());
 
             assertThrows(AttachmentFileNotReadableException.class, () -> underTest.downloadAttachment(command));
             verify(jobDataManager).findByIdAndUserId(any(), any());
-            verify(fileStorage).retrieve(eq("notReadable"), eq("notReadable.doc"));
+            verify(fileStorage).retrieve("notReadable", "notReadable.doc");
         }
 
         @Test
@@ -294,13 +294,13 @@ class JobUseCaseImplTest {
 
             reset(userDataManager);
             when(jobDataManager.findByIdAndUserId(any(), any())).thenReturn(Optional.of(testJobWithAttachment));
-            doNothing().when(fileStorage).delete(eq(attachment.getFileId()));
-            when(jobDataManager.deleteAttachmentAndSaveJob(jobArg.capture(), eq(attachment), activityArg.capture())).thenAnswer((i) -> i.getArgument(0));
+            doNothing().when(fileStorage).delete(attachment.getFileId());
+            when(jobDataManager.deleteAttachmentAndSaveJob(jobArg.capture(), eq(attachment), activityArg.capture())).thenAnswer(i -> i.getArgument(0));
 
             underTest.deleteAttachment(new DeleteAttachmentCommand(attachment.getId(), testJobWithAttachment.getUserId(), testJobWithAttachment.getId()));
 
             verify(jobDataManager).deleteAttachmentAndSaveJob(jobArg.capture(), eq(attachment), activityArg.capture());
-            verify(fileStorage).delete(eq(attachment.getFileId()));
+            verify(fileStorage).delete(attachment.getFileId());
 
             // check that an activity has been created, and has been passed to the jobservice
             Job job = jobArg.getValue();
@@ -356,12 +356,12 @@ class JobUseCaseImplTest {
             Instant before = Instant.now();
 
             reset(userDataManager);
-            when(jobDataManager.findByIdAndUserId(eq(testJobWithActivity.getId()), eq(testJobWithActivity.getUserId()))).thenReturn(Optional.of(this.testJobWithActivity));
-            when(jobDataManager.saveJobAndActivity(jobArg.capture(), activityArg.capture())).thenAnswer((i) -> i.getArgument(0));
+            when(jobDataManager.findByIdAndUserId(testJobWithActivity.getId(), testJobWithActivity.getUserId())).thenReturn(Optional.of(this.testJobWithActivity));
+            when(jobDataManager.saveJobAndActivity(jobArg.capture(), activityArg.capture())).thenAnswer(i -> i.getArgument(0));
 
             Activity result = underTest.addActivityToJob(new CreateActivityCommand(ActivityType.EMAIL, "new activity comment", testJobWithActivity.getUserId(), testJobWithActivity.getId()));
 
-            verify(jobDataManager).findByIdAndUserId(eq(testJobWithActivity.getId()), eq(testJobWithActivity.getUserId()));
+            verify(jobDataManager).findByIdAndUserId(testJobWithActivity.getId(), testJobWithActivity.getUserId());
             verify(jobDataManager).saveJobAndActivity(jobArg.capture(), activityArg.capture());
 
             assertNotEquals(activity.getId(), result.getId());
@@ -392,12 +392,12 @@ class JobUseCaseImplTest {
             Instant before = Instant.now();
 
             reset(userDataManager);
-            when(jobDataManager.findByIdAndUserId(eq(testJobWithActivity.getId()), eq(testJobWithActivity.getUserId()))).thenReturn(Optional.of(this.testJobWithActivity));
-            when(jobDataManager.saveJobAndActivity(jobArg.capture(), activityArg.capture())).thenAnswer((i) -> i.getArgument(0));
+            when(jobDataManager.findByIdAndUserId(testJobWithActivity.getId(), testJobWithActivity.getUserId())).thenReturn(Optional.of(this.testJobWithActivity));
+            when(jobDataManager.saveJobAndActivity(jobArg.capture(), activityArg.capture())).thenAnswer(i -> i.getArgument(0));
 
             Activity result = underTest.updateActivity(new UpdateActivityCommand(activity.getId(), ActivityType.EMAIL, "activity comment edited", testJobWithActivity.getUserId(), testJobWithActivity.getId()));
 
-            verify(jobDataManager).findByIdAndUserId(eq(testJobWithActivity.getId()), eq(testJobWithActivity.getUserId()));
+            verify(jobDataManager).findByIdAndUserId(testJobWithActivity.getId(), testJobWithActivity.getUserId());
             verify(jobDataManager).saveJobAndActivity(jobArg.capture(), activityArg.capture());
 
             assertEquals(activity.getId(), result.getId());

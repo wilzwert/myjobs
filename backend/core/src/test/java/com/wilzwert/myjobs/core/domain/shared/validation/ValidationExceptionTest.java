@@ -10,11 +10,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:19/05/2025
- * Time:09:53
  */
 
-public class ValidationExceptionTest {
+class ValidationExceptionTest {
     @Test
     void shouldReturnFlatErrorsAsAList() {
         // create some validation errors

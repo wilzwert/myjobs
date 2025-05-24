@@ -30,8 +30,6 @@ import static org.mockito.Mockito.mock;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:21/05/2025
- * Time:23:04
  */
 
 public class GlobalExceptionHandlerTest {

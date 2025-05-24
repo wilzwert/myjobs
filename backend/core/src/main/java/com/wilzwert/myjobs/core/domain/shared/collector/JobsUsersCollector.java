@@ -18,8 +18,6 @@ import java.util.stream.Collectors;
  * a parameter
  *
  * @author Wilhelm Zwertvaegher
- * Date:14/05/2025
- * Time:15:50
  */
 
 public class JobsUsersCollector implements Collector<Job, Map<UserId, Set<Job>>, Map<User, Set<Job>>> {
@@ -37,9 +35,9 @@ public class JobsUsersCollector implements Collector<Job, Map<UserId, Set<Job>>,
 
     @Override
     public BiConsumer<Map<UserId, Set<Job>>, Job> accumulator() {
-        return (Map<UserId, Set<Job>> userIdsToJobs, Job job) -> {
-            userIdsToJobs.computeIfAbsent(job.getUserId(), k -> new HashSet<>()).add(job);
-        };
+        return (Map<UserId, Set<Job>> userIdsToJobs, Job job) ->
+            userIdsToJobs.computeIfAbsent(job.getUserId(), k -> new HashSet<>()).add(job)
+        ;
     }
 
     @Override

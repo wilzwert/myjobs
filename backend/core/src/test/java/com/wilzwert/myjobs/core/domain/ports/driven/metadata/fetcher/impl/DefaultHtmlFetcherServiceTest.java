@@ -11,10 +11,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:08/04/2025
- * Time:14:53
  */
-public class DefaultHtmlFetcherServiceTest {
+class DefaultHtmlFetcherServiceTest {
     @Test
     void fetchWithNoFetcher_throwsNoHtmlFetcherException() {
         DefaultHtmlFetcherService underTest = new DefaultHtmlFetcherService();

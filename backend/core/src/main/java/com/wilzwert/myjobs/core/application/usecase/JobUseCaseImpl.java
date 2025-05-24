@@ -41,8 +41,6 @@ import java.util.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:14/03/2025
- * Time:16:55
  */
 
 public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, UpdateJobUseCase, UpdateJobStatusUseCase, UpdateJobRatingUseCase, DeleteJobUseCase, GetUserJobsUseCase, AddActivityToJobUseCase, UpdateActivityUseCase, AddAttachmentToJobUseCase, DownloadAttachmentUseCase, DeleteAttachmentUseCase {
@@ -123,23 +121,23 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
         User user = foundUser.get();
 
-        List<DomainSpecification> specs = new ArrayList<>(List.of(DomainSpecification.Eq("userId", user.getId(), UserId.class)));
+        List<DomainSpecification> specs = new ArrayList<>(List.of(DomainSpecification.eq("userId", user.getId(), UserId.class)));
 
         DomainPage<Job> jobs;
         if(filterLate) {
             // threshold instant : jobs not updated since that instant are considered late
             Instant nowMinusReminderDays = Instant.now().minus(user.getJobFollowUpReminderDays(), ChronoUnit.DAYS);
-            specs.add(DomainSpecification.In("status", JobStatus.activeStatuses()));
-            specs.add(DomainSpecification.Lt("statusUpdatedAt", nowMinusReminderDays));
+            specs.add(DomainSpecification.in("status", JobStatus.activeStatuses()));
+            specs.add(DomainSpecification.lt("statusUpdatedAt", nowMinusReminderDays));
         }
         else {
             if( status != null) {
-                specs.add(DomainSpecification.Eq("status", status, JobStatus.class));
+                specs.add(DomainSpecification.eq("status", status, JobStatus.class));
             }
         }
-        var finalSpecs = DomainSpecification.And(specs);
+        var finalSpecs = DomainSpecification.and(specs);
         if(sort != null && !sort.isEmpty()) {
-            DomainSpecification.applySort(finalSpecs, DomainSpecification.Sort(sort));
+            DomainSpecification.applySort(finalSpecs, DomainSpecification.sort(sort));
         }
 
         jobs = jobDataManager.findPaginated(finalSpecs, page, size);

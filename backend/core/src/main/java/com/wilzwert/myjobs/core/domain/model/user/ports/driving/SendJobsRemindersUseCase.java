@@ -6,8 +6,6 @@ import java.util.List;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:12/05/2025
- * Time:10:19
  */
 public interface SendJobsRemindersUseCase {
     List<UsersJobsRemindersBulkResult> sendJobsReminders(int batchSize);

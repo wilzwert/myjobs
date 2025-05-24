@@ -6,10 +6,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:23/04/2025
- * Time:14:02
  */
-public class JobRatingTest {
+class JobRatingTest {
 
     @Test
     void shouldCreateValidJobRating() {
@@ -54,7 +52,7 @@ public class JobRatingTest {
     @Test
     void shouldNotBeEqualToNullOrDifferentType() {
         JobRating rating = JobRating.of(2);
-        assertNotEquals(rating, null);
-        assertNotEquals(rating, "not a rating");
+        assertNotNull(rating);
+        assertNotEquals("not a rating", rating);
     }
 }

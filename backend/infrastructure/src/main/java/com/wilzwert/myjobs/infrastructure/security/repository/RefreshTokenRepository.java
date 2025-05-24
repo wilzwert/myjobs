@@ -8,8 +8,6 @@ import java.util.UUID;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:14/03/2025
- * Time:11:22
  */
 public interface RefreshTokenRepository {
     Optional<RefreshToken> findByToken(String token);

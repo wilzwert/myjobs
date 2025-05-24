@@ -17,7 +17,6 @@ import java.util.Optional;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:09/05/2025
  *
  */
 

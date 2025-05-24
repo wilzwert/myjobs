@@ -6,8 +6,6 @@ import java.util.List;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:20/03/2025
- * Time:14:36
  */
 
 // TODO @ApiModel(value = "Page", description = "Paginated content")

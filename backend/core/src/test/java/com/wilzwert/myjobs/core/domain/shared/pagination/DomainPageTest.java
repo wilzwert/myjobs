@@ -11,8 +11,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:26/04/2025
- * Time:14:48
  */
 class DomainPageTest {
 
@@ -112,7 +110,9 @@ class DomainPageTest {
 
         DomainPage<String> page = DomainPage.singlePage(content);
 
-        assertThrows(UnsupportedOperationException.class, () -> page.getContent().add("C"));
+        var pageContent = page.getContent();
+
+        assertThrows(UnsupportedOperationException.class, () -> pageContent.add("C"));
     }
 
     @ParameterizedTest

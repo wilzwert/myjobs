@@ -8,8 +8,6 @@ import java.util.List;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:25/07/2025
- * Time:12:10
  */
 
 public class ValidationException extends DomainException {

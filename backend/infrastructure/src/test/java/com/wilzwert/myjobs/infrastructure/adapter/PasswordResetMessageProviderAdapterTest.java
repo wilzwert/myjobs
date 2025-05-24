@@ -36,7 +36,7 @@ public class PasswordResetMessageProviderAdapterTest {
     }
 
     @Test
-    void testSendEmail() throws MessagingException, UnsupportedEncodingException {
+    void testSendEmail() {
         Locale locale = Locale.of(Lang.EN.name());
         CustomMailMessage mailMessage = new CustomMailMessage("mail/reset_password", "user@example.com", "John", "email.password_reset.subject", "EN");
         when(mailProvider.createMessage("mail/reset_password", "user@example.com", "John", "email.password_reset.subject", "EN")).thenReturn(mailMessage);

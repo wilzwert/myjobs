@@ -3,8 +3,6 @@ package com.wilzwert.myjobs.infrastructure.batch;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:16/05/2025
- * Time:13:48
  */
 /*
 public class BatchMetadataPurgeConfiguration {

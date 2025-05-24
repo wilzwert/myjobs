@@ -14,7 +14,7 @@ class DomainSpecificationTest {
     @Test
     void testInCriteria() {
         List<String> values = List.of("status1", "status2", "status3");
-        DomainSpecification.In<String> inCriteria = DomainSpecification.In("status", values);
+        DomainSpecification.In<String> inCriteria = DomainSpecification.in("status", values);
 
         // check the field is initialized
         assertEquals("status", inCriteria.getField());
@@ -30,7 +30,7 @@ class DomainSpecificationTest {
     @Test
     void testEqCriteria() {
         String value = "active";
-        DomainSpecification.Eq<String> eqCriteria = DomainSpecification.Eq("status", value);
+        DomainSpecification.Eq<String> eqCriteria = DomainSpecification.eq("status", value);
 
         // check field
         assertEquals("status", eqCriteria.getField());
@@ -42,7 +42,7 @@ class DomainSpecificationTest {
     @Test
     void testLtCriteria() {
         Integer value = 30;
-        DomainSpecification.Lt<Integer> ltCriteria = DomainSpecification.Lt("age", value);
+        DomainSpecification.Lt<Integer> ltCriteria = DomainSpecification.lt("age", value);
 
         // check field
         assertEquals("age", ltCriteria.getField());
@@ -53,10 +53,10 @@ class DomainSpecificationTest {
 
     @Test
     void testContains() {
-        List<DomainSpecification> specs = List.of(DomainSpecification.Eq("lastname", "bobby"),
-                DomainSpecification.Lt("createdAt", Instant.now()));
+        List<DomainSpecification> specs = List.of(DomainSpecification.eq("lastname", "bobby"),
+                DomainSpecification.lt("createdAt", Instant.now()));
 
-        DomainSpecification userSpec = DomainSpecification.Or(
+        DomainSpecification userSpec = DomainSpecification.or(
             specs
         );
 
@@ -68,41 +68,41 @@ class DomainSpecificationTest {
     @Test
     void whenTryingToNestFullSpecification_thenShouldThrowException() {
         List<DomainSpecification> specs = List.of(
-                DomainSpecification.Eq("title", "bobby"),
-                DomainSpecification.Lt("createdAt", Instant.now()));
+                DomainSpecification.eq("title", "bobby"),
+                DomainSpecification.lt("createdAt", Instant.now()));
 
         // DomainSpecification.JobFollowUpToRemind being a FullSpecification, it cannot be composed
         var list = List.of(
-                DomainSpecification.Or(specs),
+                DomainSpecification.or(specs),
                 DomainSpecification.JobFollowUpToRemind(Instant.now())
         );
         assertThrows(DomainSpecificationException.class, () ->
-            DomainSpecification.And(list)
+            DomainSpecification.and(list)
         );
     }
 
     @Test
     void testDefaultSpecSort() {
-        var spec = DomainSpecification.Eq("title", "bobby");
+        var spec = DomainSpecification.eq("title", "bobby");
         assertEquals("createdAt", spec.getSort().getFirst().getFieldName());
         assertEquals(DomainSpecification.SortDirection.DESC, spec.getSort().getFirst().getSortDirection());
     }
 
     @Test
     void testSpecSort() {
-        var spec = DomainSpecification.Eq("title", "bobby");
-        DomainSpecification.applySort(spec, DomainSpecification.Sort("field", DomainSpecification.SortDirection.ASC));
+        var spec = DomainSpecification.eq("title", "bobby");
+        DomainSpecification.applySort(spec, DomainSpecification.sort("field", DomainSpecification.SortDirection.ASC));
         assertEquals("field", spec.getSort().getFirst().getFieldName());
         assertEquals(DomainSpecification.SortDirection.ASC, spec.getSort().getFirst().getSortDirection());
     }
 
     @Test
     void testSpecSortList() {
-        var spec = DomainSpecification.Eq("title", "bobby");
+        var spec = DomainSpecification.eq("title", "bobby");
         DomainSpecification.applySort(spec, List.of(
-                DomainSpecification.Sort("field", DomainSpecification.SortDirection.ASC),
-                DomainSpecification.Sort("otherField"),
-                DomainSpecification.Sort("thirdField,desc")
+                DomainSpecification.sort("field", DomainSpecification.SortDirection.ASC),
+                DomainSpecification.sort("otherField"),
+                DomainSpecification.sort("thirdField,desc")
         ));
         assertEquals(3, spec.getSort().size());
         assertEquals("field", spec.getSort().getFirst().getFieldName());
@@ -117,41 +117,41 @@ class DomainSpecificationTest {
 
     @Test
     void testSpecSortFromString() {
-        var spec = DomainSpecification.Eq("title", "bobby");
-        DomainSpecification.applySort(spec, DomainSpecification.Sort("field,desc"));
+        var spec = DomainSpecification.eq("title", "bobby");
+        DomainSpecification.applySort(spec, DomainSpecification.sort("field,desc"));
         assertEquals("field", spec.getSort().getFirst().getFieldName());
         assertEquals(DomainSpecification.SortDirection.DESC, spec.getSort().getFirst().getSortDirection());
     }
 
     @Test
     void testSpecSortFromStringWithoutDirection() {
-        var spec = DomainSpecification.Eq("title", "bobby");
-        DomainSpecification.applySort(spec, DomainSpecification.Sort("field"));
+        var spec = DomainSpecification.eq("title", "bobby");
+        DomainSpecification.applySort(spec, DomainSpecification.sort("field"));
         assertEquals("field", spec.getSort().getFirst().getFieldName());
         assertEquals(DomainSpecification.SortDirection.ASC, spec.getSort().getFirst().getSortDirection());
     }
 
     @Test
     void whenNoValueAndNoValueClass_thenEqShouldThrowException() {
-        var eq = DomainSpecification.Eq("title", null);
+        var eq = DomainSpecification.eq("title", null);
         assertThrows(IllegalStateException.class, eq::getValueClass);
     }
 
     @Test
     void whenValueAndNoValueClass_thenEqShouldInferValueClass() {
-        var eq = DomainSpecification.Eq("title","1");
+        var eq = DomainSpecification.eq("title","1");
         assertEquals(String.class, eq.getValueClass());
     }
 
     @Test
     void whenNoValueAndNoValueClass_thenLtShouldThrowException() {
-        var lt = DomainSpecification.Lt("title", null);
+        var lt = DomainSpecification.lt("title", null);
         assertThrows(IllegalStateException.class, lt::getValueClass);
     }
 
     @Test
     void whenValueAndNoValueClass_thenLtShouldInferValueClass() {
-        var lt = DomainSpecification.Lt("title","1");
+        var lt = DomainSpecification.lt("title","1");
         assertEquals(String.class, lt.getValueClass());
     }
 
@@ -159,13 +159,13 @@ class DomainSpecificationTest {
 
     @Test
     void whenNoValuesAndNoValueClass_thenInShouldThrowException() {
-        var in = DomainSpecification.In("title", Collections.emptyList());
+        var in = DomainSpecification.in("title", Collections.emptyList());
         assertThrows(IllegalStateException.class, in::getValueClass);
     }
 
     @Test
     void whenValuesAndNoValueClass_thenShouldInferValueClass() {
-        var in = DomainSpecification.In("title", List.of("1"));
+        var in = DomainSpecification.in("title", List.of("1"));
         assertEquals(String.class, in.getValueClass());
     }
 }

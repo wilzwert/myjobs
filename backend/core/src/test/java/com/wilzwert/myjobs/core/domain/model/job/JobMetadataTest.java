@@ -8,11 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:04/04/2025
- * Time:16:23
  */
 
-public class JobMetadataTest {
+class JobMetadataTest {
 
     @Test
     void testJobMetadataEquals() {

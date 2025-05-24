@@ -7,8 +7,6 @@ import java.util.Optional;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:02/04/2025
- * Time:14:53
  * This adapter has no other than to allow caching of fetched html which is not the domain responsibility
  */
 public class CustomHtmlFetcherService extends DefaultHtmlFetcherService {

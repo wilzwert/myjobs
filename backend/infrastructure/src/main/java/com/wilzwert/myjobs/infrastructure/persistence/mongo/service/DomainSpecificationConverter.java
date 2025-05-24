@@ -16,8 +16,6 @@ import java.util.function.Function;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:12/05/2025
- * Time:11:18
  * This converter should convert DomainSpecification types to Aggregation.Operation types
  */
 
@@ -25,12 +23,12 @@ import java.util.function.Function;
 @Slf4j
 public class DomainSpecificationConverter {
 
-    private final static Map<Class<?>, Function<DomainSpecification.FieldSpecificationWithValuesList<?>, List<?>>> valuesClassMap = Map.of(
+    private static final Map<Class<?>, Function<DomainSpecification.FieldSpecificationWithValuesList<?>, List<?>>> valuesClassMap = Map.of(
         UserId.class, spec -> spec.getValues().stream().map(u -> ((UserId) u).value()).toList(),
         JobId.class, spec -> spec.getValues().stream().map(u -> ((JobId) u).value()).toList()
     );
 
-    private final static Map<Class<?>, Function<DomainSpecification.FieldSpecificationWithSingleValue<?>, ?>> valueClassMap = Map.of(
+    private static final Map<Class<?>, Function<DomainSpecification.FieldSpecificationWithSingleValue<?>, ?>> valueClassMap = Map.of(
             UserId.class, spec -> ((UserId) spec.getValue()).value(),
             JobId.class, spec -> ((JobId) spec.getValue()).value()
     );

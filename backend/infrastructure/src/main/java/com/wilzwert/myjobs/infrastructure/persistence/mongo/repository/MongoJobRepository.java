@@ -14,8 +14,6 @@ import java.util.UUID;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:12/03/2025
- * Time:15:50
  */
 @Repository
 public interface MongoJobRepository extends MongoRepository<MongoJob, String> {

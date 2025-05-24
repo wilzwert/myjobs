@@ -9,8 +9,6 @@ import java.util.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:02/04/2025
- * Time:14:53
  */
 public class DefaultHtmlFetcherService implements HtmlFetcherService {
 
@@ -46,7 +44,7 @@ public class DefaultHtmlFetcherService implements HtmlFetcherService {
             throw new NoHtmlFetcherException();
         }
         return fetchers.stream()
-                .filter((f) -> f.isCompatible(domain))
+                .filter(f -> f.isCompatible(domain))
                 .map(fetcher -> fetcher.fetchHtml(url))
                 .filter(Optional::isPresent)
                 .findFirst()

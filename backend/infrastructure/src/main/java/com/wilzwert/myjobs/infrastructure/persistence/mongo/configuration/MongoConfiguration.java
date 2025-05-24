@@ -16,8 +16,6 @@ import java.util.Arrays;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:22/04/2025
- * Time:16:05
  */
 
 

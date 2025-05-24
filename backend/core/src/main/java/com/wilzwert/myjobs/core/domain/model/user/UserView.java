@@ -4,8 +4,6 @@ import java.time.Instant;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:12/03/2025
- * Time:15:32
  * Partial view of a User with minimal info for presentation
  * Use for reads only
  */

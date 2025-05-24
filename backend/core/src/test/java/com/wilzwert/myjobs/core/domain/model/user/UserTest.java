@@ -16,11 +16,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:08/04/2025
- * Time:16:45
  */
 
-public class UserTest {
+class UserTest {
 
     @Test
     void whenInvalid_thenUserBuildShouldThrowValidationException() {
@@ -152,8 +150,8 @@ public class UserTest {
 
     @Test
     void whenPasswordWeak_thenCreateUserShouldThrowValidationException() {
+        var builder =  User.builder().email("test@example.com").password("password").username("username").firstName("firstName").lastName("lastName").jobFollowUpReminderDays(7);
         ValidationException exception = assertThrows(ValidationException.class, () ->  {
-            User.Builder builder = User.builder().email("test@example.com").password("password").username("username").firstName("firstName").lastName("lastName").jobFollowUpReminderDays(7);
             User.create(builder,"weakPassword");
         });
 

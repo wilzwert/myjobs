@@ -19,8 +19,6 @@ import java.util.UUID;
  * As of now, the jwt token subject is the user's email
  *
  * @author Wilhelm Zwertvaegher
- * Date:13/03/2025
- * Time:15:58
  */
 @Service
 @Slf4j

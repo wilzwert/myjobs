@@ -14,8 +14,6 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:08/04/2025
- * Time:09:18
  */
 
 @Configuration

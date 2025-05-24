@@ -3,8 +3,6 @@ package com.wilzwert.myjobs.core.domain.model.job.jsonld;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:04/04/2025
- * Time:13:25
  */
 public class BaseSalary {
     private String currency;

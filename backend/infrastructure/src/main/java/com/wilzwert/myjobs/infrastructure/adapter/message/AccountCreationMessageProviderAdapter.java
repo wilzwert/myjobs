@@ -3,6 +3,7 @@ package com.wilzwert.myjobs.infrastructure.adapter.message;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.AccountCreationMessageProvider;
 import com.wilzwert.myjobs.infrastructure.mail.MailProvider;
+import com.wilzwert.myjobs.infrastructure.mail.MailSendException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -29,7 +30,7 @@ public class AccountCreationMessageProviderAdapter implements AccountCreationMes
         }
         catch (Exception e) {
             log.info("Sending account creation message failed.", e);
-            throw new RuntimeException(e);
+            throw new MailSendException("Sending account creation message failed.", e);
         }
     }
 }

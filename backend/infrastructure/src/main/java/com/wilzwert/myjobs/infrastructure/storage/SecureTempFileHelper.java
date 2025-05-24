@@ -6,14 +6,13 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.attribute.*;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:23/05/2025
- * Time:14:13
  */
 @Component
 public class SecureTempFileHelper {
@@ -34,7 +33,7 @@ public class SecureTempFileHelper {
      * @return a FileAttribute for a temp file
      * @throws IOException en exception FileAttribute cannot be created
      */
-    public FileAttribute<?> getFileAttribute() throws IOException {
+    public FileAttribute<? extends Collection<?>> getFileAttribute() throws IOException {
         if(supportsPosix) {
             return PosixFilePermissions
                     .asFileAttribute(PosixFilePermissions.fromString("rwx------"));

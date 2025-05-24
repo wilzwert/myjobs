@@ -7,7 +7,6 @@ import java.util.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:05/09/2025
  */
 
 @ConfigurationProperties(prefix = "rate-limiting")

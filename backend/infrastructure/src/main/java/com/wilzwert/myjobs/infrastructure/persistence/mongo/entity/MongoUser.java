@@ -16,8 +16,6 @@ import java.util.UUID;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:12/03/2025
- * Time:16:06
  */
 @Document(collection = "users")
 @Data

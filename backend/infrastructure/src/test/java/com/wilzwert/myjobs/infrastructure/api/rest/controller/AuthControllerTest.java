@@ -45,8 +45,6 @@ import static org.mockito.Mockito.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:11/04/2025
- * Time:08:58
  */
 
 @ExtendWith(MockitoExtension.class)
@@ -209,7 +207,7 @@ public class AuthControllerTest {
         void whenEmailTaken_thenShouldReturnUnprocessableEntity() {
             when(checkUserAvailabilityUseCase.isEmailTaken("test@example.com")).thenReturn(true);
 
-            ResponseEntity<?> responseEntity = authController.emailCheck("test@example.com");
+            var responseEntity = authController.emailCheck("test@example.com");
 
             assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
             verify(checkUserAvailabilityUseCase, times(1)).isEmailTaken("test@example.com");
@@ -219,7 +217,7 @@ public class AuthControllerTest {
         void whenUsernameTaken_thenShouldReturnUnprocessableEntity() {
             when(checkUserAvailabilityUseCase.isUsernameTaken("test")).thenReturn(true);
 
-            ResponseEntity<?> responseEntity = authController.usernameCheck("test");
+            var responseEntity = authController.usernameCheck("test");
 
             assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
             verify(checkUserAvailabilityUseCase, times(1)).isUsernameTaken("test");
@@ -229,7 +227,7 @@ public class AuthControllerTest {
         void whenEmailAvailable_thenShouldReturnOk() {
             when(checkUserAvailabilityUseCase.isEmailTaken("test@example.com")).thenReturn(false);
 
-            ResponseEntity<?> responseEntity = authController.emailCheck("test@example.com");
+            var responseEntity = authController.emailCheck("test@example.com");
 
             assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
             verify(checkUserAvailabilityUseCase, times(1)).isEmailTaken("test@example.com");
@@ -239,7 +237,7 @@ public class AuthControllerTest {
         void whenUsernameAvailable_thenShouldReturnOk() {
             when(checkUserAvailabilityUseCase.isUsernameTaken("test")).thenReturn(false);
 
-            ResponseEntity<?> responseEntity = authController.usernameCheck("test");
+            var responseEntity = authController.usernameCheck("test");
 
             assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
             verify(checkUserAvailabilityUseCase, times(1)).isUsernameTaken("test");
@@ -251,7 +249,7 @@ public class AuthControllerTest {
 
         @Test
         void whenRefreshTokenEmpty_thenShouldReturnUnauthorizedResponse() {
-            ResponseEntity<?> responseEntity = authController.refreshAccessToken(null);
+            var responseEntity = authController.refreshAccessToken(null);
             assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         }
 
@@ -259,7 +257,7 @@ public class AuthControllerTest {
         void whenRefreshTokenNotFound_thenShouldThrowUnauthorizedResponseStatusException() {
             when(refreshTokenService.findByToken("refresh_token")).thenReturn(Optional.empty());
 
-            ResponseEntity<?> responseEntity = authController.refreshAccessToken("refresh_token");
+            var responseEntity = authController.refreshAccessToken("refresh_token");
             assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
             verify(refreshTokenService, times(1)).findByToken("refresh_token");
         }
@@ -270,7 +268,7 @@ public class AuthControllerTest {
             when(refreshTokenService.findByToken("refresh_token")).thenReturn(Optional.of(refreshToken));
             when(refreshTokenService.verifyExpiration(refreshToken)).thenReturn(false);
 
-            ResponseEntity<?> responseEntity = authController.refreshAccessToken("refresh_token");
+            var responseEntity = authController.refreshAccessToken("refresh_token");
             assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
             verify(refreshTokenService, times(1)).findByToken("refresh_token");
             verify(refreshTokenService, times(1)).verifyExpiration(refreshToken);
@@ -286,7 +284,7 @@ public class AuthControllerTest {
             when(refreshTokenService.verifyExpiration(refreshToken)).thenReturn(true);
             when(userDataManager.findById(userIdCaptor.capture())).thenReturn(Optional.empty());
 
-            ResponseEntity<?> responseEntity = authController.refreshAccessToken("refresh_token");
+            var responseEntity = authController.refreshAccessToken("refresh_token");
             assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
             verify(refreshTokenService, times(1)).findByToken("refresh_token");
             verify(refreshTokenService, times(1)).verifyExpiration(refreshToken);

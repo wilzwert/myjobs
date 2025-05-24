@@ -8,8 +8,6 @@ import java.util.Optional;
 /**
  * This service handles Refresh Tokens creation, retrieval and verifying
  * @author Wilhelm Zwertvaegher
- * Date:15/11/2024
- * Time:09:16
  */
 public interface RefreshTokenService {
 

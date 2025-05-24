@@ -1,6 +1,5 @@
 package com.wilzwert.myjobs.infrastructure.mail;
 
-import com.wilzwert.myjobs.infrastructure.exception.MailSendException;
 import com.wilzwert.myjobs.infrastructure.storage.SecureTempFileHelper;
 import jakarta.annotation.PostConstruct;
 import jakarta.mail.Message;
@@ -177,12 +176,10 @@ public class MailProvider {
             log.debug("Mail should have been sent");
         }
         catch (Exception e) {
-            System.out.println(e.getClass().getName());
             if(e instanceof MessagingException || e instanceof MailException) {
                 log.error("Unable to send message", e);
                 throw new MailSendException("Unable to send message", e);
             }
-            System.out.println(e.getClass().getName());
             log.error("Unexpected exception while building or sending the message", e);
             throw new MailSendException("Unexpected exception while building or sending the message", e);
         }

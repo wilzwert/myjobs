@@ -17,8 +17,6 @@ import static org.mockito.Mockito.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:10/04/2025
- * Time:09:43
  */
 @ExtendWith(MockitoExtension.class)
 public class CaptchaAspectTest {

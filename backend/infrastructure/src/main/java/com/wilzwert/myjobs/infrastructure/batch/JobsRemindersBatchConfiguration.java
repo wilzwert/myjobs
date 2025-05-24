@@ -18,8 +18,6 @@ import org.springframework.data.mongodb.MongoTransactionManager;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:16/05/2025
- * Time:13:24
  * Batch to send jobs reminders
  * As an exercice, I decided to let the domain handle the chunking
  * Therefore there is no ItemReader or ItemWriter

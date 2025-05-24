@@ -8,8 +8,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 /**
  * Provides server related configuration properties
  * @author Wilhelm Zwertvaegher
- * Date:13/03/2025
- * Time:16:05
  *
  */
 @ConfigurationProperties(prefix = "application.mail")

@@ -11,11 +11,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:08/04/2025
- * Time:17:09
  */
 
-public class StaticHtmlFetcherTest {
+class StaticHtmlFetcherTest {
     @Test
     void isCompatible_shouldReturnFalseForBlacklistedDomains() {
         StaticHtmlFetcher fetcher = url -> Optional.empty();

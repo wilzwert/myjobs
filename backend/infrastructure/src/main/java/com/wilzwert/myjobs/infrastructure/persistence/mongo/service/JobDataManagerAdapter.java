@@ -31,8 +31,6 @@ import java.util.stream.Stream;
 
     /**
  * @author Wilhelm Zwertvaegher
- * Date:14/03/2025
- * Time:16:28
  */
 @Component
 public class JobDataManagerAdapter implements JobDataManager {

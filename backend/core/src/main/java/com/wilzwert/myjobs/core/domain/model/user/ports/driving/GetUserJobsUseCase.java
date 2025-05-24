@@ -8,8 +8,6 @@ import com.wilzwert.myjobs.core.domain.model.user.UserId;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:12/03/2025
- * Time:15:25
  */
 public interface GetUserJobsUseCase {
     DomainPage<EnrichedJob> getUserJobs(UserId userId, int page, int size, JobStatus status, boolean filterLate, String sort);

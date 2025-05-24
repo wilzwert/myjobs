@@ -7,8 +7,6 @@ import java.io.File;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:22/03/2025
- * Time:14:57
  */
 public interface FileStorage {
     DownloadableFile store(File file, String targetFilename, String originalFilename);

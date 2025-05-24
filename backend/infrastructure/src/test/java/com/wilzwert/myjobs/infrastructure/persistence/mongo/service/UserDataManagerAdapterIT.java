@@ -20,13 +20,11 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:09/04/2025
- * Time:14:10
  */
 @SpringBootTest
 @EnabledIfSystemProperty(named = "spring.profiles.active", matches = "integration")
@@ -37,8 +35,8 @@ public class UserDataManagerAdapterIT extends AbstractBaseIntegrationTest {
 
     @Test
     void shouldReturnAllsUsersMinimalByEmail() {
-        Map<UserId, User> users = underTest.findMinimal(DomainSpecification.In("email", List.of("existing@example.com", "otherexisting@example.com")));
-        assertThat(users.size()).isEqualTo(2);
+        Map<UserId, User> users = underTest.findMinimal(DomainSpecification.in("email", List.of("existing@example.com", "otherexisting@example.com")));
+        assertThat(users).hasSize(2);
         assertThat(users.values().stream().toList().getFirst().getEmail()).isEqualTo("existing@example.com");
         assertThrows(IncompleteAggregateException.class, () -> users.values().stream().toList().getFirst().getJobs());
         assertThat(users.values().stream().toList().get(1).getEmail()).isEqualTo("otherexisting@example.com");
@@ -49,16 +47,16 @@ public class UserDataManagerAdapterIT extends AbstractBaseIntegrationTest {
     void shouldReturnAllsUsersMinimalById() {
         Map<UserId, User> users = underTest.findMinimal(
                 DomainSpecification.applySort(
-                    DomainSpecification.In("id",
+                    DomainSpecification.in("id",
                             List.of(
                                     new UserId(UUID.fromString("abcd1234-1234-1234-1234-123456789012")),
                                     new UserId(UUID.fromString("abcd4321-4321-4321-4321-123456789012"))
                             )
                     ),
-                    DomainSpecification.Sort("id", DomainSpecification.SortDirection.ASC)
+                    DomainSpecification.sort("id", DomainSpecification.SortDirection.ASC)
                 )
         );
-        assertThat(users.size()).isEqualTo(2);
+        assertThat(users).hasSize(2);
         var user1 = users.values().stream().toList().getFirst();
         assertThat(user1.getEmail()).isEqualTo("existing@example.com");
         assertThrows(IncompleteAggregateException.class, user1::getJobs);
@@ -116,17 +114,17 @@ public class UserDataManagerAdapterIT extends AbstractBaseIntegrationTest {
     void shouldReturnUserViews() {
         List<UserView> userViews = underTest.findView(
                 DomainSpecification.applySort(
-                        DomainSpecification.In("id",
+                        DomainSpecification.in("id",
                                 List.of(
                                         new UserId(UUID.fromString("abcd1234-1234-1234-1234-123456789012")),
                                         new UserId(UUID.fromString("abcd4321-4321-4321-4321-123456789012"))
                                 )
                         ),
-                        DomainSpecification.Sort("id", DomainSpecification.SortDirection.ASC)
+                        DomainSpecification.sort("id", DomainSpecification.SortDirection.ASC)
                 )
         );
 
-        assertThat(userViews.size()).isEqualTo(2);
+        assertThat(userViews).hasSize(2);
         assertThat(userViews.getFirst().getEmail()).isEqualTo("existing@example.com");
         assertThat(userViews.get(1).getEmail()).isEqualTo("otherexisting@example.com");
     }
@@ -153,12 +151,12 @@ public class UserDataManagerAdapterIT extends AbstractBaseIntegrationTest {
         UserId userId2 = new UserId(UUID.fromString("abcd4321-4321-4321-4321-123456789012"));
 
         DomainSpecification spec = DomainSpecification.applySort(
-                DomainSpecification.In("id", List.of(userId1, userId2)),
-                DomainSpecification.Sort("id", DomainSpecification.SortDirection.ASC)
+                DomainSpecification.in("id", List.of(userId1, userId2)),
+                DomainSpecification.sort("id", DomainSpecification.SortDirection.ASC)
         );
 
         Map<UserId, User> users = underTest.findMinimal(spec);
-        assertThat(users.size()).isEqualTo(2);
+        assertThat(users).hasSize(2);
 
         String stringDate = "09:15:30, 10/05/2025";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss, dd/MM/yyyy");
@@ -181,7 +179,7 @@ public class UserDataManagerAdapterIT extends AbstractBaseIntegrationTest {
 
         // check that only jobFollowUpReminderSentAt has been saved, as it is the only property supported for bulk updates
         Map<UserId, User> usersReloaded = underTest.findMinimal(spec);
-        assertThat(usersReloaded.size()).isEqualTo(2);
+        assertThat(usersReloaded).hasSize(2);
         assertThat(usersReloaded.get(userId1).getLastName()).isEqualTo("User");
         assertThat(usersReloaded.get(userId1).getJobFollowUpReminderSentAt()).isEqualTo(newInstant);
         assertThat(usersReloaded.get(userId2).getLastName()).isEqualTo("OtherUser");

@@ -9,8 +9,6 @@ import java.time.Instant;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:12/03/2025
- * Time:15:33
  */
 public class Attachment extends DomainEntity<AttachmentId> {
     private final AttachmentId id;

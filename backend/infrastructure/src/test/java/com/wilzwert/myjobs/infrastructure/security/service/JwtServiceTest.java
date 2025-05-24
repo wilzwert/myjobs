@@ -25,15 +25,13 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:10/04/2025
- * Time:12:18
  */
 
 @ExtendWith(MockitoExtension.class)
@@ -59,7 +57,8 @@ public class JwtServiceTest {
     @Test
     void shouldThrowWeakKeyException() {
         when(jwtProperties.getSecretKey()).thenReturn("weakKey");
-        assertThrows(WeakKeyException.class, () -> jwtService.generateToken(UUID.randomUUID().toString()));
+        var uuidString = UUID.randomUUID().toString();
+        assertThrows(WeakKeyException.class, () -> jwtService.generateToken(uuidString));
     }
 
     @Test

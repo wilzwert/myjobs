@@ -11,21 +11,21 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:23/05/2025
- * Time:16:27
  */
 
-public class UsersJobsRemindersBulkResultTest {
+class UsersJobsRemindersBulkResultTest {
 
     @Test
     void whenSendErrorsCountLessThanZero_thenShouldThrowIllegalArgumentException() {
-        var ex = assertThrows(IllegalArgumentException.class, () -> new UsersJobsRemindersBulkResult(0, 0, Collections.emptyList(), -1, 0));
+        var errors = Collections.<String>emptyList();
+        var ex = assertThrows(IllegalArgumentException.class, () -> new UsersJobsRemindersBulkResult(0, 0, errors, -1, 0));
         assertEquals("sendErrorsCount count must be greater than or equal to 0", ex.getMessage());
     }
 
     @Test
     void whenSaveErrorsCountLessThanZero_thenShouldThrowIllegalArgumentException() {
-        var ex = assertThrows(IllegalArgumentException.class, () -> new UsersJobsRemindersBulkResult(0, 0, Collections.emptyList(), 0, -1));
+        var errors = Collections.<String>emptyList();
+        var ex = assertThrows(IllegalArgumentException.class, () -> new UsersJobsRemindersBulkResult(0, 0, errors, 0, -1));
         assertEquals("saveErrorsCount count must be greater than or equal to 0", ex.getMessage());
     }
 

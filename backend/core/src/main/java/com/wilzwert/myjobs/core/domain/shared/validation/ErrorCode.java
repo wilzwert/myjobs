@@ -3,8 +3,6 @@ package com.wilzwert.myjobs.core.domain.shared.validation;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:25/04/2025
- * Time:15:18
  *
  * Error codes used in validation errors
  */

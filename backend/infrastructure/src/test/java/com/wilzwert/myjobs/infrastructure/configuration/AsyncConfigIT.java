@@ -8,7 +8,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 import java.util.concurrent.Executor;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(properties = "application.async.enabled=true")
 @ContextConfiguration(classes = AsyncConfig.class)

@@ -13,15 +13,13 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:10/04/2025
- * Time:08:51
  */
 @ExtendWith(MockitoExtension.class)
 public class CaptchaValidatorTest {
@@ -60,8 +58,9 @@ public class CaptchaValidatorTest {
         @SuppressWarnings("unchecked")
         HashMap<String, Map<String, Object>> map = (HashMap<String, Map<String, Object>>) value;
         assertNotNull(map.get("event"));
-        assertThat(map.get("event").get("token")).isEqualTo("captchaResponse");
-        assertThat(map.get("event").get("siteKey")).isEqualTo("siteKey");
+        assertThat(map.get("event"))
+                .containsEntry("token", "captchaResponse")
+                .containsEntry("siteKey", "siteKey");
     }
 
     @Test
@@ -80,8 +79,9 @@ public class CaptchaValidatorTest {
         @SuppressWarnings("unchecked")
         HashMap<String, Map<String, Object>> map = (HashMap<String, Map<String, Object>>) value;
         assertNotNull(map.get("event"));
-        assertThat(map.get("event").get("token")).isEqualTo("captchaResponse");
-        assertThat(map.get("event").get("siteKey")).isEqualTo("siteKey");
+        assertThat(map.get("event"))
+                .containsEntry("token", "captchaResponse")
+                .containsEntry("siteKey", "siteKey");
     }
 
     @Test
@@ -96,8 +96,9 @@ public class CaptchaValidatorTest {
         @SuppressWarnings("unchecked")
         HashMap<String, Map<String, Object>> map = (HashMap<String, Map<String, Object>>) value;
         assertNotNull(map.get("event"));
-        assertThat(map.get("event").get("token")).isEqualTo("captchaResponse");
-        assertThat(map.get("event").get("siteKey")).isEqualTo("siteKey");
+        assertThat(map.get("event"))
+                .containsEntry("token", "captchaResponse")
+                .containsEntry("siteKey", "siteKey");
     }
 
     @Test
@@ -112,7 +113,8 @@ public class CaptchaValidatorTest {
         @SuppressWarnings("unchecked")
         HashMap<String, Map<String, Object>> map = (HashMap<String, Map<String, Object>>) value;
         assertNotNull(map.get("event"));
-        assertThat(map.get("event").get("token")).isEqualTo("captchaResponse");
-        assertThat(map.get("event").get("siteKey")).isEqualTo("siteKey");
+        assertThat(map.get("event"))
+                .containsEntry("token", "captchaResponse")
+                .containsEntry("siteKey", "siteKey");
     }
 }

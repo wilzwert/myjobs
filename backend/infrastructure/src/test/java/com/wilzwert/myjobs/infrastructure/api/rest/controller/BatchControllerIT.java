@@ -11,15 +11,13 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:23/05/2025
- * Time:09:40
  */
 @TestPropertySource(properties = {
         "application.internal.secret=secret"
@@ -66,7 +64,7 @@ public class BatchControllerIT extends AbstractBaseIntegrationTest {
         assertThat(response.getChunksCount()).isEqualTo(1);
         assertThat(response.getUsersCount()).isEqualTo(1);
         assertThat(response.getJobsCount()).isEqualTo(3);
-        assertThat(response.getSaveErrorsCount()).isEqualTo(0);
-        assertThat(response.getSendErrorsCount()).isEqualTo(0);
+        assertThat(response.getSaveErrorsCount()).isZero();
+        assertThat(response.getSendErrorsCount()).isZero();
     }
 }

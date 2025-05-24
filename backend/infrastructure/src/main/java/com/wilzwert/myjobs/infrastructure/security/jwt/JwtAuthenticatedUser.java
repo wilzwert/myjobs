@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:13/03/2025
- * Time:19:46
  */
 @Data
 @AllArgsConstructor

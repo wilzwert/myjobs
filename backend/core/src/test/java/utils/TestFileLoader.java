@@ -7,8 +7,6 @@ import java.nio.file.Paths;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:04/04/2025
- * Time:11:20
  */
 public class TestFileLoader {
 

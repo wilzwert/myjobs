@@ -19,8 +19,6 @@ import static org.mockito.Mockito.when;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:23/05/2025
- * Time:17:02
  */
 
 public class AsyncConfigTest {

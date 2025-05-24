@@ -26,8 +26,6 @@ import static org.mockito.Mockito.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:06/05/2025
- * Time:15:50
  * Tests for the AccountCreationMessageProvider
  * Warning : this test class forces sync execution, which is time-consuming but makes testing easier
  * Maybe we should learn how to effectively test async execution
@@ -73,6 +71,6 @@ public class AccountCreationMessageProviderAdapterIT extends AbstractBaseIntegra
         assertThat(message.getSubject()).isEqualTo(expectedSubject);
         String htmlBody = EmailUtility.extractHtmlContent(message);
         assertThat(htmlBody.indexOf(expectedHtml)).isGreaterThan(-1);
-        assertThat(message.getAllRecipients()[0].toString()).isEqualTo("John <user@example.com>");
+        assertThat(message.getAllRecipients()[0]).hasToString("John <user@example.com>");
     }
 }

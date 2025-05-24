@@ -8,7 +8,6 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
-import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -20,18 +19,13 @@ import java.util.UUID;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:12/03/2025
- * Time:16:06
  */
 
 @Document(collection = "jobs")
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
-// @AllArgsConstructor
-@CompoundIndexes({
-        @CompoundIndex(name = "unique_user_job", def = "{'user_id': 1, 'url': 1}", unique = true)
-})
+@CompoundIndex(name = "unique_user_job", def = "{'user_id': 1, 'url': 1}", unique = true)
 @ToString
 public class MongoJob {
     @Id

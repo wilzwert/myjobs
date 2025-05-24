@@ -16,8 +16,6 @@ import org.mapstruct.Mapper;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:12/03/2025
- * Time:15:48
  */
 @Mapper(componentModel = "spring", uses = {IdMapper.class, ActivityMapper.class, JobRatingMapper.class})
 public interface JobMapper extends EnrichedEntityMapper<Job, MongoJob, CreateJobRequest, CreateJobCommand, UpdateJobRequest, UpdateJobCommand, JobResponse, EnrichedJob> {

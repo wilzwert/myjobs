@@ -8,11 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:17/05/2025
- * Time:18:00
  */
 
-public class ValidatorTest {
+class ValidatorTest {
 
     @Test
     void whenEmpty_thenShouldAddValidationError() {
@@ -62,7 +60,7 @@ public class ValidatorTest {
     @Test
     void whenMinLengthLessThan1_thenShouldThrowAssertionError() {
         Validator validator = new Validator();
-        assertThrows(AssertionError.class, () -> validator.requireMinLength("field", "value", 0));
+        assertThrows(IllegalArgumentException.class, () -> validator.requireMinLength("field", "value", 0));
     }
 
     @Test
@@ -83,7 +81,7 @@ public class ValidatorTest {
     @Test
     void whenMaxLengthLessThan1_thenShouldThrowAssertionError() {
         Validator validator = new Validator();
-        assertThrows(AssertionError.class, () -> validator.requireMaxLength("field", "value", 0));
+        assertThrows(IllegalArgumentException.class, () -> validator.requireMaxLength("field", "value", 0));
     }
 
     @Test

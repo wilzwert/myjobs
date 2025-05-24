@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:13/03/2025
- * Time:11:43
  * TODO : add rate limiting on public endpoints
  */
 @RestController

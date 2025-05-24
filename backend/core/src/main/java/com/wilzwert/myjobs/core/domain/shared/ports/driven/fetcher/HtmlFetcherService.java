@@ -4,8 +4,6 @@ import java.util.Optional;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:02/04/2025
- * Time:14:51
  * Infra MUST implement this interface, using whatever means necessary
  * Having a single entrypoint to actually get the Html allows additional functionnality
  * in infra, sucha as caching, AOP...

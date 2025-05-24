@@ -7,8 +7,6 @@ import java.util.List;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:20/05/2025
- * Time:21:51
  */
 @Data
 public class AssessmentResponse {

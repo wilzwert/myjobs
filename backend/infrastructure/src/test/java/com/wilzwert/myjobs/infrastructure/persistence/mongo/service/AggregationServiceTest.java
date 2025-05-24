@@ -44,10 +44,10 @@ class AggregationServiceTest {
 
     @Test
     void shouldBuildPipelineWithMatchSortSkipLimit() {
-        DomainSpecification specifications = DomainSpecification.And(List.of(
-                DomainSpecification.Eq("userId", testUser.getId(), UserId.class),
-                DomainSpecification.In("status", List.of("ACTIVE", "INTERVIEW")),
-                DomainSpecification.Lt("status_updated_at", Instant.parse("2023-01-01T00:00:00Z"))
+        DomainSpecification specifications = DomainSpecification.and(List.of(
+                DomainSpecification.eq("userId", testUser.getId(), UserId.class),
+                DomainSpecification.in("status", List.of("ACTIVE", "INTERVIEW")),
+                DomainSpecification.lt("status_updated_at", Instant.parse("2023-01-01T00:00:00Z"))
         ));
         Aggregation aggregation = service.createAggregationPaginated(specifications, 1, 20);
 
@@ -66,11 +66,11 @@ class AggregationServiceTest {
     @Test
     void whenSortPassed_thenShouldParseFieldAndDirectionCorrectly() {
         var spec = DomainSpecification.applySort(
-            DomainSpecification.And(List.of(
-                    DomainSpecification.Eq("userId", testUser.getId(), UserId.class),
-                    DomainSpecification.In("status", List.of("ACTIVE", "INTERVIEW"))
+            DomainSpecification.and(List.of(
+                    DomainSpecification.eq("userId", testUser.getId(), UserId.class),
+                    DomainSpecification.in("status", List.of("ACTIVE", "INTERVIEW"))
             )),
-            DomainSpecification.Sort("statusUpdatedAt,desc")
+            DomainSpecification.sort("statusUpdatedAt,desc")
         );
         Aggregation aggregation = service.createAggregationPaginated(spec, 0, 10);
 
@@ -89,7 +89,7 @@ class AggregationServiceTest {
 
     @Test
     void whenNoSortPassed_thenShouldNotCreateSort() {
-        Aggregation aggregation = service.createAggregationPaginated(DomainSpecification.Eq("userId", UserId.generate(), UserId.class), 0, 10);
+        Aggregation aggregation = service.createAggregationPaginated(DomainSpecification.eq("userId", UserId.generate(), UserId.class), 0, 10);
 
         List<Document> pipeline = aggregation.toPipeline(Aggregation.DEFAULT_CONTEXT);
 

@@ -89,11 +89,11 @@ public abstract class DomainSpecification {
         ASC, DESC
     }
 
-    public static Sort Sort(String sort) {
+    public static Sort sort(String sort) {
         return new Sort(sort);
     }
 
-    public static Sort Sort(String fieldName, SortDirection sortDirection) {
+    public static Sort sort(String fieldName, SortDirection sortDirection) {
         return new Sort(fieldName, sortDirection);
     }
 
@@ -210,12 +210,12 @@ public abstract class DomainSpecification {
         }
     }
 
-    public static <V> In<V> In(String field, List<V> values, Class<V> valueClass) {
+    public static <V> In<V> in(String field, List<V> values, Class<V> valueClass) {
         return new In<>(field, values, valueClass);
     }
 
-    public static <V> In<V> In(String field, List<V> values) {
-        return In(field, values, null);
+    public static <V> In<V> in(String field, List<V> values) {
+        return in(field, values, null);
     }
 
     public static final class In<V> extends FieldSpecificationWithValuesList<V> {
@@ -228,12 +228,12 @@ public abstract class DomainSpecification {
         }
     }
 
-    public static <V> Eq<V> Eq(String field, V value, Class<V> valueClass) {
+    public static <V> Eq<V> eq(String field, V value, Class<V> valueClass) {
         return new Eq<>(field, value, valueClass);
     }
 
-    public static <V> Eq<V> Eq(String field, V value) {
-        return Eq(field, value, null);
+    public static <V> Eq<V> eq(String field, V value) {
+        return eq(field, value, null);
     }
 
     public static final class Eq<V> extends FieldSpecificationWithSingleValue<V> {
@@ -246,12 +246,12 @@ public abstract class DomainSpecification {
         }
     }
 
-    public static <V extends Comparable<V>> Lt<V> Lt(String field, V value, Class<V> valueClass) {
+    public static <V extends Comparable<V>> Lt<V> lt(String field, V value, Class<V> valueClass) {
         return new Lt<>(field, value, valueClass);
     }
 
-    public static <V extends Comparable<V>> Lt<V> Lt(String field, V value) {
-        return Lt(field, value, null);
+    public static <V extends Comparable<V>> Lt<V> lt(String field, V value) {
+        return lt(field, value, null);
     }
 
     public static final class Lt<V extends Comparable<V>> extends FieldSpecificationWithSingleValue<V> {
@@ -287,7 +287,7 @@ public abstract class DomainSpecification {
         }
     }
 
-    public static  Or Or(List<DomainSpecification> criteriaList) {
+    public static  Or or(List<DomainSpecification> criteriaList) {
         return new Or(criteriaList);
     }
 
@@ -297,7 +297,7 @@ public abstract class DomainSpecification {
         }
     }
 
-    public static  And And(List<DomainSpecification> criteriaList) {
+    public static  And and(List<DomainSpecification> criteriaList) {
         return new And(criteriaList);
     }
 
@@ -358,7 +358,7 @@ public abstract class DomainSpecification {
         public JobFollowUpToRemind(Instant referenceInstant) {
             super();
             this.referenceInstant = referenceInstant;
-            super.sortBy(Sort("userId", SortDirection.ASC));
+            super.sortBy(sort("userId", SortDirection.ASC));
         }
 
         public Instant getReferenceInstant() {

@@ -11,21 +11,21 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:23/05/2025
- * Time:16:27
  */
 
-public class UsersJobsBulkResultTest {
+class UsersJobsBulkResultTest {
 
     @Test
     void whenUsersCountLessThanZero_thenShouldThrowIllegalArgumentException() {
-        var ex = assertThrows(IllegalArgumentException.class, () -> new UsersJobsBulkResult(-1, 0, Collections.emptyList()));
+        var errors = Collections.<String>emptyList();
+        var ex = assertThrows(IllegalArgumentException.class, () -> new UsersJobsBulkResult(-1, 0, errors));
         assertEquals("users count must be greater than or equal to 0", ex.getMessage());
     }
 
     @Test
     void whenJobsCountLessThanZero_thenShouldThrowIllegalArgumentException() {
-        var ex = assertThrows(IllegalArgumentException.class, () -> new UsersJobsBulkResult(0, -1, Collections.emptyList()));
+        var errors = Collections.<String>emptyList();
+        var ex = assertThrows(IllegalArgumentException.class, () -> new UsersJobsBulkResult(0, -1, errors));
         assertEquals("jobs count must be greater than or equal to 0", ex.getMessage());
     }
 

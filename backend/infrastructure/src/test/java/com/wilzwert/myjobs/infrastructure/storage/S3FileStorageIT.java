@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:08/04/2025
- * Time:09:44
  */
 @EnabledIfSystemProperty(named = "spring.profiles.active", matches = "integration")
 public class S3FileStorageIT extends AbstractBaseIntegrationTest {

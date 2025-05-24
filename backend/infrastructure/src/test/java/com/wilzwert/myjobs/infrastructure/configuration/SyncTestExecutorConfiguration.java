@@ -8,8 +8,6 @@ import org.springframework.core.task.TaskExecutor;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:06/05/2025
- * Time:15:50
  */
 @TestConfiguration
 public class SyncTestExecutorConfiguration {

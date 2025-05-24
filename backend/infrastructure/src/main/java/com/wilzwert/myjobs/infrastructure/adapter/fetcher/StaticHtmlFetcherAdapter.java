@@ -14,8 +14,6 @@ import java.util.Optional;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:02/04/2025
- * Time:13:19
  */
 @Component
 @Slf4j
@@ -33,7 +31,7 @@ public class StaticHtmlFetcherAdapter implements StaticHtmlFetcher {
         "Sec-Fetch-Site", "none",
         "Sec-Fetch-User", "?1"
     );
-    private final Map<String, String> OTHER_HEADERS = Map.of(
+    private static final Map<String, String> OTHER_HEADERS = Map.of(
     "Cache-Control", "max-age=0"
     );
 

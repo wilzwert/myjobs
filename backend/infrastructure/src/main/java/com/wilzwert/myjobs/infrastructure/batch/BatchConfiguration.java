@@ -17,8 +17,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 /**
  * Configure Spring Batch to use mongo repo and explorer
  * @author Wilhelm Zwertvaegher
- * Date:16/05/2025
- * Time:14:20
  */
 @Configuration
 @ConditionalOnProperty(name = "application.batch.enabled", havingValue = "true")

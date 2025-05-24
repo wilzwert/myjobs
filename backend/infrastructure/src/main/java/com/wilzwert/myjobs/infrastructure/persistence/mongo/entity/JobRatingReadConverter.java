@@ -6,8 +6,6 @@ import org.springframework.core.convert.converter.Converter;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:22/04/2025
- * Time:15:29
  */
 
 public class JobRatingReadConverter implements Converter<Integer, JobRating> {

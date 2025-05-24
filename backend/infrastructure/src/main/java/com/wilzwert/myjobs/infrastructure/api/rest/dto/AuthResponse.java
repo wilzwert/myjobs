@@ -5,8 +5,6 @@ import lombok.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:13/03/2025
- * Time:11:39
  */
 
 @Data

@@ -4,8 +4,6 @@ import com.wilzwert.myjobs.core.domain.shared.exception.IncompleteAggregateExcep
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:18/03/2025
- * Time:13:17
  */
 
 public abstract class DomainEntity<I> {

@@ -9,11 +9,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:04/04/2025
- * Time:11:03
  */
 
-public class HtmlJobMetadataExtractorTest {
+class HtmlJobMetadataExtractorTest {
     private final HtmlJobMetadataExtractor extractor = new HtmlJobMetadataExtractor();
 
     @Test

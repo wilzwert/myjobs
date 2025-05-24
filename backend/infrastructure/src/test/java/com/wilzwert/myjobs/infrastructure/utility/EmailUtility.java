@@ -7,8 +7,6 @@ import jakarta.mail.internet.MimeMessage;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:06/05/2025
- * Time:13:23
  */
 
 public class EmailUtility {

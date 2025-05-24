@@ -14,6 +14,8 @@ import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
 import com.wilzwert.myjobs.infrastructure.security.service.RefreshTokenService;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.*;
@@ -36,8 +38,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:25/04/2025
- * Time:09:18
  */
 
 @AutoConfigureMockMvc
@@ -227,8 +227,9 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
 
             Map<String, Cookie> cookies = Stream.of(mvcResult.getResponse().getCookies())
                     .collect(Collectors.toMap(Cookie::getName, c -> c));
-            assertThat(cookies).containsKey("access_token");
-            assertThat(cookies).containsKey("refresh_token");
+            assertThat(cookies)
+                    .containsKey("access_token")
+                    .containsKey("refresh_token");
         }
     }
 
@@ -285,29 +286,13 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
             mockMvc.perform(post(REFRESH_TOKEN_URL))
                     .andExpect(status().isUnauthorized());
         }
-        @Test
-        void whenRefreshTokenNotFound_thenShouldReturnUnauthorized() throws Exception {
-            Cookie cookie = new Cookie("refresh_token", "notExisting");
+
+        @ParameterizedTest
+        @ValueSource(strings = {"notExisting", "expiredRefreshToken", "unknownUserRefreshToken"})
+        void shouldReturnUnauthorized(String refreshToken) throws Exception {
+            Cookie cookie = new Cookie("refresh_token", refreshToken);
             mockMvc.perform(
                         post(REFRESH_TOKEN_URL).cookie(cookie)
-                    )
-                    .andExpect(status().isUnauthorized());
-        }
-
-        @Test
-        void whenRefreshTokenExpired_thenShouldReturnUnauthorized() throws Exception {
-            Cookie cookie = new Cookie("refresh_token", "expiredRefreshToken");
-            mockMvc.perform(
-                    post(REFRESH_TOKEN_URL).cookie(cookie)
-                )
-                .andExpect(status().isUnauthorized());
-        }
-
-        @Test
-        void whenUserNotFound_thenShouldReturnUnauthorized() throws Exception {
-            Cookie cookie = new Cookie("refresh_token", "unknownUserRefreshToken");
-            mockMvc.perform(
-                            post(REFRESH_TOKEN_URL).cookie(cookie)
                     )
                     .andExpect(status().isUnauthorized());
         }

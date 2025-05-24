@@ -14,14 +14,12 @@ import com.wilzwert.myjobs.core.domain.model.job.ports.driven.extractor.JobMetad
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:02/04/2025
- * Time:13:54
  */
 public class JsonLdJobMetadataExtractor implements JobMetadataExtractor {
 
-    List<String> NOT_COMPATIBLE_DOMAINS = List.of("fhf.fr");
+    private static final List<String> NOT_COMPATIBLE_DOMAINS = List.of("fhf.fr");
 
-    Pattern JSON_LD_PATTERN = Pattern.compile(
+    private static final Pattern JSON_LD_PATTERN = Pattern.compile(
             "<script\\s+type=[\"']application/ld\\+json[\"'][^>]*>((?:(?!</script>).)*?\"@type\"\\s*:\\s*\"JobPosting\"(?:(?!</script>).)*?)</script>",
             Pattern.DOTALL | Pattern.MULTILINE
     );
@@ -63,8 +61,6 @@ public class JsonLdJobMetadataExtractor implements JobMetadataExtractor {
             }
             return Optional.empty();
         } catch (Exception e) {
-            /* e.printStackTrace();
-            System.out.println(e.getMessage());*/
             return Optional.empty();
         }
     }

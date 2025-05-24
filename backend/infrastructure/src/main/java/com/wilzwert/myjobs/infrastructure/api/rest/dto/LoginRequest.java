@@ -7,8 +7,6 @@ import lombok.Data;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:13/03/2025
- * Time:18:31
  */
 @Data
 // TODO @Schema(description = "Object expected for job login request" )

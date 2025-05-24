@@ -13,8 +13,6 @@ import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:31/03/2025
- * Time:10:43
  */
 
 public class DeleteAccountUseCaseImpl implements DeleteAccountUseCase {

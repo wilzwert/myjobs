@@ -22,11 +22,9 @@ import static org.mockito.Mockito.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:09/04/2025
- * Time:09:16
  */
 @ExtendWith(MockitoExtension.class)
-public class RegisterUserUseCaseImplTest {
+class RegisterUserUseCaseImplTest {
 
     @Mock
     private UserDataManager userDataManager;

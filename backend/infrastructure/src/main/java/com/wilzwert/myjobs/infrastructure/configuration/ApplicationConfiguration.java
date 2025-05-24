@@ -10,8 +10,6 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:13/03/2025
- * Time:16:05
  */
 @Configuration
 @EnableConfigurationProperties({ CookieProperties.class, JwtProperties.class, RateLimitingProperties.class, MailProperties.class })

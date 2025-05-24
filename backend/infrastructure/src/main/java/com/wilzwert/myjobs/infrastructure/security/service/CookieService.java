@@ -8,8 +8,6 @@ import org.springframework.stereotype.Service;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:31/03/2025
- * Time:11:00
  */
 @Service
 public class CookieService {

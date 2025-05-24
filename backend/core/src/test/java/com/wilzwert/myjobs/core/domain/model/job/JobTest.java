@@ -20,15 +20,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:08/04/2025
- * Time:16:45
  */
 
-public class JobTest {
+class JobTest {
 
     @Test
     void whenInvalid_thenJobBuildShouldThrowValidationException() {
-        ValidationException exception = assertThrows(ValidationException.class, () -> Job.builder().build());
+        var builder = Job.builder();
+        ValidationException exception = assertThrows(ValidationException.class, () -> builder.build());
         assertNotNull(exception);
         assertEquals(5, exception.getErrors().getErrors().entrySet().size());
         assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY, exception.getErrors().getErrors().get("userId").getFirst().code());
@@ -198,7 +197,6 @@ public class JobTest {
                 .build();
 
         Instant before = Instant.now();
-        // String url, String title, String company, String description, String profile, String salary) {
         Job updatedJob = job.updateJob("http://www.example.com/updated", "Job updated title", "Updated company", "Job updated description", "Job updated profile", "Job updated salary");
         Instant after = Instant.now();
 

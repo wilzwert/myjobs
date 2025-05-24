@@ -13,11 +13,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:04/04/2025
- * Time:11:03
  */
 
-public class JsonLdJobMetadataExtractorTest {
+class JsonLdJobMetadataExtractorTest {
     private final JsonLdJobMetadataExtractor extractor = new JsonLdJobMetadataExtractor();
 
     @Test
@@ -164,17 +162,7 @@ public class JsonLdJobMetadataExtractorTest {
     @Test
     void whenHelloWorkHtml_thenShouldReturnMetadata() throws IOException {
         String html  = TestFileLoader.loadFileAsString("jobposting.hellowork.html");
-        /* TODO
-        JobMetadata expectedMetadata = new JobMetadata.Builder()
-                .title("Infirmier / Infirmière en Hémodialyse H/F")
-                .description("Description du poste  l'ADH Recrute un(e) IDE pour ses centres de dialyses  L’infirmier en hémodialyse assure la prise en charge globale des patients qui lui sont confiés en conformité avec le décret du Code de la Santé Publique et en cohérence avec...")
-                .profile("Profil recherché Vous êtes titulaire du diplôme d’Infirmier d’État. Une première expérience en dialyse serait un plus. Permis B indispensable. ")
-                .url("https://www.l4m.fr/emploi/offre/62400-bethune-infirmier-infirmiere-hemodialyse-h-f-3628375")
-                .company("ADH - ASSOCIATION POUR LE DEVELOPPEMENT DE L'HEMODIALYSE")
-                .salary("selon CCN 51 + Primes")
-                .build();*/
-
-        // TODO assertEquals(expectedMetadata, extractedMetadata);
+        // TODO compare expected metadata
         extractor.extractJobMetadata(html).ifPresentOrElse(
                 Assertions::assertNotNull,
                 () -> fail("Metadata should not be empty")

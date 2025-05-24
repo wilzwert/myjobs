@@ -2,6 +2,7 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
+import com.wilzwert.myjobs.core.domain.model.job.JobMetadata;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.model.job.command.*;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driving.*;
@@ -21,8 +22,6 @@ import java.util.UUID;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:13/03/2025
- * Time:11:43
  */
 @RestController
 @Slf4j
@@ -60,7 +59,7 @@ public class JobController {
     }
 
     @GetMapping("/metadata")
-    public ResponseEntity<?> extract(@RequestParam() String url) {
+    public ResponseEntity<JobMetadata> extract(@RequestParam() String url) {
         return ResponseEntity.ok(extractJobMetadataUseCase.extract(url));
     }
 

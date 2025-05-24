@@ -9,8 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:10/04/2025
- * Time:08:38
  */
 
 public class IdMapperTest {

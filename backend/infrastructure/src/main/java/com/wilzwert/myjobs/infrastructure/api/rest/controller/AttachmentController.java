@@ -14,6 +14,7 @@ import com.wilzwert.myjobs.core.domain.model.attachment.ports.driving.DownloadAt
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.AttachmentMapper;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
+import com.wilzwert.myjobs.infrastructure.storage.StorageException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.FileSystemResource;
@@ -26,13 +27,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.Base64;
 import java.util.UUID;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:13/03/2025
- * Time:11:43
  */
 @RestController
 @Slf4j
@@ -75,10 +75,10 @@ public class AttachmentController {
 
             CreateAttachmentCommand command = attachmentMapper.toCommand(createAttachmentRequest, userDetails.getId(), new JobId(UUID.fromString(jobId)), tempFile);
             Attachment attachment = addAttachmentToJobUseCase.addAttachmentToJob(command);
-            tempFile.delete();
+            Files.delete(tempFile.toPath());
             return attachmentMapper.toResponse(attachment);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new StorageException("an io exception occurred", e);
         }
     }
 

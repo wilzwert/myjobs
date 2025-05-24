@@ -6,8 +6,6 @@ import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:20/03/2025
- * Time:14:34
  */
 
 public class DomainPageable {

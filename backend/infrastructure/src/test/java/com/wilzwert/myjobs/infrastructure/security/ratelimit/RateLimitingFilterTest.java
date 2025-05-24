@@ -25,8 +25,6 @@ import static org.mockito.Mockito.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:04/11/2024
- * Time:11:08
  */
 
 @ExtendWith(MockitoExtension.class)

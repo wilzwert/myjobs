@@ -6,8 +6,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:23/04/2025
- * Time:13:46
  */
 
 public class JobRatingReadConverterTest {

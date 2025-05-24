@@ -5,8 +5,6 @@ import java.util.Objects;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:01/04/2025
- * Time:13:27
  */
 
 public class JobRating {

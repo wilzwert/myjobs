@@ -8,8 +8,6 @@ import java.util.Map;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:25/04/2025
- * Time:12:07
  */
 public class ValidationError implements Serializable {
     private final String field;

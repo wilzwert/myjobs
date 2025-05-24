@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class DomainPageableTest {
+class DomainPageableTest {
 
     @Test
     void shouldBuildDomainPageable() {
@@ -19,25 +19,25 @@ public class DomainPageableTest {
 
     @Test
     void whenPageNegative_thenShouldThrowException() {
-        var exception = assertThrows(PaginationException.class, () -> { DomainPageable pageable = new DomainPageable(-1, 100); });
+        var exception = assertThrows(PaginationException.class, () -> { new DomainPageable(-1, 100); });
         assertEquals(ErrorCode.PAGINATION_INVALID_PAGE, exception.getErrorCode());
     }
 
     @Test
     void whenPageSizeTooSmall_thenShouldThrowException() {
-        var exception = assertThrows(PaginationException.class, () -> { DomainPageable pageable = new DomainPageable(1, 0); });
+        var exception = assertThrows(PaginationException.class, () -> { new DomainPageable(1, 0); });
         assertEquals(ErrorCode.PAGINATION_INVALID_PAGE_SIZE, exception.getErrorCode());
     }
 
     @Test
     void whenPageSizeTooBig_thenShouldThrowException() {
-        var exception = assertThrows(PaginationException.class, () -> { DomainPageable pageable = new DomainPageable(1, 101); });
+        var exception = assertThrows(PaginationException.class, () -> { new DomainPageable(1, 101); });
         assertEquals(ErrorCode.PAGINATION_INVALID_PAGE_SIZE, exception.getErrorCode());
     }
 
     @Test
     void whenOffsetTooBig_thenShouldThrowException() {
-        var exception = assertThrows(PaginationException.class, () -> { DomainPageable pageable = new DomainPageable(1000, 100); });
+        var exception = assertThrows(PaginationException.class, () -> { new DomainPageable(1000, 100); });
         assertEquals(ErrorCode.PAGINATION_OFFSET_TOO_BIG, exception.getErrorCode());
     }
 }

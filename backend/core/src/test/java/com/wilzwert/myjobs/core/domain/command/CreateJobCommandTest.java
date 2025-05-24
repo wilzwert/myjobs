@@ -10,11 +10,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:13/03/2025
- * Time:11:10
  */
 
-public class CreateJobCommandTest {
+class CreateJobCommandTest {
     @Test
     void builder_shouldDuplicateCreateJobCommandCorrectly() {
         UserId userId = new UserId(UUID.randomUUID());

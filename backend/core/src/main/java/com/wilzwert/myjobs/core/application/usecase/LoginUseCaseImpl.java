@@ -11,8 +11,6 @@ import com.wilzwert.myjobs.core.domain.model.user.ports.driving.LoginUseCase;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:13/03/2025
- * Time:19:10
  */
 
 public class LoginUseCaseImpl implements LoginUseCase {

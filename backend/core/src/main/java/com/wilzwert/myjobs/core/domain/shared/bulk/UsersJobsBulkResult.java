@@ -5,8 +5,6 @@ import java.util.List;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:15/05/2025
- * Time:12:01
  */
 public class UsersJobsBulkResult {
     private final int usersCount;

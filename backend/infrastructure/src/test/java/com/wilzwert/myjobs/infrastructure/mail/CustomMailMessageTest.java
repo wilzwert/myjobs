@@ -7,8 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:10/04/2025
- * Time:12:04
  */
 
 public class CustomMailMessageTest {

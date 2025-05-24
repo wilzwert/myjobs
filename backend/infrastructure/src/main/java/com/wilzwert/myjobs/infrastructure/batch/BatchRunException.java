@@ -1,4 +1,4 @@
-package com.wilzwert.myjobs.infrastructure.exception;
+package com.wilzwert.myjobs.infrastructure.batch;
 
 public class BatchRunException extends RuntimeException {
     public BatchRunException(String message, Throwable cause) {

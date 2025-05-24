@@ -19,8 +19,6 @@ import java.util.UUID;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:12/03/2025
- * Time:15:32
  * TODO : use defensive copying on collections' getters to ensure immutability
  */
 public class User extends DomainEntity<UserId> {

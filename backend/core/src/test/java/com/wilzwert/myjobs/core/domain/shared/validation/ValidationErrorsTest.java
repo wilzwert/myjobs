@@ -10,11 +10,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:18/05/2025
- * Time:08:52
  */
 
-public class ValidationErrorsTest {
+class ValidationErrorsTest {
     @Test
     void shouldAddValidationError() {
         ValidationErrors errors = new ValidationErrors();

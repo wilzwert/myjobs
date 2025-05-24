@@ -9,8 +9,6 @@ import org.springframework.stereotype.Component;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:21/03/2025
- * Time:16:07
  */
 
 @Component

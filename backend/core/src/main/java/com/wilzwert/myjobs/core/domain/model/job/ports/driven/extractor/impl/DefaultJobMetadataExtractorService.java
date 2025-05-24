@@ -11,8 +11,6 @@ import java.util.Optional;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:05/04/2025
- * Time:11:29
  */
 
 public class DefaultJobMetadataExtractorService implements JobMetadataExtractorService {
@@ -48,7 +46,7 @@ public class DefaultJobMetadataExtractorService implements JobMetadataExtractorS
             throw new NoJobMetadataExtractorException();
         }
         return extractors.stream()
-                .filter((f) -> f.isCompatible(domain))
+                .filter(f -> f.isCompatible(domain))
                 .map(extractor -> extractor.extractJobMetadata(html))
                 .filter(Optional::isPresent)
                 .findFirst().orElse(Optional.empty());

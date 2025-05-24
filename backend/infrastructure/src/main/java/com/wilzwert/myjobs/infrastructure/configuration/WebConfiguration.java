@@ -6,8 +6,6 @@ import org.springframework.web.client.RestTemplate;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:10/04/2025
- * Time:09:38
  */
 @Configuration
 public class WebConfiguration {

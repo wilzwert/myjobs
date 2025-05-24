@@ -15,12 +15,12 @@ class SendJobsRemindersBatchRunnerIT extends AbstractBaseIntegrationTest {
     @Test
     void shouldReturnUsersJobsBatchExecutionResult() {
         var result = batchRunner.run();
-        assertThat(result).isNotNull();
-        assertThat(result).isInstanceOf(UsersJobsBatchExecutionResult.class);
+        assertThat(result).isNotNull()
+                .isInstanceOf(UsersJobsBatchExecutionResult.class);
         assertThat(result.getChunksCount()).isEqualTo(1);
         assertThat(result.getUsersCount()).isEqualTo(1);
         assertThat(result.getJobsCount()).isEqualTo(3);
-        assertThat(result.getSendErrorsCount()).isEqualTo(0);
-        assertThat(result.getSaveErrorsCount()).isEqualTo(0);
+        assertThat(result.getSendErrorsCount()).isZero();
+        assertThat(result.getSaveErrorsCount()).isZero();
     }
 }

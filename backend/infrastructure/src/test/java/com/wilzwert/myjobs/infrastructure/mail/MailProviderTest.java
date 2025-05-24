@@ -1,7 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.mail;
 
 
-import com.wilzwert.myjobs.infrastructure.exception.MailSendException;
 import com.wilzwert.myjobs.infrastructure.storage.SecureTempFileHelper;
 import jakarta.mail.Address;
 import jakarta.mail.Message;
@@ -26,7 +25,7 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Locale;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -34,8 +33,6 @@ import static org.mockito.Mockito.*;
 
 /**
  * @author Wilhelm Zwertvaegher
- * Date:10/04/2025
- * Time:11:12
  */
 @ExtendWith(MockitoExtension.class)
 public class MailProviderTest {
@@ -138,14 +135,14 @@ public class MailProviderTest {
     }
 
     @Test
-    void should_throwRuntimeException_whenSendingFails()  {
+    void should_throwMailSendException_whenSendingFails()  {
         CustomMailMessage message = new CustomMailMessage("template", "test@test.com", "User", "subject.key", "fr");
         message.setVariables(new HashMap<>());
 
         when(templateEngine.process(eq("template"), any(Context.class))).thenReturn("<html>content</html>");
         when(mailSender.createMimeMessage()).thenThrow(new RuntimeException("Cannot create message"));
 
-        assertThrows(RuntimeException.class, () -> underTest.send(message));
+        assertThrows(MailSendException.class, () -> underTest.send(message));
     }
 
     @Test

@@ -3,6 +3,7 @@ package com.wilzwert.myjobs.infrastructure.adapter.message;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.PasswordResetMessageProvider;
 import com.wilzwert.myjobs.infrastructure.mail.MailProvider;
+import com.wilzwert.myjobs.infrastructure.mail.MailSendException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -25,9 +26,8 @@ public class PasswordResetMessageProviderAdapter implements PasswordResetMessage
 
             mailProvider.send(message);
         }
-        // TODO : improve exception handling
         catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new MailSendException("An error occurred while sending the mail", e);
         }
 
     }
