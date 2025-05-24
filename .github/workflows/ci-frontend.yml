@@ -82,6 +82,12 @@ jobs:
           files: ./frontend/coverage/merged-coverage.json
           flags: frontend
 
+      - name: Show current directory
+        run: pwd
+
+      - name: List files in current directory
+        run: ls -la
+
       # Run SonarQube analysis on push, or if workflow is run manually
       - name: SonarQube Scan on push to main
         if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
@@ -94,7 +100,7 @@ jobs:
           args: >
            -Dsonar.organization=wilzwert
            -Dsonar.projectKey=MyJobs_frontend
-           -Dproject.settings=./sonar-project.properties
+           -Dproject.settings=./frontend/sonar-project.properties
 
       # Run SonarQube analysis on pull request
       - name: SonarQube Scan on pull request
@@ -108,7 +114,7 @@ jobs:
           args: >
             -Dsonar.organization=wilzwert
             -Dsonar.projectKey=MyJobs_frontend
-            -Dproject.settings=./sonar-project.properties
+            -Dproject.settings=./frontend/sonar-project.properties
             -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
             -Dsonar.pullrequest.branch=${{ github.head_ref }}
             -Dsonar.pullrequest.base=${{ github.base_ref }}
