@@ -35,17 +35,17 @@ export class JobStatusComponent {
   get icon(): string {
     switch (this.job.status) {
       case JobStatus.CREATED:
-        return 'send';
+        return 'library_add_check';
       case JobStatus.PENDING:
         return 'hourglass_top';
       case JobStatus.RELAUNCHED:
         return 'refresh';
       case JobStatus.APPLICANT_REFUSED:
-        return 'check_circle';
+        return 'block';
       case JobStatus.COMPANY_REFUSED:
         return 'cancel';
       case JobStatus.ACCEPTED:
-        return 'check';
+        return 'check_circle';
       
       default:
         return 'help';
