@@ -1,47 +1,53 @@
 /* You can add global styles to this file, and also import other style files */
-
 @use '@angular/material' as mat;
+@use './styles_theme-colors.scss' as myjobs-theme; // location of generated file
 
+$my-shape: (
+  small: 0px,
+  medium: 0px,
+  large: 0px
+);
 
 html {
-  /*--ui-font-size: 1.6rem;
-  --content-font-size: 1.4rem;*/
+  color-scheme: light;
+  font-family: Roboto, sans-serif;
   --app-max-width: 835px;
-  /*--title-font-size: 2.4rem;
-  --form-max-width: 420px;*/
-  /*
+  color: #0c1a3c;
   @include mat.theme((
     color: (
-      primary: mat.$azure-palette,
-      theme-type: light,
+      primary: myjobs-theme.$primary-palette,
+      tertiary: myjobs-theme.$tertiary-palette,
     ),
-    typography: (
-      plain-family: Roboto,
-      brand-family: Open Sans,
-      bold-weight: 900,
-      medium-weight: 500,
-      regular-weight: 300,
-    ),
-    density: 0
-  ));*/
-  font-family: 'Roboto';
-  
+    typography: Roboto,
+    density: 0,
+    shape: $my-shape
+  ));
+
   @include mat.toolbar-overrides((
-    container-text-color: var(--main-color),
     standard-height: 94px,
     mobile-height: 62px
   ));
-  /*
-  --ui-font-size: 1.6rem;
-  --content-font-size: 1.4rem;
- 
-  --title-font-size: 2.4rem;
-  --form-max-width: 420px;
+
+  @include mat.card-overrides((
+    outlined-container-shape: 0
+  ));
+
   @include mat.button-overrides((
-    filled-container-color: var(--main-color),
-    outlined-label-text-color: #fff,
-    outlined-outline-color: #000
-  ));*/
+    filled-container-shape: 0,
+    outlined-container-shape: 0,
+    protected-container-shape: 0,
+    text-container-shape: 0
+  ))
+}
+
+.mat-mdc-button .mat-ripple-element,
+.mat-mdc-raised-button .mat-ripple-element,
+.mat-mdc-outlined-button .mat-ripple-element,
+.mat-mdc-button::after,
+.mat-mdc-raised-button::after,
+.mat-mdc-outlined-button::after,
+.mat-mdc-unelevated-button::after {
+  border-radius: 0 !important;
 }
 
 body {
@@ -100,8 +106,65 @@ button:disabled mat-icon[svgIcon="send"] {
   flex: 1 1 auto;
 }
 
+.list-config {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.paginator-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+mat-card-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+// common jobs styles
+.job-title {
+  text-transform: uppercase;
+}
+
+.job-metadata, .job-status {
+  margin: 1em 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  > * {
+    display: flex;
+    align-items: center;
+    margin-right: 1rem;
+  } 
+}
+
+.job-status {
+  display: flex;
+  align-items: center;
+  > * {
+    display: flex;
+    align-items: center;
+    margin-right: 1rem;
+  } 
+}
+
+.job-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 app-rating {
   @include mat.icon-overrides((
       color: gold
   ));
+}
+
+@media screen and (min-width: 600px) {
+  .paginator-container {
+    justify-content: flex-end;
+  }
 }

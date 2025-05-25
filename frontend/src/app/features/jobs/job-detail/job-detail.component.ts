@@ -1,25 +1,24 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JobService } from '../../../core/services/job.service';
-import { catchError, EMPTY, Observable, Subject, take, takeUntil, tap, throwError } from 'rxjs';
+import { catchError, Observable, Subject, take, takeUntil, tap, throwError } from 'rxjs';
 import { Job } from '../../../core/model/job.interface';
 import { Title } from '@angular/platform-browser';
-import { AsyncPipe, DatePipe } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { ActivityType } from '../../../core/model/activity-type';
 import { MatButton } from '@angular/material/button';
 import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
-import { MatCard, MatCardContent, MatCardHeader, MatCardSubtitle, MatCardTitle } from '@angular/material/card';
+import { MatCard, MatCardContent } from '@angular/material/card';
 import { ModalService } from '../../../core/services/modal.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { ApiError } from '../../../core/errors/api-error';
-import { RatingComponent } from '../rating/rating.component';
 import { JobAttachmentsComponent } from '../job-attachments/job-attachments.component';
 import { JobActivitiesComponent } from "../job-activities/job-activities.component";
-import { StatusLabelPipe } from '../../../core/pipe/status-label.pipe';
+import { JobSummaryComponent } from '../job-summary/job-summary.component';
 
 @Component({
   selector: 'app-job-detail',
-  imports: [AsyncPipe, DatePipe, StatusLabelPipe, MatCard, MatCardHeader, MatCardTitle, MatCardContent, MatCardSubtitle, MatButton, RatingComponent, JobAttachmentsComponent, JobActivitiesComponent],
+  imports: [AsyncPipe, JobSummaryComponent, MatCard, MatCardContent, MatButton, JobAttachmentsComponent, JobActivitiesComponent],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss'
 })
@@ -75,12 +74,16 @@ export class JobDetailComponent implements OnInit, OnDestroy {
     this.modalService.openJobModal('job', job, () => this.loadJob(job.id))
   }
 
+  onDelete(job: Job) :void {
+    this.notificationService.confirmation($localize`:@@job.deleted:Job successfully deleted.`);
+    this.router.navigate(["/jobs"]);
+  }
+
   confirmDeleteJob(job: Job) :void {
     this.jobService.deleteJob(job.id).pipe(
       take(1),
       tap(() => {
-        this.notificationService.confirmation("Job deleted successfully.");
-        this.router.navigate(["/jobs"]);
+        this.confirmDeleteJob(job);
       })
     ).subscribe();
   }

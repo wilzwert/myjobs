@@ -1,0 +1,15 @@
+<div class="job-status">
+    <span matTooltip="Current status" i18n-aria-label="current job status|label preceeding a job's status@@job.status" ii8n-matTooltip="@@job.status">
+        <mat-icon>{{ icon }}</mat-icon>
+         {{ job.status | statusLabel}}  
+    </span>
+    <span matTooltip="Current status date" i18n-aria-label="current job status date|label preceeding a job's status date@@job.status.date" ii8n-matTooltip="@@job.status.date"><mat-icon>calendar_month</mat-icon>{{ job.statusUpdatedAt | date }}</span>
+    <a  mat-icon-button [matMenuTriggerFor]="statusMenu">
+        <mat-icon aria-hidden="false" aria-label="Change status" i18n-aria-label="Change status|label for job status change action@@action.job.status.edit" fontIcon="edit">Edit</mat-icon>
+    </a>
+    <mat-menu #statusMenu="matMenu">
+        @for(status of statusKeys ; track $index) {
+            <button mat-menu-item (click)="editJobStatus(job, status)">{{ status | statusLabel }}</button>
+    }
+    </mat-menu>
+</div>
