@@ -68,44 +68,17 @@ describe('JobsComponent', () => {
   it('should set status filter and reload jobs', () => {
     jobServiceMock.getAllJobs.mockClear();
 
-    component.setStatus({ value: 'OPEN' } as any);
+    component.filterByStatus('OPEN');
     expect(component.currentStatus).toBe('OPEN');
     expect(component.filterLate).toBe(false);
     expect(jobServiceMock.getAllJobs).toHaveBeenCalled();
 
-    component.setStatus({ value: 'filter-late' } as any);
+    component.filterByStatus('filter-late');
     expect(component.currentStatus).toBeNull();
     expect(component.filterLate).toBe(true);
   });
 
-  it('should update job status and show notification', done => {
-    jobServiceMock.updateJobStatus.mockReturnValue(of({ id: 'job1', status: JobStatus.RELAUNCHED }));
-
-    const job = { id: 'job1', status: JobStatus.PENDING } as Job;
-
-    component.updateJobStatus(job, { value: JobStatus.RELAUNCHED } as any);
-
-    setTimeout(() => {
-      expect(jobServiceMock.updateJobStatus).toHaveBeenCalledWith('job1', { status: JobStatus.RELAUNCHED } as any);
-      expect(notificationServiceMock.confirmation).toHaveBeenCalledWith(expect.stringContaining('Status updated successfully'));
-      done();
-    }, 0);
-  });
-
-  it('should update job rating and show notification', done => {
-    jobServiceMock.updateJobRating.mockReturnValue(of({ id: 'job1', rating: 4 }));
-
-    const job = { id: 'job1', rating: 3 } as unknown as Job;
-
-    component.updateJobRating(job, 4);
-
-    setTimeout(() => {
-      expect(jobServiceMock.updateJobRating).toHaveBeenCalledWith('job1', { rating: 4 });
-      expect(notificationServiceMock.confirmation).toHaveBeenCalledWith(expect.stringContaining('Rating updated successfully'));
-      done();
-    }, 0);
-  });
-
+  
   it('should handle page event and load jobs', () => {
     jobServiceMock.getAllJobs.mockClear();
 
@@ -145,15 +118,6 @@ describe('JobsComponent', () => {
   it('should create job and open modal without metadata', () => {
     component.createJob();
     expect(modalServiceMock.openJobStepperModal).toHaveBeenCalledWith(expect.any(Function));
-  });
-
-  it('should edit job and open modal', () => {
-    const job = { id: 'job1' } as Job;
-    const event = { stopPropagation: jest.fn() } as any;
-
-    component.editJob(event, job);
-
-    expect(modalServiceMock.openJobModal).toHaveBeenCalledWith('job', job, expect.any(Function));
   });
 
   it('should delete job after confirmation', done => {

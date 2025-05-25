@@ -44,9 +44,8 @@ export class JobDetailComponent implements OnInit, OnDestroy {
     console.log('-------------------loadJob');
     this.job$ = this.jobService.getJobById(jobId).pipe(
       // set page title once the job  is available
-      tap((job: Job) =>{console.log('-------------------setting Title'); this.title.setTitle(`Job - ${job.title}`)}),
+      tap((job: Job) =>{this.title.setTitle(`Job - ${job.title}`)}),
       catchError((error: ApiError) => {
-        console.log('we got an erreor and should nav');
         this.router.navigate(["/jobs"]);
         return throwError(() => error);
       })
@@ -83,25 +82,12 @@ export class JobDetailComponent implements OnInit, OnDestroy {
     this.jobService.deleteJob(job.id).pipe(
       take(1),
       tap(() => {
-        this.confirmDeleteJob(job);
+        this.onDelete(job);
       })
     ).subscribe();
   }
 
   deleteJob(job: Job) :void {
     this.confirmDialogService.openConfirmDialog($localize `:@@warning.job.delete:Delete job "${job.title}" ? All data will be lost.`, () => this.confirmDeleteJob(job));
-  }
-
-  updateJobRating(job: Job, rating: number) :void {
-    this.jobService.updateJobRating(job.id, {rating: rating}).pipe(
-      take(1),
-      catchError((error: ApiError) => {
-        return throwError(() => error);
-
-      })
-    ).subscribe(() => {
-      this.notificationService.confirmation($localize `:@@info.job.rating.updated:Rating updated successfully.`);
-      this.loadJob(job.id);
-    });
   }
 }
