@@ -26,9 +26,10 @@ export interface Job {
 }
 
 export enum JobStatus {
-    CREATED = "Created",
-    PENDING = "Pending",
-    RELAUNCHED = "Relaunched",
-    APPLICANT_REFUSED = "Refused (by me)",
-    COMPANY_REFUSED = "Refused (by company)"
+    CREATED = "CREATED",
+    PENDING = "PENDING",
+    RELAUNCHED = "RELAUNCHED",
+    APPLICANT_REFUSED = "APPLICANT_REFUSED",
+    COMPANY_REFUSED = "COMPANY_REFUSED",
+    ACCEPTED = "ACCEPTED"
 }

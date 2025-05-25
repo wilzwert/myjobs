@@ -48,7 +48,8 @@ export class TranslatorService {
     PENDING : $localize `:@@job.status.pending:Pending`,
     RELAUNCHED : $localize `:@@job.status.relaunched:Relaunched`,
     APPLICANT_REFUSED : $localize `:@@job.status.applicant_refused:Refused (by me)`,
-    COMPANY_REFUSED : $localize `:@@job.status.company_refused:Refused (by company)`
+    COMPANY_REFUSED : $localize `:@@job.status.company_refused:Refused (by company)`,
+    ACCEPTED: $localize `:@@job.status.accepted:Accepted`,
   };
 
   private activityTypes: Record<keyof typeof ActivityType, string> = {

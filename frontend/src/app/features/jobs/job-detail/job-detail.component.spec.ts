@@ -102,11 +102,16 @@ describe('JobDetailComponent', () => {
   });
 
   it('should delete job when confirmed', async () => {
-    
-    component.confirmDeleteJob(mockJob);
+    component.onDelete(mockJob);
+    expect(jobServiceMock.deleteJob).not.toHaveBeenCalledWith('job123');
+    expect(notificationServiceMock.confirmation).toHaveBeenCalledWith($localize`:@@job.deleted:Job successfully deleted.`);
+    expect(routerMock.navigate).toHaveBeenCalledWith(['/jobs']);
+  });
 
+  it('should delete job when confirmed', async () => {
+    component.confirmDeleteJob(mockJob);
     expect(jobServiceMock.deleteJob).toHaveBeenCalledWith('job123');
-    expect(notificationServiceMock.confirmation).toHaveBeenCalledWith('Job deleted successfully.');
+    expect(notificationServiceMock.confirmation).toHaveBeenCalledWith($localize`:@@job.deleted:Job successfully deleted.`);
     expect(routerMock.navigate).toHaveBeenCalledWith(['/jobs']);
   });
 
@@ -117,22 +122,6 @@ describe('JobDetailComponent', () => {
       `Delete job "${mockJob.title}" ? All data will be lost.`,
       expect.any(Function)
     );
-  });
-
-  it('should update rating and reload job on success', async () => {
-    component.updateJobRating(mockJob, 4);
-
-    expect(jobServiceMock.updateJobRating).toHaveBeenCalledWith('job123', { rating: 4 });
-    expect(notificationServiceMock.confirmation).toHaveBeenCalledWith('Rating updated successfully.');
-    expect(jobServiceMock.getJobById).toHaveBeenCalledWith('job123');
-  });
-
-  it('should not reload or notify if updateJobRating fails', async () => {
-    jobServiceMock.updateJobRating.mockReturnValueOnce(throwError(() => new Error('fail')));
-    
-    expect(() => {
-      component.updateJobRating(mockJob, 5);
-    }).not.toThrow();
   });
 
 });

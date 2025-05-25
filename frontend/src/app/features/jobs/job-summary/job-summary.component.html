@@ -1,0 +1,32 @@
+<mat-card appearance="outlined" [class]="{ 'follow-up-needed': job.followUpLate }" aria-label="Job details" i18n-aria-label="job details@@job.details">
+    <mat-card-header>
+        <mat-card-title class="job-title"><a [routerLink]="job.id">{{ job.title }}</a> <a href="{{job.url}}" title="View original job" i18n-title="View original job|label for displayed link to original url@@action.job.view.original"><mat-icon>open_in_new</mat-icon></a>
+        </mat-card-title>
+        <mat-card-subtitle>{{ job.company }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+
+        <app-job-status [job]="job"></app-job-status>
+        
+        <div class="job-metadata">
+            <span matTooltip="Job creation date count" aria-label="Job creation date" i18n-aria-label="job creation date|label preceeding a job's creationg date@@job.created" i18n-matTooltip="@@job.created" ><mat-icon>calendar_month</mat-icon>{{ job.createdAt | date }}</span>
+            <span matTooltip="Job activities count" aria-label="Job activities count" i18n-aria-label="job activities count|label preceeding a job's activities count@@job.activities.count" i18n-matTooltip="@@job.activities.count"><mat-icon>history</mat-icon>{{ job.activities.length}}</span>
+            <span matTooltip="Attachments count" aria-label="Job attachments count" i18n-aria-label="job attachments count|label preceeding a job's attachments count@@job.attachments.count" i18n-matTooltip="@@job.attachments.count"><mat-icon>attach_file</mat-icon>{{ job.attachments.length}}</span>     
+        </div>
+
+        <div class="job-actions">
+            <app-rating [rating]="job.rating ? job.rating.value : 0" (ratingChange)="updateJobRating(job, $event)"></app-rating>
+
+            <button mat-icon-button [matMenuTriggerFor]="actionsMenu">
+                <mat-icon aria-hidden="false" aria-label="Actions for this job" i18n-aria-label="Actions for this job|label for job actions in a jobs list@@action.job.actions" fontIcon="settings">Actions</mat-icon>
+            </button>
+            <mat-menu matRipple #actionsMenu="matMenu">
+                <button mat-menu-item (click)="editJob($event, job)" i18n="edit job|label of a job's edition action@@action.job.edit">Edit</button>
+                <button mat-menu-item (click)="manageAttachments($event, job)" i18n="edit job's attachments|label of a job's attachments management action@@action.job.attachements">Attachments</button>
+                <button mat-menu-item [routerLink]="job.id" aria-label="Go to job details" i18n="view job's details|label of a job's details view action@@action.job.details">Details</button>
+                <button mat-menu-item (click)="deleteJob(job)" aria-label="Delete job" i18n="delete a job|label of a job's delete action@@action.job.delete">Delete</button>
+            </mat-menu>
+        </div>
+
+    </mat-card-content>
+</mat-card>
