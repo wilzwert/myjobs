@@ -1,10 +1,72 @@
 <h1>MyJobs</h1>
 
-<div>
-    <span>
-        <a i18n="login|login button or link label@@action.login" mat-stroked-button routerLink="login">Login</a>
-    </span>
-    <span>
-        <a i18n="register|register button or link label@@action.register" mat-stroked-button routerLink="register">Register</a>
-    </span>
-</div>
+@if( loggedIn ) {
+
+    <p>
+        <span i18="welcome@@home.label.welcome">Welcome</span>&nbsp;
+        @if (sessionInformation$ | async; as sessionInfo) {
+            <span class="welcome-username">{{sessionInfo.username }} </span>
+        }
+        !
+    </p>
+
+    
+}
+@else {
+    <div class="">
+        <span>
+            <button mat-fab extended aria-label="Login" i18n-aria-label="login|login button or link label@@action.login" mat-stroked-button routerLink="login">
+                <mat-icon>login</mat-icon>
+                <span i18n="@@action.login">Login</span>
+            </button>
+        </span>
+        <span>
+            <button mat-fab extended aria-label="Register" i18n-aria-label="register|register button or link label@@action.register" mat-stroked-button routerLink="register">
+                <mat-icon>app_registration</mat-icon>
+                <span i18n="@@action.register">Register</span>
+            </button>
+        </span>
+    </div>
+}
+
+
+<mat-card appearance="outlined">
+    <mat-card-header>
+        <mat-card-title i18n="about title|title of the About section@@home.text.about.title">About</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <p i18n="about introduction|text to introduce personal project goals@@home.text.about.introduction">
+            This is a personal project with several goals : 
+        </p>
+        <ul>
+            <li i18n="about help manage job search|text to explain the personal goal to manage job search@@home.text.about.manage">Help me manage my job search by keeping track of jobs statuses and applications (spoiler alert : there's a good chance this project will never do what I originally intended)</li>
+            <li i18n="about learn|text to explain the personal goal to learn@@home.text.about.learn">Learn as much and as fast as possible about Spring Boot, Hexagonal Architecture, Clean Architecture, MongoDB and Domain-Driven Design (DDD), and lots of other things I will forget (or not)</li>
+        </ul>
+        <p i18n="about usability disclaimer|text to explain the project may be use without guarantee@@home.text.about.disclaimer">
+            It is usable, although not to be trusted as a long-term tool. I will take any feedback though, and be glad should anyone find it useful.
+        </p>
+        <p>
+            <span i18n="about contact|text preceeding the contact email">Please feel free to contact me on</span>&nbsp;<a [href]="'mailto:' + email" [innerText]="email"></a>.
+        </p>
+    </mat-card-content>
+
+</mat-card>
+
+
+<mat-card appearance="outlined">
+    <mat-card-header>
+        <mat-card-title i18n="features title|title of the Features section@@home.text.features.title">Features</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <p  i18n="features intro|text to introduce the features list@@home.text.features.introduction">MyJobs allows you to :</p>
+        <ul>
+            <li i18n="features - save|text for job saving feature@@home.text.features.save">Save interesting job offers</li>
+            <li i18n="features - attachments|text for attachments feature@@home.text.features.attachments">Add attachments, so that you can remember which CV or documents you sent to the recruiter</li>
+            <li i18n="features - job status|text for job status management feature@@home.text.features.status">Manage jobs status : created, pending (i.e. an application has been sent), refused, accepted...</li>
+            <li i18n="features - activities|text for activities feature@@home.text.features.activities">Add activities : keep track of actions you made</li>
+            <li i18n="features - reminders|text for reminders feature@@home.text.features.reminders">Receive reminders : define a delay to be reminded of jobs that have not been updated</li>
+            <li i18n="features - rating|text for job rating feature@@home.text.features.rate">Rate jobs : this can be used as a way to rate your interest for the job, the quality of the recruitment process. This is up to you !  </li>
+        </ul>
+    </mat-card-content>
+
+</mat-card>

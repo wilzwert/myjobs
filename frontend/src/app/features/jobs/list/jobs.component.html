@@ -1,26 +1,10 @@
 @let user = user$ | async;
 
-@if( urlForm) {
-    <form class="loggedin-form job-quick-create-form" [formGroup]="urlForm!" (ngSubmit)="createJobWithMetadata()">
-        <mat-form-field>
-            <mat-label i18n="create job url label|label for url input to create new job@@input.job.url_create.label">Create job with its url</mat-label>
-            <input matInput formControlName="url" type="url" i18n-placeholder="create job url placeholder|placeholder for url input to create new job@@input.job.url_create.placeholder" placeholder="Type or paste the job's URL">
-            @if(url?.value !== '') {
-                <mat-hint class="url-hint" align="end">
-                    <app-status-icon [isValid]="!url?.invalid" />
-                </mat-hint>
-            }
-        </mat-form-field>
-        <button mat-raised-button type="submit" [disabled]="urlForm.invalid || urlFormLoading"> 
-            @if (urlFormLoading) { 
-                <span i18n="loading|inform the user loading occurs@@info.loading">Loading...</span>
-            } 
-            @else { 
-                <span i18n="quick create job|Create job with its url form action label@@action.job.quick_create">Create</span>
-            }
-        </button>
-    </form>
-}
+
+<button (click)="createJobWithUrl()" mat-fab extended aria-label="Create a job" i18n-aria-label="@@job.create" mat-flat-button>
+    <mat-icon>add</mat-icon>
+    <span i18n="@@job.create">Create a job</span>
+</button>
 
 <div class="list-config">
     <div>

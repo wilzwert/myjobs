@@ -23,6 +23,7 @@ import { User } from '../../../core/model/user.interface';
 import { UserService } from '../../../core/services/user.service';
 import { MatIcon } from '@angular/material/icon';
 import { JobSummaryComponent } from '../job-summary/job-summary.component';
+import { ComponentInputData, ComponentInputDomainData } from '../../../core/model/component-input-data.interface';
 
 
 @Component({
@@ -33,9 +34,6 @@ import { JobSummaryComponent } from '../job-summary/job-summary.component';
   styleUrl: './jobs.component.scss'
 })
 export class JobsComponent implements OnInit {
-
-  public urlForm: FormGroup | undefined;
-  public urlFormLoading = false;
 
   public jobs$!: Observable<Page<Job>>;
   protected user$: Observable<User>;
@@ -62,21 +60,8 @@ export class JobsComponent implements OnInit {
     this.user$ = this.userService.getUser();
   }
 
-  get url() {
-    return this.urlForm?.get('url');
-  }
-
   ngOnInit(): void {
     this.jobs$ = this.jobService.getAllJobs(this.currentPage, this.currentPageSize, this.currentStatus, this.filterLate, this.currentSort);
-    this.urlForm = this.fb.group({
-      url: [
-        '',
-        [
-          Validators.required,
-          Validators.pattern('(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)')
-        ]
-      ],
-    });
   }
 
   sortBy(sort: string): void {
@@ -107,10 +92,12 @@ export class JobsComponent implements OnInit {
     this.jobs$ = this.jobService.getAllJobs(this.currentPage, this.currentPageSize, this.currentStatus, this.filterLate, this.currentSort);
   }
 
-  createJobWithMetadata(): void {
-    this.jobService.getJobMetadata(this.url?.value).subscribe((metadata: JobMetadata) => {
-      this.modalService.openJobStepperModal(() => this.reloadJobs(), { jobMetadata: metadata });
-    });
+  createJobWithUrl(): void {
+    this.modalService.openCreateJobWithUrlModal((data: ComponentInputDomainData) => this.createJobWithMetadata(data.metadata.jobMetadata));
+  }
+  
+  createJobWithMetadata(metadata: JobMetadata): void {
+    this.modalService.openJobStepperModal(() => this.reloadJobs(), { jobMetadata: metadata });
   }
 
   createJob(): void {

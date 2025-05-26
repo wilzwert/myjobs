@@ -1,20 +1,19 @@
 <mat-toolbar>
-    <a class="home" routerLink="" title="MyJobs" aria-label="MyJobs"><img src="assets/imgs/logo.png" alt="MyJobs"></a>
-    <span class="spacer"></span>
-    <button (click)="changeLang('fr')">FR</button>
-    <button (click)="changeLang('en')">EN</button>
-    @if ($isLogged() | async) {
-      <nav class="main-nav" [class.open]="isMobile && menuOpen">
+  @if ($isLogged() | async) {
+    <mat-menu #navMenu="matMenu" class="nav-menu">
+      <nav class="main-nav">
         <ul>
-          <li><a routerLink="jobs" aria-label="My jobs" class="link">Jobs</a></li>
-          <li><a routerLink="me" class="account" aria-label="My account"><mat-icon svgIcon="user"></mat-icon></a></li>
+          <li><a routerLink="jobs" aria-label="Jobs" i18n-aria-label="jobs|jobs menu item label@@menu.jobs.label" class="link"><mat-icon>list</mat-icon><span i18n="@@menu.jobs.label">Jobs</span></a></li>
+          <li><a routerLink="me" aria-label="Account" i18n-aria-label="account|account menu item label@@menu.account.label"><mat-icon>person</mat-icon><span i18n="@@menu.account.label">Account</span></a></li>
+          <li><a (click)="logout()" aria-label="Logout" i18n-aria-label="logout|logout menu item label@@menu.log_out.label"><mat-icon>logout</mat-icon><span i18n="@@menu.logout.label">Log out</span></a></li>
         </ul>
       </nav>
-      @if( isMobile) {
-        <a class="open-nav" (click)="openNav()" aria-label="Open navigation menu"><mat-icon svgIcon="hamburger"></mat-icon></a>
-        @if (menuOpen) {
-          <div class="overlay" (click)="closeNav()"></div>
-        }
-      }
+    </mat-menu>
+    <a class="open-nav" [matMenuTriggerFor]="navMenu" aria-label="Open navigation menu"><mat-icon>menu</mat-icon></a>
   }
+
+    <a class="home" routerLink="" title="MyJobs" aria-label="MyJobs"><img src="assets/imgs/logo.webp" alt="MyJobs"></a>
+    <span class="spacer"></span>
+    <a class="lang" (click)="changeLang('fr')" [class.selected]="lang == 'fr'">FR</a>
+    <a class="lang" (click)="changeLang('en')" [class.selected]="lang == 'en'">EN</a>
 </mat-toolbar>

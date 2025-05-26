@@ -33,7 +33,7 @@ export class SessionService {
     return this.isLoggedSubject.asObservable();
   }
 
-  public $getSessionInformation() :BehaviorSubject<SessionInformation|null> {
+  public $getSessionInformation(): BehaviorSubject<SessionInformation|null> {
     return this.sessionStorageService.$getSessionInformation();
   }
 

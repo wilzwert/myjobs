@@ -1,6 +1,6 @@
 <mat-card appearance="outlined" [class]="{ 'follow-up-needed': job.followUpLate }" aria-label="Job details" i18n-aria-label="job details@@job.details">
     <mat-card-header>
-        <mat-card-title class="job-title"><a [routerLink]="job.id">{{ job.title }}</a> <a href="{{job.url}}" title="View original job" i18n-title="View original job|label for displayed link to original url@@action.job.view.original"><mat-icon>open_in_new</mat-icon></a>
+        <mat-card-title class="job-title"><a [routerLink]="job.id">{{ job.title }}</a><a class="job-view-original" taget="_blank" href="{{job.url}}" title="View original job" i18n-title="View original job|label for displayed link to original url@@action.job.view.original"><mat-icon>open_in_new</mat-icon></a>
         </mat-card-title>
         <mat-card-subtitle>{{ job.company }}</mat-card-subtitle>
     </mat-card-header>

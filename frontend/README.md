@@ -4,7 +4,9 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Run `ng serve --configuration=[lang:fr|en]` for a dev server.  As the app is localized, the --configuration command arg is mandatory, as the dev server is not an actual built with both languages.  
+
+Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
 ## Code scaffolding
 
@@ -12,15 +14,28 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Run `ng build --localize` to build the project. The build artifacts will be stored in the `dist/` directory.
 
 ## Running unit tests
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Run `npm run test` to execute the Jest unit and integration tests.  Coverage report will be available in `coverage/jest`.
 
 ## Running end-to-end tests
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+Run `npm run e2e` to execute the end-to-end tests in interactive mode with Cypress.
+
+Run `npm run e2e:ci` to execute the end-to-end tests in headless mode with Cypress. 
+
+Run `npm run e2e:staging` to execute the end-to-end tests in staging (headless + recording) mode with Cypress.
+
+Coverage reports will be available in `coverage/e2e`.
+
+## Aggregating coverage reports
+
+If you want to run all tests (unit, integration, e2e), generate and merge coverage reports, you can run `npm run test-full` which points to scripts/testfull.js.
+
+Merged coverage report will be available in `coverage/merged`.
+
 
 ## Further help
 

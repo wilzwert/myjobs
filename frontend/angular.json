@@ -46,6 +46,9 @@
               },
               { "glob": "**/*", "input": "node_modules/tinymce", "output": "/tinymce/" }
             ],
+            "stylePreprocessorOptions": {
+                "includePaths": ["src/styles"]
+            },
             "styles": [
               "@angular/material/prebuilt-themes/azure-blue.css",
               "src/styles.scss"

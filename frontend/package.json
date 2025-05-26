@@ -15,8 +15,7 @@
     "cypress:run": "cypress run",
     "cypress:run-record": "cypress run --record --key 711387bb-9364-433c-83ba-ca040c440282",
     "test-full": "node scripts/testfull.js",
-    "merge-coverage": "node scripts/merge-coverage.js",
-    "posttest-all": "npm run merge-coverage"
+    "merge-coverage": "node scripts/merge-coverage.js"
   },
   "nyc": {
     "report-dir": "coverage/e2e"

@@ -25,7 +25,7 @@
         }
     </div>
     @if(activities.controls.length > 0) {
-        <button mat-raised-button type="submit" [disabled]="activities.invalid || loading">Save activities</button>
+        <button mat-flat-button type="submit" [disabled]="activities.invalid || loading">Save activities</button>
     }
 
     <button aria-hidden="false" aria-label="Add an activity"  mat-icon-button (click)="addActivity()">

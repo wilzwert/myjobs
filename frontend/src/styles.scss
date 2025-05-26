@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 @use '@angular/material' as mat;
-@use './styles_theme-colors.scss' as myjobs-theme; // location of generated file
+@use './styles/styles_theme-colors.scss' as myjobs-theme; // location of generated file
+@use './styles/vars.scss' as *;
 
 $my-shape: (
   small: 0px,
@@ -12,11 +13,13 @@ html {
   color-scheme: light;
   font-family: Roboto, sans-serif;
   --app-max-width: 835px;
-  color: #0c1a3c;
+  --app-main-color: $main-color;
+  color: $main-color;
   @include mat.theme((
     color: (
       primary: myjobs-theme.$primary-palette,
-      tertiary: myjobs-theme.$tertiary-palette,
+      tertiary: myjobs-theme.$tertiary-palette
+      
     ),
     typography: Roboto,
     density: 0,
@@ -52,7 +55,7 @@ html {
 
 body {
   margin: 0;
-  padding-top: calc(var(--mat-toolbar-standard-height));
+  padding-top: calc(var(--mat-toolbar-standard-height) + 2rem);
   padding-bottom: 2rem;
   background: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
@@ -65,16 +68,23 @@ main {
   padding-right: 1.6rem;
 }
 
+h1 {
+  color: $main-color;
+}
+
 a {
   cursor: pointer;
   font-size: var(--content-font-size);
+  color: $main-color;
+  text-decoration: none;
+  font-weight: 800;
 }
 
 p {
   font-size: var(--content-font-size);
 }
 
-mat-paginator, mat-card {
+mat-paginator, mat-card, mat-card-header {
     margin-bottom: 1em;
 }
 
@@ -83,11 +93,11 @@ mat-form-field {
     padding: .75em  0;
 }
 mat-icon.input-invalid {
-  fill: #D32F2F;
+  color: #D32F2F;
 }
 
 mat-icon.input-valid {
-  fill: #3CB371;
+  color: #3CB371;
 }
 
 .mdc-button {
