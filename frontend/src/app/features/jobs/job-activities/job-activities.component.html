@@ -1,15 +1,21 @@
 @if(job.activities.length > 0) {
+    <div class="timeline">
     @for (activity of job.activities ; track $index) {
-        <div style="display: flex">
-            <p>{{ activity.createdAt | date }}</p>
-            <p>{{ activity.type | activityLabel }} @if(activity.comment !== "") { : {{ activity.comment }} } <p>
-        </div>
+        <div class="timeline-item">
+            <div class="timeline-marker"></div>
+            <div class="timeline-content">
+              <p>{{ activity.type | activityLabel }}</p>
+              <p>{{ activity.comment }}</p>
+              <span class="timestamp">{{ activity.createdAt | date:'short' }}</span>
+            </div>
+          </div>
     }
+    </div>
 }
 
 @if(displayForm) {
     <app-job-activities-form [job]="job" (activitiesSaved)="onActivitiesSaved(job)"></app-job-activities-form>
 }
 @else {
-    <button mat-raised-button (click)="addActivity(job)" i18n="add activity|Add an activity to a job@@action.job.add_activity">Add activity</button>
+    <button mat-flat-button (click)="addActivity(job)" i18n="add activity|Add an activity to a job@@action.job.add_activity">Add activity</button>
 }

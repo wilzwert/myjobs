@@ -1,5 +1,8 @@
 <h2 mat-dialog-title>
     @switch (data.metadata!.type) {
+        @case('create-job-with-url') {
+            <span i18n="create job with url title|title for creating job url modal@@job.url_create.title">Create a Job with its URL</span>
+        }
         @case ('job') {
             @if(data.job?.id !== null) {
                 <span i18n="edit job|edit job ui title@@job.edit">Edit job</span>

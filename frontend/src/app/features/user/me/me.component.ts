@@ -88,19 +88,4 @@ export class MeComponent {
   public editUser(user: User) :void {
     this.modalService.openUserEditModal(user, (data: ComponentInputDomainData) => {this.user$ = this.userService.getUser();});
   }
-
-  public logout(): void {
-    this.authService.logout().
-        pipe(
-          catchError((error) =>  {
-            return throwError(() => error);
-          })
-      )
-        .subscribe(
-          () => {
-            this.sessionService.logOut();
-            this.router.navigate([''])
-          }
-        )
-  }
 }

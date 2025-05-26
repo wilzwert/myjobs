@@ -34,7 +34,8 @@ describe('JobActivitiesComponent (Jest)', () => {
     createdAt: '',
     rating: { value: 3 } as JobRating,
     status: JobStatus.PENDING,
-    updatedAt: ''
+    updatedAt: '',
+    statusUpdatedAt: '',
   } as Job;
 
   beforeEach(async () => {

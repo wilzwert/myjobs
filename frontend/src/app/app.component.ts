@@ -3,12 +3,11 @@ import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { MenuComponent } from './layout/menu/menu.component';
 import { NotificationComponent } from './layout/notification/notification.component';
 import { filter, Subject, takeUntil } from 'rxjs';
-import { MatIconRegistry } from '@angular/material/icon';
-import { DomSanitizer } from '@angular/platform-browser';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
     selector: 'app-root',
-    imports: [RouterOutlet, MenuComponent, NotificationComponent],
+    imports: [RouterOutlet, MenuComponent, NotificationComponent, MatMenuModule],
     templateUrl: './app.component.html',
     styleUrl: './app.component.scss'
 })
@@ -19,40 +18,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   title = 'MyJobs';
 
-  constructor(private router: Router, iconRegistry: MatIconRegistry, sanitizer: DomSanitizer) {
-    // register custom svg icons used for this app
-    iconRegistry.addSvgIcon(
-      'user',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/user_icon.svg')
-    ).addSvgIcon(
-      'arrow-left',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/arrow_left_icon.svg')
-    ).addSvgIcon(
-      'arrow-down',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/arrow_down_icon.svg')
-    ).addSvgIcon(
-      'arrow-up',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/arrow_up_icon.svg')
-    ).addSvgIcon(
-      'date',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/date_icon.svg')
-    ).addSvgIcon(
-      'send',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/send_icon.svg')
-    )
-    .addSvgIcon(
-      'hamburger',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/hamburger_icon.svg')
-    )
-    .addSvgIcon(
-      'valid',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/check_icon.svg')
-    )
-    .addSvgIcon(
-      'invalid',
-      sanitizer.bypassSecurityTrustResourceUrl('assets/icons/invalid_icon.svg')
-    );
-  }
+  constructor(private router: Router) {}
 
   public ngOnInit() :void {
     this.router.events

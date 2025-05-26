@@ -5,10 +5,11 @@ import { JobAttachmentsFormComponent } from '../job-attachments-form/job-attachm
 import { BaseChildComponent } from '../../../core/component/base-child.component';
 import { JobAttachmentsComponent } from '../job-attachments/job-attachments.component';
 import { JsonPipe } from '@angular/common';
+import { CreateJobWithUrlFormComponent } from "../create-job-with-url-form/create-job-with-url-form.component";
 
 @Component({
   selector: 'app-job-edition',
-  imports: [JobFormComponent, JobActivitiesFormComponent, JobAttachmentsFormComponent, JobAttachmentsComponent],
+  imports: [JobFormComponent, JobActivitiesFormComponent, JobAttachmentsFormComponent, JobAttachmentsComponent, CreateJobWithUrlFormComponent],
   templateUrl: './job-edition.component.html',
   styleUrl: './job-edition.component.scss'
 })

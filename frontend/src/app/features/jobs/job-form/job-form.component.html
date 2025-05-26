@@ -69,7 +69,7 @@
             </mat-form-field>
         </p>
         
-        <button mat-raised-button type="submit" [disabled]="form.invalid || loading"> 
+        <button mat-flat-button type="submit" [disabled]="form.invalid || loading"> 
             @if (loading) { 
                 <span i18n="loading|inform the user loading occurs@@info.loading">Loading...</span>
             } 

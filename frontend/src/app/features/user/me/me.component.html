@@ -1,47 +1,45 @@
 @if(user$|async; as user) {
-    <mat-card>
+    <mat-card appearance="outlined">
         <mat-card-content>
-            <p>
-                {{ user.firstName }} {{ user.lastName }}
+            <p class="user-info">
+                <mat-icon>article_person</mat-icon><span>{{ user.firstName }} {{ user.lastName }}</span>
             </p>
-            <p>
-            {{ user.email }} 
+            <p class="user-info">
+                <mat-icon>email</mat-icon> 
+            <span>{{ user.email }}</span>
             @switch(user.emailStatus) {
                 @case(EmailStatus.PENDING) {
-                    <mat-icon class="input-invalid" svgIcon="valid" i18n="invalid|invalid status label@@info.invalid">Invalid</mat-icon><button mat-button (click)="sendVerificationEmail()" i18n="validate|label of a validation link or button@@action.validate">Validate</button>
+                    <mat-icon class="input-invalid">error</mat-icon><span i18n="invalid|invalid status label@@info.invalid">Invalid</span><button mat-button (click)="sendVerificationEmail()" i18n="validate|label of a validation link or button@@action.validate">Validate</button>
                 }
                 @case(EmailStatus.VALIDATED) {
-                    <mat-icon class="input-valid" svgIcon="valid" i18n="valid|valid status label@@info.valid">Valid</mat-icon><span i18n="verified|label indicating email is verified in user account@@info.verified">Verified</span>
+                    <mat-icon class="input-valid" i18n="valid|valid status label@@info.valid">check</mat-icon><span i18n="verified|label indicating email is verified in user account@@info.verified">Verified</span>
                 }
 
             }
             </p>
-            <p>
+            <p class="user-info">
+                <mat-icon>person</mat-icon> 
             {{ user.username }}
             </p>
-            <p>
+            <p class="user-info">
+                <mat-icon>calendar_month</mat-icon> 
                 <span i18n="registered|label preceding registration date in user account@@info.registered">Registered</span> {{ user.createdAt | date }}
             </p>
         </mat-card-content>
         <mat-card-actions>
-            <button mat-raised-button (click)="editUser(user)" i18n="edit|Edit action label@@action.edit">Edit</button>
+            <button mat-flat-button (click)="editUser(user)" i18n="edit|Edit action label@@action.edit">Edit</button>
         </mat-card-actions>
     </mat-card>
 
-    <mat-card>
+    <mat-card appearance="outlined">
         <mat-card-content>
             <button mat-button (click)="changePassword()" i18n="change password|Change password action label@@action.change_password">Change password</button>
         </mat-card-content>
     </mat-card>
 
 }
-<mat-card>
-    <mat-card-content>
-        <button mat-button class="logout" (click)="logout()" i18n="log out|Log out action label@@action.log_out">Log out</button>
-    </mat-card-content>
-</mat-card>
 
-<mat-card>
+<mat-card appearance="outlined">
     <mat-card-content>
         <button mat-button class="delete-account" (click)="deleteAccount()" i18n="delete account|Delete account action label@@action.user.delete_account">Delete my account</button>
     </mat-card-content>
