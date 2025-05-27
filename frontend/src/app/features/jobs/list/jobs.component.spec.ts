@@ -1,7 +1,14 @@
 import { JobsComponent } from './jobs.component';
 import { of } from 'rxjs';
 import { Page } from '../../../core/model/page.interface';
-import { Job, JobStatus } from '../../../core/model/job.interface';
+import { Job } from '../../../core/model/job.interface';
+import { JobMetadata } from '../../../core/model/job-metadata.interface';
+import { JobService } from '../../../core/services/job.service';
+import { UserService } from '../../../core/services/user.service';
+import { ModalService } from '../../../core/services/modal.service';
+import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
+import { NotificationService } from '../../../core/services/notification.service';
+import { User } from '../../../core/model/user.interface';
 
 describe('JobsComponent', () => {
   let component: JobsComponent;
@@ -15,26 +22,24 @@ describe('JobsComponent', () => {
     updateJobRating: jest.fn(),
     getJobMetadata: jest.fn(),
     deleteJob: jest.fn(),
-  };
+  } as unknown as jest.Mocked<JobService>;
 
   const userServiceMock = {
     getUser: jest.fn(),
-  };
+  } as unknown as jest.Mocked<UserService>;
 
   const modalServiceMock = {
     openJobStepperModal: jest.fn(),
     openJobModal: jest.fn(),
-  };
+  } as unknown as jest.Mocked<ModalService>;
 
   const confirmDialogServiceMock = {
     openConfirmDialog: jest.fn(),
-  };
+  } as unknown as jest.Mocked<ConfirmDialogService>;
 
   const notificationServiceMock = {
     confirmation: jest.fn(),
-  };
-
-  const fbMock = new (require('@angular/forms').FormBuilder)();
+  } as unknown as jest.Mocked<NotificationService>;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -42,23 +47,17 @@ describe('JobsComponent', () => {
     jobServiceMock.getCurrentPage.mockReturnValue(0);
     jobServiceMock.getItemsPerPage.mockReturnValue(10);
     jobServiceMock.getAllJobs.mockReturnValue(of({ content: [], totalElementsCount: 0, pagesCount: 0 } as unknown as Page<Job>));
-    userServiceMock.getUser.mockReturnValue(of({ id: 'user1', name: 'Test User' }));
+    userServiceMock.getUser.mockReturnValue(of({ id: 'user1', name: 'Test User' } as unknown as User));
 
     component = new JobsComponent(
-      fbMock,
-      userServiceMock as any,
-      jobServiceMock as any,
-      modalServiceMock as any,
-      confirmDialogServiceMock as any,
-      notificationServiceMock as any,
+      userServiceMock,
+      jobServiceMock,
+      modalServiceMock,
+      confirmDialogServiceMock,
+      notificationServiceMock,
     );
 
     component.ngOnInit();
-  });
-
-  it('should create form with url control', () => {
-    expect(component.urlForm).toBeDefined();
-    expect(component.urlForm?.contains('url')).toBe(true);
   });
 
   it('should load jobs on init', () => {
@@ -101,15 +100,12 @@ describe('JobsComponent', () => {
   });
 
   it('should create job with metadata and open modal', done => {
-    const fakeMetadata = { title: 'Job from URL' } as any;
+    const fakeMetadata = { title: 'Job from URL' } as any as JobMetadata;
     jobServiceMock.getJobMetadata.mockReturnValue(of(fakeMetadata));
-
-    component.urlForm?.controls['url'].setValue('https://example.com/job');
-
-    component.createJobWithMetadata();
+    
+    component.createJobWithMetadata(fakeMetadata);
 
     setTimeout(() => {
-      expect(jobServiceMock.getJobMetadata).toHaveBeenCalledWith('https://example.com/job');
       expect(modalServiceMock.openJobStepperModal).toHaveBeenCalledWith(expect.any(Function), { jobMetadata: fakeMetadata });
       done();
     }, 0);

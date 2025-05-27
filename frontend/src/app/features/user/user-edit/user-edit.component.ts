@@ -11,6 +11,7 @@ import { BaseChildComponent } from '../../../core/component/base-child.component
 import { FormErrorService } from '../../../core/services/form-error.service';
 import { UserFormComponent } from "../user-form/user-form.component";
 import { LocaleService } from '../../../core/services/locale.service';
+import { ErrorProcessorService } from '../../../core/services/error-processor.service';
 
 @Component({
   selector: 'app-user-edit',
@@ -29,7 +30,8 @@ export class UserEditComponent extends BaseChildComponent implements OnInit, OnD
     private fb: FormBuilder,
     private userService: UserService,
     private notificationService: NotificationService,
-    private formErrorService: FormErrorService
+    private formErrorService: FormErrorService,
+    private errorProcessorService: ErrorProcessorService
   ) {
     super();
   }
@@ -89,11 +91,8 @@ export class UserEditComponent extends BaseChildComponent implements OnInit, OnD
               catchError(
                 (error: ApiError) => {
                   this.isSubmitting = false;
-                  
                   this.formErrorService.setBackendErrors(this.form, error.errors);
-
-
-                  return throwError(() => error);
+                  return this.errorProcessorService.processError(error);
                 }
             ))
             .subscribe(() => {

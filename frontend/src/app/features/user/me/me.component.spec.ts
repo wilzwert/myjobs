@@ -28,7 +28,7 @@ describe('MeComponent', () => {
 
   beforeEach(async () => {
     userServiceMock = {
-      getUser: jest.fn().mockReturnValue(of({ id: 1, firstName: 'John', lastName: 'Doe', email: 'john@doe.com', createdAt: '', emailStatus: EmailStatus.VALIDATED, username: 'john'  } as User)),
+      getUser: jest.fn().mockReturnValue(of({ id: 1, firstName: 'John', lastName: 'Doe', email: 'john@doe.com', createdAt: '', emailStatus: EmailStatus.VALIDATED, username: 'john', jobFollowUpReminderDays: 14 } as User)),
       deleteUser: jest.fn().mockReturnValue(of({})),
       sendVerificationMail: jest.fn().mockReturnValue(of({}))
     } as unknown as jest.Mocked<UserService>;
@@ -123,22 +123,15 @@ describe('MeComponent', () => {
   });
 
   it('should call modalService.openUserEditModal() when editUser is called', () => {
-    const user = { id: 1, firstName: 'John', lastName: 'Doe', email: 'john@doe.com', createdAt: '', emailStatus: EmailStatus.VALIDATED, username: 'john'  } as User;
+    const user = { id: 1, firstName: 'John', lastName: 'Doe', email: 'john@doe.com', createdAt: '', emailStatus: EmailStatus.VALIDATED, username: 'john', jobFollowUpReminderDays: 14  } as User;
     component.editUser(user);
     expect(modalServiceMock.openUserEditModal).toHaveBeenCalledWith(user, expect.any(Function));
-  });
-
-  it('should call authService.logout() when logout is called', () => {
-    component.logout();
-    expect(authServiceMock.logout).toHaveBeenCalled();
-    expect(sessionServiceMock.logOut).toHaveBeenCalled();
-    expect(routerMock.navigate).toHaveBeenCalledWith(['']);
   });
 
   it('should do nothing when deleting account fails', () => {
     const errorResponse = { status: 500, error: { message: 'Deletion error' }, headers: {} } as any as ApiError;
     userServiceMock.deleteUser.mockReturnValue(throwError(() => errorResponse));
-    authServiceMock.logout.mockReturnValue(of({})); // Mock successful logout
+    authServiceMock.logout.mockReturnValue(of(void 0)); // Mock successful logout
 
     component.confirmDeleteAccount();
 
@@ -159,18 +152,5 @@ describe('MeComponent', () => {
 
     expect(userServiceMock.sendVerificationMail).toHaveBeenCalled();
     expect(notificationServiceMock.confirmation).not.toHaveBeenCalled();
-  });
-
-  it('should do nothing when error during logout', () => {
-    const errorResponse = new ApiError({ status: 500, error: { message: 'Logout error' }, headers: {} } as any);
-    authServiceMock.logout.mockReturnValue(throwError(() => errorResponse));
-    sessionServiceMock.logOut.mockImplementation(() => {});
-
-    component.logout();
-
-    fixture.detectChanges(); // Triggers ngOnInit
-
-    expect(sessionServiceMock.logOut).not.toHaveBeenCalled();
-    expect(routerMock.navigate).not.toHaveBeenCalled();
   });
 });

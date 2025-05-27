@@ -5,6 +5,7 @@ import { AuthService } from "../services/auth.service";
 import { BehaviorSubject, catchError, filter, switchMap, take, throwError } from "rxjs";
 import { SessionInformation } from "../model/session-information.interface";
 import { ApiError } from "../errors/api-error";
+import { ErrorProcessorService } from "../services/error-processor.service";
 
 
 @Injectable({ providedIn: 'root' })
@@ -12,7 +13,7 @@ export class JwtInterceptor implements HttpInterceptor {
   private isRefreshing = false;
   private refreshTokenSubject: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
-  constructor(private sessionService: SessionService, private authService: AuthService) {}
+  constructor(private sessionService: SessionService, private authService: AuthService, private errorProcessorService: ErrorProcessorService) {}
 
   public intercept(request: HttpRequest<unknown>, next: HttpHandler) {
     if (!this.sessionService.isLogged()) {
@@ -28,7 +29,7 @@ export class JwtInterceptor implements HttpInterceptor {
         if (this.shouldTryToRefreshToken(request, error)) {
           return this.tryToRefreshToken(request, next);
         }
-        return throwError(() => error);
+        return this.errorProcessorService.processError(error);
       })
     );
   }
@@ -56,7 +57,7 @@ export class JwtInterceptor implements HttpInterceptor {
             this.isRefreshing = false;
             this.refreshTokenSubject.next(false);
             this.sessionService.logOut();
-            return throwError(() => error);
+            return this.errorProcessorService.processError(error);
           })
         );
       }

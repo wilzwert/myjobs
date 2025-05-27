@@ -27,7 +27,7 @@ export class FormErrorService  {
         const translatedErrors = errors.map((err:BackendError) =>
           this.translatorService.translateError(err.code, err.details)
         );
-
+        console.log(translatedErrors);
         const controlErrors = control.errors ?? {} as ValidationErrors;
         controlErrors['backend'] = translatedErrors;
         control.setErrors(controlErrors);

@@ -14,6 +14,7 @@ import { AuthValidators } from '../../core/services/auth.validators';
 import { NgxCaptchaModule } from 'ngx-captcha';
 import { PasswordValidator } from '../../core/validators/password-validator';
 import { UserFormComponent } from "../user/user-form/user-form.component";
+import { ErrorProcessorService } from '../../core/services/error-processor.service';
 
 @Component({
   selector: 'app-register',
@@ -39,7 +40,8 @@ export class RegistrationComponent {
     private authValidators: AuthValidators,
     private router: Router,
     private fb: FormBuilder,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private errorProcessorService: ErrorProcessorService
   ) {
     this.form = this.fb.group({
       email: [
@@ -91,7 +93,7 @@ export class RegistrationComponent {
         catchError(
           (error: ApiError) => {
             this.isSubmitting = false;
-            return throwError(() => error);
+            return this.errorProcessorService.processError(error);
           }
       ))
       .subscribe(() => {

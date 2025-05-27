@@ -18,6 +18,10 @@ describe('TranslatorService', () => {
     expect(service.translateError("some_code")).toEqual("An unknown error occurred some_code");
   });
 
+  it('should return unknown error with code when details null', () => {
+    expect(service.translateError("some_code", null)).toEqual("An unknown error occurred some_code");
+  });
+
   it('when code is INVALID_URL then should return message', () => {
     expect(service.translateError("INVALID_URL")).toEqual("Invalid url");
   });

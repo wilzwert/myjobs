@@ -8,6 +8,7 @@ import { UserEditComponent } from '../../features/user/user-edit/user-edit.compo
 import { ModalComponent } from '../../layout/modal/modal.component';
 import { Job } from '../model/job.interface';
 import { User } from '../model/user.interface';
+import { CreateJobWithUrlFormComponent } from '../../features/jobs/create-job-with-url-form/create-job-with-url-form.component';
 
 describe('ModalService', () => {
   let modalService: ModalService;
@@ -34,6 +35,22 @@ describe('ModalService', () => {
   afterEach(() => {
     jest.clearAllMocks(); // Clear mocks after each test
   });
+
+  it('should open job creation form modal with correct data', () => {
+    const mockSucceeded = jest.fn();
+    
+    modalService.openCreateJobWithUrlModal(mockSucceeded);
+
+    expect(dialogOpenSpy).toHaveBeenCalledWith(ModalComponent, expect.objectContaining({
+      data: expect.objectContaining({
+        component: CreateJobWithUrlFormComponent,
+        succeeded: mockSucceeded,
+        data: expect.objectContaining({
+        }),
+      }),
+    }));
+  });
+
 
   it('should open job modal with correct data', () => {
     const mockJob: Job = { id: '1', title: 'Test Job' } as Job;
@@ -83,7 +100,7 @@ describe('ModalService', () => {
   });
 
   it('should open user edit modal with correct data', () => {
-    const mockUser: User = { id: 'user1', name: 'John Doe' };
+    const mockUser: User = { id: 'user1', name: 'John Doe' } as unknown as User;
     const mockSucceeded = jest.fn();
 
     modalService.openUserEditModal(mockUser, mockSucceeded);

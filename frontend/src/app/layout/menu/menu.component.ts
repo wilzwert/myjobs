@@ -66,12 +66,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   }
 
   public logout(): void {
-    this.authService.logout().
-        pipe(
-          catchError((error) =>  {
-            return throwError(() => error);
-          })
-      )
+    this.authService.logout()
         .subscribe(
           () => {
             this.sessionService.logOut();

@@ -11,6 +11,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { ResetPasswordRequest } from '../../../../core/model/reset-password-request.interface';
 import { UserService } from '../../../../core/services/user.service';
 import { StatusIconComponent } from "../../../../layout/shared/status-icon/status-icon.component";
+import { ErrorProcessorService } from '../../../../core/services/error-processor.service';
 
 
 @Component({
@@ -28,7 +29,8 @@ export class ResetPasswordComponent {
     private userService: UserService,
     private router: Router,
     private fb: FormBuilder,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private errorProcessorService: ErrorProcessorService
   ) {
     this.form = this.fb.group({
       email: [
@@ -55,9 +57,7 @@ export class ResetPasswordComponent {
             catchError(
               () => {
                 this.isSubmitting = false;
-                return throwError(() => new Error(
-                  'Password request failed'
-                ));
+                return this.errorProcessorService.processError(new Error('Password request failed'));
               }
           ))
           .subscribe(() => {

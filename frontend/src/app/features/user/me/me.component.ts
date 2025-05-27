@@ -44,11 +44,7 @@ export class MeComponent {
   public confirmDeleteAccount() :void {
     // TODO delete user account
     this.userService.deleteUser().pipe(
-      take(1),
-      catchError((error: ApiError) => {
-        // this.notificationService.error(`An error occurred while deleting your account. ${error.message}`, error);
-        return throwError(() => error);
-      })
+      take(1)
     ).subscribe(() => {
       // first we logout ; it will help prevent the jwt interceptor to try and re-authenticate
       this.sessionService.logOut(false);
@@ -68,12 +64,7 @@ export class MeComponent {
   }
 
   public confirmSendVerificationEmail() {
-    this.userService.sendVerificationMail().
-        pipe(
-          catchError((error) =>  {
-            return throwError(() => error);
-          })
-      )
+    this.userService.sendVerificationMail()
       .subscribe(
         () => {
           this.notificationService.confirmation($localize `:@@info.user.validation_email_sent:The verification email has been sent ; please check your emails.`);

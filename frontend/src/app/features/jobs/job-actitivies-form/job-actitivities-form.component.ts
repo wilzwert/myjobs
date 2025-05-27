@@ -14,6 +14,7 @@ import { UserActitivityType } from '../../../core/model/activity-type';
 import { ActivityLabelPipe } from '../../../core/pipe/activity-label.pipe';
 import { MatOption, MatSelect } from '@angular/material/select';
 import { MatIcon } from '@angular/material/icon';
+import { ErrorProcessorService } from '../../../core/services/error-processor.service';
 
 
 @Component({
@@ -31,8 +32,12 @@ export class JobActivitiesFormComponent implements OnInit {
   activityForm!: FormGroup;
   activityTypeKeys: string[] = [];
 
-  constructor(private fb: FormBuilder, private jobService: JobService, private notificationService: NotificationService) {
-    this.activityTypeKeys=Object.keys(UserActitivityType);
+  constructor(
+    private fb: FormBuilder, 
+    private jobService: JobService, 
+    private notificationService: NotificationService,
+    private errorProcessorService: ErrorProcessorService) {
+    this.activityTypeKeys = Object.keys(UserActitivityType);
   }
 
   ngOnInit(): void {
@@ -77,7 +82,7 @@ export class JobActivitiesFormComponent implements OnInit {
                   this.loading = false;
                   // set an explicit error message
                   error.message = `Activities could not be created.${error.message}`;
-                  return throwError(() => error);
+                  return this.errorProcessorService.processError(error);
               }
             )
           )

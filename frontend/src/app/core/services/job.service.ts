@@ -49,19 +49,18 @@ export class JobService {
    */
   public getAllJobs(page: number, itemsPerPage: number, status: keyof typeof JobStatus | null = null, filterLate: boolean, sort: string): Observable<Page<Job>> {
 
-
-    // THIS code has been left as an "idea" to try and improve 
     return this.jobsSubject.pipe(
       switchMap((jobsPage: Page<Job> | null) => {
         if(jobsPage === null || page != this.currentPage || status != this.currentStatus || filterLate != this.filterLate || sort != this.currentSort) {
           this.currentPage = page;
           this.currentStatus = status;
-          this.filterLate = status == null && filterLate;
+          this.filterLate = filterLate;
           this.itemsPerPage = itemsPerPage;
           this.currentSort = sort;
           const statusOrFilterParam = (status != null ?  `status=${status}`  : filterLate ? `filterLate=true` : '');
           return this.dataService.get<Page<Job>>(`jobs?page=${page}&itemsPerPage=${itemsPerPage}`+(statusOrFilterParam ? `&${statusOrFilterParam}` : '')+`&sort=${sort}`).pipe(
             switchMap((fetchedJobs: Page<Job>) => {
+              console.log('next....');
               this.jobsSubject.next(fetchedJobs);
               return of(fetchedJobs);
             })

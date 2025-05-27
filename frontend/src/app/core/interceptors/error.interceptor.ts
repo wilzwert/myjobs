@@ -8,9 +8,16 @@ import {
 } from '@angular/common/http';
 import { catchError, Observable, throwError } from 'rxjs';
 import { ApiError } from '../errors/api-error';
+import { ErrorProcessorService } from '../services/error-processor.service';
+
+/**
+ * Intercepts http errors to rethrow structured ApiError
+ */
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
+  constructor(private errorProcessorService: ErrorProcessorService) {}
+
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     return next.handle(request)
       .pipe(
@@ -18,10 +25,9 @@ export class ErrorInterceptor implements HttpInterceptor {
         catchError((error: HttpErrorResponse | ApiError) => {
           // Handle the error
           if(error instanceof HttpErrorResponse) {
-            return throwError(() => new ApiError(error));
+            return this.errorProcessorService.processError(new ApiError(error));
           }
-          return throwError(() => error);
-          
+          return this.errorProcessorService.processError(error);
         })
       );
   }

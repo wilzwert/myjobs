@@ -10,6 +10,7 @@ import { ConfirmPasswordValidator } from '../../../../core/validators/confirm-pa
 import { NewPasswordRequest } from '../../../../core/model/new-password-request.interface';
 import { UserService } from '../../../../core/services/user.service';
 import { StatusIconComponent } from "../../../../layout/shared/status-icon/status-icon.component";
+import { ErrorProcessorService } from '../../../../core/services/error-processor.service';
 
 @Component({
   selector: 'app-new-password',
@@ -24,7 +25,13 @@ export class NewPasswordComponent implements OnInit {
   public form!: FormGroup;
   public isSubmitting = false;
 
-  constructor(private activatedRoute: ActivatedRoute, private fb: FormBuilder, private userService: UserService, private notificationService: NotificationService, private router: Router) {
+  constructor(
+    private activatedRoute: ActivatedRoute, 
+    private fb: FormBuilder, 
+    private userService: UserService, 
+    private notificationService: NotificationService, 
+    private router: Router,
+    private errorProcessorService: ErrorProcessorService) {
 
   }
 
@@ -70,9 +77,7 @@ export class NewPasswordComponent implements OnInit {
                   catchError(
                     () => {
                       this.isSubmitting = false;
-                      return throwError(() => new Error(
-                        $localize `:@@error.password.creation:Password creation failed`
-                      ));
+                      return this.errorProcessorService.processError(new Error($localize `:@@error.password.creation:Password creation failed`));
                     }
                 ))
                 .subscribe(() => {

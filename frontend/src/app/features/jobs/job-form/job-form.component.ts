@@ -13,6 +13,7 @@ import { ApiError } from '../../../core/errors/api-error';
 import { MatButton } from '@angular/material/button';
 import { JobMetadata } from '../../../core/model/job-metadata.interface';
 import { StatusIconComponent } from "../../../layout/shared/status-icon/status-icon.component";
+import { ErrorProcessorService } from '../../../core/services/error-processor.service';
 
 @Component({
   selector: 'app-job-form',
@@ -40,7 +41,7 @@ export class JobFormComponent implements OnInit {
     statusbar: false
   };
 
-  constructor(private jobService: JobService, private notificationService: NotificationService, private fb: FormBuilder) {
+  constructor(private jobService: JobService, private notificationService: NotificationService, private fb: FormBuilder, private errorProcessorService: ErrorProcessorService) {
   }
   ngOnInit(): void {
     this.initForm();
@@ -101,7 +102,7 @@ export class JobFormComponent implements OnInit {
           const errorMessage = $localize `:@@error.job.create_or_save:Job could not be ${term}.${error.message}`;
           error.message = errorMessage;
           this.error = errorMessage;
-          return throwError(() => error);
+          return this.errorProcessorService.processError(error);
         }
       )
     )

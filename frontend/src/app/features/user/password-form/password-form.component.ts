@@ -12,6 +12,7 @@ import { MatInput } from '@angular/material/input';
 import { ApiError } from '../../../core/errors/api-error';
 import { BaseChildComponent } from '../../../core/component/base-child.component';
 import { StatusIconComponent } from "../../../layout/shared/status-icon/status-icon.component";
+import { ErrorProcessorService } from '../../../core/services/error-processor.service';
 
 @Component({
   selector: 'app-password-form',
@@ -24,7 +25,7 @@ export class PasswordFormComponent extends BaseChildComponent implements OnInit 
   public form!: FormGroup;
   public isSubmitting = false;
 
-  constructor(private fb: FormBuilder, private userService: UserService, private notificationService: NotificationService) {
+  constructor(private fb: FormBuilder, private userService: UserService, private notificationService: NotificationService, private errorProcessService: ErrorProcessorService) {
     super();
   }
 
@@ -79,9 +80,7 @@ export class PasswordFormComponent extends BaseChildComponent implements OnInit 
                     (error: ApiError) => {
                       this.isSubmitting = false;
                       this.fail();
-                      return throwError(() => new Error(
-                        `Password update failed : ${error.message}`
-                      ));
+                      return this.errorProcessService.processError(new Error(`Password update failed : ${error.message}`));
                     }
                 ))
                 .subscribe(() => {

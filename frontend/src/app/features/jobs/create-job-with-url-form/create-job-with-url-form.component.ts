@@ -5,7 +5,6 @@ import { StatusIconComponent } from '../../../layout/shared/status-icon/status-i
 import { JobService } from '../../../core/services/job.service';
 import { JobMetadata } from '../../../core/model/job-metadata.interface';
 import { BaseChildComponent } from '../../../core/component/base-child.component';
-import { Job } from '../../../core/model/job.interface';
 import { ModalService } from '../../../core/services/modal.service';
 import { MatInput } from '@angular/material/input';
 import { MatButton } from '@angular/material/button';

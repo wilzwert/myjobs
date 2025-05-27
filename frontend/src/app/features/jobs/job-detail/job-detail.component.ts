@@ -17,6 +17,7 @@ import { JobActivitiesComponent } from "../job-activities/job-activities.compone
 import { JobSummaryComponent } from '../job-summary/job-summary.component';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
+import { ErrorProcessorService } from '../../../core/services/error-processor.service';
 
 @Component({
   selector: 'app-job-detail',
@@ -39,7 +40,8 @@ export class JobDetailComponent implements OnInit, OnDestroy {
     private confirmDialogService: ConfirmDialogService,
     private modalService: ModalService,
     private notificationService: NotificationService,
-    private title: Title
+    private title: Title,
+    private errorProcessorService: ErrorProcessorService
   ) {}
 
   private loadJob(jobId: string): void {
@@ -49,7 +51,7 @@ export class JobDetailComponent implements OnInit, OnDestroy {
       tap((job: Job) =>{this.title.setTitle(`Job - ${job.title}`)}),
       catchError((error: ApiError) => {
         this.router.navigate(["/jobs"]);
-        return throwError(() => error);
+        return this.errorProcessorService.processError(error);
       })
     );
   }
