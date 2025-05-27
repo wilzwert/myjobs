@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MeComponent } from './me.component';
-import { UserService } from '../../../core/services/user.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { SessionService } from '../../../core/services/session.service';
-import { ModalService } from '../../../core/services/modal.service';
-import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
-import { NotificationService } from '../../../core/services/notification.service';
+import { UserService } from '@core/services/user.service';
+import { AuthService } from '@core/services/auth.service';
+import { SessionService } from '@core/services/session.service';
+import { ModalService } from '@core/services/modal.service';
+import { ConfirmDialogService } from '@core/services/confirm-dialog.service';
+import { NotificationService } from '@core/services/notification.service';
 import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
-import { User } from '../../../core/model/user.interface';
+import { User } from '@core/model/user.interface';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { EmailStatus } from '../../../core/model/email-status';
+import { EmailStatus } from '@core/model/email-status';
 import { provideHttpClient } from '@angular/common/http';
-import { ApiError } from '../../../core/errors/api-error';
+import { ApiError } from '@core/errors/api-error';
 
 describe('MeComponent', () => {
   let component: MeComponent;

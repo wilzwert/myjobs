@@ -2,10 +2,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { CreateJobWithUrlFormComponent } from './create-job-with-url-form.component';
 import { of } from 'rxjs';
-import { ModalService } from '../../../core/services/modal.service';
-import { JobService } from '../../../core/services/job.service';
-import { JobMetadata } from '../../../core/model/job-metadata.interface';
-import { ComponentInputDomainData } from '../../../core/model/component-input-data.interface';
+import { ModalService } from '@core/services/modal.service';
+import { JobService } from '@core/services/job.service';
+import { JobMetadata } from '@core/model/job-metadata.interface';
+import { ComponentInputDomainData } from '@core/model/component-input-data.interface';
 
 describe('CreateJobWithUrlFormComponent', () => {
   let component: CreateJobWithUrlFormComponent;

@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { NotificationService } from '../../core/services/notification.service';
+import { NotificationService } from '@core/services/notification.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { AppNotification } from '../../core/model/app-notification.interface';
-import { ApiError } from '../../core/errors/api-error';
-import { TranslatorService } from '../../core/services/translator.service';
+import { AppNotification } from '@core/model/app-notification.interface';
+import { ApiError } from '@core/errors/api-error';
+import { TranslatorService } from '@core/services/translator.service';
 
 @Component({
   selector: 'app-notification',

@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { UserFormComponent } from './user-form.component';
 import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
-import { LocaleService } from '../../../core/services/locale.service';
+import { LocaleService } from '@core/services/locale.service';
 import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
 

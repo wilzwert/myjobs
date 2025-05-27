@@ -2,12 +2,12 @@ import { UserService } from './user.service';
 import { DataService } from './data.service';
 import { CaptchaService } from './captcha.service';
 import { of } from 'rxjs';
-import { ResetPasswordRequest } from '../model/reset-password-request.interface';
-import { NewPasswordRequest } from '../model/new-password-request.interface';
-import { ChangePasswordRequest } from '../model/change-password-request.interface';
-import { ValidateEmailRequest } from '../model/validate-email-request.interface';
-import { EditUserRequest } from '../model/edit-user-request.interface';
-import { User } from '../model/user.interface';
+import { ResetPasswordRequest } from '@core/model/reset-password-request.interface';
+import { NewPasswordRequest } from '@core/model/new-password-request.interface';
+import { ChangePasswordRequest } from '@core/model/change-password-request.interface';
+import { ValidateEmailRequest } from '@core/model/validate-email-request.interface';
+import { EditUserRequest } from '@core/model/edit-user-request.interface';
+import { User } from '@core/model/user.interface';
 
 describe('UserService', () => {
   let service: UserService;

@@ -4,13 +4,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { Router, RouterLink } from '@angular/router';
-import { SessionService } from '../../core/services/session.service';
-import { AuthService } from '../../core/services/auth.service';
+import { SessionService } from '@core/services/session.service';
+import { AuthService } from '@core/services/auth.service';
 import { catchError, throwError } from 'rxjs';
-import { ApiError } from '../../core/errors/api-error';
-import { LoginRequest } from '../../core/model/login-request.interface';
-import { ErrorProcessorService } from '../../core/services/error-processor.service';
-import { SessionInformation } from '../../core/model/session-information.interface';
+import { ApiError } from '@core/errors/api-error';
+import { LoginRequest } from '@core/model/login-request.interface';
+import { ErrorProcessorService } from '@core/services/error-processor.service';
+import { SessionInformation } from '@core/model/session-information.interface';
 
 
 @Component({

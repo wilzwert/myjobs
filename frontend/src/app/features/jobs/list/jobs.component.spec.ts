@@ -1,14 +1,14 @@
 import { JobsComponent } from './jobs.component';
 import { of } from 'rxjs';
-import { Page } from '../../../core/model/page.interface';
-import { Job } from '../../../core/model/job.interface';
-import { JobMetadata } from '../../../core/model/job-metadata.interface';
-import { JobService } from '../../../core/services/job.service';
-import { UserService } from '../../../core/services/user.service';
-import { ModalService } from '../../../core/services/modal.service';
-import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
-import { NotificationService } from '../../../core/services/notification.service';
-import { User } from '../../../core/model/user.interface';
+import { Page } from '@core/model/page.interface';
+import { Job } from '@core/model/job.interface';
+import { JobMetadata } from '@core/model/job-metadata.interface';
+import { JobService } from '@core/services/job.service';
+import { UserService } from '@core/services/user.service';
+import { ModalService } from '@core/services/modal.service';
+import { ConfirmDialogService } from '@core/services/confirm-dialog.service';
+import { NotificationService } from '@core/services/notification.service';
+import { User } from '@core/model/user.interface';
 
 describe('JobsComponent', () => {
   let component: JobsComponent;

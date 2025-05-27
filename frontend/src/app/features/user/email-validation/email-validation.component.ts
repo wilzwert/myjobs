@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from '../../../core/services/user.service';
+import { UserService } from '@core/services/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ValidateEmailRequest } from '../../../core/model/validate-email-request.interface';
+import { ValidateEmailRequest } from '@core/model/validate-email-request.interface';
 import { catchError, take, throwError } from 'rxjs';
-import { NotificationService } from '../../../core/services/notification.service';
-import { SessionService } from '../../../core/services/session.service';
-import { ErrorProcessorService } from '../../../core/services/error-processor.service';
+import { NotificationService } from '@core/services/notification.service';
+import { SessionService } from '@core/services/session.service';
+import { ErrorProcessorService } from '@core/services/error-processor.service';
 
 @Component({
   selector: 'app-email-validation',

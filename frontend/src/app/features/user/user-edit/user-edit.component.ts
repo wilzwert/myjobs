@@ -1,17 +1,16 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { User } from '../../../core/model/user.interface';
+import { User } from '@core/model/user.interface';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AuthValidators } from '../../../core/services/auth.validators';
-import { UserService } from '../../../core/services/user.service';
-import { EditUserRequest } from '../../../core/model/edit-user-request.interface';
-import { catchError, throwError } from 'rxjs';
-import { ApiError } from '../../../core/errors/api-error';
-import { NotificationService } from '../../../core/services/notification.service';
-import { BaseChildComponent } from '../../../core/component/base-child.component';
-import { FormErrorService } from '../../../core/services/form-error.service';
-import { UserFormComponent } from "../user-form/user-form.component";
-import { LocaleService } from '../../../core/services/locale.service';
-import { ErrorProcessorService } from '../../../core/services/error-processor.service';
+import { AuthValidators } from '@core/services/auth.validators';
+import { UserService } from '@core/services/user.service';
+import { EditUserRequest } from '@core/model/edit-user-request.interface';
+import { catchError } from 'rxjs';
+import { ApiError } from '@core/errors/api-error';
+import { NotificationService } from '@core/services/notification.service';
+import { BaseChildComponent } from '@core/component/base-child.component';
+import { FormErrorService } from '@core/services/form-error.service';
+import { UserFormComponent } from "@features/user/user-form/user-form.component";
+import { ErrorProcessorService } from '@core/services/error-processor.service';
 
 @Component({
   selector: 'app-user-edit',

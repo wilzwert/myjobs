@@ -2,15 +2,15 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoginComponent } from './login.component';
-import { SessionService } from '../../core/services/session.service';
-import { AuthService } from '../../core/services/auth.service';
+import { SessionService } from '@core/services/session.service';
+import { AuthService } from '@core/services/auth.service';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideScReCaptchaSettings } from '@semantic-components/re-captcha';
-import { environment } from '../../../environments/environment';
-import { CaptchaService } from '../../core/services/captcha.service';
+import { environment } from '@environments/environment';
+import { CaptchaService } from '@core/services/captcha.service';
 import { of } from 'rxjs';
-import { ErrorProcessorService } from '../../core/services/error-processor.service';
-import { ErrorInterceptor } from '../../core/interceptors/error.interceptor';
+import { ErrorProcessorService } from '@core/services/error-processor.service';
+import { ErrorInterceptor } from '@core/interceptors/error.interceptor';
 
 describe('LoginComponent integration test', () => {
   let fixture: ComponentFixture<LoginComponent>;

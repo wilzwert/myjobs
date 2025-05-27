@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { JobEditionComponent } from '../../features/jobs/job-editIion/job-edition.component';
-import { Job } from '../model/job.interface';
-import { JobStepperComponent } from '../../features/jobs/job-stepper/job-stepper.component';
-import { PasswordFormComponent } from '../../features/user/password-form/password-form.component';
-import { User } from '../model/user.interface';
-import { ModalComponent } from '../../layout/modal/modal.component';
-import { ComponentInputData, ComponentInputDomainData } from '../model/component-input-data.interface';
-import { UserEditComponent } from '../../features/user/user-edit/user-edit.component';
-import { CreateJobWithUrlFormComponent } from '../../features/jobs/create-job-with-url-form/create-job-with-url-form.component';
+import { JobEditionComponent } from '@features/jobs/job-editIion/job-edition.component';
+import { Job } from '@core/model/job.interface';
+import { JobStepperComponent } from '@features/jobs/job-stepper/job-stepper.component';
+import { PasswordFormComponent } from '@features/user/password-form/password-form.component';
+import { User } from '@core/model/user.interface';
+import { ModalComponent } from '@layout/modal/modal.component';
+import { ComponentInputData, ComponentInputDomainData } from '@core/model/component-input-data.interface';
+import { UserEditComponent } from '@features/user/user-edit/user-edit.component';
+import { CreateJobWithUrlFormComponent } from '@features/jobs/create-job-with-url-form/create-job-with-url-form.component';
 
 @Injectable({
   providedIn: 'root'

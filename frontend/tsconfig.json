@@ -26,6 +26,15 @@
     "types": [
       "node", "jest"
     ],
+    "baseUrl": "./src",
+    "paths": {
+      "@app/*": ["app/*"],
+      "@core/*": ["app/core/*"],
+      "@features/*": ["app/features/*"],
+      "@layout/*": ["app/layout/*"],
+      "@environments/*": ["environments/*"],
+      "@lang/*": ["lang/*"],
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

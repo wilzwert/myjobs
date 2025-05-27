@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { SessionInformation } from '../model/session-information.interface';
-import { RefreshTokenResponse } from '../model/refresh-token-response.interface';
+import { SessionInformation } from '@core/model/session-information.interface';
+import { RefreshTokenResponse } from '@core/model/refresh-token-response.interface';
 import { BehaviorSubject } from 'rxjs';
 
 const SESSION_INFO_KEY = 'session-info';

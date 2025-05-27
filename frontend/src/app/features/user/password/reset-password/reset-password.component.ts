@@ -7,11 +7,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { NgxCaptchaModule } from 'ngx-captcha';
-import { NotificationService } from '../../../../core/services/notification.service';
-import { ResetPasswordRequest } from '../../../../core/model/reset-password-request.interface';
-import { UserService } from '../../../../core/services/user.service';
-import { StatusIconComponent } from "../../../../layout/shared/status-icon/status-icon.component";
-import { ErrorProcessorService } from '../../../../core/services/error-processor.service';
+import { NotificationService } from '@core/services/notification.service';
+import { ResetPasswordRequest } from '@core/model/reset-password-request.interface';
+import { UserService } from '@core/services/user.service';
+import { StatusIconComponent } from "@layout/shared/status-icon/status-icon.component";
+import { ErrorProcessorService } from '@core/services/error-processor.service';
 
 
 @Component({

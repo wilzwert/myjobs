@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { SessionService } from '../../core/services/session.service';
-import { SessionInformation } from '../../core/model/session-information.interface';
+import { SessionService } from '@core/services/session.service';
+import { SessionInformation } from '@core/model/session-information.interface';
 import { BehaviorSubject } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';

@@ -2,19 +2,19 @@ import { Component } from '@angular/core';
 import { catchError, EMPTY, Observable, take, throwError } from 'rxjs';
 import { AsyncPipe, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
-import { User } from '../../../core/model/user.interface';
-import { UserService } from '../../../core/services/user.service';
-import { AuthService } from '../../../core/services/auth.service';
-import { SessionService } from '../../../core/services/session.service';
+import { User } from '@core/model/user.interface';
+import { UserService } from '@core/services/user.service';
+import { AuthService } from '@core/services/auth.service';
+import { SessionService } from '@core/services/session.service';
 import { MatCard, MatCardActions, MatCardContent } from '@angular/material/card';
 import { MatButton } from '@angular/material/button';
-import { ModalService } from '../../../core/services/modal.service';
-import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
-import { ApiError } from '../../../core/errors/api-error';
-import { NotificationService } from '../../../core/services/notification.service';
-import { EmailStatus } from '../../../core/model/email-status';
+import { ModalService } from '@core/services/modal.service';
+import { ConfirmDialogService } from '@core/services/confirm-dialog.service';
+import { ApiError } from '@core/errors/api-error';
+import { NotificationService } from '@core/services/notification.service';
+import { EmailStatus } from '@core/model/email-status';
 import { MatIcon } from '@angular/material/icon';
-import { ComponentInputDomainData } from '../../../core/model/component-input-data.interface';
+import { ComponentInputDomainData } from '@core/model/component-input-data.interface';
 
 @Component({
   selector: 'app-me',

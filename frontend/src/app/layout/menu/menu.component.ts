@@ -1,13 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AsyncPipe, CommonModule } from '@angular/common';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { SessionService } from '../../core/services/session.service';
+import { SessionService } from '@core/services/session.service';
 import { catchError, filter, Observable, Subject, takeUntil, throwError } from 'rxjs';
 import { NavigationEnd, NavigationSkipped, Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { LocaleService } from '../../core/services/locale.service';
+import { LocaleService } from '@core/services/locale.service';
 import { MatMenu, MatMenuModule } from '@angular/material/menu';
-import { AuthService } from '../../core/services/auth.service';
+import { AuthService } from '@core/services/auth.service';
 
 @Component({
   selector: 'app-menu',

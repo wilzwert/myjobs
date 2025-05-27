@@ -1,14 +1,14 @@
 import { TestBed } from '@angular/core/testing';
 import { ModalService } from './modal.service';
 import { MatDialog } from '@angular/material/dialog';
-import { JobEditionComponent } from '../../features/jobs/job-editIion/job-edition.component';
-import { JobStepperComponent } from '../../features/jobs/job-stepper/job-stepper.component';
-import { PasswordFormComponent } from '../../features/user/password-form/password-form.component';
-import { UserEditComponent } from '../../features/user/user-edit/user-edit.component';
-import { ModalComponent } from '../../layout/modal/modal.component';
-import { Job } from '../model/job.interface';
-import { User } from '../model/user.interface';
-import { CreateJobWithUrlFormComponent } from '../../features/jobs/create-job-with-url-form/create-job-with-url-form.component';
+import { JobEditionComponent } from '@features/jobs/job-editIion/job-edition.component';
+import { JobStepperComponent } from '@features/jobs/job-stepper/job-stepper.component';
+import { PasswordFormComponent } from '@features/user/password-form/password-form.component';
+import { UserEditComponent } from '@features/user/user-edit/user-edit.component';
+import { ModalComponent } from '@layout/modal/modal.component';
+import { Job } from '@core/model/job.interface';
+import { User } from '@core/model/user.interface';
+import { CreateJobWithUrlFormComponent } from '@features/jobs/create-job-with-url-form/create-job-with-url-form.component';
 
 describe('ModalService', () => {
   let modalService: ModalService;

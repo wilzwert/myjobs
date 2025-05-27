@@ -1,13 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { JobActivitiesComponent } from './job-activities.component';
-import { JobActivitiesFormComponent } from '../job-actitivies-form/job-actitivities-form.component';
-import { JobService } from '../../../core/services/job.service';
-import { ModalService } from '../../../core/services/modal.service';
+import { JobActivitiesFormComponent } from '@features/jobs/job-actitivies-form/job-actitivities-form.component';
+import { JobService } from '@core/services/job.service';
+import { ModalService } from '@core/services/modal.service';
 import { DatePipe } from '@angular/common';
-import { ActivityLabelPipe } from '../../../core/pipe/activity-label.pipe';
+import { ActivityLabelPipe } from '@core/pipe/activity-label.pipe';
 import { MatButtonModule } from '@angular/material/button';
 import { By } from '@angular/platform-browser';
-import { Job, JobRating, JobStatus } from '../../../core/model/job.interface';
+import { Job, JobRating, JobStatus } from '@core/model/job.interface';
 
 describe('JobActivitiesComponent (Jest)', () => {
   let component: JobActivitiesComponent;

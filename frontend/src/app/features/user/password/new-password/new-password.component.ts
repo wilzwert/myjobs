@@ -4,13 +4,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatFormField, MatHint, MatInput, MatLabel } from '@angular/material/input';
 import { MatButton } from '@angular/material/button';
 import { catchError, take, throwError } from 'rxjs';
-import { NotificationService } from '../../../../core/services/notification.service';
-import { PasswordValidator } from '../../../../core/validators/password-validator';
-import { ConfirmPasswordValidator } from '../../../../core/validators/confirm-password-validator';
-import { NewPasswordRequest } from '../../../../core/model/new-password-request.interface';
-import { UserService } from '../../../../core/services/user.service';
-import { StatusIconComponent } from "../../../../layout/shared/status-icon/status-icon.component";
-import { ErrorProcessorService } from '../../../../core/services/error-processor.service';
+import { NotificationService } from '@core/services/notification.service';
+import { PasswordValidator } from '@core/validators/password-validator';
+import { ConfirmPasswordValidator } from '@core/validators/confirm-password-validator';
+import { NewPasswordRequest } from '@core/model/new-password-request.interface';
+import { UserService } from '@core/services/user.service';
+import { StatusIconComponent } from "@layout/shared/status-icon/status-icon.component";
+import { ErrorProcessorService } from '@core/services/error-processor.service';
 
 @Component({
   selector: 'app-new-password',

@@ -1,8 +1,8 @@
 import { of, Subject, throwError } from 'rxjs';
 import { JobDetailComponent } from './job-detail.component';
-import { Job } from '../../../core/model/job.interface';
+import { Job } from '@core/model/job.interface';
 import { fakeAsync } from '@angular/core/testing';
-import { ApiError } from '../../../core/errors/api-error';
+import { ApiError } from '@core/errors/api-error';
 import { HttpErrorResponse } from '@angular/common/http';
 
 // Mocks

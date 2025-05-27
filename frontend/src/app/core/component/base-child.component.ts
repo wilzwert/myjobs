@@ -1,5 +1,5 @@
 import { Directive, EventEmitter, Input, Output } from "@angular/core";
-import { ComponentInputData, ComponentInputDomainData } from "../model/component-input-data.interface";
+import { ComponentInputDomainData } from "@core/model/component-input-data.interface";
 
 
 // abstract class used to handle common behaviour for components that may be used in modals

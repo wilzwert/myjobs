@@ -1,15 +1,15 @@
 import { AfterViewInit, Component, EventEmitter, Inject, OnInit, Output, ViewChild } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { MatStepper, MatStepperIntl, MatStepperModule } from '@angular/material/stepper';
-import { Job } from '../../../core/model/job.interface';
-import { JobFormComponent } from '../job-form/job-form.component';
-import { JobActivitiesFormComponent } from '../job-actitivies-form/job-actitivities-form.component';
-import { JobAttachmentsFormComponent } from '../job-attachments-form/job-attachments-form.component';
+import { Job } from '@core/model/job.interface';
+import { JobFormComponent } from '@features/jobs/job-form/job-form.component';
+import { JobActivitiesFormComponent } from '@features/jobs/job-actitivies-form/job-actitivities-form.component';
+import { JobAttachmentsFormComponent } from '@features/jobs/job-attachments-form/job-attachments-form.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
-import { BaseChildComponent } from '../../../core/component/base-child.component';
-import { JobMetadata } from '../../../core/model/job-metadata.interface';
-import { JobStepperIntl } from '../../../core/services/job-stepper-intl';
+import { BaseChildComponent } from '@core/component/base-child.component';
+import { JobMetadata } from '@core/model/job-metadata.interface';
+import { JobStepperIntl } from '@core/services/job-stepper-intl';
 
 @Component({
   selector: 'app-job-stepper',

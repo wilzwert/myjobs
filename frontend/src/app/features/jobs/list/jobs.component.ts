@@ -3,23 +3,23 @@ import { Observable, take, tap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card';
-import { Page } from '../../../core/model/page.interface';
-import { Job, JobStatus } from '../../../core/model/job.interface';
-import { JobService } from '../../../core/services/job.service';
-import { ModalService } from '../../../core/services/modal.service';
-import { StatusLabelPipe } from '../../../core/pipe/status-label.pipe';
+import { Page } from '@core/model/page.interface';
+import { Job, JobStatus } from '@core/model/job.interface';
+import { JobService } from '@core/services/job.service';
+import { ModalService } from '@core/services/modal.service';
+import { StatusLabelPipe } from '@core/pipe/status-label.pipe';
 import { MatButton } from '@angular/material/button';
-import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
-import { NotificationService } from '../../../core/services/notification.service';
+import { ConfirmDialogService } from '@core/services/confirm-dialog.service';
+import { NotificationService } from '@core/services/notification.service';
 import {MatRippleModule} from '@angular/material/core';
 import { MatMenuModule } from '@angular/material/menu';
-import { JobMetadata } from '../../../core/model/job-metadata.interface';
-import { CustomPaginatorIntl } from '../../../core/services/custom-paginator-intl';
-import { User } from '../../../core/model/user.interface';
-import { UserService } from '../../../core/services/user.service';
+import { JobMetadata } from '@core/model/job-metadata.interface';
+import { CustomPaginatorIntl } from '@core/services/custom-paginator-intl';
+import { User } from '@core/model/user.interface';
+import { UserService } from '@core/services/user.service';
 import { MatIcon } from '@angular/material/icon';
-import { JobSummaryComponent } from '../job-summary/job-summary.component';
-import { ComponentInputDomainData } from '../../../core/model/component-input-data.interface';
+import { JobSummaryComponent } from '@features/jobs/job-summary/job-summary.component';
+import { ComponentInputDomainData } from '@core/model/component-input-data.interface';
 
 
 @Component({

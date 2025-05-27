@@ -1,6 +1,5 @@
 import { ErrorHandler, Injectable } from '@angular/core';
 import { NotificationService } from './notification.service';
-import { ApiError } from '../errors/api-error';
 
 /**
  * Overrides the default error handler

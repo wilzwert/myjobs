@@ -1,12 +1,12 @@
 import { RegistrationComponent } from './registration.component';
-import { AuthService } from '../../core/services/auth.service';
-import { AuthValidators } from '../../core/services/auth.validators';
-import { NotificationService } from '../../core/services/notification.service';
+import { AuthService } from '@core/services/auth.service';
+import { AuthValidators } from '@core/services/auth.validators';
+import { NotificationService } from '@core/services/notification.service';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
-import { RegistrationRequest } from '../../core/model/registration-request.interface';
-import { ErrorProcessorService } from '../../core/services/error-processor.service';
+import { RegistrationRequest } from '@core/model/registration-request.interface';
+import { ErrorProcessorService } from '@core/services/error-processor.service';
 
 describe('RegistrationComponent', () => {
   let component: RegistrationComponent;  

@@ -1,13 +1,13 @@
 import { UserEditComponent } from './user-edit.component';
 import { FormBuilder } from '@angular/forms';
-import { AuthValidators } from '../../../core/services/auth.validators';
-import { UserService } from '../../../core/services/user.service';
-import { NotificationService } from '../../../core/services/notification.service';
-import { FormErrorService } from '../../../core/services/form-error.service';
+import { AuthValidators } from '@core/services/auth.validators';
+import { UserService } from '@core/services/user.service';
+import { NotificationService } from '@core/services/notification.service';
+import { FormErrorService } from '@core/services/form-error.service';
 import { of, throwError } from 'rxjs';
-import { User } from '../../../core/model/user.interface';
-import { ApiError } from '../../../core/errors/api-error';
-import { EmailStatus } from '../../../core/model/email-status';
+import { User } from '@core/model/user.interface';
+import { ApiError } from '@core/errors/api-error';
+import { EmailStatus } from '@core/model/email-status';
 
 describe('UserEditComponent', () => {
   let component: UserEditComponent;

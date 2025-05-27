@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { JobFormComponent } from './job-form.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { JobService } from '../../../core/services/job.service';
-import { NotificationService } from '../../../core/services/notification.service';
+import { JobService } from '@core/services/job.service';
+import { NotificationService } from '@core/services/notification.service';
 import { of, throwError } from 'rxjs';
-import { Job } from '../../../core/model/job.interface';
+import { Job } from '@core/model/job.interface';
 import { TINYMCE_SCRIPT_SRC } from '@tinymce/tinymce-angular';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 

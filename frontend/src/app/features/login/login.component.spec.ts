@@ -1,12 +1,12 @@
 import { LoginComponent } from './login.component';
 import { FormBuilder } from '@angular/forms';
-import { AuthService } from '../../core/services/auth.service';
-import { SessionService } from '../../core/services/session.service';
+import { AuthService } from '@core/services/auth.service';
+import { SessionService } from '@core/services/session.service';
 import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
-import { SessionInformation } from '../../core/model/session-information.interface';
-import { ApiError } from '../../core/errors/api-error';
-import { ErrorProcessorService } from '../../core/services/error-processor.service';
+import { SessionInformation } from '@core/model/session-information.interface';
+import { ApiError } from '@core/errors/api-error';
+import { ErrorProcessorService } from '@core/services/error-processor.service';
 
 describe('LoginComponent', () => {
   let component: LoginComponent;

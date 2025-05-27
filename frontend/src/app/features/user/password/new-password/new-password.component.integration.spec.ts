@@ -5,12 +5,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideScReCaptchaSettings } from '@semantic-components/re-captcha';
-import { environment } from '../../../../../environments/environment';
-import { ErrorInterceptor } from '../../../../core/interceptors/error.interceptor';
-import { ErrorProcessorService } from '../../../../core/services/error-processor.service';
+import { environment } from '@environments/environment';
+import { ErrorInterceptor } from '@core/interceptors/error.interceptor';
+import { ErrorProcessorService } from '@core/services/error-processor.service';
 import { of } from 'rxjs';
-import { NotificationService } from '../../../../core/services/notification.service';
-import { CaptchaService } from '../../../../core/services/captcha.service';
+import { NotificationService } from '@core/services/notification.service';
+import { CaptchaService } from '@core/services/captcha.service';
 
 describe('NewPasswordComponent', () => {
   let component: NewPasswordComponent;

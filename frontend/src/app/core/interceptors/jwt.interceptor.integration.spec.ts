@@ -1,11 +1,11 @@
 import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
-import { SessionService } from '../services/session.service';
+import { SessionService } from '@core/services/session.service';
 import { TestBed } from "@angular/core/testing";
 import { HttpTestingController, provideHttpClientTesting } from "@angular/common/http/testing";
 import { JwtInterceptor } from "./jwt.interceptor";
-import { SessionInformation } from "../model/session-information.interface"; 
-import { RefreshTokenRequest } from "../model/refresh-token-request.interface"; 
-import { RefreshTokenResponse } from "../model/refresh-token-response.interface"; 
+import { SessionInformation } from "@core/model/session-information.interface"; 
+import { RefreshTokenRequest } from "@core/model/refresh-token-request.interface"; 
+import { RefreshTokenResponse } from "@core/model/refresh-token-response.interface"; 
 
 describe('JwtInterceptor', () => {
   let httpTestingController: HttpTestingController;

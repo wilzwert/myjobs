@@ -1,5 +1,5 @@
 import { ActivityLabelPipe } from './activity-label.pipe';
-import { TranslatorService } from '../services/translator.service';
+import { TranslatorService } from '@core/services/translator.service';
 
 describe('ActivityLabelPipe', () => {
   it('should call translatorService.translateActivityType and return its result', () => {

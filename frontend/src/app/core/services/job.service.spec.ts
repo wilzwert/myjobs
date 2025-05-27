@@ -1,15 +1,15 @@
 import { JobService } from './job.service';
 import { DataService } from './data.service';
 import { BehaviorSubject, firstValueFrom, lastValueFrom, of, Subject } from 'rxjs';
-import { Job, JobRating, JobStatus } from '../model/job.interface';
-import { CreateJobRequest } from '../model/create-job-request.interface';
-import { UpdateJobStatusRequest } from '../model/update-job-status-request.interface';
-import { CreateJobAttachmentsRequest } from '../model/create-job-attachments-request.interface';
-import { Page } from '../model/page.interface';
-import { JobMetadata } from '../model/job-metadata.interface';
-import { UpdateJobRequest } from '../model/update-job-request.interface';
-import { CreateJobAttachmentRequest } from '../model/create-job-attachment-request.interface';
-import { UpdateJobRatingRequest } from '../model/update-job-rating-request.interface';
+import { Job, JobRating, JobStatus } from '@core/model/job.interface';
+import { CreateJobRequest } from '@core/model/create-job-request.interface';
+import { UpdateJobStatusRequest } from '@core/model/update-job-status-request.interface';
+import { CreateJobAttachmentsRequest } from '@core/model/create-job-attachments-request.interface';
+import { Page } from '@core/model/page.interface';
+import { JobMetadata } from '@core/model/job-metadata.interface';
+import { UpdateJobRequest } from '@core/model/update-job-request.interface';
+import { CreateJobAttachmentRequest } from '@core/model/create-job-attachment-request.interface';
+import { UpdateJobRatingRequest } from '@core/model/update-job-rating-request.interface';
 import { SessionService } from './session.service';
 
 describe('JobService', () => {

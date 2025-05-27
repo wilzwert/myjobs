@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { TranslatorService } from './translator.service';
 import { AbstractControl, FormGroup, ValidationErrors } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { BackendError } from '../errors/backend-error';
+import { BackendError } from '@core/errors/backend-error';
 
 @Injectable({
   providedIn: 'root'

@@ -6,7 +6,7 @@ import { BehaviorSubject, catchError, distinctUntilChanged, EMPTY, filter, first
 import { UserService } from './user.service';
 import { SessionService } from './session.service';
 import { CookieService } from 'ngx-cookie-service'
-import { AVAILABLE_LANGS } from '../../../lang/lang';
+import { AVAILABLE_LANGS } from '@lang/lang';
 
 @Injectable({
   providedIn: 'root'

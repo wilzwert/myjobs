@@ -6,9 +6,9 @@ import {
   HttpInterceptor,
   HttpErrorResponse
 } from '@angular/common/http';
-import { catchError, Observable, throwError } from 'rxjs';
-import { ApiError } from '../errors/api-error';
-import { ErrorProcessorService } from '../services/error-processor.service';
+import { catchError, Observable } from 'rxjs';
+import { ApiError } from '@core/errors/api-error';
+import { ErrorProcessorService } from '@core/services/error-processor.service';
 
 /**
  * Intercepts http errors to rethrow structured ApiError

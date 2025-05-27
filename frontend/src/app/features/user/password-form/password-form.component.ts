@@ -1,18 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { UserService } from '../../../core/services/user.service';
-import { NotificationService } from '../../../core/services/notification.service';
-import { PasswordValidator } from '../../../core/validators/password-validator';
-import { ConfirmPasswordValidator } from '../../../core/validators/confirm-password-validator';
-import { ChangePasswordRequest } from '../../../core/model/change-password-request.interface';
+import { UserService } from '@core/services/user.service';
+import { NotificationService } from '@core/services/notification.service';
+import { PasswordValidator } from '@core/validators/password-validator';
+import { ConfirmPasswordValidator } from '@core/validators/confirm-password-validator';
+import { ChangePasswordRequest } from '@core/model/change-password-request.interface';
 import { catchError, take, throwError } from 'rxjs';
 import { MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
 import { MatInput } from '@angular/material/input';
-import { ApiError } from '../../../core/errors/api-error';
-import { BaseChildComponent } from '../../../core/component/base-child.component';
-import { StatusIconComponent } from "../../../layout/shared/status-icon/status-icon.component";
-import { ErrorProcessorService } from '../../../core/services/error-processor.service';
+import { ApiError } from '@core/errors/api-error';
+import { BaseChildComponent } from '@core/component/base-child.component';
+import { StatusIconComponent } from "@layout/shared/status-icon/status-icon.component";
+import { ErrorProcessorService } from '@core/services/error-processor.service';
 
 @Component({
   selector: 'app-password-form',

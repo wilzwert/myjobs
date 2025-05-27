@@ -3,9 +3,9 @@ import { LocaleService } from './locale.service';
 import { SessionService } from './session.service';
 import { UserService } from './user.service';
 import { CookieService } from 'ngx-cookie-service';
-import { User } from '../model/user.interface';
-import { EmailStatus } from '../model/email-status';
-import { Lang } from '../model/lang';
+import { User } from '@core/model/user.interface';
+import { EmailStatus } from '@core/model/email-status';
+import { Lang } from '@core/model/lang';
 
 describe('LocaleService tests', () => {
   let service: LocaleService;

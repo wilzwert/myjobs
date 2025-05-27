@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { RegistrationRequest } from '../model/registration-request.interface';
+import { RegistrationRequest } from '@core/model/registration-request.interface';
 import { Observable, switchMap } from 'rxjs';
 import { DataService } from './data.service';
-import { LoginRequest } from '../model/login-request.interface';
-import { SessionInformation } from '../model/session-information.interface';
+import { LoginRequest } from '@core/model/login-request.interface';
+import { SessionInformation } from '@core/model/session-information.interface';
 import { HttpHeaders } from '@angular/common/http';
 import { CaptchaService } from './captcha.service';
 
