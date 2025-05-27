@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { TranslatorService } from './translator.service';
 import { AbstractControl, FormGroup, ValidationErrors } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { BackendError } from '../errors/backend-error';
+import { BackendError } from '@core/errors/backend-error';
 
 @Injectable({
   providedIn: 'root'
@@ -17,17 +17,12 @@ export class FormErrorService  {
     form: FormGroup,
     errorMap: Record<string, BackendError[]> 
   ): void {
-    console.log(errorMap);
-    console.log(Object.entries(errorMap));
     for (const [fieldName, errors] of Object.entries(errorMap)) {
-      console.log(`getting control for ${fieldName}`);
       const control = form.get(fieldName);
       if (control) {
-        console.log('setting control translated errors');
         const translatedErrors = errors.map((err:BackendError) =>
           this.translatorService.translateError(err.code, err.details)
         );
-
         const controlErrors = control.errors ?? {} as ValidationErrors;
         controlErrors['backend'] = translatedErrors;
         control.setErrors(controlErrors);

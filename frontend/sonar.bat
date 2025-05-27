@@ -52,15 +52,6 @@ for /f "usebackq tokens=1,* delims==" %%A in (".env") do (
     )
 )
 
-REM === get Git current branch  ===
-for /f "delims=" %%i in ('git rev-parse --abbrev-ref HEAD') do set BRANCH_NAME=%%i
-
-REM === add branch to sonar args ONLY IF sonarqube version supports it ===
-if "%SONAR_SUPPORTS_BRANCH%"=="true" (
-    set SONAR_ARGS=%SONAR_ARGS% -Dsonar.branch.name=%BRANCH_NAME%
-    echo [INFO] Analyse de la branche: %BRANCH_NAME%
-)
-
 REM === Specific Angular / Jest config ===
 set SONAR_ARGS=%SONAR_ARGS% -Dsonar.projectBaseDir=.
 set SONAR_ARGS=%SONAR_ARGS% -Dsonar.sources=src/app
@@ -71,6 +62,15 @@ set SONAR_ARGS=%SONAR_ARGS% -Dsonar.coverage.exclusions=src/app/**/*.spec.ts,nod
 set SONAR_ARGS=%SONAR_ARGS% -Dsonar.typescript.lcov.reportPaths=coverage/jest/lcov.info,coverage/e2e/lcov.info
 set SONAR_ARGS=%SONAR_ARGS% -Dsonar.javascript.lcov.reportPaths=coverage/jest/lcov.info
 set SONAR_ARGS=%SONAR_ARGS% -Dsonar.sourceEncoding=UTF-8
+
+REM === get Git current branch  ===
+for /f "delims=" %%i in ('git rev-parse --abbrev-ref HEAD') do set BRANCH_NAME=%%i
+
+REM === add branch to sonar args ONLY IF sonarqube version supports it ===
+if "%SONAR_SUPPORTS_BRANCH%"=="true" (
+    set SONAR_ARGS=%SONAR_ARGS% -Dsonar.branch.name=%BRANCH_NAME%
+    echo [INFO] Branche: %BRANCH_NAME%
+)
 
 echo [INFO] Launching Sonar with args: %SONAR_ARGS%
 

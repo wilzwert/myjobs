@@ -1,8 +1,8 @@
 import { PasswordFormComponent } from './password-form.component';
 import { FormBuilder } from '@angular/forms';
-import { UserService } from '../../../core/services/user.service';
-import { NotificationService } from '../../../core/services/notification.service';
-import { ApiError } from '../../../core/errors/api-error';
+import { UserService } from '@core/services/user.service';
+import { NotificationService } from '@core/services/notification.service';
+import { ApiError } from '@core/errors/api-error';
 import { throwError, of } from 'rxjs';
 
 describe('PasswordFormComponent', () => {

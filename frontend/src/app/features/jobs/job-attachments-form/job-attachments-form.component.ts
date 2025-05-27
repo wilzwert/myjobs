@@ -1,18 +1,17 @@
-import { Component, EventEmitter, input, Input, model, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { JobService } from '../../../core/services/job.service';
-import { CreateJobAttachmentsRequest } from '../../../core/model/create-job-attachments-request.interface';
-import { Job } from '../../../core/model/job.interface';
+import { JobService } from '@core/services/job.service';
+import { CreateJobAttachmentsRequest } from '@core/model/create-job-attachments-request.interface';
+import { Job } from '@core/model/job.interface';
 import { catchError, take, throwError } from 'rxjs';
-import { ApiError } from '../../../core/errors/api-error';
-import { CreateJobAttachmentRequest } from '../../../core/model/create-job-attachment-request.interface';
+import { ApiError } from '@core/errors/api-error';
+import { CreateJobAttachmentRequest } from '@core/model/create-job-attachment-request.interface';
 import { MatButton, MatIconButton } from '@angular/material/button';
-import { NotificationService } from '../../../core/services/notification.service';
-import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
-import { FileService } from '../../../core/services/file.service';
+import { NotificationService } from '@core/services/notification.service';
 import { MatIcon } from '@angular/material/icon';
+import { ErrorProcessorService } from '@core/services/error-processor.service';
 
 @Component({
   selector: 'app-job-attachments-form',
@@ -29,7 +28,11 @@ export class JobAttachmentsFormComponent implements OnInit {
   attachmentForm!: FormGroup;
   maxFileSize = 2*1024*1024;
 
-  constructor(private fb: FormBuilder, private jobService: JobService, private notificationService: NotificationService, private confirmDialogService: ConfirmDialogService, private fileService: FileService) {
+  constructor(
+    private fb: FormBuilder, 
+    private jobService: JobService, 
+    private notificationService: NotificationService,
+      private errorProcessorService: ErrorProcessorService) {
   }
 
   ngOnInit(): void {
@@ -101,7 +104,7 @@ export class JobAttachmentsFormComponent implements OnInit {
                   this.loading = false;
                   // set an explicit error message
                   error.message = `Attachments could not be created.${error.message}`;
-                  return throwError(() => error);
+                  return this.errorProcessorService.processError(error);
               }
             )
           )

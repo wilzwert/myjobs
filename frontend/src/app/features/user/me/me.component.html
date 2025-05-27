@@ -12,7 +12,7 @@
                     <mat-icon class="input-invalid">error</mat-icon><span i18n="invalid|invalid status label@@info.invalid">Invalid</span><button mat-button (click)="sendVerificationEmail()" i18n="validate|label of a validation link or button@@action.validate">Validate</button>
                 }
                 @case(EmailStatus.VALIDATED) {
-                    <mat-icon class="input-valid" i18n="valid|valid status label@@info.valid">check</mat-icon><span i18n="verified|label indicating email is verified in user account@@info.verified">Verified</span>
+                    <mat-icon class="input-valid">check</mat-icon><span i18n="verified|label indicating email is verified in user account@@info.verified">Verified</span>
                 }
 
             }

@@ -1,6 +1,6 @@
 import { TestBed, tick } from '@angular/core/testing';
 import { AuthValidators } from './auth.validators';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '@core/services/auth.service';
 import { of, throwError} from 'rxjs';
 import { AbstractControl, ValidationErrors } from '@angular/forms';
 import { DataService } from './data.service';

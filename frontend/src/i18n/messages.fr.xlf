@@ -120,7 +120,7 @@
         <source>Valid</source>
         <target state="translated">Valide</target>
         <note priority="1" from="description">valid status label</note>
-        <note priority="1" from="meaning">valid</note>
+        <note priority="1" from="meaning">Valid</note>
       </trans-unit>
       <trans-unit id="info.verified" datatype="html">
         <source>Verified</source>
@@ -140,11 +140,9 @@
         <note priority="1" from="description">Change password action label</note>
         <note priority="1" from="meaning">change password</note>
       </trans-unit>
-      <trans-unit id="action.log_out" datatype="html">
+      <trans-unit id="menu.logout.label" datatype="html">
         <source>Log out</source>
         <target state="translated">Déconnexion</target>
-        <note priority="1" from="description">Log out action label</note>
-        <note priority="1" from="meaning">log out</note>
       </trans-unit>
       <trans-unit id="action.user.delete_account" datatype="html">
         <source>Delete my account</source>
@@ -325,24 +323,12 @@
       <trans-unit id="input.job.url_create.label" datatype="html">
         <source>Create job with its url</source>
         <target state="translated">Créer un job à partir de son URL</target>
-        <note priority="1" from="description">label for url input to create new job</note>
-        <note priority="1" from="meaning">create job url label</note>
       </trans-unit>
       <trans-unit id="input.job.url_create.placeholder" datatype="html">
         <source>Type or paste the job's URL</source>
         <target state="translated">Saisissez ou collez l'URL du job</target>
         <note priority="1" from="description">placeholder for url input to create new job</note>
         <note priority="1" from="meaning">create job url placeholder</note>
-      </trans-unit>
-      <trans-unit id="input.job.filter_by_status.label" datatype="html">
-        <source>Filter by status</source>
-        <target state="translated">Filtrer par statut</target>
-        <note priority="1" from="description">filter by status</note>
-      </trans-unit>
-      <trans-unit id="input.jobs.sort.label" datatype="html">
-        <source>Sort</source>
-        <target state="translated">Trier</target>
-        <note priority="1" from="description">sort jobs</note>
       </trans-unit>
       <trans-unit id="input.jobs.sort.option.date_desc" datatype="html">
         <source>Date (newest first)</source>
@@ -369,35 +355,23 @@
         <target state="translated">Détails</target>
         <note priority="1" from="description">job details</note>
       </trans-unit>
-      <trans-unit id="job.status" datatype="html">
-        <source>Status</source>
-        <target state="translated">Statut</target>
-        <note priority="1" from="description">label preceeding a job's status</note>
-        <note priority="1" from="meaning">job status</note>
-      </trans-unit>
-      <trans-unit id="input.job.change_status.label" datatype="html">
+      <trans-unit id="action.job.status.edit" datatype="html">
         <source>Change status</source>
         <target state="translated">Modifier le statut</target>
-        <note priority="1" from="description">label of the input used to change a job's status</note>
-        <note priority="1" from="meaning">change job status</note>
+        <note priority="1" from="description">label for job status change action</note>
+        <note priority="1" from="meaning">Change status</note>
       </trans-unit>
       <trans-unit id="job.created" datatype="html">
-        <source>Created</source>
+        <source>Job creation date count</source>
         <target state="translated">Créé</target>
-        <note priority="1" from="description">label preceeding a job's creationg date</note>
-        <note priority="1" from="meaning">job status</note>
       </trans-unit>
       <trans-unit id="job.activities.count" datatype="html">
-        <source>Activities</source>
+        <source>Job activities count</source>
         <target state="translated">Activités</target>
-        <note priority="1" from="description">label preceeding a job's activities count</note>
-        <note priority="1" from="meaning">job activities count</note>
       </trans-unit>
       <trans-unit id="job.attachments.count" datatype="html">
-        <source>Attachments</source>
+        <source>Attachments count</source>
         <target state="translated">Pièces jointes</target>
-        <note priority="1" from="description">label preceeding a job's attachments count</note>
-        <note priority="1" from="meaning">job attachments count</note>
       </trans-unit>
       <trans-unit id="action.job.edit" datatype="html">
         <source>Edit</source>
@@ -450,7 +424,7 @@
       <trans-unit id="pagination.jobs.select_page_label" datatype="html">
         <source>Select list page</source>
         <target state="translated">Aller à la page</target>
-        <note priority="1" from="description">select list page</note>
+        <note priority="1" from="description">Select list page</note>
       </trans-unit>
       <trans-unit id="action.job.quick_create" datatype="html">
         <source>Create</source>
@@ -658,7 +632,7 @@
       </trans-unit>
       <trans-unit id="info.job.rating.updated" datatype="html">
         <source>Rating updated successfully.</source>
-        <target state="new">La note a bien été modifiée.</target>
+        <target state="translated">La note a bien été modifiée.</target>
       </trans-unit>
       <trans-unit id="info.job.created" datatype="html">
         <source>created</source>
@@ -863,6 +837,192 @@
       <trans-unit id="info.email.verification.needed" datatype="html">
         <source>Your new email address needs verification ; please check your emails.</source>
         <target state="translated">Votre nouvelle adresse mail doit être vérifiée ; veuillez vérifier vos emails.</target>
+      </trans-unit>
+      <trans-unit id="job.status.accepted" datatype="html">
+        <source>Accepted</source>
+        <target state="translated">Recruté</target>
+      </trans-unit>
+      <trans-unit id="action.activity.delete" datatype="html">
+        <source>Remove this activity</source>
+        <target state="translated">Supprimer cette activité</target>
+        <note priority="1" from="description">label for activity removal action</note>
+        <note priority="1" from="meaning">Remove this activity</note>
+      </trans-unit>
+      <trans-unit id="action.jobs.back" datatype="html">
+        <source>Go back to jobs</source>
+        <target state="translated">Retour aux jobs</target>
+        <note priority="1" from="description">back to jobs action label</note>
+        <note priority="1" from="meaning">back to jobs</note>
+      </trans-unit>
+      <trans-unit id="job.description.label" datatype="html">
+        <source>Job description</source>
+        <target state="translated">Description du poste</target>
+        <note priority="1" from="description">job description label</note>
+      </trans-unit>
+      <trans-unit id="info.empty" datatype="html">
+        <source>Empty</source>
+        <target state="translated">Vide</target>
+        <note priority="1" from="description">short text to tell that a field is empty</note>
+        <note priority="1" from="meaning">empty field</note>
+      </trans-unit>
+      <trans-unit id="job.profile.label" datatype="html">
+        <source>Job profile</source>
+        <target state="translated">Profil recherché</target>
+        <note priority="1" from="description">job profile label</note>
+      </trans-unit>
+      <trans-unit id="job.attachments.label" datatype="html">
+        <source>Job attachments</source>
+        <target state="translated">Pièces jointes</target>
+        <note priority="1" from="description">job attachments label</note>
+      </trans-unit>
+      <trans-unit id="job.activities.label" datatype="html">
+        <source>Job activities</source>
+        <target state="translated">Activités</target>
+        <note priority="1" from="description">job activities label</note>
+      </trans-unit>
+      <trans-unit id="job.url_create.title" datatype="html">
+        <source>Create a Job with its URL</source>
+        <target state="translated">Créer un Job à partir de son URL</target>
+        <note priority="1" from="description">title for creating job url modal</note>
+        <note priority="1" from="meaning">create job with url title</note>
+      </trans-unit>
+      <trans-unit id="action.job.view.original" datatype="html">
+        <source>View original job</source>
+        <target state="translated">Voir l'offre d'origine</target>
+        <note priority="1" from="description">label for displayed link to original url</note>
+        <note priority="1" from="meaning">View original job</note>
+      </trans-unit>
+      <trans-unit id="action.job.actions" datatype="html">
+        <source>Actions for this job</source>
+        <target state="translated">Actions pour ce job</target>
+        <note priority="1" from="description">label for job actions in a jobs list</note>
+        <note priority="1" from="meaning">Actions for this job</note>
+      </trans-unit>
+      <trans-unit id="filter.job.late" datatype="html">
+        <source>Late only</source>
+        <target state="translated">En retard uniquement</target>
+        <note priority="1" from="description">the late only filter label</note>
+        <note priority="1" from="meaning">late only label</note>
+      </trans-unit>
+      <trans-unit id="info.email.validated" datatype="html">
+        <source>Your email has been validated.</source>
+        <target state="translated">Votre adresse mail a été validée.</target>
+      </trans-unit>
+      <trans-unit id="error.password.confirmation.match" datatype="html">
+        <source>Password and confirmation don't match</source>
+        <target state="translated">Le mot de passe et sa confirmation ne correspondent pas</target>
+        <note priority="1" from="description">password confirmation_ doesn't match</note>
+      </trans-unit>
+      <trans-unit id="info.password.reset.processed" datatype="html">
+        <source>Your request has been processed. If your email is linked to an account, an email has been sent. Please check your emails for further instructions.</source>
+        <target state="translated">Votre demande a été traitée. Si votre adresse mail est liée à un compte, un email a été envoyé. Veuillez vérifier vos mails.</target>
+      </trans-unit>
+      <trans-unit id="home.text.about.title" datatype="html">
+        <source>About</source>
+        <target state="translated">A propos</target>
+        <note priority="1" from="description">title of the About section</note>
+        <note priority="1" from="meaning">about title</note>
+      </trans-unit>
+      <trans-unit id="home.text.about.introduction" datatype="html">
+        <source> This is a personal project with several goals : </source>
+        <target state="translated"> MyJobs est un projet personnel qui a plusieurs objectifs : </target>
+        <note priority="1" from="description">text to introduce personal project goals</note>
+        <note priority="1" from="meaning">about introduction</note>
+      </trans-unit>
+      <trans-unit id="home.text.about.manage" datatype="html">
+        <source>Help me manage my job search by keeping track of jobs statuses and applications (spoiler alert : there's a good chance this project will never do what I originally intended)</source>
+        <target state="translated">M'aider à gérer ma recherche d'emploi en ayant un suivi du statut des jobs et de mes candidatures (spoiler alert : il y a de bonnes chances que ce projet ne fasse jamais ce que j'avais en tête à l'origine)</target>
+        <note priority="1" from="description">text to explain the personal goal to manage job search</note>
+        <note priority="1" from="meaning">about help manage job search</note>
+      </trans-unit>
+      <trans-unit id="home.text.about.learn" datatype="html">
+        <source>Learn as much and as fast as possible about Spring Boot, Hexagonal Architecture, Clean Architecture, MongoDB and Domain-Driven Design (DDD), and lots of other things I will forget (or not)</source>
+        <target state="translated">Apprendre autant que possible et aussi rapidement que possible sur Spring Boot, Hexagonal Architecture, Clean Architecture, MongoDB et le Domain-Driven Design (DDD), et beaucoup d'autres choses que j'oublierai (ou pas)</target>
+        <note priority="1" from="description">text to explain the personal goal to learn</note>
+        <note priority="1" from="meaning">about learn</note>
+      </trans-unit>
+      <trans-unit id="home.text.about.disclaimer" datatype="html">
+        <source>It is usable, although not to be trusted as a long-term tool. I will take any feedback though, and be glad should anyone find it useful.</source>
+        <target state="translated">Il est utilisable en l'état, mais sans doute pas sur long terme. Je suis toutefois preneur de toute remarque ou suggestion, et je serai ravi si jamais quelqu'un trouve cet outil utile.</target>
+        <note priority="1" from="description">text to explain the project may be use without guarantee</note>
+        <note priority="1" from="meaning">about usability disclaimer</note>
+      </trans-unit>
+      <trans-unit id="8054509822489676309" datatype="html">
+        <source>Please feel free to contact me on</source>
+        <target state="translated">N'hésitez pas à me contacter sur</target>
+        <note priority="1" from="description">text preceeding the contact email</note>
+        <note priority="1" from="meaning">about contact</note>
+      </trans-unit>
+      <trans-unit id="home.text.features.title" datatype="html">
+        <source>Features</source>
+        <target state="translated">Fonctionnalités</target>
+        <note priority="1" from="description">title of the Features section</note>
+        <note priority="1" from="meaning">features title</note>
+      </trans-unit>
+      <trans-unit id="home.text.features.introduction" datatype="html">
+        <source>MyJobs allows you to :</source>
+        <target state="translated">MyJobs vous permet de :</target>
+        <note priority="1" from="description">text to introduce the features list</note>
+        <note priority="1" from="meaning">features intro</note>
+      </trans-unit>
+      <trans-unit id="home.text.features.save" datatype="html">
+        <source>Save interesting job offers</source>
+        <target state="translated">Sauvegarder des offres de jobs</target>
+        <note priority="1" from="description">text for job saving feature</note>
+        <note priority="1" from="meaning">features - save</note>
+      </trans-unit>
+      <trans-unit id="home.text.features.attachments" datatype="html">
+        <source>Add attachments, so that you can remember which CV or documents you sent to the recruiter</source>
+        <target state="translated">Ajouter des pièces jointes, pour conserver une trace des CV et documents envoyés au recruteur</target>
+        <note priority="1" from="description">text for attachments feature</note>
+        <note priority="1" from="meaning">features - attachments</note>
+      </trans-unit>
+      <trans-unit id="home.text.features.status" datatype="html">
+        <source>Manage jobs status : created, pending (i.e. an application has been sent), refused, accepted...</source>
+        <target state="translated">Gérer le statut des jobs : crée, en attente(une candidature a été envoyée), refusé, recruté...</target>
+        <note priority="1" from="description">text for job status management feature</note>
+        <note priority="1" from="meaning">features - job status</note>
+      </trans-unit>
+      <trans-unit id="home.text.features.activities" datatype="html">
+        <source>Add activities : keep track of actions you made</source>
+        <target state="translated">Ajouter des activités : conserver une trace des actions effectuées</target>
+        <note priority="1" from="description">text for activities feature</note>
+        <note priority="1" from="meaning">features - activities</note>
+      </trans-unit>
+      <trans-unit id="home.text.features.reminders" datatype="html">
+        <source>Receive reminders : define a delay to be reminded of jobs that have not been updated</source>
+        <target state="translated">Recevoir des rappels : définir un délai au delà du vous souhaitez recevoir un rappel des jobs en cours non mis à jour</target>
+        <note priority="1" from="description">text for reminders feature</note>
+        <note priority="1" from="meaning">features - reminders</note>
+      </trans-unit>
+      <trans-unit id="home.text.features.rate" datatype="html">
+        <source>Rate jobs : this can be used as a way to rate your interest for the job, the quality of the recruitment process. This is up to you !</source>
+        <target state="translated">Noter les jobs : cela peut être utilisé pour noter votre niveau d'intérêt pour un job, la qualité du process de recrutement, etc. A vous de voir !</target>
+        <note priority="1" from="description">text for job rating feature</note>
+        <note priority="1" from="meaning">features - rating</note>
+      </trans-unit>
+      <trans-unit id="menu.jobs.label" datatype="html">
+        <source>Jobs</source>
+        <target state="translated">Jobs</target>
+        <note priority="1" from="description">jobs menu item label</note>
+        <note priority="1" from="meaning">jobs</note>
+      </trans-unit>
+      <trans-unit id="menu.account.label" datatype="html">
+        <source>Account</source>
+        <target state="translated">Compte</target>
+        <note priority="1" from="description">account menu item label</note>
+        <note priority="1" from="meaning">account</note>
+      </trans-unit>
+      <trans-unit id="menu.log_out.label" datatype="html">
+        <source>Logout</source>
+        <target state="translated">Déconnexion</target>
+        <note priority="1" from="description">logout menu item label</note>
+        <note priority="1" from="meaning">logout</note>
+      </trans-unit>
+      <trans-unit id="error.email.validation_failed" datatype="html">
+        <source>Email validation failed</source>
+        <target state="translated">La validation de votre adresse mail a échoué</target>
+        <note priority="1" from="description">email validation fail</note>
       </trans-unit>
     </body>
   </file>

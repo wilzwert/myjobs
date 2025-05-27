@@ -1,10 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { UserFormComponent } from './user-form.component';
 import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
-import { LocaleService } from '../../../core/services/locale.service';
-import { By, DomSanitizer } from '@angular/platform-browser';
+import { LocaleService } from '@core/services/locale.service';
+import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
-import { MatIconRegistry } from '@angular/material/icon';
 
 describe('UserFormComponent', () => {
   let component: UserFormComponent;
@@ -22,9 +21,7 @@ describe('UserFormComponent', () => {
     await TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, UserFormComponent],
       providers: [
-        { provide: LocaleService, useValue: localeServiceMock },
-        { provide: MatIconRegistry, useValue: {addSvgIcon: () => matIconRegistryMock, getNamedSvgIcon: () => of('')} },
-        { provide: DomSanitizer, useValue: { bypassSecurityTrustResourceUrl: (url: string) => url } },
+        { provide: LocaleService, useValue: localeServiceMock }
       ]
     }).compileComponents();
 

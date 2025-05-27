@@ -4,12 +4,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatFormField, MatHint, MatInput, MatLabel } from '@angular/material/input';
 import { MatButton } from '@angular/material/button';
 import { catchError, take, throwError } from 'rxjs';
-import { NotificationService } from '../../../../core/services/notification.service';
-import { PasswordValidator } from '../../../../core/validators/password-validator';
-import { ConfirmPasswordValidator } from '../../../../core/validators/confirm-password-validator';
-import { NewPasswordRequest } from '../../../../core/model/new-password-request.interface';
-import { UserService } from '../../../../core/services/user.service';
-import { StatusIconComponent } from "../../../../layout/shared/status-icon/status-icon.component";
+import { NotificationService } from '@core/services/notification.service';
+import { PasswordValidator } from '@core/validators/password-validator';
+import { ConfirmPasswordValidator } from '@core/validators/confirm-password-validator';
+import { NewPasswordRequest } from '@core/model/new-password-request.interface';
+import { UserService } from '@core/services/user.service';
+import { StatusIconComponent } from "@layout/shared/status-icon/status-icon.component";
+import { ErrorProcessorService } from '@core/services/error-processor.service';
 
 @Component({
   selector: 'app-new-password',
@@ -24,7 +25,13 @@ export class NewPasswordComponent implements OnInit {
   public form!: FormGroup;
   public isSubmitting = false;
 
-  constructor(private activatedRoute: ActivatedRoute, private fb: FormBuilder, private userService: UserService, private notificationService: NotificationService, private router: Router) {
+  constructor(
+    private activatedRoute: ActivatedRoute, 
+    private fb: FormBuilder, 
+    private userService: UserService, 
+    private notificationService: NotificationService, 
+    private router: Router,
+    private errorProcessorService: ErrorProcessorService) {
 
   }
 
@@ -65,21 +72,19 @@ export class NewPasswordComponent implements OnInit {
     if(!this.isSubmitting && this.form.valid) {
       this.isSubmitting = true;
       this.userService.newPassword({password: this.password!.value, token: this.token} as NewPasswordRequest)
-                .pipe(
-                  take(1),
-                  catchError(
-                    () => {
-                      this.isSubmitting = false;
-                      return throwError(() => new Error(
-                        $localize `:@@error.password.creation:Password creation failed`
-                      ));
-                    }
-                ))
-                .subscribe(() => {
-                    this.isSubmitting = false;
-                    this.notificationService.confirmation($localize `:@@info.password.updated:Your password has been updated.` + ' '+ $localize `:@@info.login.possible:You may now log in.`);
-                    this.router.navigate(["/login"])
-                });
+        .pipe(
+          take(1),
+          catchError(
+            () => {
+              this.isSubmitting = false;
+              return this.errorProcessorService.processError(new Error($localize `:@@error.password.creation:Password creation failed`));
+            }
+        ))
+        .subscribe(() => {
+            this.isSubmitting = false;
+            this.notificationService.confirmation($localize `:@@info.password.updated:Your password has been updated.` + ' '+ $localize `:@@info.login.possible:You may now log in.`);
+            this.router.navigate(["/login"])
+        });
     }
   }
 }

@@ -2,18 +2,19 @@ import { Component, EventEmitter, input, Input, model, OnInit, Output } from '@a
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { JobService } from '../../../core/services/job.service';
-import { Job } from '../../../core/model/job.interface';
+import { JobService } from '@core/services/job.service';
+import { Job } from '@core/model/job.interface';
 import { catchError, take, throwError } from 'rxjs';
-import { ApiError } from '../../../core/errors/api-error';
-import { CreateJobActivitiesRequest } from '../../../core/model/create-job-activities-request.interface';
-import { NotificationService } from '../../../core/services/notification.service';
-import { CreateJobActivityRequest } from '../../../core/model/create-job-activity-request.interface';
+import { ApiError } from '@core/errors/api-error';
+import { CreateJobActivitiesRequest } from '@core/model/create-job-activities-request.interface';
+import { NotificationService } from '@core/services/notification.service';
+import { CreateJobActivityRequest } from '@core/model/create-job-activity-request.interface';
 import { MatButton } from '@angular/material/button';
-import { UserActitivityType } from '../../../core/model/activity-type';
-import { ActivityLabelPipe } from '../../../core/pipe/activity-label.pipe';
+import { UserActitivityType } from '@core/model/activity-type';
+import { ActivityLabelPipe } from '@core/pipe/activity-label.pipe';
 import { MatOption, MatSelect } from '@angular/material/select';
 import { MatIcon } from '@angular/material/icon';
+import { ErrorProcessorService } from '@core/services/error-processor.service';
 
 
 @Component({
@@ -31,8 +32,12 @@ export class JobActivitiesFormComponent implements OnInit {
   activityForm!: FormGroup;
   activityTypeKeys: string[] = [];
 
-  constructor(private fb: FormBuilder, private jobService: JobService, private notificationService: NotificationService) {
-    this.activityTypeKeys=Object.keys(UserActitivityType);
+  constructor(
+    private fb: FormBuilder, 
+    private jobService: JobService, 
+    private notificationService: NotificationService,
+    private errorProcessorService: ErrorProcessorService) {
+    this.activityTypeKeys = Object.keys(UserActitivityType);
   }
 
   ngOnInit(): void {
@@ -77,7 +82,7 @@ export class JobActivitiesFormComponent implements OnInit {
                   this.loading = false;
                   // set an explicit error message
                   error.message = `Activities could not be created.${error.message}`;
-                  return throwError(() => error);
+                  return this.errorProcessorService.processError(error);
               }
             )
           )

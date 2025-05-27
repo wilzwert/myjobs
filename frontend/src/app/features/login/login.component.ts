@@ -4,12 +4,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { Router, RouterLink } from '@angular/router';
-import { SessionService } from '../../core/services/session.service';
-import { AuthService } from '../../core/services/auth.service';
+import { SessionService } from '@core/services/session.service';
+import { AuthService } from '@core/services/auth.service';
 import { catchError, throwError } from 'rxjs';
-import { ApiError } from '../../core/errors/api-error';
-import { LoginRequest } from '../../core/model/login-request.interface';
-import { SessionInformation } from '../../core/model/session-information.interface';
+import { ApiError } from '@core/errors/api-error';
+import { LoginRequest } from '@core/model/login-request.interface';
+import { ErrorProcessorService } from '@core/services/error-processor.service';
+import { SessionInformation } from '@core/model/session-information.interface';
 
 
 @Component({
@@ -32,8 +33,9 @@ export class LoginComponent {
   constructor(
     private authService: AuthService,
     private fb: FormBuilder,
+    private sessionService: SessionService,
     private router: Router,
-    private sessionService: SessionService) {
+    private errorProcessor: ErrorProcessorService) {
       this.form = this.fb.group({
         email: [
           '', 
@@ -53,7 +55,7 @@ export class LoginComponent {
   }
 
   public submit() :void {
-    if(!this.isSubmitting) {
+    if(!this.isSubmitting && this.form.valid) {
       this.isSubmitting = true;
       const loginRequest: LoginRequest = this.form.value as LoginRequest;
       this.authService.login(loginRequest)
@@ -63,7 +65,7 @@ export class LoginComponent {
               this.isSubmitting = false;
               // here we have to build a "regular" Error
               // otherwise the NotificationService would not display as it is specifically designed to skip  401 errors
-              return throwError(() => new Error(
+              return this.errorProcessor.processError(new Error(
                 $localize `:@@error.login:Login failed`+'.'+(error.httpStatus === 401 ? ' '+$localize `:@@info.login.verify:Please verify your email or password` +'.' : '')
               ));
             }

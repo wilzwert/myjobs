@@ -1,6 +1,6 @@
 import { ApplicationConfig, ErrorHandler, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, withDebugTracing, withEnabledBlockingInitialNavigation } from '@angular/router';
-import { environment } from '../environments/environment';
+import { environment } from '@environments/environment';
 
 import { routes } from './app.routes';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';

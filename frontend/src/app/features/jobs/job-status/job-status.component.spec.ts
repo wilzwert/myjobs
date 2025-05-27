@@ -1,7 +1,7 @@
 import { JobStatusComponent } from './job-status.component';
-import { JobService } from '../../../core/services/job.service';
-import { NotificationService } from '../../../core/services/notification.service';
-import { Job, JobStatus } from '../../../core/model/job.interface';
+import { JobService } from '@core/services/job.service';
+import { NotificationService } from '@core/services/notification.service';
+import { Job, JobStatus } from '@core/model/job.interface';
 import { of } from 'rxjs';
 
 describe('JobStatusComponent', () => {

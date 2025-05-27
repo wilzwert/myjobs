@@ -1,14 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { JobFormComponent } from './job-form.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { JobService } from '../../../core/services/job.service';
-import { NotificationService } from '../../../core/services/notification.service';
+import { JobService } from '@core/services/job.service';
+import { NotificationService } from '@core/services/notification.service';
 import { of, throwError } from 'rxjs';
-import { Job } from '../../../core/model/job.interface';
-import { EditorComponent, TINYMCE_SCRIPT_SRC } from '@tinymce/tinymce-angular';
+import { Job } from '@core/model/job.interface';
+import { TINYMCE_SCRIPT_SRC } from '@tinymce/tinymce-angular';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { MatIconRegistry } from '@angular/material/icon';
-import { DomSanitizer } from '@angular/platform-browser';
 
 describe('JobFormComponent', () => {
   let component: JobFormComponent;
@@ -26,19 +24,12 @@ describe('JobFormComponent', () => {
       confirmation: jest.fn()
     } as any;
 
-    const matIconRegistryMock = {
-      addSvgIcon: () => matIconRegistryMock,
-      getNamedSvgIcon: () => of(''), // if needed
-    };
-
     await TestBed.configureTestingModule({
       imports: [ReactiveFormsModule, JobFormComponent],
       providers: [
         { provide: JobService, useValue: jobServiceMock },
         { provide: NotificationService, useValue: notificationServiceMock },
-        { provide: TINYMCE_SCRIPT_SRC, useValue: 'tinymce/tinymce.min.js' },
-        { provide: MatIconRegistry, useValue: {addSvgIcon: () => matIconRegistryMock, getNamedSvgIcon: () => of('')} },
-        { provide: DomSanitizer, useValue: { bypassSecurityTrustResourceUrl: (url: string) => url } },
+        { provide: TINYMCE_SCRIPT_SRC, useValue: 'tinymce/tinymce.min.js' }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA] // ignore subcomponents like EditorComponent
     }).compileComponents();

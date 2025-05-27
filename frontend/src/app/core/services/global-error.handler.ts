@@ -1,7 +1,10 @@
 import { ErrorHandler, Injectable } from '@angular/core';
 import { NotificationService } from './notification.service';
-import { ApiError } from '../errors/api-error';
 
+/**
+ * Overrides the default error handler
+ * Useful to intercept all errors and pass them to the NotificationService
+ */
 
 @Injectable()
 export class GlobalErrorHandler extends ErrorHandler {
@@ -12,12 +15,6 @@ export class GlobalErrorHandler extends ErrorHandler {
 
 
     override handleError(error: Error) {
-        // Custom error handling logic
-        if(error instanceof ApiError) {
-            console.log(error);
-        }
-        
-        // TODO : implement translation
         this.notificationService.error(error.message??'', error);
     }
 }

@@ -1,8 +1,8 @@
 import { AfterContentInit, AfterViewInit, Component, ComponentRef, computed, Inject, Injector, OnChanges, OnDestroy, OnInit, SimpleChanges, viewChild, ViewChild, ViewContainerRef } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { CommonModule } from '@angular/common';
-import { ComponentInputData, ComponentInputDomainData } from '../../core/model/component-input-data.interface';
-import { BaseChildComponent } from '../../core/component/base-child.component';
+import { ComponentInputData, ComponentInputDomainData } from '@core/model/component-input-data.interface';
+import { BaseChildComponent } from '@core/component/base-child.component';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { Subject, takeUntil } from 'rxjs';
 import { MatIcon } from '@angular/material/icon';
@@ -60,7 +60,6 @@ export class ModalComponent implements AfterViewInit, OnDestroy {
   private loadComponent() {
     try {
       this.viewContainerRef.clear(); // cleans up current view
-      console.log(this.inputData.component);
       const componentRef: ComponentRef<BaseChildComponent> = this.container.createComponent(this.inputData.component!);
       
       // assign input

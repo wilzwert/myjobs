@@ -1,5 +1,5 @@
 import { StatusLabelPipe } from './status-label.pipe';
-import { TranslatorService } from '../services/translator.service';
+import { TranslatorService } from '@core/services/translator.service';
 
 describe('StatusLabelPipe', () => {
   it('should call translatorService.translateJobStatus and return its result', () => {

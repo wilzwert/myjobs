@@ -1,8 +1,8 @@
 import { of, Subject, throwError } from 'rxjs';
 import { JobDetailComponent } from './job-detail.component';
-import { Job } from '../../../core/model/job.interface';
+import { Job } from '@core/model/job.interface';
 import { fakeAsync } from '@angular/core/testing';
-import { ApiError } from '../../../core/errors/api-error';
+import { ApiError } from '@core/errors/api-error';
 import { HttpErrorResponse } from '@angular/common/http';
 
 // Mocks
@@ -47,6 +47,10 @@ describe('JobDetailComponent', () => {
     params: of({ id: 'job123' })
   };
 
+  const errorProcessorServiceMock = {
+    processError: jest.fn()
+  }
+
   beforeEach(() => {
     jest.clearAllMocks();
     loadJobSubject = new Subject();
@@ -64,6 +68,7 @@ describe('JobDetailComponent', () => {
       modalServiceMock as any,
       notificationServiceMock as any,
       titleServiceMock as any,
+      errorProcessorServiceMock as any
     );
   });
   

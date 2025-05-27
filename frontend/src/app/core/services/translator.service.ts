@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { JobStatus } from '../model/job.interface';
-import { ActivityType } from '../model/activity-type';
+import { JobStatus } from '@core/model/job.interface';
+import { ActivityType } from '@core/model/activity-type';
 
 @Injectable({
   providedIn: 'root'

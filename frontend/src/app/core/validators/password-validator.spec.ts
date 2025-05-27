@@ -5,6 +5,15 @@ describe('PasswordValidator', () => {
   
   let control: AbstractControl;
 
+  it('should return null for an empty value', () => {
+    control = { value: null } as AbstractControl;
+    
+    const result = PasswordValidator(control);
+    
+    // no error expected
+    expect(result).toBeNull();
+  });
+
   it('should return null for a valid password', () => {
     control = { value: 'Valid1Password@123' } as AbstractControl;
     
@@ -67,6 +76,25 @@ describe('PasswordValidator', () => {
       }
     });
   });
+
+  it('should return an error for a password without a lowercase letter', () => {
+    control = { value: 'PASSWORD1!' } as AbstractControl;
+    
+    const result = PasswordValidator(control);
+  
+    expect(result).toEqual({
+      passwordStrength: {
+        minimumLengthError: false,  
+        maximumLengthError: false,
+        upperCaseError: false,
+        lowerCaseError: true,
+        numericError: false,
+        specialCharError: false,
+        message: 'Needs at least 1 lowercase character'
+      }
+    });
+  });
+
 
   it('should return an error for a password without a special character', () => {
     control = { value: 'Password1' } as AbstractControl;

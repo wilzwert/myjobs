@@ -1,11 +1,11 @@
 import { Component, Input } from '@angular/core';
 import { MatIcon } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { Job, JobStatus } from '../../../core/model/job.interface';
-import { JobService } from '../../../core/services/job.service';
-import { NotificationService } from '../../../core/services/notification.service';
-import { UpdateJobStatusRequest } from '../../../core/model/update-job-status-request.interface';
-import { StatusLabelPipe } from '../../../core/pipe/status-label.pipe';
+import { Job, JobStatus } from '@core/model/job.interface';
+import { JobService } from '@core/services/job.service';
+import { NotificationService } from '@core/services/notification.service';
+import { UpdateJobStatusRequest } from '@core/model/update-job-status-request.interface';
+import { StatusLabelPipe } from '@core/pipe/status-label.pipe';
 import { DatePipe } from '@angular/common';
 
 @Component({

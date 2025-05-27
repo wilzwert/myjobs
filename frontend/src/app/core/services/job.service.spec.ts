@@ -1,15 +1,15 @@
 import { JobService } from './job.service';
 import { DataService } from './data.service';
 import { BehaviorSubject, firstValueFrom, lastValueFrom, of, Subject } from 'rxjs';
-import { Job, JobRating, JobStatus } from '../model/job.interface';
-import { CreateJobRequest } from '../model/create-job-request.interface';
-import { UpdateJobStatusRequest } from '../model/update-job-status-request.interface';
-import { CreateJobAttachmentsRequest } from '../model/create-job-attachments-request.interface';
-import { Page } from '../model/page.interface';
-import { JobMetadata } from '../model/job-metadata.interface';
-import { UpdateJobRequest } from '../model/update-job-request.interface';
-import { CreateJobAttachmentRequest } from '../model/create-job-attachment-request.interface';
-import { UpdateJobRatingRequest } from '../model/update-job-rating-request.interface';
+import { Job, JobRating, JobStatus } from '@core/model/job.interface';
+import { CreateJobRequest } from '@core/model/create-job-request.interface';
+import { UpdateJobStatusRequest } from '@core/model/update-job-status-request.interface';
+import { CreateJobAttachmentsRequest } from '@core/model/create-job-attachments-request.interface';
+import { Page } from '@core/model/page.interface';
+import { JobMetadata } from '@core/model/job-metadata.interface';
+import { UpdateJobRequest } from '@core/model/update-job-request.interface';
+import { CreateJobAttachmentRequest } from '@core/model/create-job-attachment-request.interface';
+import { UpdateJobRatingRequest } from '@core/model/update-job-rating-request.interface';
 import { SessionService } from './session.service';
 
 describe('JobService', () => {
@@ -55,31 +55,36 @@ describe('JobService', () => {
     expect(jobService.getItemsPerPage()).toEqual(-1);
   })
 
-  it('getJobById should call dataService.get with job id', async () => {
+  it('getJobById should call dataService.get with job id', (done) => {
     const job: Job = { id: '123' } as Job;
     dataServiceMock.get.mockReturnValue(of(job));
 
-    const result = await firstValueFrom(jobService.getJobById('123'));
-    expect(result).toEqual(job);
-    expect(dataServiceMock.get).toHaveBeenCalledWith('jobs/123');
+    jobService.getJobById('123').subscribe((result) => {
+      expect(result).toEqual(job);
+      expect(dataServiceMock.get).toHaveBeenCalledWith('jobs/123');
+      done();
+    });
   });
 
-  it('createJob should call post and reset jobsSubject', async () => {
+  it('createJob should call post and reset jobsSubject', (done) => {
     const request: CreateJobRequest = { title: 'New Job' } as CreateJobRequest;
     const createdJob: Job = { id: '1', title: 'New Job' } as Job;
 
     dataServiceMock.post.mockReturnValue(of(createdJob));
 
-    const job = await firstValueFrom(jobService.createJob(request));
-    expect(job).toEqual(createdJob);
-    expect(dataServiceMock.post).toHaveBeenCalledWith('jobs', request);
+    jobService.createJob(request).subscribe((job) => {
+      expect(job).toEqual(createdJob);
+      expect((jobService as any).jobsSubject.value).toBeNull();
+      expect(dataServiceMock.post).toHaveBeenCalledWith('jobs', request);
+      done();
+    });
   });
 
   it('deleteJob should call dataService.delete and reloadIfNecessary', async () => {
     const jobId = '123';
     dataServiceMock.delete.mockReturnValue(of(undefined));
 
-    // Mock interne pour suivre reloadIfNecessary
+    //internal mock for reloadIfNecessary
     const reloadSpy = jest.spyOn<any, any>(jobService as any, 'reloadIfNecessary');
     (jobService as any).jobsSubject.next({
       content: [{ id: jobId }] as Job[],
@@ -91,19 +96,20 @@ describe('JobService', () => {
     expect(reloadSpy).toHaveBeenCalled();
   });
 
-  it('updateJob should call dataService.put and reloadIfNecessary', async () => {
+  it('updateJob should call dataService.put and reloadIfNecessary', (done) => {
     const jobId = '321';
     const job: Job = { id: jobId } as Job;
     const request: UpdateJobRequest = { title: 'New title' } as UpdateJobRequest;
 
     dataServiceMock.patch.mockReturnValue(of(job));
-
     const reloadSpy = jest.spyOn<any, any>(jobService as any, 'reloadIfNecessary');
 
-    const result = await firstValueFrom(jobService.updateJob(jobId, request));
-    expect(result).toEqual(job);
-    expect(dataServiceMock.patch).toHaveBeenCalledWith(`jobs/${jobId}`, request);
-    expect(reloadSpy).toHaveBeenCalledWith(job);
+    jobService.updateJob(jobId, request).subscribe(result => {
+      expect(result).toEqual(job);
+      expect(dataServiceMock.patch).toHaveBeenCalledWith(`jobs/${jobId}`, request);
+      expect(reloadSpy).toHaveBeenCalledWith(job);
+      done();
+    });
   });
 
   it('updateJobStatus should call dataService.put and reloadIfNecessary', () => {
@@ -144,11 +150,14 @@ describe('JobService', () => {
     const job: Job = { id: jobId } as Job;
     const request: CreateJobAttachmentRequest = { name: 'cv.pdf' } as CreateJobAttachmentRequest;
 
+    const reloadSpy = jest.spyOn<any, any>(jobService as any, 'reloadIfNecessary');
+
     dataServiceMock.post.mockReturnValue(of(job));
 
     const result = await firstValueFrom(jobService.createAttachment(jobId, request));
     expect(dataServiceMock.post).toHaveBeenCalledWith(`jobs/${jobId}/attachments`, request);
     expect(result).toEqual(job);
+    expect(reloadSpy).toHaveBeenCalledWith(job);
       
   });
 
@@ -166,6 +175,59 @@ describe('JobService', () => {
     const result = await firstValueFrom(jobService.getAllJobs(1, 10, null, false, 'createdAt'));
     expect(result).toEqual(page);
     expect(dataServiceMock.get).toHaveBeenCalledWith('jobs?page=1&itemsPerPage=10&sort=createdAt');
+  });
+
+  it('getAllJobs should call dataService.get with status param', async () => {
+    const page: Page<Job> = {
+      content: [{ id: '1' }] as Job[],
+      totalElementsCount: 1,
+      currentPage: 1,
+      pageSize: 1,
+      pagesCount: 1
+    };
+
+    dataServiceMock.get.mockReturnValue(of(page));
+
+    const result = await firstValueFrom(jobService.getAllJobs(1, 10, JobStatus.ACCEPTED, false, 'createdAt'));
+    expect(result).toEqual(page);
+    expect(dataServiceMock.get).toHaveBeenCalledWith('jobs?page=1&itemsPerPage=10&status=ACCEPTED&sort=createdAt');
+  });
+
+  it('getAllJobs should call dataService.get with status param when both status and filterLate set', (done) => {
+    const page: Page<Job> = {
+      content: [{ id: '1' }] as Job[],
+      totalElementsCount: 1,
+      currentPage: 1,
+      pageSize: 1,
+      pagesCount: 1
+    };
+
+    dataServiceMock.get.mockReturnValue(of(page));
+
+    jobService.getAllJobs(1, 10, JobStatus.PENDING, true, 'createdAt').subscribe((result) => {
+      done();
+      expect(result).toEqual(page);
+      expect(dataServiceMock.get).toHaveBeenCalledWith('jobs?page=1&itemsPerPage=10&status=PENDING&sort=createdAt');
+      
+    });
+    
+  });
+
+
+  it('getAllJobs should call dataService.get with filterLate param', async () => {
+    const page: Page<Job> = {
+      content: [{ id: '1' }] as Job[],
+      totalElementsCount: 1,
+      currentPage: 1,
+      pageSize: 1,
+      pagesCount: 1
+    };
+
+    dataServiceMock.get.mockReturnValue(of(page));
+
+    const result = await firstValueFrom(jobService.getAllJobs(1, 10, null, true, 'createdAt'));
+    expect(result).toEqual(page);
+    expect(dataServiceMock.get).toHaveBeenCalledWith('jobs?page=1&itemsPerPage=10&filterLate=true&sort=createdAt');
   });
 
   it('getAllJobs should not call dataService.get if page/status/sort did not change', async () => {
@@ -186,6 +248,8 @@ describe('JobService', () => {
     expect(dataServiceMock.get).toHaveBeenCalledTimes(1); // only one call expected as page and order did not change
     expect(secondResult).toEqual(page);
   });
+
+  
 
   it('getJobMetadata should call dataService.get with url', async () => {
     const url = 'https://example.com';
@@ -270,7 +334,7 @@ describe('JobService', () => {
     
   });
 
-  it('deleteJob should trigger job deletion in BehaviorSubject', async () => {
+  it('deleteJob should trigger job deletion in BehaviorSubject', (done) => {
     const job: Job = { id: 'job-1', title: 'Job to delete' } as Job;  
 
     const page: Page<Job> = {
@@ -286,11 +350,12 @@ describe('JobService', () => {
   
     dataServiceMock.delete.mockReturnValue(of(void 0));
 
-    const result = await lastValueFrom(jobService.deleteJob('job-1'));
-    expect(result).toEqual(void 0);
-    const updatedPage = (jobService as any).jobsSubject.value;
-    expect(updatedPage.content).toHaveLength(0);
+    jobService.deleteJob('job-1').subscribe(() => {
+      const updatedPage = (jobService as any).jobsSubject.value;
+      expect(updatedPage.content).toHaveLength(0);
+      expect(updatedPage.totalElementsCount).toBe(0);
+      done();
+    })
   });
-
-
+    
 });

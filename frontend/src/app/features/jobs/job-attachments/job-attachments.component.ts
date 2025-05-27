@@ -1,13 +1,13 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Job } from '../../../core/model/job.interface';
-import { JobService } from '../../../core/services/job.service';
-import { Attachment } from '../../../core/model/attachment.interface';
+import { Job } from '@core/model/job.interface';
+import { JobService } from '@core/services/job.service';
+import { Attachment } from '@core/model/attachment.interface';
 import { take, tap } from 'rxjs';
-import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
-import { FileService } from '../../../core/services/file.service';
+import { ConfirmDialogService } from '@core/services/confirm-dialog.service';
+import { FileService } from '@core/services/file.service';
 import { MatButton } from '@angular/material/button';
-import { JobAttachmentsFormComponent } from '../job-attachments-form/job-attachments-form.component';
-import { ModalService } from '../../../core/services/modal.service';
+import { JobAttachmentsFormComponent } from '@features/jobs/job-attachments-form/job-attachments-form.component';
+import { ModalService } from '@core/services/modal.service';
 import { DatePipe } from '@angular/common';
 
 @Component({

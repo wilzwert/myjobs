@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { ActivityType } from '../model/activity-type';
-import { TranslatorService } from '../services/translator.service';
+import { ActivityType } from '@core/model/activity-type';
+import { TranslatorService } from '@core/services/translator.service';
 
 @Pipe({
   name: 'activityLabel'

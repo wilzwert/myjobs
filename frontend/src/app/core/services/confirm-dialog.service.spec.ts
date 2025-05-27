@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { ConfirmDialogService } from './confirm-dialog.service';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { ConfirmDialogComponent } from '../../features/dialogs/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogComponent } from '@features/dialogs/confirm-dialog/confirm-dialog.component';
 import { of } from 'rxjs';
 
 describe('ConfirmDialogService', () => {

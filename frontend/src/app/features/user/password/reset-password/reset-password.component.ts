@@ -7,10 +7,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { NgxCaptchaModule } from 'ngx-captcha';
-import { NotificationService } from '../../../../core/services/notification.service';
-import { ResetPasswordRequest } from '../../../../core/model/reset-password-request.interface';
-import { UserService } from '../../../../core/services/user.service';
-import { StatusIconComponent } from "../../../../layout/shared/status-icon/status-icon.component";
+import { NotificationService } from '@core/services/notification.service';
+import { ResetPasswordRequest } from '@core/model/reset-password-request.interface';
+import { UserService } from '@core/services/user.service';
+import { StatusIconComponent } from "@layout/shared/status-icon/status-icon.component";
+import { ErrorProcessorService } from '@core/services/error-processor.service';
 
 
 @Component({
@@ -28,7 +29,8 @@ export class ResetPasswordComponent {
     private userService: UserService,
     private router: Router,
     private fb: FormBuilder,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private errorProcessorService: ErrorProcessorService
   ) {
     this.form = this.fb.group({
       email: [
@@ -46,7 +48,6 @@ export class ResetPasswordComponent {
   }
 
   submit() :void {
-    console.log('submit ', this.isSubmitting, this.form.valid);
     if(!this.isSubmitting && this.form.valid) {
           this.isSubmitting = true;
           this.userService.resetPassword(this.form.value as ResetPasswordRequest)
@@ -55,9 +56,7 @@ export class ResetPasswordComponent {
             catchError(
               () => {
                 this.isSubmitting = false;
-                return throwError(() => new Error(
-                  'Password request failed'
-                ));
+                return this.errorProcessorService.processError(new Error('Password request failed'));
               }
           ))
           .subscribe(() => {

@@ -1,12 +1,11 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
-import { StatusIconComponent } from '../../../layout/shared/status-icon/status-icon.component';
-import { JobService } from '../../../core/services/job.service';
-import { JobMetadata } from '../../../core/model/job-metadata.interface';
-import { BaseChildComponent } from '../../../core/component/base-child.component';
-import { Job } from '../../../core/model/job.interface';
-import { ModalService } from '../../../core/services/modal.service';
+import { StatusIconComponent } from '@layout/shared/status-icon/status-icon.component';
+import { JobService } from '@core/services/job.service';
+import { JobMetadata } from '@core/model/job-metadata.interface';
+import { BaseChildComponent } from '@core/component/base-child.component';
+import { ModalService } from '@core/services/modal.service';
 import { MatInput } from '@angular/material/input';
 import { MatButton } from '@angular/material/button';
 

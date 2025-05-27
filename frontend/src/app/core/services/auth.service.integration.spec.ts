@@ -3,9 +3,9 @@ import { TestBed } from '@angular/core/testing';
 
 import { AuthService } from './auth.service';
 import { HttpTestingController, provideHttpClientTesting, TestRequest } from '@angular/common/http/testing';
-import { LoginRequest } from '../model/login-request.interface';
-import { RegistrationRequest } from '../model/registration-request.interface';
-import { SessionInformation } from '../model/session-information.interface';
+import { LoginRequest } from '@core/model/login-request.interface';
+import { RegistrationRequest } from '@core/model/registration-request.interface';
+import { SessionInformation } from '@core/model/session-information.interface';
 import { of } from 'rxjs';
 import { CaptchaService } from './captcha.service';
 

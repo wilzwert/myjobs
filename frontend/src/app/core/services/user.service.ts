@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { Observable, switchMap } from 'rxjs';
 import { DataService } from './data.service';
 import { CaptchaService } from './captcha.service';
-import { ResetPasswordRequest } from '../model/reset-password-request.interface';
-import { NewPasswordRequest } from '../model/new-password-request.interface';
-import { ValidateEmailRequest } from '../model/validate-email-request.interface';
-import { User } from '../model/user.interface';
-import { ChangePasswordRequest } from '../model/change-password-request.interface';
-import { EditUserRequest } from '../model/edit-user-request.interface';
-import { EditUserLangRequest } from '../model/edit-user-lang-request.interface';
+import { ResetPasswordRequest } from '@core/model/reset-password-request.interface';
+import { NewPasswordRequest } from '@core/model/new-password-request.interface';
+import { ValidateEmailRequest } from '@core/model/validate-email-request.interface';
+import { User } from '@core/model/user.interface';
+import { ChangePasswordRequest } from '@core/model/change-password-request.interface';
+import { EditUserRequest } from '@core/model/edit-user-request.interface';
+import { EditUserLangRequest } from '@core/model/edit-user-lang-request.interface';
 
 @Injectable({
   providedIn: 'root'

@@ -1,17 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { UserService } from '../../../core/services/user.service';
-import { NotificationService } from '../../../core/services/notification.service';
-import { PasswordValidator } from '../../../core/validators/password-validator';
-import { ConfirmPasswordValidator } from '../../../core/validators/confirm-password-validator';
-import { ChangePasswordRequest } from '../../../core/model/change-password-request.interface';
+import { UserService } from '@core/services/user.service';
+import { NotificationService } from '@core/services/notification.service';
+import { PasswordValidator } from '@core/validators/password-validator';
+import { ConfirmPasswordValidator } from '@core/validators/confirm-password-validator';
+import { ChangePasswordRequest } from '@core/model/change-password-request.interface';
 import { catchError, take, throwError } from 'rxjs';
 import { MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
 import { MatButton } from '@angular/material/button';
 import { MatInput } from '@angular/material/input';
-import { ApiError } from '../../../core/errors/api-error';
-import { BaseChildComponent } from '../../../core/component/base-child.component';
-import { StatusIconComponent } from "../../../layout/shared/status-icon/status-icon.component";
+import { ApiError } from '@core/errors/api-error';
+import { BaseChildComponent } from '@core/component/base-child.component';
+import { StatusIconComponent } from "@layout/shared/status-icon/status-icon.component";
+import { ErrorProcessorService } from '@core/services/error-processor.service';
 
 @Component({
   selector: 'app-password-form',
@@ -24,7 +25,7 @@ export class PasswordFormComponent extends BaseChildComponent implements OnInit 
   public form!: FormGroup;
   public isSubmitting = false;
 
-  constructor(private fb: FormBuilder, private userService: UserService, private notificationService: NotificationService) {
+  constructor(private fb: FormBuilder, private userService: UserService, private notificationService: NotificationService, private errorProcessService: ErrorProcessorService) {
     super();
   }
 
@@ -68,9 +69,7 @@ export class PasswordFormComponent extends BaseChildComponent implements OnInit 
   }
 
   submit() :void {
-    console.log('submit', this.isSubmitting, this.form.valid);
     if(!this.isSubmitting && this.form.valid) {
-      console.log('not submitting && valid, submit');
       this.isSubmitting = true;
       this.userService.changePassword({password: this.password!.value, oldPassword: this.oldPassword!.value } as ChangePasswordRequest)
                 .pipe(
@@ -79,9 +78,7 @@ export class PasswordFormComponent extends BaseChildComponent implements OnInit 
                     (error: ApiError) => {
                       this.isSubmitting = false;
                       this.fail();
-                      return throwError(() => new Error(
-                        `Password update failed : ${error.message}`
-                      ));
+                      return this.errorProcessService.processError(new Error(`Password update failed : ${error.message}`));
                     }
                 ))
                 .subscribe(() => {

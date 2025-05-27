@@ -1,18 +1,19 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { JobService } from '../../../core/services/job.service';
-import { Job } from '../../../core/model/job.interface';
+import { JobService } from '@core/services/job.service';
+import { Job } from '@core/model/job.interface';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { EditorComponent, TINYMCE_SCRIPT_SRC } from '@tinymce/tinymce-angular'
-import { NotificationService } from '../../../core/services/notification.service';
+import { NotificationService } from '@core/services/notification.service';
 import { MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
-import { UpdateJobRequest } from '../../../core/model/update-job-request.interface';
-import { CreateJobRequest } from '../../../core/model/create-job-request.interface';
+import { UpdateJobRequest } from '@core/model/update-job-request.interface';
+import { CreateJobRequest } from '@core/model/create-job-request.interface';
 import { MatInput } from '@angular/material/input';
-import { catchError, Observable, take, throwError } from 'rxjs';
-import { ApiError } from '../../../core/errors/api-error';
+import { catchError, Observable, take } from 'rxjs';
+import { ApiError } from '@core/errors/api-error';
 import { MatButton } from '@angular/material/button';
-import { JobMetadata } from '../../../core/model/job-metadata.interface';
-import { StatusIconComponent } from "../../../layout/shared/status-icon/status-icon.component";
+import { JobMetadata } from '@core/model/job-metadata.interface';
+import { StatusIconComponent } from "@layout/shared/status-icon/status-icon.component";
+import { ErrorProcessorService } from '@core/services/error-processor.service';
 
 @Component({
   selector: 'app-job-form',
@@ -40,7 +41,7 @@ export class JobFormComponent implements OnInit {
     statusbar: false
   };
 
-  constructor(private jobService: JobService, private notificationService: NotificationService, private fb: FormBuilder) {
+  constructor(private jobService: JobService, private notificationService: NotificationService, private fb: FormBuilder, private errorProcessorService: ErrorProcessorService) {
   }
   ngOnInit(): void {
     this.initForm();
@@ -101,7 +102,7 @@ export class JobFormComponent implements OnInit {
           const errorMessage = $localize `:@@error.job.create_or_save:Job could not be ${term}.${error.message}`;
           error.message = errorMessage;
           this.error = errorMessage;
-          return throwError(() => error);
+          return this.errorProcessorService.processError(error);
         }
       )
     )
@@ -114,7 +115,6 @@ export class JobFormComponent implements OnInit {
 
   private initForm(): void {
     const valueSource = this.job?? this.jobMetadata;
-    console.log('initform', this.jobMetadata);
     this.form = this.fb.group({
       url: [
         valueSource?.url,

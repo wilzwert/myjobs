@@ -1,22 +1,23 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { JobService } from '../../../core/services/job.service';
+import { JobService } from '@core/services/job.service';
 import { catchError, Observable, Subject, take, takeUntil, tap, throwError } from 'rxjs';
-import { Job } from '../../../core/model/job.interface';
+import { Job } from '@core/model/job.interface';
 import { Title } from '@angular/platform-browser';
 import { AsyncPipe } from '@angular/common';
-import { ActivityType } from '../../../core/model/activity-type';
+import { ActivityType } from '@core/model/activity-type';
 import { MatButton, MatIconButton } from '@angular/material/button';
-import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
+import { ConfirmDialogService } from '@core/services/confirm-dialog.service';
 import { MatCardModule } from '@angular/material/card';
-import { ModalService } from '../../../core/services/modal.service';
-import { NotificationService } from '../../../core/services/notification.service';
-import { ApiError } from '../../../core/errors/api-error';
-import { JobAttachmentsComponent } from '../job-attachments/job-attachments.component';
-import { JobActivitiesComponent } from "../job-activities/job-activities.component";
-import { JobSummaryComponent } from '../job-summary/job-summary.component';
+import { ModalService } from '@core/services/modal.service';
+import { NotificationService } from '@core/services/notification.service';
+import { ApiError } from '@core/errors/api-error';
+import { JobAttachmentsComponent } from '@features/jobs/job-attachments/job-attachments.component';
+import { JobActivitiesComponent } from "@features/jobs/job-activities/job-activities.component";
+import { JobSummaryComponent } from '@features/jobs/job-summary/job-summary.component';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
+import { ErrorProcessorService } from '@core/services/error-processor.service';
 
 @Component({
   selector: 'app-job-detail',
@@ -39,17 +40,17 @@ export class JobDetailComponent implements OnInit, OnDestroy {
     private confirmDialogService: ConfirmDialogService,
     private modalService: ModalService,
     private notificationService: NotificationService,
-    private title: Title
+    private title: Title,
+    private errorProcessorService: ErrorProcessorService
   ) {}
 
   private loadJob(jobId: string): void {
-    console.log('-------------------loadJob');
     this.job$ = this.jobService.getJobById(jobId).pipe(
       // set page title once the job  is available
       tap((job: Job) =>{this.title.setTitle(`Job - ${job.title}`)}),
       catchError((error: ApiError) => {
         this.router.navigate(["/jobs"]);
-        return throwError(() => error);
+        return this.errorProcessorService.processError(error);
       })
     );
   }

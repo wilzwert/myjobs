@@ -4,16 +4,17 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { AuthService } from '../../core/services/auth.service';
-import { RegistrationRequest } from '../../core/model/registration-request.interface';
+import { AuthService } from '@core/services/auth.service';
+import { RegistrationRequest } from '@core/model/registration-request.interface';
 import { catchError, take, throwError } from 'rxjs';
 import { Router } from '@angular/router';
-import { NotificationService } from '../../core/services/notification.service';
-import { ApiError } from '../../core/errors/api-error';
-import { AuthValidators } from '../../core/services/auth.validators';
+import { NotificationService } from '@core/services/notification.service';
+import { ApiError } from '@core/errors/api-error';
+import { AuthValidators } from '@core/services/auth.validators';
 import { NgxCaptchaModule } from 'ngx-captcha';
-import { PasswordValidator } from '../../core/validators/password-validator';
-import { UserFormComponent } from "../user/user-form/user-form.component";
+import { PasswordValidator } from '@core/validators/password-validator';
+import { UserFormComponent } from "@features/user/user-form/user-form.component";
+import { ErrorProcessorService } from '@core/services/error-processor.service';
 
 @Component({
   selector: 'app-register',
@@ -39,7 +40,8 @@ export class RegistrationComponent {
     private authValidators: AuthValidators,
     private router: Router,
     private fb: FormBuilder,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private errorProcessorService: ErrorProcessorService
   ) {
     this.form = this.fb.group({
       email: [
@@ -91,7 +93,7 @@ export class RegistrationComponent {
         catchError(
           (error: ApiError) => {
             this.isSubmitting = false;
-            return throwError(() => error);
+            return this.errorProcessorService.processError(error);
           }
       ))
       .subscribe(() => {

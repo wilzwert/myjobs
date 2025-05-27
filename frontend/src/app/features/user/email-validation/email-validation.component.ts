@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from '../../../core/services/user.service';
+import { UserService } from '@core/services/user.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ValidateEmailRequest } from '../../../core/model/validate-email-request.interface';
+import { ValidateEmailRequest } from '@core/model/validate-email-request.interface';
 import { catchError, take, throwError } from 'rxjs';
-import { NotificationService } from '../../../core/services/notification.service';
-import { SessionService } from '../../../core/services/session.service';
+import { NotificationService } from '@core/services/notification.service';
+import { SessionService } from '@core/services/session.service';
+import { ErrorProcessorService } from '@core/services/error-processor.service';
 
 @Component({
   selector: 'app-email-validation',
@@ -14,7 +15,13 @@ import { SessionService } from '../../../core/services/session.service';
 })
 export class EmailValidationComponent implements OnInit {
 
-  constructor(private userService: UserService, private activatedRoute: ActivatedRoute, private router: Router, private notificationService: NotificationService, private sessionService: SessionService) {}
+  constructor(
+    private userService: UserService, 
+    private activatedRoute: ActivatedRoute, 
+    private router: Router, 
+    private notificationService: NotificationService, 
+    private sessionService: SessionService,
+    private errorProcessorService: ErrorProcessorService) {}
 
   private redirect(): void {
     if(this.sessionService.isLogged()) {
@@ -36,9 +43,7 @@ export class EmailValidationComponent implements OnInit {
           catchError(
             () => {
               this.redirect();
-              return throwError(() => new Error(
-                'Email validation failed'
-              ));
+              return this.errorProcessorService.processError(new Error($localize `:email validation fail@@error.email.validation_failed:Email validation failed`));
             }
         )).subscribe(() => {
           this.notificationService.confirmation($localize `:@@info.email.validated:Your email has been validated.`);

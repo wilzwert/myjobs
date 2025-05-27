@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { SessionStorageService } from './token-storage.service';
 import { Router } from '@angular/router';
-import { SessionInformation } from '../model/session-information.interface';
-import { RefreshTokenResponse } from '../model/refresh-token-response.interface';
+import { SessionInformation } from '@core/model/session-information.interface';
+import { RefreshTokenResponse } from '@core/model/refresh-token-response.interface';
 import { NotificationService } from './notification.service';
 
 @Injectable({

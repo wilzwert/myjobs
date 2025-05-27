@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, UrlTree } from '@angular/router';
-import { LocaleService } from '../services/locale.service';
+import { LocaleService } from '@core/services/locale.service';
 import { Observable } from 'rxjs';
 
 @Injectable({

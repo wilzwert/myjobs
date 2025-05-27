@@ -1,8 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from './auth.service';
-import { LoginRequest } from '../model/login-request.interface';
-import { RegistrationRequest } from '../model/registration-request.interface';
-import { SessionInformation } from '../model/session-information.interface';
+import { LoginRequest } from '@core/model/login-request.interface';
+import { RegistrationRequest } from '@core/model/registration-request.interface';
+import { SessionInformation } from '@core/model/session-information.interface';
 import { of, throwError } from 'rxjs';
 import { CaptchaService } from './captcha.service';
 import { DataService } from './data.service';

@@ -1,11 +1,11 @@
 import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
-import { SessionService } from '../services/session.service';
+import { SessionService } from '@core/services/session.service';
 import { TestBed } from "@angular/core/testing";
 import { HttpTestingController, provideHttpClientTesting } from "@angular/common/http/testing";
 import { JwtInterceptor } from "./jwt.interceptor";
-import { SessionInformation } from "../models/session-information.interface";
-import { RefreshTokenRequest } from "../models/refresh-token-request.interface";
-import { RefreshTokenResponse } from "../models/refresh-token-response.interface";
+import { SessionInformation } from "@core/model/session-information.interface"; 
+import { RefreshTokenRequest } from "@core/model/refresh-token-request.interface"; 
+import { RefreshTokenResponse } from "@core/model/refresh-token-response.interface"; 
 
 describe('JwtInterceptor', () => {
   let httpTestingController: HttpTestingController;
@@ -47,11 +47,9 @@ describe('JwtInterceptor', () => {
 
   it('should add bearer to token in request headers if logged in', () => {
     const mockSessionInformation: SessionInformation = {
-      id: 1,
+      email: 'john@doe.com',
       username: 'johndoe',
-      token: 'token123',
-      type: 'Bearer',
-      refreshToken: 'refresh_token'
+      role: 'USER'
     }
 
     sessionService.logIn(mockSessionInformation);

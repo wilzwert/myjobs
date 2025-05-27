@@ -1,13 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { JobSummaryComponent } from './job-summary.component';
-import { JobStatusComponent } from '../job-status/job-status.component';
-import { JobService } from '../../../core/services/job.service';
-import { ModalService } from '../../../core/services/modal.service';
-import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
-import { NotificationService } from '../../../core/services/notification.service';
+import { JobStatusComponent } from '@features/jobs/job-status/job-status.component';
+import { JobService } from '@core/services/job.service';
+import { ModalService } from '@core/services/modal.service';
+import { ConfirmDialogService } from '@core/services/confirm-dialog.service';
+import { NotificationService } from '@core/services/notification.service';
 import { of } from 'rxjs';
-import { Job, JobStatus } from '../../../core/model/job.interface';
+import { Job, JobStatus } from '@core/model/job.interface';
 
 describe('JobSummaryComponent', () => {
   let component: JobSummaryComponent;

@@ -1,4 +1,4 @@
-import { ApiError } from "../errors/api-error";
+import { ApiError } from "@core/errors/api-error";
 
 export interface AppNotification {
     type: 'error' | 'confirmation' | 'information';
