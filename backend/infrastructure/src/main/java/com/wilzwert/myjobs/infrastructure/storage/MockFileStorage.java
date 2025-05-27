@@ -2,6 +2,7 @@ package com.wilzwert.myjobs.infrastructure.storage;
 
 import com.wilzwert.myjobs.core.domain.model.attachment.exception.AttachmentFileNotReadableException;
 import com.wilzwert.myjobs.core.domain.model.DownloadableFile;
+import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
@@ -53,7 +54,7 @@ public class MockFileStorage implements FileStorage {
     }
 
     @Override
-    public String generateProtectedUrl(String fileId) {
+    public String generateProtectedUrl(JobId jobId, String fileId) {
         return "https://mockstorage.local/fake-url/"+fileId;
     }
 

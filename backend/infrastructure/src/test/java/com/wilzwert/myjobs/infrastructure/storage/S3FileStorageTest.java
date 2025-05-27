@@ -2,6 +2,7 @@ package com.wilzwert.myjobs.infrastructure.storage;
 
 
 import com.wilzwert.myjobs.core.domain.model.DownloadableFile;
+import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
@@ -22,7 +23,6 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequ
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -86,7 +86,7 @@ public class S3FileStorageTest {
         when(presignedRequest.url()).thenReturn(URI.create("https://example.com/fake-url").toURL());
         when(s3Presigner.presignGetObject(any(GetObjectPresignRequest.class))).thenReturn(presignedRequest);
 
-        String url = underTest.generateProtectedUrl("fileId");
+        String url = underTest.generateProtectedUrl(JobId.generate(), "fileId");
 
         assertEquals("https://example.com/fake-url", url);
     }
