@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">73.77% </span>
+                <span class="strong">75% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>45/61</span>
+                <span class='fraction'>45/60</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">53.84% </span>
+                <span class="strong">52% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>14/26</span>
+                <span class='fraction'>13/25</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">97.61% </span>
+                <span class="strong">97.67% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>41/42</span>
+                <span class='fraction'>42/43</span>
             </div>
         
             
@@ -158,7 +158,8 @@
 <a name='L93'></a><a href='#L93'>93</a>
 <a name='L94'></a><a href='#L94'>94</a>
 <a name='L95'></a><a href='#L95'>95</a>
-<a name='L96'></a><a href='#L96'>96</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -172,6 +173,7 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -200,10 +202,10 @@
 <span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
@@ -255,23 +257,24 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { JobService } from '../../../core/services/job.service';
+import { JobService } from '@core/services/job.service';
 import { catchError, Observable, Subject, take, takeUntil, tap, throwError } from 'rxjs';
-import { Job } from '../../../core/model/job.interface';
+import { Job } from '@core/model/job.interface';
 import { Title } from '@angular/platform-browser';
 import { AsyncPipe } from '@angular/common';
-import { ActivityType } from '../../../core/model/activity-type';
+import { ActivityType } from '@core/model/activity-type';
 import { MatButton, MatIconButton } from '@angular/material/button';
-import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
+import { ConfirmDialogService } from '@core/services/confirm-dialog.service';
 import { MatCardModule } from '@angular/material/card';
-import { ModalService } from '../../../core/services/modal.service';
-import { NotificationService } from '../../../core/services/notification.service';
-import { ApiError } from '../../../core/errors/api-error';
-import { JobAttachmentsComponent } from '../job-attachments/job-attachments.component';
-import { JobActivitiesComponent } from "../job-activities/job-activities.component";
-import { JobSummaryComponent } from '../job-summary/job-summary.component';
+import { ModalService } from '@core/services/modal.service';
+import { NotificationService } from '@core/services/notification.service';
+import { ApiError } from '@core/errors/api-error';
+import { JobAttachmentsComponent } from '@features/jobs/job-attachments/job-attachments.component';
+import { JobActivitiesComponent } from "@features/jobs/job-activities/job-activities.component";
+import { JobSummaryComponent } from '@features/jobs/job-summary/job-summary.component';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
+import { ErrorProcessorService } from '@core/services/error-processor.service';
 &nbsp;
 @Component({
   selector: 'app-job-detail',
@@ -294,17 +297,17 @@ export class JobDetailComponent implements OnInit, OnDestroy {
     private confirmDialogService: ConfirmDialogService,
     private modalService: ModalService,
     private notificationService: NotificationService,
-    private title: Title
+    private title: Title,
+    private errorProcessorService: ErrorProcessorService
   ) {}
 &nbsp;
   private <span class="fstat-no" title="function not covered" >loadJob(</span>jobId: string): void {
-<span class="cstat-no" title="statement not covered" >    console.log('-------------------loadJob');</span>
 <span class="cstat-no" title="statement not covered" >    this.job$ = this.jobService.getJobById(jobId).pipe(</span>
       // set page title once the job  is available
       tap((job: Job) =&gt;{this.title.setTitle(`Job - ${job.title}`)}),
       catchError((error: ApiError) =&gt; {
 <span class="cstat-no" title="statement not covered" >        this.router.navigate(["/jobs"]);</span>
-<span class="cstat-no" title="statement not covered" >        return throwError(() =&gt; error);</span>
+<span class="cstat-no" title="statement not covered" >        return this.errorProcessorService.processError(error);</span>
       })
     );
   }
@@ -327,7 +330,7 @@ export class JobDetailComponent implements OnInit, OnDestroy {
 &nbsp;
 &nbsp;
 <span class="fstat-no" title="function not covered" >  editJob(</span>job: Job) :void {
-    this.modalService.openJobModal('job', job, <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >this.loadJob(job.id))</span>
+    this.modalService.openJobModal('job', job, <span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >t</span>his.loadJob(job.id))</span>
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" >  onDelete(</span>job: Job) :void {
@@ -345,7 +348,7 @@ export class JobDetailComponent implements OnInit, OnDestroy {
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" >  deleteJob(</span>job: Job) :void {
-<span class="cstat-no" title="statement not covered" >    this.confirmDialogService.openConfirmDialog($localize `:@@warning.job.delete:Delete job "${job.title}" ? All data will be lost.`, <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >this.confirmDeleteJob(job))</span>;</span>
+<span class="cstat-no" title="statement not covered" >    this.confirmDialogService.openConfirmDialog($localize `:@@warning.job.delete:Delete job "${job.title}" ? All data will be lost.`, <span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >t</span>his.confirmDeleteJob(job))</span>;</span>
   }
 }
 &nbsp;</pre></td></tr></table></pre>
@@ -355,7 +358,7 @@ export class JobDetailComponent implements OnInit, OnDestroy {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-26T11:31:46.538Z
+                at 2025-05-27T15:05:06.871Z
             </div>
         <script src="../../../../../prettify.js"></script>
         <script>

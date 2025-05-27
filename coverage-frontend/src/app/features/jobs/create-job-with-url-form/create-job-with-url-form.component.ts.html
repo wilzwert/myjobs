@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">41.93% </span>
+                <span class="strong">77.41% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>13/31</span>
+                <span class='fraction'>24/31</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">10% </span>
+                <span class="strong">60% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/10</span>
+                <span class='fraction'>6/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">52.63% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>10/19</span>
+                <span class='fraction'>19/19</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -115,15 +115,13 @@
 <a name='L50'></a><a href='#L50'>50</a>
 <a name='L51'></a><a href='#L51'>51</a>
 <a name='L52'></a><a href='#L52'>52</a>
-<a name='L53'></a><a href='#L53'>53</a>
-<a name='L54'></a><a href='#L54'>54</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">9x</span>
+<a name='L53'></a><a href='#L53'>53</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">9x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-yes">9x</span>
@@ -136,20 +134,17 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -158,26 +153,28 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
-import { StatusIconComponent } from '../../../layout/shared/status-icon/status-icon.component';
-import { JobService } from '../../../core/services/job.service';
-import { JobMetadata } from '../../../core/model/job-metadata.interface';
-import { BaseChildComponent } from '../../../core/component/base-child.component';
-import { Job } from '../../../core/model/job.interface';
-import { ModalService } from '../../../core/services/modal.service';
+import { StatusIconComponent } from '@layout/shared/status-icon/status-icon.component';
+import { JobService } from '@core/services/job.service';
+import { JobMetadata } from '@core/model/job-metadata.interface';
+import { BaseChildComponent } from '@core/component/base-child.component';
+import { ModalService } from '@core/services/modal.service';
 import { MatInput } from '@angular/material/input';
 import { MatButton } from '@angular/material/button';
 &nbsp;
@@ -189,17 +186,17 @@ import { MatButton } from '@angular/material/button';
 })
 export class <span class="cstat-no" title="statement not covered" >CreateJobWithUrlFormComponent e</span>xtends BaseChildComponent implements OnInit {
 &nbsp;
-  @Output() onJobCreation = <span class="cstat-no" title="statement not covered" >new EventEmitter&lt;JobMetadata&gt;;</span>
+  @Output() onJobCreation = new EventEmitter&lt;JobMetadata&gt;;
 &nbsp;
   public urlForm: FormGroup | undefined;
-  public urlFormLoading = <span class="cstat-no" title="statement not covered" >false;</span>
+  public urlFormLoading = false;
 &nbsp;
-<span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  constructor(private <span class="cstat-no" title="statement not covered" >f</span></span>b: FormBuilder,</span> private <span class="cstat-no" title="statement not covered" >jobService: JobService,</span> private <span class="cstat-no" title="statement not covered" >modalService: ModalService)</span> {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    super();</span></span>
+<span class="fstat-no" title="function not covered" >  constructor(private f</span>b: FormBuilder, private jobService: JobService, private modalService: ModalService) {
+<span class="cstat-no" title="statement not covered" >    super();</span>
   }
 &nbsp;
-<span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  ngOnInit(</span></span>): void {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.urlForm = this.fb.group({</span></span>
+<span class="fstat-no" title="function not covered" >  ngOnInit(</span>): void {
+<span class="cstat-no" title="statement not covered" >    this.urlForm = this.fb.group({</span>
       url: [
         '',
         [
@@ -210,15 +207,15 @@ export class <span class="cstat-no" title="statement not covered" >CreateJobWith
     });
   }
 &nbsp;
-<span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  get u</span></span>rl() {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    return this.urlForm?.get('url');</span></span>
+<span class="fstat-no" title="function not covered" >  get u</span>rl() {
+<span class="cstat-no" title="statement not covered" >    return this.urlForm?.get('url');</span>
   }
 &nbsp;
 &nbsp;
-<span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  getMetadataFromUrl(</span></span>): void {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.jobService.getJobMetadata(this.url?.value).subscribe(<span class="fstat-no" title="function not covered" >(m</span>etadata: JobMetadata) =&gt; {</span></span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >      this.data.metadata = { jobMetadata: metadata };</span></span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >      this.success();</span></span>
+<span class="fstat-no" title="function not covered" >  getMetadataFromUrl(</span>): void {
+<span class="cstat-no" title="statement not covered" >    this.jobService.getJobMetadata(this.url?.value).subscribe((metadata: JobMetadata) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >      this.data.metadata = { jobMetadata: metadata };</span>
+<span class="cstat-no" title="statement not covered" >      this.success();</span>
     });
   }
 }
@@ -229,7 +226,7 @@ export class <span class="cstat-no" title="statement not covered" >CreateJobWith
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-26T11:31:46.538Z
+                at 2025-05-27T15:05:06.871Z
             </div>
         <script src="../../../../../prettify.js"></script>
         <script>

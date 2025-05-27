@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">44.44% </span>
+                <span class="strong">46.87% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>28/63</span>
+                <span class='fraction'>30/64</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">23.52% </span>
+                <span class="strong">25% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>4/17</span>
+                <span class='fraction'>4/16</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">57.89% </span>
+                <span class="strong">61.9% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>22/38</span>
+                <span class='fraction'>26/42</span>
             </div>
         
             
@@ -154,7 +154,12 @@
 <a name='L89'></a><a href='#L89'>89</a>
 <a name='L90'></a><a href='#L90'>90</a>
 <a name='L91'></a><a href='#L91'>91</a>
-<a name='L92'></a><a href='#L92'>92</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">11x</span>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-yes">11x</span>
@@ -165,6 +170,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-yes">11x</span>
@@ -187,6 +193,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -249,18 +259,19 @@
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { JobService } from '../../../core/services/job.service';
-import { Job } from '../../../core/model/job.interface';
+import { JobService } from '@core/services/job.service';
+import { Job } from '@core/model/job.interface';
 import { catchError, take, throwError } from 'rxjs';
-import { ApiError } from '../../../core/errors/api-error';
-import { CreateJobActivitiesRequest } from '../../../core/model/create-job-activities-request.interface';
-import { NotificationService } from '../../../core/services/notification.service';
-import { CreateJobActivityRequest } from '../../../core/model/create-job-activity-request.interface';
+import { ApiError } from '@core/errors/api-error';
+import { CreateJobActivitiesRequest } from '@core/model/create-job-activities-request.interface';
+import { NotificationService } from '@core/services/notification.service';
+import { CreateJobActivityRequest } from '@core/model/create-job-activity-request.interface';
 import { MatButton } from '@angular/material/button';
-import { UserActitivityType } from '../../../core/model/activity-type';
-import { ActivityLabelPipe } from '../../../core/pipe/activity-label.pipe';
+import { UserActitivityType } from '@core/model/activity-type';
+import { ActivityLabelPipe } from '@core/pipe/activity-label.pipe';
 import { MatOption, MatSelect } from '@angular/material/select';
 import { MatIcon } from '@angular/material/icon';
+import { ErrorProcessorService } from '@core/services/error-processor.service';
 &nbsp;
 &nbsp;
 @Component({
@@ -278,8 +289,12 @@ export class JobActivitiesFormComponent implements OnInit {
   activityForm!: FormGroup;
   activityTypeKeys: string[] = [];
 &nbsp;
-<span class="fstat-no" title="function not covered" >  constructor(private f</span>b: FormBuilder, private jobService: JobService, private notificationService: NotificationService) {
-<span class="cstat-no" title="statement not covered" >    this.activityTypeKeys=Object.keys(UserActitivityType);</span>
+<span class="fstat-no" title="function not covered" >  constructor(</span>
+    private fb: FormBuilder, 
+    private jobService: JobService, 
+    private notificationService: NotificationService,
+    private errorProcessorService: ErrorProcessorService) {
+<span class="cstat-no" title="statement not covered" >    this.activityTypeKeys = Object.keys(UserActitivityType);</span>
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" >  ngOnInit(</span>): void {
@@ -320,15 +335,15 @@ export class JobActivitiesFormComponent implements OnInit {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >      this.jobService.createActivities(this.job.id, {activities: activities} as CreateJobActivitiesRequest).pipe(</span></span>
             take(1),
             catchError(
-<span class="fstat-no" title="function not covered" >              (e</span>rror: ApiError) =&gt; {
+              (<span class="fstat-no" title="function not covered" >error: ApiError)</span> =&gt; {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >                  this.loading = false;</span></span>
                   // set an explicit error message
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >                  error.message = `Activities could not be created.${error.message}`;</span></span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >                  return throwError(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >error)</span>;</span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >                  return this.errorProcessorService.processError(error);</span></span>
               }
             )
           )
-          .subscribe(<span class="fstat-no" title="function not covered" >(j</span>ob) =&gt; {
+          .subscribe((<span class="fstat-no" title="function not covered" >job)</span> =&gt; {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >            this.loading = false;</span></span>
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >            this.notificationService.confirmation(`Activit${activities.length &gt; 1 ? 'ies' : 'y'} created successfully`);</span></span>
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >            this.activitiesSaved.emit(job);</span></span>
@@ -343,7 +358,7 @@ export class JobActivitiesFormComponent implements OnInit {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-26T11:31:46.538Z
+                at 2025-05-27T15:05:06.871Z
             </div>
         <script src="../../../../../prettify.js"></script>
         <script>

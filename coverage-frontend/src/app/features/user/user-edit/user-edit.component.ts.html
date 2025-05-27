@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">69.38% </span>
+                <span class="strong">70% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>34/49</span>
+                <span class='fraction'>35/50</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">57.14% </span>
+                <span class="strong">53.84% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>8/14</span>
+                <span class='fraction'>7/13</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">96.77% </span>
+                <span class="strong">96.96% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>30/31</span>
+                <span class='fraction'>32/33</span>
             </div>
         
             
@@ -167,9 +167,7 @@
 <a name='L102'></a><a href='#L102'>102</a>
 <a name='L103'></a><a href='#L103'>103</a>
 <a name='L104'></a><a href='#L104'>104</a>
-<a name='L105'></a><a href='#L105'>105</a>
-<a name='L106'></a><a href='#L106'>106</a>
-<a name='L107'></a><a href='#L107'>107</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">10x</span>
+<a name='L105'></a><a href='#L105'>105</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-yes">10x</span>
@@ -181,7 +179,7 @@
 <span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">10x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -196,6 +194,7 @@
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">3x</span>
@@ -260,10 +259,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -276,18 +272,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Component, OnDestroy, OnInit } from '@angular/core';
-import { User } from '../../../core/model/user.interface';
+import { User } from '@core/model/user.interface';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AuthValidators } from '../../../core/services/auth.validators';
-import { UserService } from '../../../core/services/user.service';
-import { EditUserRequest } from '../../../core/model/edit-user-request.interface';
-import { catchError, throwError } from 'rxjs';
-import { ApiError } from '../../../core/errors/api-error';
-import { NotificationService } from '../../../core/services/notification.service';
-import { BaseChildComponent } from '../../../core/component/base-child.component';
-import { FormErrorService } from '../../../core/services/form-error.service';
-import { UserFormComponent } from "../user-form/user-form.component";
-import { LocaleService } from '../../../core/services/locale.service';
+import { AuthValidators } from '@core/services/auth.validators';
+import { UserService } from '@core/services/user.service';
+import { EditUserRequest } from '@core/model/edit-user-request.interface';
+import { catchError } from 'rxjs';
+import { ApiError } from '@core/errors/api-error';
+import { NotificationService } from '@core/services/notification.service';
+import { BaseChildComponent } from '@core/component/base-child.component';
+import { FormErrorService } from '@core/services/form-error.service';
+import { UserFormComponent } from "@features/user/user-form/user-form.component";
+import { ErrorProcessorService } from '@core/services/error-processor.service';
 &nbsp;
 @Component({
   selector: 'app-user-edit',
@@ -306,7 +302,8 @@ export class <span class="cstat-no" title="statement not covered" >UserEditCompo
     private fb: FormBuilder,
     private userService: UserService,
     private notificationService: NotificationService,
-    private formErrorService: FormErrorService
+    private formErrorService: FormErrorService,
+    private errorProcessorService: ErrorProcessorService
   ) {
 <span class="cstat-no" title="statement not covered" >    super();</span>
   }
@@ -366,11 +363,8 @@ export class <span class="cstat-no" title="statement not covered" >UserEditCompo
               catchError(
                 (error: ApiError) =&gt; {
 <span class="cstat-no" title="statement not covered" >                  this.isSubmitting = false;</span>
-                  
 <span class="cstat-no" title="statement not covered" >                  this.formErrorService.setBackendErrors(this.form, error.errors);</span>
-&nbsp;
-&nbsp;
-<span class="cstat-no" title="statement not covered" >                  return throwError(() =&gt; error);</span>
+<span class="cstat-no" title="statement not covered" >                  return this.errorProcessorService.processError(error);</span>
                 }
             ))
             .subscribe(() =&gt; {
@@ -388,7 +382,7 @@ export class <span class="cstat-no" title="statement not covered" >UserEditCompo
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-26T11:31:46.538Z
+                at 2025-05-27T15:05:06.871Z
             </div>
         <script src="../../../../../prettify.js"></script>
         <script>

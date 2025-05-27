@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">14.28% </span>
+                <span class="strong">15.87% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>9/63</span>
+                <span class='fraction'>10/63</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">6.25% </span>
+                <span class="strong">7.14% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>1/16</span>
+                <span class='fraction'>1/14</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">17.14% </span>
+                <span class="strong">19.44% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>6/35</span>
+                <span class='fraction'>7/36</span>
             </div>
         
             
@@ -135,13 +135,15 @@
 <a name='L70'></a><a href='#L70'>70</a>
 <a name='L71'></a><a href='#L71'>71</a>
 <a name='L72'></a><a href='#L72'>72</a>
-<a name='L73'></a><a href='#L73'>73</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -209,11 +211,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { HttpErrorResponse, HttpHandler, HttpInterceptor, HttpRequest } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { SessionService } from '../services/session.service';
-import { AuthService } from "../services/auth.service";
+import { SessionService } from '@core/services/session.service';
+import { AuthService } from "@core/services/auth.service";
 import { BehaviorSubject, catchError, filter, switchMap, take, throwError } from "rxjs";
-import { SessionInformation } from "../model/session-information.interface";
-import { ApiError } from "../errors/api-error";
+import { SessionInformation } from "@core/model/session-information.interface";
+import { ApiError } from "@core/errors/api-error";
+import { ErrorProcessorService } from "@core/services/error-processor.service";
 &nbsp;
 &nbsp;
 @Injectable({ providedIn: 'root' })
@@ -221,7 +224,7 @@ export class JwtInterceptor implements HttpInterceptor {
   private isRefreshing = <span class="cstat-no" title="statement not covered" >false;</span>
   private refreshTokenSubject: BehaviorSubject&lt;boolean&gt; = <span class="cstat-no" title="statement not covered" >new BehaviorSubject&lt;boolean&gt;(true);</span>
 &nbsp;
-<span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  constructor(private <span class="cstat-no" title="statement not covered" >s</span></span>essionService: SessionService,</span> private <span class="cstat-no" title="statement not covered" >authService: AuthService)</span> {}
+<span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  constructor(private <span class="cstat-no" title="statement not covered" >s</span></span>essionService: SessionService,</span> private <span class="cstat-no" title="statement not covered" >authService: AuthService,</span> private <span class="cstat-no" title="statement not covered" >errorProcessorService: ErrorProcessorService)</span> {}
 &nbsp;
   public <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >intercept(</span></span>request: HttpRequest&lt;unknown&gt;, next: HttpHandler) {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (!this.sessionService.isLogged()) {</span></span>
@@ -237,7 +240,7 @@ export class JwtInterceptor implements HttpInterceptor {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (this.shouldTryToRefreshToken(request, error)) {</span></span>
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >          return this.tryToRefreshToken(request, next);</span></span>
         }
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        return throwError(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >error)</span>;</span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        return this.errorProcessorService.processError(error);</span></span>
       })
     );
   }
@@ -255,17 +258,17 @@ export class JwtInterceptor implements HttpInterceptor {
 &nbsp;
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >      <span class="missing-if-branch" title="if path not taken" >I</span>if (isLogged) {</span></span>
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        return this.authService.refreshToken().pipe(</span></span>
-          switchMap(<span class="fstat-no" title="function not covered" >(d</span>ata: SessionInformation) =&gt; {
+          switchMap((<span class="fstat-no" title="function not covered" >data: SessionInformation)</span> =&gt; {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >            this.isRefreshing = false;</span></span>
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >            this.sessionService.logIn(data);</span></span>
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >            this.refreshTokenSubject.next(true);</span></span>
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >            return next.handle(request);</span></span>
           }),
-          catchError(<span class="fstat-no" title="function not covered" >(e</span>rror: ApiError) =&gt; {
+          catchError((<span class="fstat-no" title="function not covered" >error: ApiError)</span> =&gt; {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >            this.isRefreshing = false;</span></span>
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >            this.refreshTokenSubject.next(false);</span></span>
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >            this.sessionService.logOut();</span></span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >            return throwError(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >error)</span>;</span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >            return this.errorProcessorService.processError(error);</span></span>
           })
         );
       }
@@ -275,7 +278,7 @@ export class JwtInterceptor implements HttpInterceptor {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    return this.refreshTokenSubject.pipe(</span></span>
       filter(<span class="fstat-no" title="function not covered" >token </span>=&gt; <span class="cstat-no" title="statement not covered" >token !== false)</span>,
       take(1),
-      switchMap(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >next.handle(request))</span>
+      switchMap(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >n</span>ext.handle(request))</span>
     );
   }
 }
@@ -286,7 +289,7 @@ export class JwtInterceptor implements HttpInterceptor {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-26T11:31:46.538Z
+                at 2025-05-27T15:05:06.871Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

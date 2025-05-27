@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">59.18% </span>
+                <span class="strong">71.42% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>29/49</span>
+                <span class='fraction'>35/49</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">25% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/12</span>
+                <span class='fraction'>3/12</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">33.33% </span>
+                <span class="strong">52.38% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>7/21</span>
+                <span class='fraction'>11/21</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">81.25% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>26/32</span>
+                <span class='fraction'>32/32</span>
             </div>
         
             
@@ -175,18 +175,34 @@
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">80x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">48x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">48x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">80x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -194,43 +210,27 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">7x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">25x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormField, MatHint, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
-import { StatusIconComponent } from '../../../layout/shared/status-icon/status-icon.component';
-import { InputBackendErrorsComponent } from "../../../layout/shared/input-backend-errors/input-backend-errors.component";
+import { StatusIconComponent } from '@layout/shared/status-icon/status-icon.component';
+import { InputBackendErrorsComponent } from "@layout/shared/input-backend-errors/input-backend-errors.component";
 import { MatButton } from '@angular/material/button';
-import { LocaleService } from '../../../core/services/locale.service';
-import { PasswordValidator } from '../../../core/validators/password-validator';
-import { User } from '../../../core/model/user.interface';
+import { LocaleService } from '@core/services/locale.service';
+import { PasswordValidator } from '@core/validators/password-validator';
+import { User } from '@core/model/user.interface';
 import { RouterLink } from '@angular/router';
 &nbsp;
 @Component({
@@ -255,14 +255,14 @@ export class UserFormComponent implements OnInit {
   }
 <span class="fstat-no" title="function not covered" >  ngOnInit(</span>): void {
 <span class="cstat-no" title="statement not covered" >    this.form.addControl('lang', new FormControl(this.currentLang, []));</span>
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if(this.showPassword) {</span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >      this.form.addControl('password', new FormControl('', [</span></span>
+<span class="cstat-no" title="statement not covered" >    if(this.showPassword) {</span>
+<span class="cstat-no" title="statement not covered" >      this.form.addControl('password', new FormControl('', [</span>
         Validators.required,
         PasswordValidator
       ]));
     }
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if(this.showJobFollowUpReminderDays) {</span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >      this.form.addControl('jobFollowUpReminderDays', new FormControl((this.user ? this.user.jobFollowUpReminderDays : 7), [</span></span>
+<span class="cstat-no" title="statement not covered" >    if(this.showJobFollowUpReminderDays) {</span>
+<span class="cstat-no" title="statement not covered" >      this.form.addControl('jobFollowUpReminderDays', new FormControl((this.user ? <span class="branch-0 cbranch-no" title="branch not covered" >this.user.jobFollowUpReminderDays </span>: 7), [</span>
         Validators.required
       ]));
     }
@@ -284,20 +284,20 @@ export class UserFormComponent implements OnInit {
 <span class="cstat-no" title="statement not covered" >    return this.form.get('username');</span>
   }
 &nbsp;
-<span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  get p</span></span>assword() {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    return this.form.get('password');</span></span>
+<span class="fstat-no" title="function not covered" >  get p</span>assword() {
+<span class="cstat-no" title="statement not covered" >    return this.form.get('password');</span>
   }
 &nbsp;
-<span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  get j</span></span>obFollowUpReminderDays() {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    return this.form.get('jobFollowUpReminderDays');</span></span>
+<span class="fstat-no" title="function not covered" >  get j</span>obFollowUpReminderDays() {
+<span class="cstat-no" title="statement not covered" >    return this.form.get('jobFollowUpReminderDays');</span>
   }
 &nbsp;
-<span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  get l</span></span>ang() {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    return this.form.get('lang');</span></span>
+<span class="fstat-no" title="function not covered" >  get l</span>ang() {
+<span class="cstat-no" title="statement not covered" >    return this.form.get('lang');</span>
   }
 &nbsp;
-<span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  submit(</span></span>) :void {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >      this.submitted.emit();</span></span>
+<span class="fstat-no" title="function not covered" >  submit(</span>) :void {
+<span class="cstat-no" title="statement not covered" >      this.submitted.emit();</span>
   }
 }
 &nbsp;</pre></td></tr></table></pre>
@@ -307,7 +307,7 @@ export class UserFormComponent implements OnInit {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-26T11:31:46.538Z
+                at 2025-05-27T15:05:06.871Z
             </div>
         <script src="../../../../../prettify.js"></script>
         <script>

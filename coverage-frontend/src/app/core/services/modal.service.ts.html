@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">88.46% </span>
+                <span class="strong">96.15% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>23/26</span>
+                <span class='fraction'>25/26</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">41.66% </span>
+                <span class="strong">50% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>5/12</span>
+                <span class='fraction'>6/12</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">91.3% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>21/23</span>
+                <span class='fraction'>23/23</span>
             </div>
         
             
@@ -153,11 +153,11 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -197,15 +197,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Injectable } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { JobEditionComponent } from '../../features/jobs/job-editIion/job-edition.component';
-import { Job } from '../model/job.interface';
-import { JobStepperComponent } from '../../features/jobs/job-stepper/job-stepper.component';
-import { PasswordFormComponent } from '../../features/user/password-form/password-form.component';
-import { User } from '../model/user.interface';
-import { ModalComponent } from '../../layout/modal/modal.component';
-import { ComponentInputData, ComponentInputDomainData } from '../model/component-input-data.interface';
-import { UserEditComponent } from '../../features/user/user-edit/user-edit.component';
-import { CreateJobWithUrlFormComponent } from '../../features/jobs/create-job-with-url-form/create-job-with-url-form.component';
+import { JobEditionComponent } from '@features/jobs/job-editIion/job-edition.component';
+import { Job } from '@core/model/job.interface';
+import { JobStepperComponent } from '@features/jobs/job-stepper/job-stepper.component';
+import { PasswordFormComponent } from '@features/user/password-form/password-form.component';
+import { User } from '@core/model/user.interface';
+import { ModalComponent } from '@layout/modal/modal.component';
+import { ComponentInputData, ComponentInputDomainData } from '@core/model/component-input-data.interface';
+import { UserEditComponent } from '@features/user/user-edit/user-edit.component';
+import { CreateJobWithUrlFormComponent } from '@features/jobs/create-job-with-url-form/create-job-with-url-form.component';
 &nbsp;
 @Injectable({
   providedIn: 'root'
@@ -221,9 +221,9 @@ export class <span class="cstat-no" title="statement not covered" >ModalService 
 &nbsp;
 <span class="fstat-no" title="function not covered" >  constructor(private d</span>ialog: MatDialog) {}
 &nbsp;
-<span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  openCreateJobWithUrlModal(</span></span>succeeded: (data: ComponentInputDomainData) =&gt; void): void {
-    const componentInputData: ComponentInputData = <span class="cstat-no" title="statement not covered" >{ component: CreateJobWithUrlFormComponent, succeeded: succeeded, data: {}} as ComponentInputData;</span>
-    const dialogRef: MatDialogRef&lt;ModalComponent&gt; =  <span class="cstat-no" title="statement not covered" >this.dialog.open(ModalComponent, {</span>
+<span class="fstat-no" title="function not covered" >  openCreateJobWithUrlModal(</span>succeeded: (data: ComponentInputDomainData) =&gt; void): void {
+    const componentInputData: ComponentInputData = { component: CreateJobWithUrlFormComponent, succeeded: succeeded, data: {}} as ComponentInputData;
+    const dialogRef: MatDialogRef&lt;ModalComponent&gt; =  this.dialog.open(ModalComponent, {
       ...ModalService.MODAL_OPTIONS,
       data: componentInputData,
     });
@@ -268,7 +268,7 @@ export class <span class="cstat-no" title="statement not covered" >ModalService 
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-26T11:31:46.538Z
+                at 2025-05-27T15:05:06.871Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

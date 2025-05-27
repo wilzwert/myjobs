@@ -214,15 +214,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Job } from '../../../core/model/job.interface';
-import { JobService } from '../../../core/services/job.service';
-import { Attachment } from '../../../core/model/attachment.interface';
+import { Job } from '@core/model/job.interface';
+import { JobService } from '@core/services/job.service';
+import { Attachment } from '@core/model/attachment.interface';
 import { take, tap } from 'rxjs';
-import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
-import { FileService } from '../../../core/services/file.service';
+import { ConfirmDialogService } from '@core/services/confirm-dialog.service';
+import { FileService } from '@core/services/file.service';
 import { MatButton } from '@angular/material/button';
-import { JobAttachmentsFormComponent } from '../job-attachments-form/job-attachments-form.component';
-import { ModalService } from '../../../core/services/modal.service';
+import { JobAttachmentsFormComponent } from '@features/jobs/job-attachments-form/job-attachments-form.component';
+import { ModalService } from '@core/services/modal.service';
 import { DatePipe } from '@angular/common';
 &nbsp;
 @Component({
@@ -245,7 +245,7 @@ export class JobAttachmentsComponent implements OnInit {
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  downloadAttachement(</span></span>job: Job, attachment: Attachment) :void {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.fileService.downloadFile(`/api/jobs/${job.id}/attachments/${attachment.id}/file`).subscribe(<span class="fstat-no" title="function not covered" >(b</span>lob) =&gt; {</span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.fileService.downloadFile(`/api/jobs/${job.id}/attachments/${attachment.id}/file`).subscribe((<span class="fstat-no" title="function not covered" >blob)</span> =&gt; {</span></span>
       const a = <span class="cstat-no" title="statement not covered" >document.createElement('a');</span>
       const objectUrl = <span class="cstat-no" title="statement not covered" >URL.createObjectURL(blob);</span>
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >      window.open(objectUrl, '_blank');</span></span>
@@ -262,12 +262,12 @@ export class JobAttachmentsComponent implements OnInit {
 <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  confirmDeleteAttachment(</span></span>job: Job, attachment: Attachment) :void {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.jobService.deleteAttachment(job.id, attachment.id).pipe(</span></span>
       take(1),
-      tap(<span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >job.attachments = job.attachments.filter(<span class="fstat-no" title="function not covered" >(a</span>) =&gt; <span class="cstat-no" title="statement not covered" >a.id != attachment.id </span>))</span>
+      tap(<span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >j</span>ob.attachments = job.attachments.filter((<span class="fstat-no" title="function not covered" >a)</span> =&gt; <span class="cstat-no" title="statement not covered" >a.id != attachment.id </span>))</span>
     ).subscribe();
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" > deleteAttachment(</span></span>job: Job, attachment: Attachment) :void {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.confirmDialogService.openConfirmDialog(`Delete attachment "${attachment.name}" ?`, <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >this.confirmDeleteAttachment(job, attachment))</span>;</span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.confirmDialogService.openConfirmDialog(`Delete attachment "${attachment.name}" ?`, <span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >t</span>his.confirmDeleteAttachment(job, attachment))</span>;</span></span>
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >  cancelForm(</span></span>) :void {
@@ -279,7 +279,7 @@ export class JobAttachmentsComponent implements OnInit {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.displayForm = true;</span></span>
   }
   else {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.modalService.openJobModal('attachments-form', job, <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >this.onAttachmentsSaved(job),</span> {defaultAttachments: 1});</span></span>
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.modalService.openJobModal('attachments-form', job, <span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >t</span>his.onAttachmentsSaved(job),</span> {defaultAttachments: 1});</span></span>
   }
  }
 &nbsp;
@@ -295,7 +295,7 @@ export class JobAttachmentsComponent implements OnInit {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-26T11:31:46.538Z
+                at 2025-05-27T15:05:06.871Z
             </div>
         <script src="../../../../../prettify.js"></script>
         <script>

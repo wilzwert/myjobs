@@ -30,9 +30,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">51.51% </span>
+                <span class="strong">58.06% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>17/33</span>
+                <span class='fraction'>18/31</span>
             </div>
         
             
@@ -278,9 +278,7 @@
 <a name='L213'></a><a href='#L213'>213</a>
 <a name='L214'></a><a href='#L214'>214</a>
 <a name='L215'></a><a href='#L215'>215</a>
-<a name='L216'></a><a href='#L216'>216</a>
-<a name='L217'></a><a href='#L217'>217</a>
-<a name='L218'></a><a href='#L218'>218</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">15x</span>
+<a name='L216'></a><a href='#L216'>216</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">15x</span>
@@ -301,18 +299,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">15x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-yes">16x</span>
-<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">19x</span>
+<span class="cline-any cline-yes">19x</span>
+<span class="cline-any cline-yes">19x</span>
+<span class="cline-any cline-yes">19x</span>
+<span class="cline-any cline-yes">19x</span>
+<span class="cline-any cline-yes">19x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">19x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">19x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">17x</span>
+<span class="cline-any cline-yes">20x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -331,25 +329,23 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -499,18 +495,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Injectable } from '@angular/core';
 import { DataService } from './data.service';
-import { Job, JobStatus } from '../model/job.interface';
+import { Job, JobStatus } from '@core/model/job.interface';
 import { BehaviorSubject, forkJoin, map, Observable, of, switchMap, tap } from 'rxjs';
-import { Page } from '../model/page.interface';
-import { CreateJobRequest } from '../model/create-job-request.interface';
-import { UpdateJobRequest } from '../model/update-job-request.interface';
-import { CreateJobAttachmentsRequest } from '../model/create-job-attachments-request.interface';
-import { CreateJobAttachmentRequest } from '../model/create-job-attachment-request.interface';
-import { CreateJobActivitiesRequest } from '../model/create-job-activities-request.interface';
-import { CreateJobActivityRequest } from '../model/create-job-activity-request.interface';
-import { UpdateJobStatusRequest } from '../model/update-job-status-request.interface';
-import { UpdateJobRatingRequest } from '../model/update-job-rating-request.interface';
-import { JobMetadata } from '../model/job-metadata.interface';
+import { Page } from '@core/model/page.interface';
+import { CreateJobRequest } from '@core/model/create-job-request.interface';
+import { UpdateJobRequest } from '@core/model/update-job-request.interface';
+import { CreateJobAttachmentsRequest } from '@core/model/create-job-attachments-request.interface';
+import { CreateJobAttachmentRequest } from '@core/model/create-job-attachment-request.interface';
+import { CreateJobActivitiesRequest } from '@core/model/create-job-activities-request.interface';
+import { CreateJobActivityRequest } from '@core/model/create-job-activity-request.interface';
+import { UpdateJobStatusRequest } from '@core/model/update-job-status-request.interface';
+import { UpdateJobRatingRequest } from '@core/model/update-job-rating-request.interface';
+import { JobMetadata } from '@core/model/job-metadata.interface';
 import { SessionService } from './session.service';
 &nbsp;
 @Injectable({
@@ -548,18 +544,16 @@ export class JobService {
    */
   public <span class="fstat-no" title="function not covered" >getAllJobs(</span>page: number, itemsPerPage: number, status: keyof typeof JobStatus | null = <span class="branch-0 cbranch-no" title="branch not covered" >null,</span> filterLate: boolean, sort: string): Observable&lt;Page&lt;Job&gt;&gt; {
 &nbsp;
-&nbsp;
-    // THIS code has been left as an "idea" to try and improve 
 <span class="cstat-no" title="statement not covered" >    return this.jobsSubject.pipe(</span>
       switchMap((jobsPage: Page&lt;Job&gt; | null) =&gt; {
 <span class="cstat-no" title="statement not covered" >        if(jobsPage === null || page != this.currentPage || status != this.currentStatus || filterLate != this.filterLate || sort != this.currentSort) {</span>
 <span class="cstat-no" title="statement not covered" >          this.currentPage = page;</span>
 <span class="cstat-no" title="statement not covered" >          this.currentStatus = status;</span>
-<span class="cstat-no" title="statement not covered" >          this.filterLate = status == null &amp;&amp; filterLate;</span>
+<span class="cstat-no" title="statement not covered" >          this.filterLate = filterLate;</span>
 <span class="cstat-no" title="statement not covered" >          this.itemsPerPage = itemsPerPage;</span>
 <span class="cstat-no" title="statement not covered" >          this.currentSort = sort;</span>
-          const statusOrFilterParam = (status != null ?  <span class="branch-0 cbranch-no" title="branch not covered" >`status=${status}` </span> : filterLate ? <span class="branch-0 cbranch-no" title="branch not covered" >`filterLate=true` </span>: '');
-          return this.dataService.get&lt;Page&lt;Job&gt;&gt;(`jobs?page=${page}&amp;itemsPerPage=${itemsPerPage}`+(statusOrFilterParam ? <span class="branch-0 cbranch-no" title="branch not covered" >`&amp;${statusOrFilterParam}` </span>: '')+`&amp;sort=${sort}`).pipe(
+          const statusOrFilterParam = (status != null ?  `status=${status}`  : filterLate ? `filterLate=true` : '');
+          return this.dataService.get&lt;Page&lt;Job&gt;&gt;(`jobs?page=${page}&amp;itemsPerPage=${itemsPerPage}`+(statusOrFilterParam ? `&amp;${statusOrFilterParam}` : '')+`&amp;sort=${sort}`).pipe(
             switchMap((fetchedJobs: Page&lt;Job&gt;) =&gt; {
 <span class="cstat-no" title="statement not covered" >              this.jobsSubject.next(fetchedJobs);</span>
 <span class="cstat-no" title="statement not covered" >              return of(fetchedJobs);</span>
@@ -693,7 +687,7 @@ export class JobService {
 &nbsp;
   public <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >createActivity(</span></span>jobId: string, request: CreateJobActivityRequest): Observable&lt;Job&gt; {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    return this.dataService.post&lt;Job&gt;(`jobs/${jobId}/activities`, request).pipe(</span></span>
-      map(<span class="fstat-no" title="function not covered" >(j</span>: Job) =&gt; {
+      map((<span class="fstat-no" title="function not covered" >j: Job)</span> =&gt; {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        this.reloadIfNecessary(j);</span></span>
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        return j;</span></span>
       })
@@ -706,7 +700,7 @@ export class JobService {
     );
 &nbsp;
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    return forkJoin(attachmentRequests).pipe(</span></span>
-        map(<span class="fstat-no" title="function not covered" >(j</span>obs: Job[]) =&gt; <span class="cstat-no" title="statement not covered" >jobs[jobs.length - 1])</span> // Retourne le dernier Job mis à jour
+        map((<span class="fstat-no" title="function not covered" >jobs: Job[])</span> =&gt; <span class="cstat-no" title="statement not covered" >jobs[jobs.length - 1])</span> // Retourne le dernier Job mis à jour
     );
   }
 &nbsp;
@@ -721,7 +715,7 @@ export class JobService {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-26T11:31:46.538Z
+                at 2025-05-27T15:05:06.871Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

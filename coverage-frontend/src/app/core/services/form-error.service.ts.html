@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">52% </span>
+                <span class="strong">57.14% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>26/50</span>
+                <span class='fraction'>24/42</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">18.75% </span>
+                <span class="strong">25% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>3/16</span>
+                <span class='fraction'>4/16</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">55.55% </span>
+                <span class="strong">66.66% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>5/9</span>
+                <span class='fraction'>6/9</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">79.31% </span>
+                <span class="strong">84% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>23/29</span>
+                <span class='fraction'>21/25</span>
             </div>
         
             
@@ -121,12 +121,7 @@
 <a name='L56'></a><a href='#L56'>56</a>
 <a name='L57'></a><a href='#L57'>57</a>
 <a name='L58'></a><a href='#L58'>58</a>
-<a name='L59'></a><a href='#L59'>59</a>
-<a name='L60'></a><a href='#L60'>60</a>
-<a name='L61'></a><a href='#L61'>61</a>
-<a name='L62'></a><a href='#L62'>62</a>
-<a name='L63'></a><a href='#L63'>63</a>
-<a name='L64'></a><a href='#L64'>64</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">11x</span>
+<a name='L59'></a><a href='#L59'>59</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -146,15 +141,10 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-yes">4x</span>
@@ -164,8 +154,8 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -193,7 +183,7 @@
 import { TranslatorService } from './translator.service';
 import { AbstractControl, FormGroup, ValidationErrors } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { BackendError } from '../errors/backend-error';
+import { BackendError } from '@core/errors/backend-error';
 &nbsp;
 @Injectable({
   providedIn: 'root'
@@ -208,17 +198,12 @@ export class FormErrorService  {
     form: FormGroup,
     errorMap: Record&lt;string, BackendError[]&gt; 
   ): void {
-<span class="cstat-no" title="statement not covered" >    console.log(errorMap);</span>
-<span class="cstat-no" title="statement not covered" >    console.log(Object.entries(errorMap));</span>
 <span class="cstat-no" title="statement not covered" >    for (const [fieldName, errors] of Object.entries(errorMap)) {</span>
-<span class="cstat-no" title="statement not covered" >      console.log(`getting control for ${fieldName}`);</span>
       const control = form.get(fieldName);
 <span class="cstat-no" title="statement not covered" >      if (control) {</span>
-<span class="cstat-no" title="statement not covered" >        console.log('setting control translated errors');</span>
         const translatedErrors = errors.map((err:BackendError) =&gt;
           this.translatorService.translateError(err.code, err.details)
         );
-&nbsp;
         const controlErrors = control.errors ?? {} as ValidationErrors;
 <span class="cstat-no" title="statement not covered" >        controlErrors['backend'] = translatedErrors;</span>
 <span class="cstat-no" title="statement not covered" >        control.setErrors(controlErrors);</span>
@@ -226,9 +211,9 @@ export class FormErrorService  {
 <span class="cstat-no" title="statement not covered" >        this.cleanupSubscriptions.get(control)?.unsubscribe();</span>
 &nbsp;
         // automatic cleanup errors are removed if user changes form control value
-        const sub = control.valueChanges.subscribe(<span class="fstat-no" title="function not covered" >() =</span>&gt; {
-          const currentErrors = <span class="cstat-no" title="statement not covered" >control.errors;</span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >          <span class="missing-if-branch" title="if path not taken" >I</span>if (currentErrors &amp;&amp; currentErrors['backend']) {</span></span>
+        const sub = control.valueChanges.subscribe(() =&gt; {
+          const currentErrors = control.errors;
+<span class="cstat-no" title="statement not covered" >          <span class="missing-if-branch" title="if path not taken" >I</span>if (currentErrors &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >currentErrors['backend'])</span> {</span>
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >            delete currentErrors['backend'];</span></span>
             // replace with cleaned up errors
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >            if (Object.keys(currentErrors).length &gt; 0) {</span></span>
@@ -259,7 +244,7 @@ export class FormErrorService  {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-05-26T11:31:46.538Z
+                at 2025-05-27T15:05:06.871Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>
