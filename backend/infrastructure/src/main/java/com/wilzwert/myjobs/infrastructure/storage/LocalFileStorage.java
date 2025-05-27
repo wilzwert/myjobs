@@ -1,10 +1,12 @@
 package com.wilzwert.myjobs.infrastructure.storage;
 
 
+import com.wilzwert.myjobs.core.domain.model.attachment.AttachmentId;
 import com.wilzwert.myjobs.core.domain.model.attachment.exception.AttachmentFileNotReadableException;
 import com.wilzwert.myjobs.core.domain.model.DownloadableFile;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.MediaType;
@@ -28,7 +30,9 @@ public class LocalFileStorage implements FileStorage {
 
     private final Path storageLocation = Paths.get("uploads"); // Dossier local
 
-    public LocalFileStorage() {
+    private final String backendUrl;
+
+    public LocalFileStorage(@Value("${application.backend.url}") final String backendUrl) {
         try {
             if (!Files.exists(storageLocation)) {
                 Files.createDirectories(storageLocation); // Crée le répertoire s'il n'existe pas
@@ -36,6 +40,7 @@ public class LocalFileStorage implements FileStorage {
         } catch (IOException e) {
             throw new StorageException("Failed to initialize local storage", e);
         }
+        this.backendUrl = backendUrl;
     }
 
     @Override
@@ -81,8 +86,8 @@ public class LocalFileStorage implements FileStorage {
     }
 
     @Override
-    public String generateProtectedUrl(JobId jobId, String fileId) {
-        return "http://localhost:8080/api/jobs/"+jobId.toString()+"/attachments/"+fileId+"/file";
+    public String generateProtectedUrl(JobId jobId, AttachmentId attachmentId, String fileId) {
+        return backendUrl+"/api/jobs/"+jobId.value().toString()+"/attachments/"+attachmentId.value().toString()+"/file";
     }
 
     private String getContentType(String originalFilename, String filePath) throws IOException {

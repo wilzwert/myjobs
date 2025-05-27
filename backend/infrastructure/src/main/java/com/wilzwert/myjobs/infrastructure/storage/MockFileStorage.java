@@ -1,5 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.storage;
 
+import com.wilzwert.myjobs.core.domain.model.attachment.AttachmentId;
 import com.wilzwert.myjobs.core.domain.model.attachment.exception.AttachmentFileNotReadableException;
 import com.wilzwert.myjobs.core.domain.model.DownloadableFile;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
@@ -54,7 +55,7 @@ public class MockFileStorage implements FileStorage {
     }
 
     @Override
-    public String generateProtectedUrl(JobId jobId, String fileId) {
+    public String generateProtectedUrl(JobId jobId, AttachmentId attachmentId, String fileId) {
         return "https://mockstorage.local/fake-url/"+fileId;
     }
 

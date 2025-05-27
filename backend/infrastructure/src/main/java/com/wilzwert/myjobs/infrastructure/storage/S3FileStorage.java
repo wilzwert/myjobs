@@ -2,6 +2,7 @@ package com.wilzwert.myjobs.infrastructure.storage;
 
 
 import com.wilzwert.myjobs.core.domain.model.DownloadableFile;
+import com.wilzwert.myjobs.core.domain.model.attachment.AttachmentId;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
 import lombok.extern.slf4j.Slf4j;
@@ -72,7 +73,7 @@ public class S3FileStorage implements FileStorage {
     }
 
     @Override
-    public String generateProtectedUrl(JobId jobId, String fileId) {
+    public String generateProtectedUrl(JobId jobId, AttachmentId attachmentId, String fileId) {
         GetObjectRequest getRequest = GetObjectRequest.builder()
                 .bucket(bucketName)
                 .key(fileId)

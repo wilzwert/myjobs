@@ -97,6 +97,8 @@ application:
     enabled: ${ASYNC_ENABLED:true}
   batch:
     enabled: ${BATCH_ENABLED:true}
+  backend:
+    url: ${BACKEND_URL:http://localhost:8080}
   frontend:
     url: ${FRONTEND_URL:http://localhost:4200}
   mail:
