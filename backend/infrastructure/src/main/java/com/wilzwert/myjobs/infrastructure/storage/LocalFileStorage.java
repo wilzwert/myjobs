@@ -81,7 +81,7 @@ public class LocalFileStorage implements FileStorage {
 
     @Override
     public String generateProtectedUrl(String fileId) {
-        return "";
+        return "TODO";
     }
 
     private String getContentType(String originalFilename, String filePath) throws IOException {

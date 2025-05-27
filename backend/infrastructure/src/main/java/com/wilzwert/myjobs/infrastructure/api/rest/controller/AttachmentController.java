@@ -1,17 +1,20 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 
+import com.wilzwert.myjobs.core.domain.model.AttachmentFileInfo;
 import com.wilzwert.myjobs.core.domain.model.attachment.command.CreateAttachmentCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.command.DeleteAttachmentCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.command.DownloadAttachmentCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.DownloadableFile;
 import com.wilzwert.myjobs.core.domain.model.attachment.AttachmentId;
+import com.wilzwert.myjobs.core.domain.model.attachment.ports.driving.GetAttachmentFileInfoUseCase;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driving.AddAttachmentToJobUseCase;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driving.DeleteAttachmentUseCase;
 import com.wilzwert.myjobs.core.domain.model.attachment.ports.driving.DownloadAttachmentUseCase;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
+import com.wilzwert.myjobs.infrastructure.mapper.AttachmentFileInfoMapper;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.AttachmentMapper;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
 import com.wilzwert.myjobs.infrastructure.storage.StorageException;
@@ -47,12 +50,25 @@ public class AttachmentController {
 
     private final DeleteAttachmentUseCase deleteAttachmentUseCase;
 
+    private final GetAttachmentFileInfoUseCase getAttachmentFileInfoUseCase;
 
-    public AttachmentController(AddAttachmentToJobUseCase addAttachmentToJobUseCase, DownloadAttachmentUseCase downloadAttachmentUseCase, DeleteAttachmentUseCase deleteAttachmentUseCase, AttachmentMapper attachmentMapper) {
+    private final AttachmentFileInfoMapper attachmentFileInfoMapper;
+
+
+    public AttachmentController(
+            AddAttachmentToJobUseCase addAttachmentToJobUseCase,
+            DownloadAttachmentUseCase downloadAttachmentUseCase,
+            DeleteAttachmentUseCase deleteAttachmentUseCase,
+            GetAttachmentFileInfoUseCase getAttachmentFileInfoUseCase,
+            AttachmentMapper attachmentMapper,
+            AttachmentFileInfoMapper attachmentFileInfoMapper
+    ) {
         this.addAttachmentToJobUseCase = addAttachmentToJobUseCase;
         this.downloadAttachmentUseCase = downloadAttachmentUseCase;
         this.deleteAttachmentUseCase = deleteAttachmentUseCase;
+        this.getAttachmentFileInfoUseCase = getAttachmentFileInfoUseCase;
         this.attachmentMapper = attachmentMapper;
+        this.attachmentFileInfoMapper = attachmentFileInfoMapper;
     }
 
     @PostMapping("{jobId}/attachments")
@@ -98,5 +114,12 @@ public class AttachmentController {
                 .contentType(MediaType.parseMediaType(downloadableFile.contentType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + downloadableFile.filename() + "\"")
                 .body(new FileSystemResource(downloadableFile.path()));
+    }
+
+    @GetMapping("{jobId}/attachments/{id}/file/info")
+    public ProtectedFileResponse getProtectedFile(@PathVariable("jobId") String jobId, @PathVariable("id") String id, Authentication authentication) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        AttachmentFileInfo info = getAttachmentFileInfoUseCase.getAttachmentFileInfo(new DownloadAttachmentCommand(id, userDetails.getId(), new JobId(UUID.fromString(jobId))));
+        return attachmentFileInfoMapper.toResponse(info);
     }
 }

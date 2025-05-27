@@ -13,6 +13,7 @@ import { UpdateJobStatusRequest } from '@core/model/update-job-status-request.in
 import { UpdateJobRatingRequest } from '@core/model/update-job-rating-request.interface';
 import { JobMetadata } from '@core/model/job-metadata.interface';
 import { SessionService } from './session.service';
+import { ProtectedFile } from '../model/protected-file.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -188,6 +189,10 @@ export class JobService {
 
   public deleteAttachment(jobId: string, attachmentId: string): Observable<void> {
     return this.dataService.delete<void>(`jobs/${jobId}/attachments/${attachmentId}`);
+  }
+
+  public getProtectedFile(jobId: string, attachmentId: string): Observable<ProtectedFile> {
+    return this.dataService.get<ProtectedFile>(`jobs/${jobId}/attachments/${attachmentId}/file/info`);
   }
 
   public createActivity(jobId: string, request: CreateJobActivityRequest): Observable<Job> {

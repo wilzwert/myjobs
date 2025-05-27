@@ -13,6 +13,7 @@ import com.wilzwert.myjobs.core.domain.model.attachment.command.DeleteAttachment
 import com.wilzwert.myjobs.core.domain.model.attachment.command.DownloadAttachmentCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.exception.AttachmentNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.attachment.ports.driving.DownloadAttachmentUseCase;
+import com.wilzwert.myjobs.core.domain.model.attachment.ports.driving.GetAttachmentFileInfoUseCase;
 import com.wilzwert.myjobs.core.domain.model.job.EnrichedJob;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
@@ -43,7 +44,7 @@ import java.util.*;
  * @author Wilhelm Zwertvaegher
  */
 
-public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, UpdateJobUseCase, UpdateJobStatusUseCase, UpdateJobRatingUseCase, DeleteJobUseCase, GetUserJobsUseCase, AddActivityToJobUseCase, UpdateActivityUseCase, AddAttachmentToJobUseCase, DownloadAttachmentUseCase, DeleteAttachmentUseCase {
+public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, UpdateJobUseCase, UpdateJobStatusUseCase, UpdateJobRatingUseCase, DeleteJobUseCase, GetUserJobsUseCase, AddActivityToJobUseCase, UpdateActivityUseCase, AddAttachmentToJobUseCase, DownloadAttachmentUseCase, DeleteAttachmentUseCase, GetAttachmentFileInfoUseCase {
 
     private final JobDataManager jobDataManager;
 
@@ -300,6 +301,18 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         }
 
         return fileStorage.retrieve(attachment.getFileId(), attachment.getFilename());
+    }
+
+    @Override
+    public AttachmentFileInfo getAttachmentFileInfo(DownloadAttachmentCommand command) {
+        Job job = jobDataManager.findByIdAndUserId(command.jobId(), command.userId()).orElseThrow(JobNotFoundException::new);
+
+        Attachment attachment = job.getAttachments().stream().filter(a -> a.getId().value().toString().equals(command.id())).findAny().orElse(null);
+        if(attachment == null) {
+            throw new AttachmentNotFoundException();
+        }
+
+        return new AttachmentFileInfo(attachment.getFileId(), fileStorage.generateProtectedUrl(attachment.getFileId()));
     }
 
     @Override
