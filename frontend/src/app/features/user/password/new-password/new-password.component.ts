@@ -72,19 +72,19 @@ export class NewPasswordComponent implements OnInit {
     if(!this.isSubmitting && this.form.valid) {
       this.isSubmitting = true;
       this.userService.newPassword({password: this.password!.value, token: this.token} as NewPasswordRequest)
-                .pipe(
-                  take(1),
-                  catchError(
-                    () => {
-                      this.isSubmitting = false;
-                      return this.errorProcessorService.processError(new Error($localize `:@@error.password.creation:Password creation failed`));
-                    }
-                ))
-                .subscribe(() => {
-                    this.isSubmitting = false;
-                    this.notificationService.confirmation($localize `:@@info.password.updated:Your password has been updated.` + ' '+ $localize `:@@info.login.possible:You may now log in.`);
-                    this.router.navigate(["/login"])
-                });
+        .pipe(
+          take(1),
+          catchError(
+            () => {
+              this.isSubmitting = false;
+              return this.errorProcessorService.processError(new Error($localize `:@@error.password.creation:Password creation failed`));
+            }
+        ))
+        .subscribe(() => {
+            this.isSubmitting = false;
+            this.notificationService.confirmation($localize `:@@info.password.updated:Your password has been updated.` + ' '+ $localize `:@@info.login.possible:You may now log in.`);
+            this.router.navigate(["/login"])
+        });
     }
   }
 }

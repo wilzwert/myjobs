@@ -1,25 +1,20 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule, HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoginComponent } from './login.component';
 import { SessionService } from '../../core/services/session.service';
 import { AuthService } from '../../core/services/auth.service';
-import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideScReCaptchaSettings } from '@semantic-components/re-captcha';
 import { environment } from '../../../environments/environment';
 import { CaptchaService } from '../../core/services/captcha.service';
 import { of } from 'rxjs';
-import { GlobalErrorHandler } from '../../core/services/global-error.handler';
-import { ErrorHandler } from '@angular/core';
 import { ErrorProcessorService } from '../../core/services/error-processor.service';
 import { ErrorInterceptor } from '../../core/interceptors/error.interceptor';
 
 describe('LoginComponent integration test', () => {
   let fixture: ComponentFixture<LoginComponent>;
   let component: LoginComponent;
-  let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let captchaServiceMock: jest.Mocked<CaptchaService>;
   let sessionServiceSpy: { logIn: jest.Mock };
@@ -56,7 +51,6 @@ describe('LoginComponent integration test', () => {
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
     httpTestingController = TestBed.inject(HttpTestingController);
-    httpClient = TestBed.inject(HttpClient);
     router = TestBed.inject(Router);
     errorProcessorService = TestBed.inject(ErrorProcessorService);
     
@@ -98,7 +92,7 @@ describe('LoginComponent integration test', () => {
     const req = httpTestingController.expectOne('/api/auth/login');
     expect(req.request.method).toBe('POST');
 
-    // Simule une erreur HTTP 401 Unauthorized
+    // Simulate HTTP 401 Unauthorized error
     req.flush({ message: 'Unauthorized' }, { status: 401, statusText: 'Unauthorized' });
 
     expect(component.isSubmitting).toBe(false);
