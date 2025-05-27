@@ -60,7 +60,6 @@ export class JobService {
           const statusOrFilterParam = (status != null ?  `status=${status}`  : filterLate ? `filterLate=true` : '');
           return this.dataService.get<Page<Job>>(`jobs?page=${page}&itemsPerPage=${itemsPerPage}`+(statusOrFilterParam ? `&${statusOrFilterParam}` : '')+`&sort=${sort}`).pipe(
             switchMap((fetchedJobs: Page<Job>) => {
-              console.log('next....');
               this.jobsSubject.next(fetchedJobs);
               return of(fetchedJobs);
             })

@@ -566,9 +566,9 @@
         <note priority="1" from="meaning">validate</note>
       </trans-unit>
       <trans-unit id="info.valid" datatype="html">
-        <source>check</source>
+        <source>Valid</source>
         <note priority="1" from="description">valid status label</note>
-        <note priority="1" from="meaning">valid</note>
+        <note priority="1" from="meaning">Valid</note>
       </trans-unit>
       <trans-unit id="info.verified" datatype="html">
         <source>Verified</source>
@@ -743,7 +743,7 @@
         <note priority="1" from="meaning">about learn</note>
       </trans-unit>
       <trans-unit id="home.text.about.disclaimer" datatype="html">
-        <source> It is usable, although not to be trusted as a long-term tool. I will take any feedback though, and be glad should anyone find it useful. </source>
+        <source>It is usable, although not to be trusted as a long-term tool. I will take any feedback though, and be glad should anyone find it useful.</source>
         <note priority="1" from="description">text to explain the project may be use without guarantee</note>
         <note priority="1" from="meaning">about usability disclaimer</note>
       </trans-unit>
@@ -788,7 +788,7 @@
         <note priority="1" from="meaning">features - reminders</note>
       </trans-unit>
       <trans-unit id="home.text.features.rate" datatype="html">
-        <source>Rate jobs : this can be used as a way to rate your interest for the job, the quality of the recruitment process. This is up to you ! </source>
+        <source>Rate jobs : this can be used as a way to rate your interest for the job, the quality of the recruitment process. This is up to you !</source>
         <note priority="1" from="description">text for job rating feature</note>
         <note priority="1" from="meaning">features - rating</note>
       </trans-unit>
@@ -812,6 +812,10 @@
       </trans-unit>
       <trans-unit id="action.close" datatype="html">
         <source>Close</source>
+      </trans-unit>
+      <trans-unit id="error.email.validation_failed" datatype="html">
+        <source>Email validation failed</source>
+        <note priority="1" from="description">email validation fail</note>
       </trans-unit>
     </body>
   </file>

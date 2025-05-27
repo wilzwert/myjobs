@@ -60,7 +60,6 @@ export class ModalComponent implements AfterViewInit, OnDestroy {
   private loadComponent() {
     try {
       this.viewContainerRef.clear(); // cleans up current view
-      console.log(this.inputData.component);
       const componentRef: ComponentRef<BaseChildComponent> = this.container.createComponent(this.inputData.component!);
       
       // assign input

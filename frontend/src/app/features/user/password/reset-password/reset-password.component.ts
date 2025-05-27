@@ -48,7 +48,6 @@ export class ResetPasswordComponent {
   }
 
   submit() :void {
-    console.log('submit ', this.isSubmitting, this.form.valid);
     if(!this.isSubmitting && this.form.valid) {
           this.isSubmitting = true;
           this.userService.resetPassword(this.form.value as ResetPasswordRequest)

@@ -43,7 +43,7 @@ export class EmailValidationComponent implements OnInit {
           catchError(
             () => {
               this.redirect();
-              return this.errorProcessorService.processError(new Error($localize `:email validation fail:@@error.email.validation_failed:Email validation failed`));
+              return this.errorProcessorService.processError(new Error($localize `:email validation fail@@error.email.validation_failed:Email validation failed`));
             }
         )).subscribe(() => {
           this.notificationService.confirmation($localize `:@@info.email.validated:Your email has been validated.`);

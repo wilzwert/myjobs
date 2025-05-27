@@ -115,7 +115,6 @@ export class JobFormComponent implements OnInit {
 
   private initForm(): void {
     const valueSource = this.job?? this.jobMetadata;
-    console.log('initform', this.jobMetadata);
     this.form = this.fb.group({
       url: [
         valueSource?.url,

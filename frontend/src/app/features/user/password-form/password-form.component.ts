@@ -69,9 +69,7 @@ export class PasswordFormComponent extends BaseChildComponent implements OnInit 
   }
 
   submit() :void {
-    console.log('submit', this.isSubmitting, this.form.valid);
     if(!this.isSubmitting && this.form.valid) {
-      console.log('not submitting && valid, submit');
       this.isSubmitting = true;
       this.userService.changePassword({password: this.password!.value, oldPassword: this.oldPassword!.value } as ChangePasswordRequest)
                 .pipe(

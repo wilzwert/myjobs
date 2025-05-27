@@ -57,11 +57,8 @@ describe('FormErrorService', () => {
 
     form.get('username')!.setErrors({test: [{message: 'testerror'}]} as ValidationErrors);
 
-    console.log(form.get('username')?.errors);
-
     service.setBackendErrors(form, errors);
 
-    console.log(form.get('username')?.errors);
     expect(form.get('username')?.errors).toEqual({
       backend: ['translated_invalid translated_Username is invalid'],
       test: [{message: 'testerror'}]

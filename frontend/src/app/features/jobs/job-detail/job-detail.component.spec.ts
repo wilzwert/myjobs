@@ -47,6 +47,10 @@ describe('JobDetailComponent', () => {
     params: of({ id: 'job123' })
   };
 
+  const errorProcessorServiceMock = {
+    processError: jest.fn()
+  }
+
   beforeEach(() => {
     jest.clearAllMocks();
     loadJobSubject = new Subject();
@@ -64,6 +68,7 @@ describe('JobDetailComponent', () => {
       modalServiceMock as any,
       notificationServiceMock as any,
       titleServiceMock as any,
+      errorProcessorServiceMock as any
     );
   });
   

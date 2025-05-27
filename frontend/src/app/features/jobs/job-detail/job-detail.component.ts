@@ -45,7 +45,6 @@ export class JobDetailComponent implements OnInit, OnDestroy {
   ) {}
 
   private loadJob(jobId: string): void {
-    console.log('-------------------loadJob');
     this.job$ = this.jobService.getJobById(jobId).pipe(
       // set page title once the job  is available
       tap((job: Job) =>{this.title.setTitle(`Job - ${job.title}`)}),
