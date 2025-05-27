@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Job } from '@core/model/job.interface';
 import { JobService } from '@core/services/job.service';
 import { Attachment } from '@core/model/attachment.interface';
-import { take, tap } from 'rxjs';
+import { of, switchMap, take, tap } from 'rxjs';
 import { ConfirmDialogService } from '@core/services/confirm-dialog.service';
 import { FileService } from '@core/services/file.service';
 import { MatButton } from '@angular/material/button';
@@ -32,9 +32,19 @@ export class JobAttachmentsComponent implements OnInit {
 
   downloadAttachement(job: Job, attachment: Attachment) :void {
 
-    this.jobService.getProtectedFile(job.id, attachment.id).subscribe((p: ProtectedFile) => {
-      window.open(p.url, "_blank");
-    })
+    this.jobService.getProtectedFile(job.id, attachment.id).
+      pipe(
+        switchMap((p: ProtectedFile) => {
+          this.fileService.downloadFile(p.url, true).subscribe((blob) => {
+            const a = document.createElement('a');
+            const objectUrl = URL.createObjectURL(blob);
+            window.open(objectUrl, '_blank');
+            URL.revokeObjectURL(objectUrl)
+          })
+          return of(p);
+        })
+      ).
+      subscribe()
     
     /*
     this.fileService.downloadFile(`/api/jobs/${job.id}/attachments/${attachment.id}/file`).subscribe((blob) => {
