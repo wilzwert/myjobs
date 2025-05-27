@@ -69,7 +69,7 @@ for /f "delims=" %%i in ('git rev-parse --abbrev-ref HEAD') do set BRANCH_NAME=%
 REM === add branch to sonar args ONLY IF sonarqube version supports it ===
 if "%SONAR_SUPPORTS_BRANCH%"=="true" (
     set SONAR_ARGS=%SONAR_ARGS% -Dsonar.branch.name=%BRANCH_NAME%
-    echo [INFO] Analyse de la branche: %BRANCH_NAME%
+    echo [INFO] Branche: %BRANCH_NAME%
 )
 
 echo [INFO] Launching Sonar with args: %SONAR_ARGS%
