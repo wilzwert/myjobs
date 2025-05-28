@@ -54,8 +54,8 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
     }
 
     @Bean
-    public FileStorage fileStorage(S3Client s3Client, S3Presigner s3Presigner) {
-<span class="fc" id="L58">        return new S3FileStorage(s3Client, s3Presigner, bucketName);</span>
+    public FileStorage fileStorage(S3Client s3Client, S3Presigner s3Presigner, SecureTempFileHelper secureTempFileHelper) {
+<span class="fc" id="L58">        return new S3FileStorage(s3Client, s3Presigner, bucketName, secureTempFileHelper);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
