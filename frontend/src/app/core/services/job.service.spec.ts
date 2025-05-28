@@ -205,10 +205,9 @@ describe('JobService', () => {
     dataServiceMock.get.mockReturnValue(of(page));
 
     jobService.getAllJobs(1, 10, JobStatus.PENDING, true, 'createdAt').subscribe((result) => {
-      done();
       expect(result).toEqual(page);
       expect(dataServiceMock.get).toHaveBeenCalledWith('jobs?page=1&itemsPerPage=10&status=PENDING&sort=createdAt');
-      
+      done();
     });
     
   });

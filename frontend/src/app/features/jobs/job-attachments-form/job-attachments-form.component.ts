@@ -5,7 +5,7 @@ import { MatInput } from '@angular/material/input';
 import { JobService } from '@core/services/job.service';
 import { CreateJobAttachmentsRequest } from '@core/model/create-job-attachments-request.interface';
 import { Job } from '@core/model/job.interface';
-import { catchError, take, throwError } from 'rxjs';
+import { catchError, take } from 'rxjs';
 import { ApiError } from '@core/errors/api-error';
 import { CreateJobAttachmentRequest } from '@core/model/create-job-attachment-request.interface';
 import { MatButton, MatIconButton } from '@angular/material/button';
@@ -110,7 +110,11 @@ export class JobAttachmentsFormComponent implements OnInit {
           )
           .subscribe((job) => {
             this.loading = false;
-            this.notificationService.confirmation(`Attachment${attachments.length > 1 ? 's' : ''} created successfully`);
+            this.notificationService.confirmation(
+              attachments.length > 1 ?
+                $localize`:@@message.attachements.created:${attachments.length} attachments created successfully`
+                : $localize`:@@message.attachement.created:Attachment created successfully`
+            );
             this.attachmentsSaved.emit(job);
           });
     }

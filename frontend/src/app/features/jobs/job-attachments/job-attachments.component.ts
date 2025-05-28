@@ -49,30 +49,25 @@ export class JobAttachmentsComponent implements OnInit {
           )
         ),
       catchError((err) => {
-        this.notificationService.error($localize `:download file|message indicating file download has failed@@error.file.download:File download failed.`, err);
+        this.notificationService.error($localize `:download file|message indicating file download has failed@@error.file.download:File download failed`, err);
         return EMPTY;
       })
   )
   .subscribe();
-    
-    /*
-    this.fileService.downloadFile(`/api/jobs/${job.id}/attachments/${attachment.id}/file`).subscribe((blob) => {
-      const a = document.createElement('a');
-      const objectUrl = URL.createObjectURL(blob);
-      window.open(objectUrl, '_blank');
-      URL.revokeObjectURL(objectUrl);
-    });*/
   }
 
   confirmDeleteAttachment(job: Job, attachment: Attachment) :void {
     this.jobService.deleteAttachment(job.id, attachment.id).pipe(
       take(1),
-      tap(() => job.attachments = job.attachments.filter((a) => a.id != attachment.id ))
+      tap(() => {
+        this.notificationService.confirmation($localize `:@@message.attachment.deleted:Attachment deleted successfully`);
+        job.attachments = job.attachments.filter((a) => a.id != attachment.id )
+    })
     ).subscribe();
   }
 
  deleteAttachment(job: Job, attachment: Attachment) :void {
-    this.confirmDialogService.openConfirmDialog(`Delete attachment "${attachment.name}" ?`, () => this.confirmDeleteAttachment(job, attachment));
+    this.confirmDialogService.openConfirmDialog($localize `:@@info.attachment.delete.confirmation_required:Delete attachment "${attachment.name}" ?`, () => this.confirmDeleteAttachment(job, attachment));
   }
 
   cancelForm() :void {

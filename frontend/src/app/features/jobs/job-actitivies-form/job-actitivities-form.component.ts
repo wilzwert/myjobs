@@ -15,6 +15,7 @@ import { ActivityLabelPipe } from '@core/pipe/activity-label.pipe';
 import { MatOption, MatSelect } from '@angular/material/select';
 import { MatIcon } from '@angular/material/icon';
 import { ErrorProcessorService } from '@core/services/error-processor.service';
+import { TranslatorService } from '@app/core/services/translator.service';
 
 
 @Component({
@@ -36,7 +37,8 @@ export class JobActivitiesFormComponent implements OnInit {
     private fb: FormBuilder, 
     private jobService: JobService, 
     private notificationService: NotificationService,
-    private errorProcessorService: ErrorProcessorService) {
+    private errorProcessorService: ErrorProcessorService,
+    private translatorService: TranslatorService) {
     this.activityTypeKeys = Object.keys(UserActitivityType);
   }
 
@@ -81,14 +83,18 @@ export class JobActivitiesFormComponent implements OnInit {
               (error: ApiError) => {
                   this.loading = false;
                   // set an explicit error message
-                  error.message = `Activities could not be created.${error.message}`;
+                  error.message = $localize `:@@error.activities.creation:Activities could not be created.`+this.translatorService.translateError(error.message);
                   return this.errorProcessorService.processError(error);
               }
             )
           )
           .subscribe((job) => {
             this.loading = false;
-            this.notificationService.confirmation(`Activit${activities.length > 1 ? 'ies' : 'y'} created successfully`);
+            this.notificationService.confirmation(
+              activities.length > 1 ?
+                $localize`:@@message.activities.created:${activities.length} activities created successfully`
+                : $localize`:@@message.activity.created:Activity created successfully`
+            );
             this.activitiesSaved.emit(job);
           });
     }

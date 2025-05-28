@@ -1024,6 +1024,50 @@
         <target state="translated">La validation de votre adresse mail a échoué</target>
         <note priority="1" from="description">email validation fail</note>
       </trans-unit>
+      <trans-unit id="message.attachement.created" datatype="html">
+        <source>Attachment created successfully</source>
+        <target state="translated">La pièce jointe a été créé</target>
+      </trans-unit>
+      <trans-unit id="error.file.download" datatype="html">
+        <source>File download failed</source>
+        <target state="translated">Le téléchargement a échoué</target>
+        <note priority="1" from="description">message indicating file download has failed</note>
+        <note priority="1" from="meaning">download file</note>
+      </trans-unit>
+      <trans-unit id="action.filter.status" datatype="html">
+        <source>Status</source>
+        <target state="translated">Statut</target>
+        <note priority="1" from="description">sort</note>
+      </trans-unit>
+      <trans-unit id="action.sort" datatype="html">
+        <source>Sort</source>
+        <target state="translated">Trier</target>
+        <note priority="1" from="description">sort</note>
+      </trans-unit>
+      <trans-unit id="message.activities.created" datatype="html">
+        <source><x id="PH" equiv-text="activities.length"/> activities created successfully</source>
+        <target state="translated"><x id="PH" equiv-text="activities.length"/> activités ont été créées</target>
+      </trans-unit>
+      <trans-unit id="message.activity.created" datatype="html">
+        <source>Activity created successfully</source>
+        <target state="translated">Activité créée</target>
+      </trans-unit>
+      <trans-unit id="message.attachements.created" datatype="html">
+        <source><x id="PH" equiv-text="attachments.length"/> attachments created successfully</source>
+        <target state="translated"><x id="PH" equiv-text="attachments.length"/> pièces jointes ont été créées</target>
+      </trans-unit>
+      <trans-unit id="info.attachment.delete.confirmation_required" datatype="html">
+        <source>Delete attachment "<x id="PH" equiv-text="attachment.name"/>" ?</source>
+        <target state="translated">Supprimer la pièce jointe "<x id="PH" equiv-text="attachment.name"/>" ?</target>
+      </trans-unit>
+      <trans-unit id="error.activities.creation" datatype="html">
+        <source>Activities could not be created.</source>
+        <target state="translated">Les activités n'ont pas pu être créées.</target>
+      </trans-unit>
+      <trans-unit id="message.attachment.deleted" datatype="html">
+        <source>Attachment deleted successfully</source>
+        <target state="translated">La pièce jointe a été supprimée</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
