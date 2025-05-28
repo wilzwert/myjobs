@@ -20,6 +20,8 @@ public record UpdateJobCommand(JobId jobId, UserId userId, String title, String 
         private String profile;
         private String salary;
 
+        public Builder() {}
+
         public Builder(UpdateJobCommand command) {
             this.jobId = command.jobId();
             this.userId = command.userId();
@@ -30,6 +32,12 @@ public record UpdateJobCommand(JobId jobId, UserId userId, String title, String 
             this.profile = command.profile();
             this.salary = command.salary();
         }
+
+        public UpdateJobCommand.Builder jobId(JobId jobId) {
+            this.jobId = jobId;
+            return this;
+        }
+
 
         public UpdateJobCommand.Builder title(String title) {
             this.title = title;

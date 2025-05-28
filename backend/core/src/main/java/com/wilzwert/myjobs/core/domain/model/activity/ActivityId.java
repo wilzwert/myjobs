@@ -8,4 +8,9 @@ public record ActivityId(UUID value) implements EntityId<UUID> {
     public static ActivityId generate() {
         return new ActivityId(UUID.randomUUID());
     }
+
+    @Override
+    public String toString() {
+        return value.toString();
+    }
 }

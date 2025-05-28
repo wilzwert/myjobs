@@ -817,6 +817,40 @@
         <source>Email validation failed</source>
         <note priority="1" from="description">email validation fail</note>
       </trans-unit>
+      <trans-unit id="action.filter.status" datatype="html">
+        <source>Status</source>
+        <note priority="1" from="description">sort</note>
+      </trans-unit>
+      <trans-unit id="action.sort" datatype="html">
+        <source>Sort</source>
+        <note priority="1" from="description">sort</note>
+      </trans-unit>
+      <trans-unit id="error.file.download" datatype="html">
+        <source>File download failed</source>
+        <note priority="1" from="description">message indicating file download has failed</note>
+        <note priority="1" from="meaning">download file</note>
+      </trans-unit>
+      <trans-unit id="message.attachement.created" datatype="html">
+        <source>Attachment created successfully</source>
+      </trans-unit>
+      <trans-unit id="info.attachment.delete.confirmation_required" datatype="html">
+        <source>Delete attachment &quot;<x id="PH" equiv-text="attachment.name"/>&quot; ?</source>
+      </trans-unit>
+      <trans-unit id="message.activities.created" datatype="html">
+        <source><x id="PH" equiv-text="activities.length"/> activities created successfully</source>
+      </trans-unit>
+      <trans-unit id="message.activity.created" datatype="html">
+        <source>Activity created successfully</source>
+      </trans-unit>
+      <trans-unit id="message.attachements.created" datatype="html">
+        <source><x id="PH" equiv-text="attachments.length"/> attachments created successfully</source>
+      </trans-unit>
+      <trans-unit id="error.activities.creation" datatype="html">
+        <source>Activities could not be created.</source>
+      </trans-unit>
+      <trans-unit id="message.attachment.deleted" datatype="html">
+        <source>Attachment deleted successfully</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>

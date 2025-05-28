@@ -9,7 +9,7 @@
 <div class="list-config">
     <div>
         <button mat-button [matMenuTriggerFor]="filterMenu">
-            <mat-icon>filter_alt</mat-icon>Status
+            <mat-icon>filter_alt</mat-icon><span i18n="sort@@action.filter.status">Status</span>
         </button>
         <mat-menu #filterMenu="matMenu">
             @for(status of statusKeys ; track $index) {
@@ -20,14 +20,19 @@
                     {{ status | statusLabel }}
                 </button>
         }
-        <button mat-menu-item (click)="filterByStatus('filter-late')" i18n="late only label|the late only filter label@@filter.job.late">Late only</button>
+        <button mat-menu-item (click)="filterByStatus('filter-late')">
+            @if(filterLate) {
+                <mat-icon>check</mat-icon>
+            }
+            <span i18n="late only label|the late only filter label@@filter.job.late">Late only</span>
+        </button>
         </mat-menu>
     </div>
 
 @let page = jobs$ | async;
 @if(page !== null) {
     <button mat-button [matMenuTriggerFor]="sortMenu">
-        <mat-icon>sort</mat-icon>Sort
+        <mat-icon>sort</mat-icon><span i18n="sort@@action.sort">Sort</span>
     </button>
     <mat-menu #sortMenu="matMenu">
         <button mat-menu-item (click)="sortBy('createdAt,desc')">

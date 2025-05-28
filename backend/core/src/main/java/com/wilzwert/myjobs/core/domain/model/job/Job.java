@@ -250,6 +250,7 @@ public class Job extends DomainEntity<JobId> {
 
         ValidationErrors validationErrors = validate();
         if(validationErrors.hasErrors()) {
+            System.out.println(validationErrors);
             throw new ValidationException(validationErrors);
         }
     }
@@ -312,19 +313,6 @@ public class Job extends DomainEntity<JobId> {
 
         // return a copy of this job with updated data
         return copy(null, updatedActivities, newJobStatus, Instant.now());
-    }
-
-    public Job updateJob(String url, String title, String company, String description, String profile, String salary) {
-        return new Job(
-            from(this)
-                .url(url)
-                .title(title)
-                .company(company)
-                .description(description)
-                .profile(profile)
-                .salary(salary)
-                .updatedAt(Instant.now())
-        );
     }
 
     public Job addAttachment(Attachment attachment) {

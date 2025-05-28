@@ -2,20 +2,25 @@ package com.wilzwert.myjobs.infrastructure.storage;
 
 
 import com.wilzwert.myjobs.core.domain.model.DownloadableFile;
+import com.wilzwert.myjobs.core.domain.model.attachment.AttachmentId;
+import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.MediaTypeFactory;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Optional;
 
@@ -29,12 +34,14 @@ public class S3FileStorage implements FileStorage {
     private final S3Client s3Client;
     private final S3Presigner s3Presigner;
     private final String bucketName;
+    private final SecureTempFileHelper secureTempFileHelper;
 
 
-    public S3FileStorage(S3Client s3Client, S3Presigner s3Presigner, String bucketName) {
+    public S3FileStorage(S3Client s3Client, S3Presigner s3Presigner, String bucketName, SecureTempFileHelper secureTempFileHelper) {
         this.s3Client = s3Client;
         this.s3Presigner = s3Presigner;
         this.bucketName = bucketName;
+        this.secureTempFileHelper = secureTempFileHelper;
     }
 
     @Override
@@ -66,12 +73,27 @@ public class S3FileStorage implements FileStorage {
 
     @Override
     public DownloadableFile retrieve(String fileId, String originalFilename) {
-        throw new UnsupportedOperationException("Not implemented yet");
-        // TODO : locally store file in a tmp file, return a downloadablefile from this tmp file
+        try {
+            ResponseInputStream<GetObjectResponse> responseInputStream = s3Client.getObject(GetObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(fileId)
+                    .build());
+            File tempFile = Files.createTempFile("temp", "s3", secureTempFileHelper.getFileAttribute()).toFile();
+            Files.write(Path.of(tempFile.getPath()), responseInputStream.readAllBytes());
+
+            // for now, target path and fileId are the same
+            return new DownloadableFile(fileId, tempFile.getPath(), getContentType(originalFilename), originalFilename);
+        }
+        catch (SdkClientException e) {
+            throw new StorageException("Unable to retrieve file from S3 bucket", e);
+        }
+        catch (IOException e) {
+            throw new StorageException("Unable to store file downloaded from S3 bucket", e);
+        }
     }
 
     @Override
-    public String generateProtectedUrl(String fileId) {
+    public String generateProtectedUrl(JobId jobId, AttachmentId attachmentId, String fileId) {
         GetObjectRequest getRequest = GetObjectRequest.builder()
                 .bucket(bucketName)
                 .key(fileId)

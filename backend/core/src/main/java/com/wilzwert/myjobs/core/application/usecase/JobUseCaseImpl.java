@@ -13,16 +13,17 @@ import com.wilzwert.myjobs.core.domain.model.attachment.command.DeleteAttachment
 import com.wilzwert.myjobs.core.domain.model.attachment.command.DownloadAttachmentCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.exception.AttachmentNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.attachment.ports.driving.DownloadAttachmentUseCase;
+import com.wilzwert.myjobs.core.domain.model.attachment.ports.driving.GetAttachmentFileInfoUseCase;
 import com.wilzwert.myjobs.core.domain.model.job.EnrichedJob;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.model.job.command.*;
-import com.wilzwert.myjobs.core.domain.model.job.exception.JobAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.model.job.exception.JobNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobDataManager;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driving.*;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
+import com.wilzwert.myjobs.core.domain.shared.exception.DomainException;
 import com.wilzwert.myjobs.core.domain.shared.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
@@ -33,6 +34,7 @@ import com.wilzwert.myjobs.core.domain.model.job.service.JobEnricher;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.HtmlSanitizer;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
+import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 
 import java.lang.reflect.Method;
 import java.time.Instant;
@@ -43,7 +45,7 @@ import java.util.*;
  * @author Wilhelm Zwertvaegher
  */
 
-public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, UpdateJobUseCase, UpdateJobStatusUseCase, UpdateJobRatingUseCase, DeleteJobUseCase, GetUserJobsUseCase, AddActivityToJobUseCase, UpdateActivityUseCase, AddAttachmentToJobUseCase, DownloadAttachmentUseCase, DeleteAttachmentUseCase {
+public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, UpdateJobUseCase, UpdateJobStatusUseCase, UpdateJobRatingUseCase, DeleteJobUseCase, GetUserJobsUseCase, AddActivityToJobUseCase, UpdateActivityUseCase, AddAttachmentToJobUseCase, DownloadAttachmentUseCase, DeleteAttachmentUseCase, GetAttachmentFileInfoUseCase {
 
     private final JobDataManager jobDataManager;
 
@@ -68,6 +70,9 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         if(user.isEmpty()) {
             throw new UserNotFoundException();
         }
+
+        command = sanitizeCommandFields(command, List.of("title", "company", "description", "profile", "salary"));
+
         Job jobToCreate = Job.create(
                 Job.builder()
                 .url(command.url())
@@ -78,8 +83,10 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
                 .salary(command.salary())
                 .userId(user.get().getId())
         );
-        Job job = user.get().addJob(jobToCreate);
-        userDataManager.saveUserAndJob(user.get(), job);
+
+        User updatedUser = user.get().addJob(jobToCreate);
+        Job job = updatedUser.getJobByUrl(jobToCreate.getUrl()).orElseThrow(() -> new DomainException(ErrorCode.UNEXPECTED_ERROR));
+        userDataManager.saveUserAndJob(updatedUser, job);
         return job;
     }
 
@@ -108,8 +115,8 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
             }
         });
 
-        user.removeJob(job);
-        userDataManager.deleteJobAndSaveUser(user, job);
+        User updatedUser = user.removeJob(job);
+        userDataManager.deleteJobAndSaveUser(updatedUser, job);
     }
 
     @Override
@@ -160,25 +167,16 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         Job job = foundJob.get();
         command = sanitizeCommandFields(command, List.of("title", "company", "description", "profile", "salary"));
 
-        // FIXME This is not very DDD : the application service (ie this use case) should not check itself if
-        // if a job with the same url already exists for the user as it is a business rule and should be in the domain
-        // if user wants to update the job's url, we have to check if it does not exist yet
-        // it seems that to do things right the user aggregate should handle the job update after all
-        // because otherwise the job aggregate cannot check other jobs
-        if(!command.url().equals(job.getUrl())) {
-            Optional<Job> otherJob = jobDataManager.findByUrlAndUserId(command.url(), user.getId());
-            if(otherJob.isPresent() && !otherJob.get().getId().equals(job.getId())) {
-                throw new JobAlreadyExistsException();
-            }
-        }
-        job = job.updateJob(command.url(), command.title(), command.company(), command.description(), command.profile(), command.salary());
+        User updatedUser = user.updateJob(job, command.url(), command.title(), command.company(), command.description(), command.profile(), command.salary());
+        // soft reload the updatedJob in the loaded collection
+        Job updatedJob = updatedUser.getJobById(job.getId()).orElseThrow(() -> new DomainException(ErrorCode.UNEXPECTED_ERROR));
 
         // FIXME
         // this is an ugly workaround to force the infra (persistence in particular) to save all data
         // as I understand DDD, only the root aggregate should be explicitly persisted
         // but I just don't how to do it cleanly for now
-        userDataManager.saveUserAndJob(user, job);
-        return job;
+        userDataManager.saveUserAndJob(updatedUser, updatedJob);
+        return updatedJob;
     }
 
     @Override
@@ -300,6 +298,18 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         }
 
         return fileStorage.retrieve(attachment.getFileId(), attachment.getFilename());
+    }
+
+    @Override
+    public AttachmentFileInfo getAttachmentFileInfo(DownloadAttachmentCommand command) {
+        Job job = jobDataManager.findByIdAndUserId(command.jobId(), command.userId()).orElseThrow(JobNotFoundException::new);
+
+        Attachment attachment = job.getAttachments().stream().filter(a -> a.getId().value().toString().equals(command.id())).findAny().orElse(null);
+        if(attachment == null) {
+            throw new AttachmentNotFoundException();
+        }
+
+        return new AttachmentFileInfo(attachment.getFileId(), fileStorage.generateProtectedUrl(job.getId(), attachment.getId(), attachment.getFileId()));
     }
 
     @Override

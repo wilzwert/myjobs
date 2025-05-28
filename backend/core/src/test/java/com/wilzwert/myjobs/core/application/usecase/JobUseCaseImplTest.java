@@ -15,6 +15,8 @@ import com.wilzwert.myjobs.core.domain.model.attachment.command.DownloadAttachme
 import com.wilzwert.myjobs.core.domain.model.attachment.exception.AttachmentFileNotReadableException;
 import com.wilzwert.myjobs.core.domain.model.attachment.exception.AttachmentNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.job.command.CreateJobCommand;
+import com.wilzwert.myjobs.core.domain.model.job.command.DeleteJobCommand;
+import com.wilzwert.myjobs.core.domain.model.job.command.UpdateJobCommand;
 import com.wilzwert.myjobs.core.domain.model.job.exception.JobAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.model.job.exception.JobNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.user.exception.UserNotFoundException;
@@ -66,6 +68,7 @@ class JobUseCaseImplTest {
     @BeforeEach
     void setUp() {
         UserId testUserId = UserId.generate();
+        AttachmentId attachmentId = AttachmentId.generate();
         testJob = Job.builder()
                 .id(JobId.generate())
                 .userId(testUserId)
@@ -75,7 +78,15 @@ class JobUseCaseImplTest {
                 .profile("job profile 1")
                 .status(JobStatus.PENDING)
                 .url("http://www.example.com/1")
-                .attachments(Collections.emptyList())
+                .attachments(List.of(
+                        Attachment.builder()
+                                .id(attachmentId)
+                                .name("Attachment name")
+                                .fileId("fileId")
+                                .filename("attachment.pdf")
+                                .contentType("application/pdf")
+                                .build()
+                ))
                 .activities(Collections.emptyList())
                 .statusUpdatedAt(Instant.now().minusSeconds(3600)).build();
         testFollowUpLateJob = Job.builder()
@@ -104,93 +115,308 @@ class JobUseCaseImplTest {
                     testFollowUpLateJob
                 )).build();
 
-        // Mock de l'UserDataManager
+        // Mocks UserDataManager
         when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
 
         underTest = new JobUseCaseImpl(jobDataManager, userDataManager, fileStorage, htmlSanitizer);
     }
 
-    @Test
-    void whenUserNotFound_thenGetUserJobs_shouldThrowUserNotFoundException() {
-        reset(userDataManager);
-        when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.empty());
+    @Nested
+    class GetJobsTest {
 
-        UserId userId = new UserId(UUID.randomUUID());
+        @Test
+        void whenUserNotFound_thenGetUserJobs_shouldThrowUserNotFoundException() {
+            reset(userDataManager);
+            when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.empty());
 
-        assertThrows(UserNotFoundException.class, () -> underTest.getUserJobs(userId, 0, 10, JobStatus.PENDING, false, "date,desc"));
+            UserId userId = new UserId(UUID.randomUUID());
+
+            assertThrows(UserNotFoundException.class, () -> underTest.getUserJobs(userId, 0, 10, JobStatus.PENDING, false, "date,desc"));
+        }
+
+
+        @Test
+        void whenFilterLateTrue_thenShouldGetLateUserJobs() {
+            DomainPage<Job> mockJobPage = DomainPage.builder(List.of(testFollowUpLateJob)).pageSize(1).currentPage(0).totalElementsCount(1).build();
+
+            when(jobDataManager.findPaginated(any(), eq(0), eq(10))).thenReturn(mockJobPage);
+
+            DomainPage<EnrichedJob> result = underTest.getUserJobs(testUser.getId(), 0, 10, JobStatus.PENDING, true, "date,desc");
+
+            // check specification passed to the jobDataManager
+            verify(jobDataManager).findPaginated(
+                    argThat(specification -> {
+                        // TODO we MUST check userId, filter late and sort specs
+                        DomainSpecification.And spec = (DomainSpecification.And) specification;
+                        return spec.getSpecifications().size() == 3 &&
+                                spec.getSpecifications().getFirst() instanceof DomainSpecification.Eq &&
+                                spec.getSpecifications().get(1) instanceof DomainSpecification.In<?> &&
+                                spec.getSpecifications().get(2) instanceof DomainSpecification.Lt<?>;
+
+                    }), eq(0), eq(10));
+
+            // check results page is enriched
+            assertNotNull(result);
+            assertEquals(1, result.getTotalElementsCount());
+            assertTrue(result.getContent().getFirst().isFollowUpLate());
+        }
+
+        @Test
+        void whenFilterLateFalse_thenShouldGetUserJobs() {
+            DomainPage<Job> mockJobPage = DomainPage.builder(List.of(testJob)).pageSize(1).currentPage(0).totalElementsCount(1).build();
+
+            when(jobDataManager.findPaginated(any(DomainSpecification.class), eq(0), eq(10))).thenReturn(mockJobPage);
+
+            DomainPage<EnrichedJob> result = underTest.getUserJobs(testUser.getId(), 0, 10, JobStatus.PENDING, false, "date");
+
+            // TODO : check that the DomainSpecification is correctly built
+            // as is, we only check that some spec has been built
+            verify(jobDataManager).findPaginated(any(DomainSpecification.class), eq(0), eq(10));
+
+            // check results page is enriched
+            assertNotNull(result);
+            assertEquals(1, result.getTotalElementsCount());
+        }
+
+        @Test
+        void testEnrichJobs() {
+            DomainPage<Job> mockJobPage = DomainPage.builder(List.of(testJob)).pageSize(1).currentPage(0).totalElementsCount(1).build();
+
+            when(jobDataManager.findPaginated(any(DomainSpecification.class), eq(0), eq(10))).thenReturn(mockJobPage);
+
+            // call test method
+            DomainPage<EnrichedJob> result = underTest.getUserJobs(testUser.getId(), 0, 10, JobStatus.PENDING, false, "date");
+
+            // check result is enriched
+            assertNotNull(result);
+            assertEquals(1, result.getTotalElementsCount());
+            assertInstanceOf(EnrichedJob.class, result.getContent().getFirst());
+        }
     }
 
-    @Test
-    void whenCreateAndJobExists_thenCreateJob_shouldThrowJobAlreadyExistsException() {
-        reset(userDataManager);
-        when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+    @Nested
+    class CreateJobTest {
+        @Test
+        void whenUserNotFound_thenCreateJob_shouldThrowUserNotFoundException() {
+            UserId userId = new UserId(UUID.randomUUID());
 
-        CreateJobCommand command = new CreateJobCommand.Builder()
-                .userId(UserId.generate())
-                .title("Job title")
-                .description("Job description")
-                .url("http://www.example.com/1")
-                .company("Company 3").build();
+            reset(userDataManager);
+            when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.empty());
 
-        assertThrows(JobAlreadyExistsException.class, () -> underTest.createJob(command));
+            var command = new CreateJobCommand.Builder()
+                            .userId(userId)
+                            .title("Create job")
+                            .company("company 3")
+                            .build();
+
+            assertThrows(UserNotFoundException.class, () -> underTest.createJob(command));
+        }
+
+        @Test
+        void whenJobAlreadyExists_thenCreateJob_shouldThrowJobAlreadyExistsException() {
+            UserId userId = new UserId(UUID.randomUUID());
+
+            reset(userDataManager);
+            when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+            when(htmlSanitizer.sanitize(any(String.class))).thenAnswer(i -> i.getArgument(0));
+
+            var command = new CreateJobCommand.Builder()
+                    .userId(userId)
+                    .title("New job")
+                    .company("Company 3")
+                    .url(testJob.getUrl())
+                    .description("New job description")
+                    .build();
+
+            assertThrows(JobAlreadyExistsException.class, () -> underTest.createJob(command));
+            verify(userDataManager).findById(any(UserId.class));
+            // sanitizer should have been called rot title, company, description
+            verify(htmlSanitizer, times(3)).sanitize(any(String.class));
+        }
+
+        @Test
+        void shouldCreateJob() {
+            ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
+            ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
+            reset(userDataManager);
+            when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+            // mocks htmlSanitizer
+            when(htmlSanitizer.sanitize(any(String.class))).thenAnswer(i -> i.getArgument(0));
+            // using ArgumentCaptor for both user and job allows us to check that upon saving, they are as expected
+            // we cannot just check that the current testUSer had been updated, as the domain always makes copies of entities
+            // to ensure their immutability
+            when(userDataManager.saveUserAndJob(userArgumentCaptor.capture(), jobArgumentCaptor.capture())).thenAnswer(i -> i.getArgument(0));
+
+            var command = new CreateJobCommand.Builder()
+                    .userId(testUser.getId())
+                    .title("New job")
+                    .company("Company 3")
+                    .url("https://www.example.com/new-job")
+                    .description("New job description")
+                    .build();
+
+            assertDoesNotThrow(() -> underTest.createJob(command));
+            verify(userDataManager).findById(any(UserId.class));
+            verify(userDataManager).saveUserAndJob(userArgumentCaptor.capture(), jobArgumentCaptor.capture());
+            // sanitizer should have been called rot title, company, description
+            verify(htmlSanitizer, times(3)).sanitize(any(String.class));
+
+            User user = userArgumentCaptor.getValue();
+            assertNotNull(user);
+            assertEquals(3, user.getJobs().size());
+
+            Job job = jobArgumentCaptor.getValue();
+            assertNotNull(job);
+            assertEquals("New job", job.getTitle());
+            assertEquals("New job description", job.getDescription());
+            assertEquals("https://www.example.com/new-job", job.getUrl());
+            assertEquals("Company 3", job.getCompany());
+        }
     }
 
-    @Test
-    void whenFilterLateTrue_thenShouldGetLateUserJobs() {
-        DomainPage<Job> mockJobPage = DomainPage.builder(List.of(testFollowUpLateJob)).pageSize(1).currentPage(0).totalElementsCount(1).build();
-        
-        when(jobDataManager.findPaginated(any(), eq(0), eq(10))).thenReturn(mockJobPage);
+    @Nested
+    class UpdateJobTest {
+        @Test
+        void whenUserNotFound_thenUpdateJob_shouldThrowUserNotFoundException() {
+            reset(userDataManager);
+            when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.empty());
 
-        DomainPage<EnrichedJob> result = underTest.getUserJobs(testUser.getId(), 0, 10, JobStatus.PENDING, true, "date,desc");
+            var command = new UpdateJobCommand.Builder()
+                    .jobId(JobId.generate())
+                    .userId(UserId.generate())
+                    .title("UpdatedJob")
+                    .build();
 
-        // check specification passed to the jobDataManager
-        verify(jobDataManager).findPaginated(
-            argThat(specification -> {
-                // TODO we MUST check userId, filter late and sort specs
-                DomainSpecification.And spec = (DomainSpecification.And) specification;
-                return  spec.getSpecifications().size() == 3 &&
-                        spec.getSpecifications().getFirst() instanceof DomainSpecification.Eq &&
-                        spec.getSpecifications().get(1) instanceof DomainSpecification.In<?> &&
-                        spec.getSpecifications().get(2) instanceof DomainSpecification.Lt<?>;
+            assertThrows(UserNotFoundException.class, () -> underTest.updateJob(command));
+        }
 
-            }), eq(0), eq(10));
+        @Test
+        void whenJobNotFound_thenUpdateJob_shouldThrowJobAlreadyExistsException() {
+            reset(userDataManager);
+            when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+            var command = new UpdateJobCommand.Builder()
+                    .jobId(JobId.generate())
+                    .userId(UserId.generate())
+                    .title("UpdatedJob")
+                    .build();
 
-        // check results page is enriched
-        assertNotNull(result);
-        assertEquals(1, result.getTotalElementsCount());
-        assertTrue(result.getContent().getFirst().isFollowUpLate());
+            assertThrows(JobNotFoundException.class, () -> underTest.updateJob(command));
+        }
+
+        @Test
+        void whenUpdatingAlreadyExistingUrl_thenUpdateJob_shouldThrowJobAlreadyExistsException() {
+            reset(userDataManager);
+            when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+            when(jobDataManager.findByIdAndUserId(testJob.getId(), testUser.getId())).thenReturn(Optional.of(testJob));
+            when(htmlSanitizer.sanitize(any(String.class))).thenAnswer(i -> i.getArgument(0));
+
+
+            var command = new UpdateJobCommand.Builder()
+                    .jobId(testJob.getId())
+                    .userId(UserId.generate())
+                    .title("UpdatedJob")
+                    .url("http://www.example.com/2")
+                    .build();
+
+            assertThrows(JobAlreadyExistsException.class, () -> underTest.updateJob(command));
+        }
+
+        @Test
+        void shouldUpdateJob() {
+            ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
+            ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
+
+            reset(userDataManager);
+            when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+            when(jobDataManager.findByIdAndUserId(testJob.getId(), testUser.getId())).thenReturn(Optional.of(testJob));
+            when(htmlSanitizer.sanitize(any(String.class))).thenAnswer(i -> i.getArgument(0));
+            when(userDataManager.saveUserAndJob(userArgumentCaptor.capture(), jobArgumentCaptor.capture())).thenAnswer(i -> i.getArgument(0));
+
+            var command = new UpdateJobCommand.Builder()
+                    .jobId(testJob.getId())
+                    .userId(UserId.generate())
+                    .url("http://www.example.com/new-job")
+                    .title("Updated job title")
+                    .company("Updated company")
+                    .description("Updated job description")
+                    .profile("Updated job profile")
+                    .salary("Updated job salary")
+                    .build();
+
+            var updatedJob = assertDoesNotThrow(() -> underTest.updateJob(command));
+            verify(jobDataManager).findByIdAndUserId(testJob.getId(), testUser.getId());
+            verify(userDataManager).saveUserAndJob(userArgumentCaptor.capture(), jobArgumentCaptor.capture());
+
+            User user = userArgumentCaptor.getValue();
+            assertNotNull(user);
+            assertEquals(2, user.getJobs().size());
+
+            Job job = jobArgumentCaptor.getValue();
+            assertNotNull(job);
+            assertEquals(updatedJob, job);
+            assertEquals("Updated job title", updatedJob.getTitle());
+            assertEquals("Updated company", updatedJob.getCompany());
+            assertEquals("http://www.example.com/new-job", updatedJob.getUrl());
+            assertEquals("Updated job description", updatedJob.getDescription());
+            assertEquals("Updated job profile", updatedJob.getProfile());
+            assertEquals("Updated job salary", updatedJob.getSalary());
+            assertTrue(updatedJob.getUpdatedAt().getEpochSecond() - Instant.now().getEpochSecond() < 1);
+        }
     }
 
-    @Test
-    void whenFilterLateFalse_thenShouldGetUserJobs() {
-        DomainPage<Job> mockJobPage = DomainPage.builder(List.of(testJob)).pageSize(1).currentPage(0).totalElementsCount(1).build();
-        
-        when(jobDataManager.findPaginated(any(DomainSpecification.class), eq(0), eq(10))).thenReturn(mockJobPage);
+    @Nested
+    class DeleteJobTest {
+        @Test
+        void whenUserNotFound_thenDeleteJob_shouldThrowUserNotFoundException() {
+            JobId jobId = new JobId(UUID.randomUUID());
+            UserId userId = new UserId(UUID.randomUUID());
 
-        DomainPage<EnrichedJob> result = underTest.getUserJobs(testUser.getId(), 0, 10, JobStatus.PENDING, false, "date");
+            reset(userDataManager);
+            when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.empty());
 
-        // TODO : check that the DomainSpecification is correctly built
-        // as is, we only check that some spec has been built
-        verify(jobDataManager).findPaginated(any(DomainSpecification.class), eq(0), eq(10));
+            var command = new DeleteJobCommand(jobId, userId);
 
-        // check results page is enriched
-        assertNotNull(result);
-        assertEquals(1, result.getTotalElementsCount());
-    }
+            assertThrows(UserNotFoundException.class, () -> underTest.deleteJob(command));
+        }
 
-    @Test
-    void testEnrichJobs() {
-        DomainPage<Job> mockJobPage = DomainPage.builder(List.of(testJob)).pageSize(1).currentPage(0).totalElementsCount(1).build();
+        @Test
+        void whenJobNotFound_thenDeleteJob_shouldThrowJobAlreadyExistsException() {
+            JobId jobId = new JobId(UUID.randomUUID());
+            UserId userId = new UserId(UUID.randomUUID());
 
-        when(jobDataManager.findPaginated(any(DomainSpecification.class), eq(0), eq(10))).thenReturn(mockJobPage);
+            reset(userDataManager);
+            when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+            var command = new DeleteJobCommand(jobId, userId);
 
-        // call test method
-        DomainPage<EnrichedJob> result = underTest.getUserJobs(testUser.getId(), 0, 10, JobStatus.PENDING, false, "date");
+            assertThrows(JobNotFoundException.class, () -> underTest.deleteJob(command));
+        }
 
-        // check result is enriched
-        assertNotNull(result);
-        assertEquals(1, result.getTotalElementsCount());
-        assertInstanceOf(EnrichedJob.class, result.getContent().getFirst());
+        @Test
+        void shouldDeleteJob() {
+            ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
+            ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
+
+            reset(userDataManager);
+            when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+            when(jobDataManager.findByIdAndUserId(testJob.getId(), testUser.getId())).thenReturn(Optional.of(testJob));
+            when(userDataManager.deleteJobAndSaveUser(userArgumentCaptor.capture(), jobArgumentCaptor.capture())).thenAnswer(i -> i.getArgument(0));
+            doNothing().when(fileStorage).delete("fileId");
+
+            var command = new DeleteJobCommand(testJob.getId(), testUser.getId());
+
+            assertDoesNotThrow(() -> underTest.deleteJob(command));
+            verify(jobDataManager).findByIdAndUserId(testJob.getId(), testUser.getId());
+            verify(fileStorage).delete("fileId");
+            verify(userDataManager).deleteJobAndSaveUser(userArgumentCaptor.capture(), jobArgumentCaptor.capture());
+
+            User user = userArgumentCaptor.getValue();
+            assertNotNull(user);
+            assertEquals(1, user.getJobs().size());
+
+            Job job = jobArgumentCaptor.getValue();
+            assertNotNull(job);
+            assertEquals(testJob.getId(), job.getId());
+        }
     }
 
     @Nested
@@ -238,8 +464,6 @@ class JobUseCaseImplTest {
             );
             when(jobDataManager.saveJobAndAttachment(jobArg.capture(), attachmentArg.capture(), activityArg.capture())).thenAnswer(i -> i.getArgument(0));
 
-
-
             Attachment result = underTest.addAttachmentToJob(new CreateAttachmentCommand("my file", file, "test.pdf", testJob.getUserId(), testJob.getId()));
 
             assertNotNull(result);
@@ -257,7 +481,7 @@ class JobUseCaseImplTest {
 
             Job job = jobArg.getValue();
             assertNotNull(job);
-            assertEquals(1, job.getAttachments().size());
+            assertEquals(2, job.getAttachments().size());
 
             Activity activity = activityArg.getValue();
             assertNotNull(activity);
