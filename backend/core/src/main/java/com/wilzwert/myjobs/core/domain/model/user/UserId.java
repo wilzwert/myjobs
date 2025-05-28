@@ -8,4 +8,9 @@ public record UserId(UUID value) implements EntityId<UUID> {
     public static UserId generate() {
         return new UserId(UUID.randomUUID());
     }
+
+    @Override
+    public String toString() {
+        return value.toString();
+    }
 }

@@ -5,6 +5,7 @@ import com.wilzwert.myjobs.core.domain.model.*;
 import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
+import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.exception.JobAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.model.job.exception.JobNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.user.exception.ResetPasswordExpiredException;
@@ -14,7 +15,9 @@ import com.wilzwert.myjobs.core.domain.shared.validation.*;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -242,8 +245,8 @@ public class User extends DomainEntity<UserId> {
         this.createdAt = builder.createdAt != null ? builder.createdAt : Instant.now();
         this.updatedAt = builder.updatedAt != null ? builder.updatedAt : Instant.now();
         this.jobFollowUpReminderSentAt = builder.jobFollowUpReminderSentAt;
-        // jobs can be null in some cases, but it will throw an exception for operations that need them to be loaded
-        this.jobs = builder.jobs;
+        // jobs may be null in some cases, but it will throw an exception for operations that need them to be loaded
+        this.jobs = builder.jobs != null ? List.copyOf(builder.jobs) : null;
 
         // validate the User state
         ValidationErrors validationErrors = validate();
@@ -254,6 +257,15 @@ public class User extends DomainEntity<UserId> {
 
     private void requireFull() {
         requireLoadedProperty(jobs);
+    }
+
+    private User copy(List<Job> jobs, Instant updatedAt) {
+
+        return new User(
+                from(this)
+                        .updatedAt(updatedAt != null ? updatedAt : getUpdatedAt())
+                        .jobs(jobs != null ? jobs : getJobs())
+        );
     }
 
     public static User create(User.Builder builder, String plainPassword) {
@@ -299,25 +311,66 @@ public class User extends DomainEntity<UserId> {
         );
     }
 
-    public Job addJob(Job job) {
+    public User addJob(Job job) {
         requireFull();
 
         // check if job to be added already exists by its url
         jobs.stream().filter(j -> j.getUrl().equals(job.getUrl())).findAny().ifPresent(found -> {throw new JobAlreadyExistsException();});
 
-        jobs.add(job);
+        List<Job> newJobs = new ArrayList<>(jobs);
 
         // automatically create first activity
-        return job.addActivity(Activity.builder().type(ActivityType.CREATION).build());
+        newJobs.add(job.addActivity(Activity.builder().type(ActivityType.CREATION).build()));
+
+        return copy(newJobs, Instant.now());
     }
 
-    public void removeJob(Job job) {
+    public Optional<Job> getJobById(JobId jobId) {
+        return getJobs().stream().filter(j -> j.getId().equals(jobId)).findFirst();
+    }
+
+    public Optional<Job> getJobByUrl(String url) {
+        return getJobs().stream().filter(j -> j.getUrl().equals(url)).findFirst();
+    }
+
+    public User updateJob(Job job, String url, String title, String company, String description, String profile, String salary) {
         requireFull();
 
         if(!jobs.contains(job)) {
             throw new JobNotFoundException();
         }
-        jobs.remove(job);
+        if(!url.equals(job.getUrl())) {
+            jobs.stream().filter(j -> j.getUrl().equals(url)).findAny().ifPresent(found -> {throw new JobAlreadyExistsException();});
+        }
+
+        int index = jobs.indexOf(job);
+
+        List<Job> newJobs = new ArrayList<>(jobs);
+        newJobs.set(index,
+                Job.from(job)
+                    .url(url)
+                    .title(title)
+                    .company(company)
+                    .description(description)
+                    .profile(profile)
+                    .salary(salary)
+                    .updatedAt(Instant.now())
+                    .build()
+        );
+
+        System.out.println(newJobs);
+        return copy(newJobs, Instant.now());
+    }
+
+    public User removeJob(Job job) {
+        requireFull();
+
+        if(!jobs.contains(job)) {
+            throw new JobNotFoundException();
+        }
+        List<Job> newJobs = new ArrayList<>(jobs);
+        newJobs.remove(job);
+        return copy(newJobs, Instant.now());
     }
 
     /**

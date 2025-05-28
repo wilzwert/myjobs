@@ -27,7 +27,7 @@ class JobTest {
     @Test
     void whenInvalid_thenJobBuildShouldThrowValidationException() {
         var builder = Job.builder();
-        ValidationException exception = assertThrows(ValidationException.class, () -> builder.build());
+        ValidationException exception = assertThrows(ValidationException.class, builder::build);
         assertNotNull(exception);
         assertEquals(5, exception.getErrors().getErrors().entrySet().size());
         assertEquals(ErrorCode.FIELD_CANNOT_BE_EMPTY, exception.getErrors().getErrors().get("userId").getFirst().code());
@@ -153,70 +153,6 @@ class JobTest {
         assertEquals(activities, job.getActivities());
         assertEquals(attachments, job.getAttachments());
         assertEquals(userId.value(), job.getUserId().value());
-    }
-
-    @Test
-    void shouldUpdateJob() {
-        UserId userId = new UserId(UUID.randomUUID());
-        JobId jobId = new JobId(UUID.randomUUID());
-        Instant jobCreatedAt = Instant.parse("2025-03-09T13:45:30Z");
-        Instant now = Instant.now();
-        List<Activity> activities = List.of(Activity.builder()
-                .id(ActivityId.generate())
-                .createdAt(now)
-                .updatedAt(now)
-                .type(ActivityType.CREATION)
-                .comment("Creation")
-                .build());
-        List<Attachment> attachments = List.of(Attachment.builder()
-                .id(AttachmentId.generate())
-                .createdAt(now)
-                .updatedAt(now)
-                .fileId("attachementFile1")
-                .name("Attachment 1")
-                .filename("attachment1.doc")
-                .contentType("application/msword")
-                .build());
-
-        Job job = Job.builder()
-                .id(jobId)
-                .url("http://www.example.com")
-                .title("Job title")
-                .status(JobStatus.PENDING)
-                .rating(JobRating.of(3))
-                .company("Company")
-                .description("Job description")
-                .profile("Job profile")
-                .salary("TBD")
-                .userId(userId)
-                .createdAt(jobCreatedAt)
-                .updatedAt(jobCreatedAt)
-                .statusUpdatedAt(jobCreatedAt)
-                .activities(activities)
-                .attachments(attachments)
-                .build();
-
-        Instant before = Instant.now();
-        Job updatedJob = job.updateJob("http://www.example.com/updated", "Job updated title", "Updated company", "Job updated description", "Job updated profile", "Job updated salary");
-        Instant after = Instant.now();
-
-        assertNotNull(updatedJob);
-        assertEquals(jobId, updatedJob.getId());
-        assertEquals(userId, updatedJob.getUserId());
-        assertEquals(JobStatus.PENDING, updatedJob.getStatus());
-        assertEquals("Job updated title", updatedJob.getTitle());
-        assertEquals("http://www.example.com/updated", updatedJob.getUrl());
-        assertEquals("Updated company", updatedJob.getCompany());
-        assertEquals("Job updated description", updatedJob.getDescription());
-        assertEquals("Job updated profile", updatedJob.getProfile());
-        assertEquals("Job updated salary", updatedJob.getSalary());
-        Instant updatedAt = updatedJob.getUpdatedAt();
-        assertTrue(updatedAt.equals(before) || updatedAt.equals(after) || updatedAt.isAfter(before) && updatedAt.isBefore(after));
-        assertEquals(jobCreatedAt, updatedJob.getCreatedAt());
-        // status has not changed, check that the status update date also didn't change
-        assertEquals(jobCreatedAt, updatedJob.getStatusUpdatedAt());
-        assertEquals(1, updatedJob.getActivities().size());
-        assertEquals(1, updatedJob.getAttachments().size());
     }
 
     @Test

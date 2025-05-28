@@ -1,15 +1,25 @@
 package com.wilzwert.myjobs.core.domain.model.user;
 
 
+import com.wilzwert.myjobs.core.domain.model.activity.Activity;
+import com.wilzwert.myjobs.core.domain.model.activity.ActivityId;
+import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
+import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
+import com.wilzwert.myjobs.core.domain.model.attachment.AttachmentId;
+import com.wilzwert.myjobs.core.domain.model.job.JobRating;
+import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.shared.exception.ValidationException;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,6 +29,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 
 class UserTest {
+
+    private User testUser;
 
     @Test
     void whenInvalid_thenUserBuildShouldThrowValidationException() {
@@ -151,9 +163,9 @@ class UserTest {
     @Test
     void whenPasswordWeak_thenCreateUserShouldThrowValidationException() {
         var builder =  User.builder().email("test@example.com").password("password").username("username").firstName("firstName").lastName("lastName").jobFollowUpReminderDays(7);
-        ValidationException exception = assertThrows(ValidationException.class, () ->  {
-            User.create(builder,"weakPassword");
-        });
+        ValidationException exception = assertThrows(ValidationException.class, () ->
+            User.create(builder,"weakPassword")
+        );
 
         assertNotNull(exception);
         assertEquals(1, exception.getErrors().getErrors().entrySet().size());
@@ -267,5 +279,172 @@ class UserTest {
         assertNull(user.getJobFollowUpReminderSentAt());
         User updatedUser = user.saveJobFollowUpReminderSentAt();
         assertTrue(updatedUser.getJobFollowUpReminderSentAt().getEpochSecond() - Instant.now().getEpochSecond() < 1);
+    }
+
+    @Test
+    void shouldUpdateJob() {
+        UserId userId = new UserId(UUID.randomUUID());
+        JobId jobId = new JobId(UUID.randomUUID());
+        Instant jobCreatedAt = Instant.parse("2025-03-09T13:45:30Z");
+        Instant now = Instant.now();
+        List<Activity> activities = List.of(Activity.builder()
+                .id(ActivityId.generate())
+                .createdAt(now)
+                .updatedAt(now)
+                .type(ActivityType.CREATION)
+                .comment("Creation")
+                .build());
+        List<Attachment> attachments = List.of(Attachment.builder()
+                .id(AttachmentId.generate())
+                .createdAt(now)
+                .updatedAt(now)
+                .fileId("attachementFile1")
+                .name("Attachment 1")
+                .filename("attachment1.doc")
+                .contentType("application/msword")
+                .build());
+
+        Job job = Job.builder()
+                .id(jobId)
+                .url("http://www.example.com")
+                .title("Job title")
+                .status(JobStatus.PENDING)
+                .rating(JobRating.of(3))
+                .company("Company")
+                .description("Job description")
+                .profile("Job profile")
+                .salary("TBD")
+                .userId(userId)
+                .createdAt(jobCreatedAt)
+                .updatedAt(jobCreatedAt)
+                .statusUpdatedAt(jobCreatedAt)
+                .activities(activities)
+                .attachments(attachments)
+                .build();
+
+        User user = User.builder()
+                .id(userId)
+                .email("test@example.com")
+                .password("password")
+                .username("username")
+                .firstName("firstName")
+                .lastName("lastName")
+                .emailStatus(EmailStatus.VALIDATED)
+                .emailValidationCode("code")
+                .jobs(List.of(job))
+                .build();
+
+        Instant before = Instant.now();
+        User updatedUser = user.updateJob(job,"http://www.example.com/updated", "Job updated title", "Updated company", "Job updated description", "Job updated profile", "Job updated salary");
+        Instant after = Instant.now();
+
+        assertNotNull(updatedUser);
+
+        Optional<Job> optionalUpdatedJob = updatedUser.getJobById(jobId);
+        assertTrue(optionalUpdatedJob.isPresent());
+        Job updatedJob = optionalUpdatedJob.get();
+        assertEquals(jobId, updatedJob.getId());
+        assertEquals(userId, updatedJob.getUserId());
+        assertEquals(JobStatus.PENDING, updatedJob.getStatus());
+        assertEquals("Job updated title", updatedJob.getTitle());
+        assertEquals("http://www.example.com/updated", updatedJob.getUrl());
+        assertEquals("Updated company", updatedJob.getCompany());
+        assertEquals("Job updated description", updatedJob.getDescription());
+        assertEquals("Job updated profile", updatedJob.getProfile());
+        assertEquals("Job updated salary", updatedJob.getSalary());
+        Instant updatedAt = updatedJob.getUpdatedAt();
+        assertTrue(updatedAt.equals(before) || updatedAt.equals(after) || updatedAt.isAfter(before) && updatedAt.isBefore(after));
+        assertEquals(jobCreatedAt, updatedJob.getCreatedAt());
+        // status has not changed, check that the status update date also didn't change
+        assertEquals(jobCreatedAt, updatedJob.getStatusUpdatedAt());
+        assertEquals(1, updatedJob.getActivities().size());
+        assertEquals(1, updatedJob.getAttachments().size());
+    }
+
+
+    @Nested
+    class JobRetrievalTest {
+
+        private User testUser;
+        private Job testJob;
+
+
+        @BeforeEach
+        void setUp() {
+            UserId userId = new UserId(UUID.randomUUID());
+            JobId jobId = new JobId(UUID.randomUUID());
+            Instant jobCreatedAt = Instant.parse("2025-03-09T13:45:30Z");
+            Instant now = Instant.now();
+            List<Activity> activities = List.of(Activity.builder()
+                    .id(ActivityId.generate())
+                    .createdAt(now)
+                    .updatedAt(now)
+                    .type(ActivityType.CREATION)
+                    .comment("Creation")
+                    .build());
+            List<Attachment> attachments = List.of(Attachment.builder()
+                    .id(AttachmentId.generate())
+                    .createdAt(now)
+                    .updatedAt(now)
+                    .fileId("attachementFile1")
+                    .name("Attachment 1")
+                    .filename("attachment1.doc")
+                    .contentType("application/msword")
+                    .build());
+
+            testJob = Job.builder()
+                    .id(jobId)
+                    .url("http://www.example.com")
+                    .title("Job title")
+                    .status(JobStatus.PENDING)
+                    .rating(JobRating.of(3))
+                    .company("Company")
+                    .description("Job description")
+                    .profile("Job profile")
+                    .salary("TBD")
+                    .userId(userId)
+                    .createdAt(jobCreatedAt)
+                    .updatedAt(jobCreatedAt)
+                    .statusUpdatedAt(jobCreatedAt)
+                    .activities(activities)
+                    .attachments(attachments)
+                    .build();
+
+            testUser = User.builder()
+                    .id(userId)
+                    .email("test@example.com")
+                    .password("password")
+                    .username("username")
+                    .firstName("firstName")
+                    .lastName("lastName")
+                    .emailStatus(EmailStatus.VALIDATED)
+                    .emailValidationCode("code")
+                    .jobs(List.of(testJob))
+                    .build();
+        }
+
+        @Test
+        void whenJobIdNotFound_thenShouldReturnEmptyOptional() {
+            assertTrue(testUser.getJobById(JobId.generate()).isEmpty());
+        }
+
+        @Test
+        void shouldRetrieveJobById() {
+            var foundJob = testUser.getJobById(testJob.getId());
+            assertTrue(foundJob.isPresent());
+            assertEquals(testJob, foundJob.get());
+        }
+
+        @Test
+        void whenUrlNotFound_thenShouldReturnEmptyOptional() {
+            assertTrue(testUser.getJobByUrl("http://www.example.com/not-existing").isEmpty());
+        }
+
+        @Test
+        void shouldRetrieveJobByUrl() {
+            var foundJob = testUser.getJobByUrl(testJob.getUrl());
+            assertTrue(foundJob.isPresent());
+            assertEquals(testJob, foundJob.get());
+        }
     }
 }

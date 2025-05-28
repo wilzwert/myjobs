@@ -8,4 +8,9 @@ public record JobId(UUID value) implements EntityId<UUID> {
     public static JobId  generate() {
         return new JobId(UUID.randomUUID());
     }
+
+    @Override
+    public String toString() {
+        return value.toString();
+    }
 }
