@@ -6,6 +6,7 @@ import com.wilzwert.myjobs.core.domain.model.attachment.exception.AttachmentFile
 import com.wilzwert.myjobs.core.domain.model.DownloadableFile;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.FileSystemResource;
@@ -28,11 +29,16 @@ import java.util.Optional;
 @Component
 public class LocalFileStorage implements FileStorage {
 
-    private final Path storageLocation = Paths.get("uploads"); // Dossier local
+    private final Path storageLocation; // Dossier local
 
     private final String backendUrl;
 
+    @Autowired
     public LocalFileStorage(@Value("${application.backend.url}") final String backendUrl) {
+        this(backendUrl, Paths.get("uploads"));
+    }
+
+    public LocalFileStorage(String backendUrl, Path storageLocation) {
         try {
             if (!Files.exists(storageLocation)) {
                 Files.createDirectories(storageLocation); // Crée le répertoire s'il n'existe pas
@@ -40,6 +46,7 @@ public class LocalFileStorage implements FileStorage {
         } catch (IOException e) {
             throw new StorageException("Failed to initialize local storage", e);
         }
+        this.storageLocation = storageLocation;
         this.backendUrl = backendUrl;
     }
 
