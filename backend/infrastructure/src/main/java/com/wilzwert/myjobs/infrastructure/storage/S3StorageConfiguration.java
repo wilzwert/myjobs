@@ -54,7 +54,7 @@ public class S3StorageConfiguration {
     }
 
     @Bean
-    public FileStorage fileStorage(S3Client s3Client, S3Presigner s3Presigner) {
-        return new S3FileStorage(s3Client, s3Presigner, bucketName);
+    public FileStorage fileStorage(S3Client s3Client, S3Presigner s3Presigner, SecureTempFileHelper secureTempFileHelper) {
+        return new S3FileStorage(s3Client, s3Presigner, bucketName, secureTempFileHelper);
     }
 }

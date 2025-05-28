@@ -80,6 +80,7 @@ public class LocalFileStorage implements FileStorage {
         Path filePath = Paths.get(fileId);
         FileSystemResource resource = new FileSystemResource(filePath.toFile());
         if (!resource.exists() || !resource.isReadable()) {
+            System.out.println(resource.getFilename());
             throw new AttachmentFileNotReadableException();
         }
 

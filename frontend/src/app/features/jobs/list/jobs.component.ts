@@ -3,28 +3,32 @@ import { Observable, take, tap } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card';
-import { Page } from '@core/model/page.interface';
-import { Job, JobStatus } from '@core/model/job.interface';
-import { JobService } from '@core/services/job.service';
-import { ModalService } from '@core/services/modal.service';
-import { StatusLabelPipe } from '@core/pipe/status-label.pipe';
+import { Page } from '../../../core/model/page.interface';
+import { Job, JobStatus } from '../../../core/model/job.interface';
+import { JobService } from '../../../core/services/job.service';
+import { ModalService } from '../../../core/services/modal.service';
+import { StatusLabelPipe } from '../../../core/pipe/status-label.pipe';
+import { MatFormField, MatHint, MatLabel } from '@angular/material/select';
 import { MatButton } from '@angular/material/button';
-import { ConfirmDialogService } from '@core/services/confirm-dialog.service';
-import { NotificationService } from '@core/services/notification.service';
+import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
+import { NotificationService } from '../../../core/services/notification.service';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatInput } from '@angular/material/input';
 import {MatRippleModule} from '@angular/material/core';
 import { MatMenuModule } from '@angular/material/menu';
-import { JobMetadata } from '@core/model/job-metadata.interface';
-import { CustomPaginatorIntl } from '@core/services/custom-paginator-intl';
-import { User } from '@core/model/user.interface';
-import { UserService } from '@core/services/user.service';
+import { JobMetadata } from '../../../core/model/job-metadata.interface';
+import { StatusIconComponent } from "../../../layout/shared/status-icon/status-icon.component";
+import { CustomPaginatorIntl } from '../../../core/services/custom-paginator-intl';
+import { User } from '../../../core/model/user.interface';
+import { UserService } from '../../../core/services/user.service';
 import { MatIcon } from '@angular/material/icon';
-import { JobSummaryComponent } from '@features/jobs/job-summary/job-summary.component';
-import { ComponentInputDomainData } from '@core/model/component-input-data.interface';
+import { JobSummaryComponent } from '../job-summary/job-summary.component';
+import { ComponentInputData, ComponentInputDomainData } from '../../../core/model/component-input-data.interface';
 
 
 @Component({
   selector: 'app-jobs',
-  imports: [AsyncPipe, MatMenuModule, MatRippleModule, MatCardModule, MatPaginatorModule, MatIcon, JobSummaryComponent, StatusLabelPipe, MatButton],
+  imports: [AsyncPipe, MatMenuModule, MatRippleModule, MatCardModule, MatPaginatorModule, MatIcon, JobSummaryComponent, StatusLabelPipe, MatFormField, MatInput, MatLabel, MatButton, FormsModule, ReactiveFormsModule, MatHint, StatusIconComponent],
   providers: [{ provide: MatPaginatorIntl, useClass: CustomPaginatorIntl }],
   templateUrl: './jobs.component.html',
   styleUrl: './jobs.component.scss'
@@ -42,7 +46,7 @@ export class JobsComponent implements OnInit {
 
   statusKeys: string[] = [];
 
-  constructor(private userService: UserService, private jobService: JobService, private modalService: ModalService, private confirmDialogService: ConfirmDialogService, private notificationService: NotificationService) {
+  constructor(private fb: FormBuilder, private userService: UserService, private jobService: JobService, private modalService: ModalService, private confirmDialogService: ConfirmDialogService, private notificationService: NotificationService) {
     this.currentPage = jobService.getCurrentPage();
     if (this.currentPage == -1) {
       this.currentPage = 0;
@@ -68,8 +72,26 @@ export class JobsComponent implements OnInit {
   filterByStatus(status: String): void {
     // having two properties to handle status or "filter-late" filters may seem unclean, as they are exclusive at the moment
     // but it actually allow us to change our mind in the future and use both filters cumulatively 
-    this.currentStatus = status === "filter-late" ? null : status as keyof typeof JobStatus;
-    this.filterLate = status === "filter-late";
+
+    // clicking on the current status filter removes the filter
+    if(status === 'filter-late' && this.filterLate) {
+      console.log('removing filter late');
+      this.filterLate = false;
+    }
+    else {
+      const newStatus: keyof typeof JobStatus = status as keyof typeof JobStatus;
+      if(newStatus === this.currentStatus) {
+          this.currentStatus = null;
+          console.log('removing current status');
+      }
+      else {
+        this.currentStatus = status === "filter-late" ? null : status as keyof typeof JobStatus;
+        console.log('setting currentstatus ', this.currentStatus);
+        this.filterLate = status === "filter-late";
+        console.log('setting filterLate ', this.filterLate);
+      }
+    }
+    
     this.reloadJobs();
   }
 

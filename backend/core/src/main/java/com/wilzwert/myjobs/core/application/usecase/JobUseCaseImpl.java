@@ -176,7 +176,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         // as I understand DDD, only the root aggregate should be explicitly persisted
         // but I just don't how to do it cleanly for now
         userDataManager.saveUserAndJob(updatedUser, updatedJob);
-        return job;
+        return updatedJob;
     }
 
     @Override

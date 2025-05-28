@@ -1,19 +1,24 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wilzwert.myjobs.core.domain.model.DownloadableFile;
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobDataManager;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
 import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
 import jakarta.servlet.http.Cookie;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,6 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 // TODO : find a way to do some useful and meaningful IT on the /api/jobs/jobUd/attachments/file API endpoint
 
 @AutoConfigureMockMvc
+@Slf4j
 public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
     private static final String JOBS_URL = "/api/jobs";
     private static final String JOB_FOR_TEST_ID =  "77777777-7777-7777-7777-123456789012";
@@ -55,13 +61,16 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
 
     Cookie accessTokenCookie;
 
+    @Autowired
+    private FileStorage fileStorage;
+
     @BeforeEach
     void setup() {
         accessTokenCookie = new Cookie("access_token", jwtService.generateToken(USER_FOR_JOBS_TEST_ID));
     }
 
     @Nested
-    class AttachmentControllerCreateIt {
+    class AttachmentControllerCreateIT {
 
         @Test
         void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
@@ -172,7 +181,7 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
     }
 
     @Nested
-    class AttachmentControllerDeleteIt {
+    class AttachmentControllerDeleteIT {
 
         private static final String ATTACHMENT_TEST_ID = "b7777777-7777-7777-7770-123456789012";
         private static final String JOB_ATTACHMENT_TEST_URL = JOB_ATTACHMENTS_TEST_URL+"/b7777777-7777-7777-7770-123456789012";
@@ -217,6 +226,66 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(foundJob).isNotNull();
             Attachment attachment = foundJob.getAttachments().stream().filter(a -> a.getId().value().equals(UUID.fromString(ATTACHMENT_TEST_ID))).findFirst().orElse(null);
             assertThat(attachment).isNull();
+        }
+    }
+
+    @Nested
+    class AttachmentControllerFileIT {
+
+        @Value("${aws.s3.bucket-name}")
+        private String bucketName;
+
+        private DownloadableFile testFile;
+
+        // before each test we have to create a file with the current FileStorage
+        // to ensure it exists when we send requests to the api endpoints
+        @BeforeEach
+        void setUp() {
+            File file = new File("src/test/resources/attachment.pdf");
+            // Store
+            testFile = fileStorage.store(file, "my-attachment-file", "attachment.pdf");
+        }
+
+        // after each test we delete the created temp file
+        @AfterEach
+        void tearDown() {
+            fileStorage.delete(testFile.fileId());
+        }
+
+
+        private static final String JOB_ATTACHMENT_FILE_TEST_URL = JOB_ATTACHMENTS_TEST_URL+"/b7777777-7777-7777-7770-123456789012/file";
+
+        @Test
+        void whenUnauthenticated_thenDownloadShouldReturnUnauthorized() throws Exception {
+            mockMvc.perform(get(JOB_ATTACHMENT_FILE_TEST_URL))
+                    .andExpect(status().isUnauthorized());
+        }
+
+        @Test
+        void shouldDownloadAttachmentFile() throws Exception {
+            MvcResult result = mockMvc.perform(get(JOB_ATTACHMENT_FILE_TEST_URL).cookie(accessTokenCookie))
+                    .andExpect(status().isOk())
+                    .andReturn();
+            assertThat(result.getResponse().getContentType()).isEqualTo("application/pdf");
+            assertThat(result.getResponse().getContentAsString()).isNotEmpty();
+        }
+
+        @Test
+        void whenUnauthenticated_thenGetProtectedFileInfoShouldReturnUnauthorized() throws Exception {
+            mockMvc.perform(get(JOB_ATTACHMENT_FILE_TEST_URL+"/info"))
+                    .andExpect(status().isUnauthorized());
+        }
+
+        @Test
+        void shouldReturnProtectedFileResponse() throws Exception {
+            MvcResult result = mockMvc.perform(get(JOB_ATTACHMENT_FILE_TEST_URL+"/info").cookie(accessTokenCookie))
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            ProtectedFileResponse response = objectMapper.readValue(result.getResponse().getContentAsString(), ProtectedFileResponse.class);
+            assertThat(response).isNotNull();
+            assertThat(response.getFileId()).isEqualTo("my-attachment-file");
+            assertThat(response.getUrl()).contains(bucketName).contains("my-attachment-file");
         }
     }
 }

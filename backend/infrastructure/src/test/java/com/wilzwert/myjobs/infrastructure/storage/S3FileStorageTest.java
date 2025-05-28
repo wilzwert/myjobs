@@ -9,21 +9,25 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
+import software.amazon.awssdk.services.s3.model.*;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,17 +40,24 @@ import static org.mockito.Mockito.*;
 @EnabledIfSystemProperty(named = "spring.profiles.active", matches = "dev|test")
 @ExtendWith(MockitoExtension.class)
 public class S3FileStorageTest {
+
+    private SecureTempFileHelper secureTempFileHelper;
+
     @Mock
     private S3Client s3Client;
     @Mock
     private S3Presigner s3Presigner;
 
+    @Mock
+    private ResponseInputStream<GetObjectResponse> responseInputStream;
+
     private S3FileStorage underTest;
 
     @BeforeEach
     void setUp() {
+        secureTempFileHelper = new SecureTempFileHelper();
         MockitoAnnotations.openMocks(this);
-        underTest = new S3FileStorage(s3Client, s3Presigner, "test");
+        underTest = new S3FileStorage(s3Client, s3Presigner, "test", secureTempFileHelper);
     }
 
     @Test
@@ -93,11 +104,63 @@ public class S3FileStorageTest {
     }
 
     @Test
-    void shouldThrowUnsupportedOperationExceptionWhenRetrieve() {
-        S3FileStorage fileStorage = new S3FileStorage(s3Client, s3Presigner, "bucket");
+    void shouldRetrieveFileFromS3Successfully() throws IOException {
+        S3FileStorage fileStorage = new S3FileStorage(s3Client, s3Presigner, "bucket", secureTempFileHelper);
+        // Arrange
+        String fileId = "uploads/file.pdf";
+        String originalFilename = "file.pdf";
+        byte[] fileContent = "Hello world".getBytes();
 
-        assertThrows(UnsupportedOperationException.class, () ->
-                fileStorage.retrieve("fileId", "original.txt")
+        Path tempFilePath = Files.createTempFile("test", ".pdf");
+        File tempFile = tempFilePath.toFile();
+        tempFile.deleteOnExit();
+
+        when(s3Client.getObject(any(GetObjectRequest.class))).thenReturn(responseInputStream);
+        when(responseInputStream.readAllBytes()).thenReturn(fileContent); // alternative to IoUtils
+
+        // Act
+        DownloadableFile file = fileStorage.retrieve(fileId, originalFilename);
+
+        // Assert
+        assertThat(file.fileId()).isEqualTo(fileId);
+        assertThat(file.path()).endsWith("s3");
+        assertThat(file.contentType()).isEqualTo("application/pdf");
+        assertThat(file.filename()).isEqualTo(originalFilename);
+    }
+
+    @Test
+    void shouldThrowStorageExceptionWhenSdkClientExceptionOccurs() {
+        String fileId = "badfile";
+        String originalFilename = "badfile.txt";
+
+        when(s3Client.getObject(any(GetObjectRequest.class))).thenThrow(SdkClientException.create("S3 error"));
+
+        var ex = assertThrows(StorageException.class, () ->
+                underTest.retrieve(fileId, originalFilename)
         );
+        assertThat(ex.getMessage()).isEqualTo("Unable to retrieve file from S3 bucket");
+    }
+
+    @Test
+    void shouldThrowStorageExceptionWhenIOExceptionOccurs() throws IOException {
+        String fileId = "badfile";
+        String originalFilename = "badfile.txt";
+        byte[] fileContent = "Hello world".getBytes();
+
+        Path tempFilePath = Files.createTempFile("badfile", ".txt");
+        File tempFile = tempFilePath.toFile();
+        tempFile.deleteOnExit();
+
+        when(s3Client.getObject(any(GetObjectRequest.class))).thenReturn(responseInputStream);
+        when(responseInputStream.readAllBytes()).thenReturn(fileContent);
+        try (MockedStatic<Files> filesMockedStatic = Mockito.mockStatic(Files.class)) {
+            filesMockedStatic.when(() -> Files.createTempFile(anyString(), anyString(), any()))
+                    .thenReturn(tempFilePath);
+            filesMockedStatic.when(() -> Files.write(any(Path.class), eq(fileContent))).thenThrow(IOException.class);
+            var ex = assertThrows(StorageException.class, () ->
+                    underTest.retrieve(fileId, originalFilename)
+            );
+            assertThat(ex.getMessage()).isEqualTo("Unable to store file downloaded from S3 bucket");
+        }
     }
 }

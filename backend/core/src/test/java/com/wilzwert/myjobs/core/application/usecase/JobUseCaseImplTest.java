@@ -343,7 +343,7 @@ class JobUseCaseImplTest {
                     .salary("Updated job salary")
                     .build();
 
-            assertDoesNotThrow(() -> underTest.updateJob(command));
+            var updatedJob = assertDoesNotThrow(() -> underTest.updateJob(command));
             verify(jobDataManager).findByIdAndUserId(testJob.getId(), testUser.getId());
             verify(userDataManager).saveUserAndJob(userArgumentCaptor.capture(), jobArgumentCaptor.capture());
 
@@ -353,13 +353,14 @@ class JobUseCaseImplTest {
 
             Job job = jobArgumentCaptor.getValue();
             assertNotNull(job);
-            assertEquals(testJob.getId(), job.getId());
-            assertEquals("Updated job title", job.getTitle());
-            assertEquals("Updated company", job.getCompany());
-            assertEquals("http://www.example.com/new-job", job.getUrl());
-            assertEquals("Updated job description", job.getDescription());
-            assertEquals("Updated job profile", job.getProfile());
-            assertEquals("Updated job salary", job.getSalary());
+            assertEquals(updatedJob, job);
+            assertEquals("Updated job title", updatedJob.getTitle());
+            assertEquals("Updated company", updatedJob.getCompany());
+            assertEquals("http://www.example.com/new-job", updatedJob.getUrl());
+            assertEquals("Updated job description", updatedJob.getDescription());
+            assertEquals("Updated job profile", updatedJob.getProfile());
+            assertEquals("Updated job salary", updatedJob.getSalary());
+            assertTrue(updatedJob.getUpdatedAt().getEpochSecond() - Instant.now().getEpochSecond() < 1);
         }
     }
 
