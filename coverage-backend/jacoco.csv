@@ -7,15 +7,15 @@ MyJobsInfra,com.wilzwert.myjobs.infrastructure.api.rest.dto,JobRatingSerializer,
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.api.rest.dto,JobRatingConverter,0,7,0,0,0,2,0,2,0,2
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.batch,JobsRemindersScheduler,45,13,0,0,9,5,1,2,1,2
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.batch,MongoBatchCollectionsInitializer,0,224,0,8,0,49,0,6,0,2
-MyJobsInfra,com.wilzwert.myjobs.infrastructure.batch,BatchRunException,0,5,0,0,0,2,0,1,0,1
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.batch,JobsRemindersBatchConfiguration,8,31,0,0,3,10,1,5,1,5
+MyJobsInfra,com.wilzwert.myjobs.infrastructure.batch,BatchRunException,0,5,0,0,0,2,0,1,0,1
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.batch,BatchConfiguration,11,36,0,0,3,12,1,4,1,4
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.api.rest.controller,UserController,20,106,0,0,5,24,2,7,2,7
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.api.rest.controller,PasswordController,0,30,0,0,0,9,0,4,0,4
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.api.rest.controller,JobController,6,211,1,7,1,41,2,12,1,9
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.api.rest.controller,AttachmentController,12,172,1,1,3,32,1,6,0,6
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.api.rest.controller,AuthController,0,290,0,12,0,50,0,14,0,8
-MyJobsInfra,com.wilzwert.myjobs.infrastructure.api.rest.controller,BatchController,0,20,0,0,0,6,0,3,0,3
+MyJobsInfra,com.wilzwert.myjobs.infrastructure.api.rest.controller,BatchController,0,47,0,0,0,10,0,3,0,3
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.api.rest.controller,ActivityController,0,38,0,0,0,8,0,3,0,3
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.configuration,CacheConfiguration,0,94,0,0,0,24,0,2,0,2
 MyJobsInfra,com.wilzwert.myjobs.infrastructure.configuration,BeanConfiguration,0,82,0,0,0,16,0,12,0,12

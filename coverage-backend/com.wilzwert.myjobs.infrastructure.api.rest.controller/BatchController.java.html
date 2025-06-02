@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BatchController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">MyJobsInfra</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.infrastructure.api.rest.controller</a> &gt; <span class="el_source">BatchController.java</span></div><h1>BatchController.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.UsersJobsBatchExecutionResultResponse;
+import com.wilzwert.myjobs.infrastructure.batch.UsersJobsBatchExecutionResult;
 import com.wilzwert.myjobs.infrastructure.batch.service.SendJobsRemindersBatchRunner;
 import com.wilzwert.myjobs.infrastructure.mapper.UsersJobsBatchResultMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -8,15 +9,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Duration;
+import java.time.Instant;
+
 /**
  * @author Wilhelm Zwertvaegher
  * Controller used to trigger batches in a non &quot;batch-capable&quot; environment by HTTP requests
- * It hould not be used when batches can be run with @EnableBatchProcessing and/or @Scheduled
+ * It should not be used when batches can be run with @EnableBatchProcessing and/or @Scheduled
+ * Requests are authorized via {@link com.wilzwert.myjobs.infrastructure.security.internal.InternalEndpointAuthorization}
+ * For now we use a specific header to authenticate requests but in &quot;real life&quot; we should use a more secure way
  */
 
 @RestController
 @RequestMapping(&quot;/internal&quot;)
-<span class="fc" id="L19">@Slf4j</span>
+<span class="fc" id="L25">@Slf4j</span>
 public class BatchController {
 
     private final SendJobsRemindersBatchRunner sendJobsRemindersBatchRunner;
@@ -25,14 +31,18 @@ public class BatchController {
 
 
 
-<span class="fc" id="L28">    public BatchController(SendJobsRemindersBatchRunner jobsRemindersBatchRunner, UsersJobsBatchResultMapper usersJobsBatchResultMapper) {</span>
-<span class="fc" id="L29">        this.sendJobsRemindersBatchRunner = jobsRemindersBatchRunner;</span>
-<span class="fc" id="L30">        this.usersJobsBatchResultMapper = usersJobsBatchResultMapper;</span>
-<span class="fc" id="L31">    }</span>
+<span class="fc" id="L34">    public BatchController(SendJobsRemindersBatchRunner jobsRemindersBatchRunner, UsersJobsBatchResultMapper usersJobsBatchResultMapper) {</span>
+<span class="fc" id="L35">        this.sendJobsRemindersBatchRunner = jobsRemindersBatchRunner;</span>
+<span class="fc" id="L36">        this.usersJobsBatchResultMapper = usersJobsBatchResultMapper;</span>
+<span class="fc" id="L37">    }</span>
 
     @PostMapping(&quot;/jobs-reminders-batch&quot;)
     public UsersJobsBatchExecutionResultResponse runJobsReminders() {
-<span class="fc" id="L35">        return usersJobsBatchResultMapper.toResponse(sendJobsRemindersBatchRunner.run());</span>
+<span class="fc" id="L41">        Instant start = Instant.now();</span>
+<span class="fc" id="L42">        UsersJobsBatchExecutionResult result = sendJobsRemindersBatchRunner.run();</span>
+<span class="fc" id="L43">        Instant end = Instant.now();</span>
+<span class="fc" id="L44">        log.info(&quot;Job reminders run by http, started at {}, ended at {} (took {} ms}&quot;, start, end, Duration.between(start, end).toMillis());</span>
+<span class="fc" id="L45">        return usersJobsBatchResultMapper.toResponse(result);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
