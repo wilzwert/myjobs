@@ -4,7 +4,6 @@ security:
     secure: true
 
 spring:
-  mail.properties.mail.debug: false
   data:
     mongodb:
       uri: mongodb+srv://${MONGODB_USERNAME:mongouser}:${MONGODB_PASSWORD:mongopwd}@${MONGODB_HOST:localhost}/${MONGODB_DATABASE:myjobs}?retryWrites=true&w=majority
