@@ -17,7 +17,7 @@ spring:
       mime:
         charset: UTF-8
       mail:
-        debug: false
+        debug: ${MAIL_DEBUG:false}
         smtp:
           auth: ${MAIL_SMTP_AUTH:false}
           starttls:
