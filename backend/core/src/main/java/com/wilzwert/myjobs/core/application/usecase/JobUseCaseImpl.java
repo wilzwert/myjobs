@@ -71,7 +71,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
             throw new UserNotFoundException();
         }
 
-        command = sanitizeCommandFields(command, List.of("title", "company", "description", "profile", "salary"));
+        command = sanitizeCommandFields(command, List.of("title", "company", "description", "profile", "comment", "salary"));
 
         Job jobToCreate = Job.create(
                 Job.builder()
@@ -80,6 +80,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
                 .company(command.company())
                 .description(command.description())
                 .profile(command.profile())
+                .comment(command.comment())
                 .salary(command.salary())
                 .userId(user.get().getId())
         );
@@ -165,9 +166,9 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         }
 
         Job job = foundJob.get();
-        command = sanitizeCommandFields(command, List.of("title", "company", "description", "profile", "salary"));
+        command = sanitizeCommandFields(command, List.of("title", "company", "description", "profile", "comment", "salary"));
 
-        User updatedUser = user.updateJob(job, command.url(), command.title(), command.company(), command.description(), command.profile(), command.salary());
+        User updatedUser = user.updateJob(job, command.url(), command.title(), command.company(), command.description(), command.profile(), command.comment(), command.salary());
         // soft reload the updatedJob in the loaded collection
         Job updatedJob = updatedUser.getJobById(job.getId()).orElseThrow(() -> new DomainException(ErrorCode.UNEXPECTED_ERROR));
 

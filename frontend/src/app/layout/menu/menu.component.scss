@@ -51,7 +51,8 @@ mat-toolbar {
 }
 
 ::ng-deep .nav-menu {
-    width: 200px;
+    width: 280px;
+    max-width: 90vw;
     height: 60vh;
     box-shadow: -2px 0 5px rgba(0, 0, 0, 0.3);
     z-index: 20;

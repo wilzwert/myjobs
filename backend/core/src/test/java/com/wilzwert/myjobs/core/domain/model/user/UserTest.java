@@ -30,8 +30,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UserTest {
 
-    private User testUser;
-
     @Test
     void whenInvalid_thenUserBuildShouldThrowValidationException() {
         User.Builder builder = User.builder();
@@ -313,6 +311,7 @@ class UserTest {
                 .company("Company")
                 .description("Job description")
                 .profile("Job profile")
+                .comment("Job comment")
                 .salary("TBD")
                 .userId(userId)
                 .createdAt(jobCreatedAt)
@@ -335,7 +334,7 @@ class UserTest {
                 .build();
 
         Instant before = Instant.now();
-        User updatedUser = user.updateJob(job,"http://www.example.com/updated", "Job updated title", "Updated company", "Job updated description", "Job updated profile", "Job updated salary");
+        User updatedUser = user.updateJob(job,"http://www.example.com/updated", "Job updated title", "Updated company", "Job updated description", "Job updated profile", "Job updated comment", "Job updated salary");
         Instant after = Instant.now();
 
         assertNotNull(updatedUser);
@@ -351,6 +350,7 @@ class UserTest {
         assertEquals("Updated company", updatedJob.getCompany());
         assertEquals("Job updated description", updatedJob.getDescription());
         assertEquals("Job updated profile", updatedJob.getProfile());
+        assertEquals("Job updated comment", updatedJob.getComment());
         assertEquals("Job updated salary", updatedJob.getSalary());
         Instant updatedAt = updatedJob.getUpdatedAt();
         assertTrue(updatedAt.equals(before) || updatedAt.equals(after) || updatedAt.isAfter(before) && updatedAt.isBefore(after));

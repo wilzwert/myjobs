@@ -1,6 +1,5 @@
-package com.wilzwert.myjobs.core.domain.command;
+package com.wilzwert.myjobs.core.domain.model.job.command;
 
-import com.wilzwert.myjobs.core.domain.model.job.command.CreateJobCommand;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import org.junit.jupiter.api.Test;
 
@@ -22,6 +21,7 @@ class CreateJobCommandTest {
                 "https://example.com",
                 "Job description",
                 "Job profile",
+                "Job comment",
                 "100k",
                 userId
         );
@@ -46,6 +46,7 @@ class CreateJobCommandTest {
                 "https://example.com",
                 "Job description",
                 "Job profile",
+                "Job comment",
                 "100k",
                 userId
         );
@@ -56,6 +57,7 @@ class CreateJobCommandTest {
                 .url("https://example.com/changed")
                 .description("Changed description")
                 .profile("Changed profile")
+                .comment("Changed comment")
                 .salary("Changed salary")
                 .build();
 
@@ -64,6 +66,7 @@ class CreateJobCommandTest {
         assertEquals("https://example.com/changed", command.url());
         assertEquals("Changed description", command.description());
         assertEquals("Changed profile", command.profile());
+        assertEquals("Changed comment", command.comment());
         assertEquals("Changed salary", command.salary());
         assertEquals(userId, command.userId());
     }

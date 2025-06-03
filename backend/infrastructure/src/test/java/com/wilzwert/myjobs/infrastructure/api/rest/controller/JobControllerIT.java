@@ -267,6 +267,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             createJobRequest.setCompany("My new company");
             createJobRequest.setDescription("My new job description");
             createJobRequest.setProfile("My new job profile");
+            createJobRequest.setComment("My new job comment");
             createJobRequest.setSalary("My new job salary");
 
             mockMvc.perform(post(JOBS_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(createJobRequest)))
@@ -302,6 +303,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             createJobRequest.setCompany("My new company");
             createJobRequest.setDescription("My new job description");
             createJobRequest.setProfile("My new job profile");
+            createJobRequest.setComment("My new job comment");
             createJobRequest.setSalary("My new job salary");
 
             Instant beforeCall = Instant.now();
@@ -328,6 +330,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(jobResponse.getCompany()).isEqualTo("My new company");
             assertThat(jobResponse.getDescription()).isEqualTo("My new job description");
             assertThat(jobResponse.getProfile()).isEqualTo("My new job profile");
+            assertThat(jobResponse.getComment()).isEqualTo("My new job comment");
             assertThat(jobResponse.getSalary()).isEqualTo("My new job salary");
 
             // let's check the update job is retrievable and consistent
@@ -337,6 +340,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(createdJob.getCompany()).isEqualTo("My new company");
             assertThat(createdJob.getDescription()).isEqualTo("My new job description");
             assertThat(createdJob.getProfile()).isEqualTo("My new job profile");
+            assertThat(createdJob.getComment()).isEqualTo("My new job comment");
             assertThat(createdJob.getSalary()).isEqualTo("My new job salary");
         }
     }
@@ -372,6 +376,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             updateJobRequest.setCompany("My company");
             updateJobRequest.setDescription("My job description [updated]");
             updateJobRequest.setProfile("My job profile [updated]");
+            updateJobRequest.setComment("My comment [updated]");
             updateJobRequest.setSalary("My job salary [updated]");
             mockMvc.perform(patch(JOBS_URL+"/11111111-1111-1111-1111-111111111111").cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateJobRequest)))
                     .andExpect(status().isNotFound());
@@ -406,6 +411,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             updateJobRequest.setCompany("My company");
             updateJobRequest.setDescription("My job description [updated]");
             updateJobRequest.setProfile("My job profile [updated]");
+            updateJobRequest.setComment("My comment [updated]");
             updateJobRequest.setSalary("My job salary [updated]");
 
             Instant beforeCall = Instant.now();
@@ -428,6 +434,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(jobResponse.getCompany()).isEqualTo("My company");
             assertThat(jobResponse.getDescription()).isEqualTo("My job description [updated]");
             assertThat(jobResponse.getProfile()).isEqualTo("My job profile [updated]");
+            assertThat(jobResponse.getComment()).isEqualTo("My comment [updated]");
             assertThat(jobResponse.getSalary()).isEqualTo("My job salary [updated]");
 
 
@@ -438,6 +445,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(updatedJob.getCompany()).isEqualTo("My company");
             assertThat(updatedJob.getDescription()).isEqualTo("My job description [updated]");
             assertThat(updatedJob.getProfile()).isEqualTo("My job profile [updated]");
+            assertThat(updatedJob.getComment()).isEqualTo("My comment [updated]");
             assertThat(updatedJob.getSalary()).isEqualTo("My job salary [updated]");
         }
     }

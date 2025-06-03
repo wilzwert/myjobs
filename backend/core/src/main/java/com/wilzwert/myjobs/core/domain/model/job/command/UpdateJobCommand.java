@@ -9,7 +9,7 @@ import com.wilzwert.myjobs.core.domain.model.user.UserId;
  * @author Wilhelm Zwertvaegher
  */
 
-public record UpdateJobCommand(JobId jobId, UserId userId, String title, String company, String url, String description, String profile, String salary) {
+public record UpdateJobCommand(JobId jobId, UserId userId, String title, String company, String url, String description, String profile, String comment, String salary) {
     public static class Builder {
         private JobId jobId;
         private UserId userId;
@@ -18,6 +18,7 @@ public record UpdateJobCommand(JobId jobId, UserId userId, String title, String 
         private String url;
         private String description;
         private String profile;
+        private String comment;
         private String salary;
 
         public Builder() {}
@@ -30,6 +31,7 @@ public record UpdateJobCommand(JobId jobId, UserId userId, String title, String 
             this.url = command.url();
             this.description = command.description();
             this.profile = command.profile();
+            this.comment = command.comment();
             this.salary = command.salary();
         }
 
@@ -64,6 +66,11 @@ public record UpdateJobCommand(JobId jobId, UserId userId, String title, String 
             return this;
         }
 
+        public UpdateJobCommand.Builder comment(String comment) {
+            this.comment = comment;
+            return this;
+        }
+
         public UpdateJobCommand.Builder salary(String salary) {
             this.salary = salary;
             return this;
@@ -75,7 +82,7 @@ public record UpdateJobCommand(JobId jobId, UserId userId, String title, String 
         }
 
         public UpdateJobCommand build() {
-            return new UpdateJobCommand(jobId, userId, title, company, url, description, profile, salary);
+            return new UpdateJobCommand(jobId, userId, title, company, url, description, profile, comment, salary);
         }
     }
 }

@@ -253,13 +253,15 @@ class JobUseCaseImplTest {
                     .company("Company 3")
                     .url("https://www.example.com/new-job")
                     .description("New job description")
+                    .profile("New job profile")
+                    .comment("New job comment")
                     .build();
 
             assertDoesNotThrow(() -> underTest.createJob(command));
             verify(userDataManager).findById(any(UserId.class));
             verify(userDataManager).saveUserAndJob(userArgumentCaptor.capture(), jobArgumentCaptor.capture());
             // sanitizer should have been called rot title, company, description
-            verify(htmlSanitizer, times(3)).sanitize(any(String.class));
+            verify(htmlSanitizer, times(5)).sanitize(any(String.class));
 
             User user = userArgumentCaptor.getValue();
             assertNotNull(user);
@@ -269,6 +271,8 @@ class JobUseCaseImplTest {
             assertNotNull(job);
             assertEquals("New job", job.getTitle());
             assertEquals("New job description", job.getDescription());
+            assertEquals("New job profile", job.getProfile());
+            assertEquals("New job comment", job.getComment());
             assertEquals("https://www.example.com/new-job", job.getUrl());
             assertEquals("Company 3", job.getCompany());
         }
@@ -340,6 +344,7 @@ class JobUseCaseImplTest {
                     .company("Updated company")
                     .description("Updated job description")
                     .profile("Updated job profile")
+                    .comment("Updated job comment")
                     .salary("Updated job salary")
                     .build();
 
@@ -359,6 +364,7 @@ class JobUseCaseImplTest {
             assertEquals("http://www.example.com/new-job", updatedJob.getUrl());
             assertEquals("Updated job description", updatedJob.getDescription());
             assertEquals("Updated job profile", updatedJob.getProfile());
+            assertEquals("Updated job comment", updatedJob.getComment());
             assertEquals("Updated job salary", updatedJob.getSalary());
             assertTrue(updatedJob.getUpdatedAt().getEpochSecond() - Instant.now().getEpochSecond() < 1);
         }

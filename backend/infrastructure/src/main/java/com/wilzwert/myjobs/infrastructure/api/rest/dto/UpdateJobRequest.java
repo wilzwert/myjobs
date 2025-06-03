@@ -27,5 +27,7 @@ public class UpdateJobRequest {
 
     private String profile;
 
+    private String comment;
+
     private String salary;
 }

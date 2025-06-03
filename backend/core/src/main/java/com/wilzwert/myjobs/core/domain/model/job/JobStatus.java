@@ -11,11 +11,14 @@ public enum JobStatus {
     RELAUNCHED,
     APPLICANT_REFUSED,
     COMPANY_REFUSED,
-    ACCEPTED;
+    EXPIRED,
+    CANCELLED,
+    ACCEPTED,
+    HIRED;
 
-    private static final List<JobStatus> active = List.of(CREATED, PENDING, RELAUNCHED);
+    private static final List<JobStatus> active = List.of(CREATED, PENDING, RELAUNCHED, ACCEPTED);
 
-    private static final List<JobStatus> inactive = List.of(APPLICANT_REFUSED, COMPANY_REFUSED, ACCEPTED);
+    private static final List<JobStatus> inactive = List.of(APPLICANT_REFUSED, COMPANY_REFUSED, EXPIRED, CANCELLED, HIRED);
 
     public static List<JobStatus> activeStatuses() {
         return active;
@@ -24,6 +27,4 @@ public enum JobStatus {
     public static List<JobStatus> inactiveStatuses() {
         return inactive;
     }
-
-
 }

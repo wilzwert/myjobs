@@ -23,6 +23,7 @@ public class JobResponse {
     private String url;
     private String description;
     private String profile;
+    private String comment;
     private String salary;
     private JobStatus status;
     private JobRatingResponse rating;

@@ -31,6 +31,8 @@ public class Job extends DomainEntity<JobId> {
 
     private final String profile;
 
+    private final String comment;
+
     private final String salary;
 
     private final JobRating rating;
@@ -89,6 +91,8 @@ public class Job extends DomainEntity<JobId> {
 
         private String profile;
 
+        private String comment;
+
         private String salary;
 
         private JobRating rating;
@@ -118,6 +122,7 @@ public class Job extends DomainEntity<JobId> {
             this.company = job.getCompany();
             this.description = job.getDescription();
             this.profile = job.getProfile();
+            this.comment = job.getComment();
             this.salary = job.getSalary();
             this.rating = job.getRating();
             this.createdAt = job.getCreatedAt();
@@ -161,6 +166,11 @@ public class Job extends DomainEntity<JobId> {
 
         public Builder profile(String profile) {
             this.profile = profile;
+            return this;
+        }
+
+        public Builder comment(String comment) {
+            this.comment = comment;
             return this;
         }
 
@@ -233,6 +243,7 @@ public class Job extends DomainEntity<JobId> {
         this.company = builder.company;
         this.description = builder.description;
         this.profile = builder.profile;
+        this.comment = builder.comment;
         this.salary = builder.salary;
         this.rating = builder.rating != null ? builder.rating : JobRating.of(0);
         this.createdAt = builder.createdAt != null ? builder.createdAt : Instant.now();
@@ -403,6 +414,8 @@ public class Job extends DomainEntity<JobId> {
         return profile;
     }
 
+    public String getComment() { return comment; }
+
     public String getSalary() { return salary; }
 
     public JobRating getRating() {
@@ -436,5 +449,4 @@ public class Job extends DomainEntity<JobId> {
     public String toString() {
         return getId().toString()+ " [userId="+getUserId().toString()+",title="+getTitle() + "]";
     }
-
 }

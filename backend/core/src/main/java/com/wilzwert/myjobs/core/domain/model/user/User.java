@@ -333,7 +333,7 @@ public class User extends DomainEntity<UserId> {
         return getJobs().stream().filter(j -> j.getUrl().equals(url)).findFirst();
     }
 
-    public User updateJob(Job job, String url, String title, String company, String description, String profile, String salary) {
+    public User updateJob(Job job, String url, String title, String company, String description, String profile, String comment, String salary) {
         requireFull();
 
         if(!jobs.contains(job)) {
@@ -353,6 +353,7 @@ public class User extends DomainEntity<UserId> {
                     .company(company)
                     .description(description)
                     .profile(profile)
+                    .comment(comment)
                     .salary(salary)
                     .updatedAt(Instant.now())
                     .build()
