@@ -2,6 +2,7 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
+import com.wilzwert.myjobs.core.domain.model.job.JobStatusFilter;
 import com.wilzwert.myjobs.core.domain.model.user.Lang;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
@@ -23,6 +24,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -283,9 +285,11 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
 
             assertThat(summary).isNotNull();
             assertThat(summary.getActiveJobsCount()).isEqualTo(3);
-            assertThat(summary.getInactiveJobsCount()).isEqualTo(0);
-            assertThat(summary.getJobsCount()).isEqualTo(3);
-            assertThat(summary.getJobStatuses()).containsExactlyInAnyOrderEntriesOf(Map.of(JobStatus.PENDING, 1, JobStatus.CREATED, 2));
+            assertThat(summary.getInactiveJobsCount()).isEqualTo(1);
+            assertThat(summary.getJobsCount()).isEqualTo(4);
+            assertThat(summary.getLateJobsCount()).isEqualTo(3);
+            assertThat(summary.getJobStatuses()).containsExactlyInAnyOrderEntriesOf(Map.of(JobStatus.PENDING, 1, JobStatus.CREATED, 2, JobStatus.COMPANY_REFUSED, 1));
+            assertThat(summary.getUsableJobStatusFilters()).containsAll(List.of(JobStatusFilter.ACTIVE, JobStatusFilter.INACTIVE, JobStatusFilter.LATE));
         }
     }
 }

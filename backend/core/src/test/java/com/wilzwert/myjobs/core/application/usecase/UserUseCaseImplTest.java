@@ -1,7 +1,9 @@
 package com.wilzwert.myjobs.core.application.usecase;
 
 
+import com.wilzwert.myjobs.core.domain.model.job.JobState;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
+import com.wilzwert.myjobs.core.domain.model.job.JobStatusFilter;
 import com.wilzwert.myjobs.core.domain.model.user.UserSummary;
 import com.wilzwert.myjobs.core.domain.model.user.command.UpdateUserCommand;
 import com.wilzwert.myjobs.core.domain.model.user.EmailStatus;
@@ -15,11 +17,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -45,6 +48,7 @@ class UserUseCaseImplTest {
                 .password("password")
                 .firstName("firstName")
                 .lastName("lastName")
+                .jobFollowUpReminderDays(3)
                 .jobs(Collections.emptyList())
                 .build();
     }
@@ -106,20 +110,23 @@ class UserUseCaseImplTest {
     void shouldGetUserSummary() {
         UserId userId = UserId.generate();
         User user = getValidTestUser(userId);
-        List<JobStatus> statuses = List.of(
-            JobStatus.CREATED,
-            JobStatus.CREATED,
-            JobStatus.PENDING,
-            JobStatus.ACCEPTED,
-            JobStatus.APPLICANT_REFUSED,
-            JobStatus.APPLICANT_REFUSED,
-            JobStatus.APPLICANT_REFUSED,
-            JobStatus.CANCELLED,
-            JobStatus.EXPIRED
+
+        Instant lateInstant = Instant.now().minusSeconds(86_400*4);
+
+        List<JobState> states = List.of(
+            new JobState(JobStatus.CREATED, Instant.now(), Instant.now()),
+            new JobState(JobStatus.CREATED, lateInstant, lateInstant),
+            new JobState(JobStatus.PENDING, lateInstant, lateInstant),
+            new JobState(JobStatus.ACCEPTED, Instant.now(), Instant.now()),
+            new JobState(JobStatus.APPLICANT_REFUSED, Instant.now(), Instant.now()),
+            new JobState(JobStatus.APPLICANT_REFUSED, Instant.now(), Instant.now()),
+            new JobState(JobStatus.APPLICANT_REFUSED, Instant.now(), Instant.now()),
+            new JobState(JobStatus.CANCELLED, Instant.now(), Instant.now()),
+            new JobState(JobStatus.EXPIRED, Instant.now(), Instant.now())
         );
 
         when(userDataManager.findMinimalById(userId)).thenReturn(Optional.of(user));
-        when(userDataManager.getJobsStatuses(user)).thenReturn(statuses);
+        when(userDataManager.getJobsState(user)).thenReturn(states);
 
         UserSummary result = underTest.getUserSummary(userId);
 
@@ -127,5 +134,11 @@ class UserUseCaseImplTest {
         assertEquals(4, result.getActiveJobsCount());
         assertEquals(5, result.getInactiveJobsCount());
         assertEquals(6, result.getJobStatuses().size());
+        assertEquals(2, result.getLateJobsCount());
+        // we expect all JobStatusFilter to be present : ACTIVE, INACTIVE, LATE
+        assertEquals(3, result.getUsableJobStatusFilters().size());
+        assertTrue(result.getUsableJobStatusFilters().contains(JobStatusFilter.ACTIVE));
+        assertTrue(result.getUsableJobStatusFilters().contains(JobStatusFilter.INACTIVE));
+        assertTrue(result.getUsableJobStatusFilters().contains(JobStatusFilter.LATE));
     }
 }

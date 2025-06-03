@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.core.application.usecase;
 
 
-import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
+import com.wilzwert.myjobs.core.domain.model.job.JobState;
 import com.wilzwert.myjobs.core.domain.model.user.UserSummary;
 import com.wilzwert.myjobs.core.domain.model.user.UserView;
 import com.wilzwert.myjobs.core.domain.model.user.collector.UserSummaryCollector;
@@ -84,10 +84,10 @@ public class UserUseCaseImpl implements SendVerificationEmailUseCase, GetUserVie
     public UserSummary getUserSummary(UserId userId) {
         User user = userDataManager.findMinimalById(userId).orElseThrow(UserNotFoundException::new);
 
-        List<JobStatus> jobStatuses = userDataManager.getJobsStatuses(user);
+        List<JobState> jobStatuses = userDataManager.getJobsState(user);
         System.out.println(jobStatuses);
-        System.out.println(jobStatuses.stream().collect(new UserSummaryCollector()));
+        System.out.println(jobStatuses.stream().collect(new UserSummaryCollector(user)));
 
-        return jobStatuses.stream().collect(new UserSummaryCollector());
+        return jobStatuses.stream().collect(new UserSummaryCollector(user));
     }
 }

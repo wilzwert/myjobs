@@ -14,10 +14,7 @@ import com.wilzwert.myjobs.core.domain.model.attachment.command.DownloadAttachme
 import com.wilzwert.myjobs.core.domain.model.attachment.exception.AttachmentNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.attachment.ports.driving.DownloadAttachmentUseCase;
 import com.wilzwert.myjobs.core.domain.model.attachment.ports.driving.GetAttachmentFileInfoUseCase;
-import com.wilzwert.myjobs.core.domain.model.job.EnrichedJob;
-import com.wilzwert.myjobs.core.domain.model.job.Job;
-import com.wilzwert.myjobs.core.domain.model.job.JobId;
-import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
+import com.wilzwert.myjobs.core.domain.model.job.*;
 import com.wilzwert.myjobs.core.domain.model.job.command.*;
 import com.wilzwert.myjobs.core.domain.model.job.exception.JobNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobDataManager;
@@ -121,7 +118,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
     }
 
     @Override
-    public DomainPage<EnrichedJob> getUserJobs(UserId userId, int page, int size, JobStatus status, boolean filterLate, String sort) {
+    public DomainPage<EnrichedJob> getUserJobs(UserId userId, int page, int size, JobStatus status, JobStatusFilter statusFilter, String sort) {
         Optional<User> foundUser = userDataManager.findById(userId);
         if(foundUser.isEmpty()) {
             throw new UserNotFoundException();
@@ -132,17 +129,24 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         List<DomainSpecification> specs = new ArrayList<>(List.of(DomainSpecification.eq("userId", user.getId(), UserId.class)));
 
         DomainPage<Job> jobs;
-        if(filterLate) {
+
+        if(statusFilter != null) {
             // threshold instant : jobs not updated since that instant are considered late
-            Instant nowMinusReminderDays = Instant.now().minus(user.getJobFollowUpReminderDays(), ChronoUnit.DAYS);
-            specs.add(DomainSpecification.in("status", JobStatus.activeStatuses()));
-            specs.add(DomainSpecification.lt("statusUpdatedAt", nowMinusReminderDays));
-        }
-        else {
-            if( status != null) {
-                specs.add(DomainSpecification.eq("status", status, JobStatus.class));
+            switch (statusFilter) {
+                case ACTIVE: specs.add(DomainSpecification.in("status", JobStatus.activeStatuses())); break;
+                case INACTIVE: specs.add(DomainSpecification.in("status", JobStatus.inactiveStatuses())); break;
+                case LATE:
+                    Instant nowMinusReminderDays = Instant.now().minus(user.getJobFollowUpReminderDays(), ChronoUnit.DAYS);
+                    specs.add(DomainSpecification.in("status", JobStatus.activeStatuses()));
+                    specs.add(DomainSpecification.lt("statusUpdatedAt", nowMinusReminderDays));
+                    break;
             }
         }
+
+        if( status != null) {
+            specs.add(DomainSpecification.eq("status", status, JobStatus.class));
+        }
+
         var finalSpecs = DomainSpecification.and(specs);
         if(sort != null && !sort.isEmpty()) {
             DomainSpecification.applySort(finalSpecs, DomainSpecification.sort(sort));

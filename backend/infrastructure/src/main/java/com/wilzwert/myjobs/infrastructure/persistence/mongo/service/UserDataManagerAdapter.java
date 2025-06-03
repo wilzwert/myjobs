@@ -3,7 +3,7 @@ package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 
 import com.mongodb.bulk.BulkWriteResult;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
-import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
+import com.wilzwert.myjobs.core.domain.model.job.JobState;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.user.UserView;
@@ -211,11 +211,11 @@ public class UserDataManagerAdapter implements UserDataManager {
     }
 
     @Override
-    public List<JobStatus> getJobsStatuses(User user) {
+    public List<JobState> getJobsState(User user) {
         Query query = new Query();
         query.addCriteria(Criteria.where("userId").is(user.getId().value()));
-        query.fields().include("status");
+        query.fields().include("status").include("updatedAt").include("statusUpdatedAt");
         List<MongoJob> projection = mongoTemplate.find(query, MongoJob.class);
-        return projection.stream().map(MongoJob::getStatus).collect(Collectors.toList());
+        return projection.stream().map(j -> new JobState(j.getStatus(), j.getUpdatedAt(), j.getStatusUpdatedAt())).collect(Collectors.toList());
     }
 }

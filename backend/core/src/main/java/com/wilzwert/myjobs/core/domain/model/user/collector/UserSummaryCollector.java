@@ -1,17 +1,19 @@
 package com.wilzwert.myjobs.core.domain.model.user.collector;
 
 
+import com.wilzwert.myjobs.core.domain.model.job.JobState;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
+import com.wilzwert.myjobs.core.domain.model.job.JobStatusFilter;
+import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserSummary;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -19,36 +21,74 @@ import java.util.stream.Collector;
  * Time:09:51
  */
 
-public class UserSummaryCollector implements Collector<JobStatus, Map<JobStatus, Integer>, UserSummary> {
+public class UserSummaryCollector implements Collector<JobState, Map<JobStatus, List<JobState>>, UserSummary> {
+
+
+    private final User user;
 
     private int jobsCount = 0;
 
+    public UserSummaryCollector(User user) {
+        this.user = user;
+    }
+
     @Override
-    public Supplier<Map<JobStatus, Integer>> supplier() {
+    public Supplier<Map<JobStatus, List<JobState>>> supplier() {
         return HashMap::new;
     }
 
     @Override
-    public BiConsumer<Map<JobStatus, Integer>, JobStatus> accumulator() {
-        return (statusesToCount, jobStatus) -> {
+    public BiConsumer<Map<JobStatus, List<JobState>>, JobState> accumulator() {
+        return (statusesToCount, jobState) -> {
             jobsCount++;
-            statusesToCount.compute(jobStatus, (jobStatus1, integer) -> integer == null ? 1 : integer + 1);
+            statusesToCount.computeIfAbsent(jobState.status(), jobStatus -> new ArrayList<>() ).add(jobState);
         };
     }
 
     @Override
-    public BinaryOperator<Map<JobStatus, Integer>> combiner() {
+    public BinaryOperator<Map<JobStatus, List<JobState>>> combiner() {
         return (set1, set2) -> { throw new UnsupportedOperationException("Parallel processing is not supported"); };
     }
 
     @Override
-    public Function<Map<JobStatus, Integer>, UserSummary> finisher() {
-        return (statusToCount) -> {
-            int activeJobsCount = statusToCount.entrySet().stream()
+    public Function<Map<JobStatus, List<JobState>>, UserSummary> finisher() {
+        return (statusToStates) -> {
+            // FIXME : it may actually be better to loop through statusToStates to compute useful data
+            // than to use numerous streams
+
+            // map statuses to jobs count
+            Map<JobStatus, Integer> statusToCount = statusToStates.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size()));
+
+            // compute active, inactive jobs counts
+            int activeJobsCount = statusToStates.entrySet().stream()
                    .filter(e -> JobStatus.activeStatuses().contains(e.getKey()))
-                   .mapToInt(Map.Entry::getValue).sum();
+                   .mapToInt(e -> e.getValue().size()).sum();
             int inactiveJobsCount = jobsCount - activeJobsCount;
-            return new UserSummary(jobsCount, activeJobsCount, inactiveJobsCount, statusToCount);
+
+            // compute usable filters
+            Set<JobStatusFilter> filters = new HashSet<>();
+            if(statusToStates.entrySet().stream().anyMatch(e -> JobStatus.activeStatuses().contains(e.getKey()))) {
+                filters.add(JobStatusFilter.ACTIVE);
+            }
+            if(statusToStates.entrySet().stream().anyMatch(e -> JobStatus.inactiveStatuses().contains(e.getKey()))) {
+                filters.add(JobStatusFilter.INACTIVE);
+            }
+
+            long lateJobsCount = statusToStates.entrySet().stream()
+                    .filter(e -> JobStatus.activeStatuses().contains(e.getKey()))
+                    .flatMap(jobStatusListEntry -> jobStatusListEntry.getValue().stream())
+                    .filter(state -> user.isJobLate(state.statusUpdatedAt()))
+                    .count();
+
+            if(lateJobsCount > Integer.MAX_VALUE) {
+                lateJobsCount = Integer.MAX_VALUE;
+            }
+
+            if(lateJobsCount > 0) {
+                filters.add(JobStatusFilter.LATE);
+            }
+
+            return new UserSummary(jobsCount, activeJobsCount, inactiveJobsCount, (int)lateJobsCount, statusToCount, filters);
         };
     }
 

@@ -95,4 +95,38 @@
       }
     ],
     "attachments": []
-  }]
+  },
+  {
+    "id": "98989898-9999-9999-9999-123456789012",
+    "url": "http://www.example.com/my-refused-job",
+    "status": "COMPANY_REFUSED",
+    "title": "My refused job",
+    "company": "Google",
+    "description": "This is the job description for my company refused job",
+    "profile": "This is the job profile for my company refused  job",
+    "comment": "This is the comment for my company refused  job",
+    "rating": 1,
+    "createdAt": "2025-04-27T18:25:31.160Z",
+    "updatedAt": "2025-04-27T18:25:31.162Z",
+    "statusUpdatedAt": "2025-04-27T18:25:31.160Z",
+    "userId": "abcd1234-1234-1234-1234-123456789012",
+    "activities": [
+      {
+        "id": "aa999999-9999-9999-9990-123456789012",
+        "type": "CREATION",
+        "comment": "",
+        "createdAt": "2025-04-26T18:25:31.160Z",
+        "updatedAt": "2025-04-26T18:25:31.160Z"
+      },
+      {
+        "id": "ab999999-9999-9999-9990-123456789012",
+        "type": "COMPANY_REFUSAL",
+        "comment": "",
+        "createdAt": "2025-05-26T18:25:31.160Z",
+        "updatedAt": "2025-05-26T18:25:31.160Z"
+      }
+    ],
+    "attachments": []
+  }
+
+]

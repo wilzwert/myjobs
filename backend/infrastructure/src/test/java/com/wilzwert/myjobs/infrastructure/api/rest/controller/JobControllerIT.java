@@ -76,26 +76,25 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
                     .andExpect(status().isOk())
                     .andReturn();
 
-            RestPage<JobResponse> jobResponseRestPage = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<>() {
-            });
+            RestPage<JobResponse> jobResponseRestPage = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<>() {});
             assertThat(jobResponseRestPage).isNotNull();
             assertThat(jobResponseRestPage.getContent()).isNotNull();
-            assertThat(jobResponseRestPage.getContent()).hasSize(3);
-            assertThat(jobResponseRestPage.getTotalElementsCount()).isEqualTo(3);
+            assertThat(jobResponseRestPage.getContent()).hasSize(4);
+            assertThat(jobResponseRestPage.getTotalElementsCount()).isEqualTo(4);
             assertThat(jobResponseRestPage.getPageSize()).isEqualTo(10);
             assertThat(jobResponseRestPage.getPagesCount()).isEqualTo(1);
             assertThat(jobResponseRestPage.getCurrentPage()).isZero();
 
             List<String> titles = jobResponseRestPage.getContent().stream().map(JobResponse::getTitle).toList();
             // by default, we expect jobs sorted by creation date desc
-            assertThat(titles).containsExactly("My third job", "My second job", "My job");
+            assertThat(titles).containsExactly("My refused job", "My third job", "My second job", "My job");
         }
 
         @Test
         void shouldGetJobsWithUserPagination() throws Exception {
             MvcResult mvcResult = mockMvc.perform(
                     get(JOBS_URL).cookie(accessTokenCookie)
-                            .param("page", "2") // third page
+                            .param("page", "3") // fourth page
                             .param("itemsPerPage", "1") // 1 Job per page
                 )
                 .andExpect(status().isOk())
@@ -105,10 +104,10 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(jobResponseRestPage).isNotNull();
             assertThat(jobResponseRestPage.getContent()).isNotNull();
             assertThat(jobResponseRestPage.getContent()).hasSize(1);
-            assertThat(jobResponseRestPage.getTotalElementsCount()).isEqualTo(3);
+            assertThat(jobResponseRestPage.getTotalElementsCount()).isEqualTo(4);
             assertThat(jobResponseRestPage.getPageSize()).isEqualTo(1);
-            assertThat(jobResponseRestPage.getCurrentPage()).isEqualTo(2);
-            assertThat(jobResponseRestPage.getPagesCount()).isEqualTo(3);
+            assertThat(jobResponseRestPage.getCurrentPage()).isEqualTo(3);
+            assertThat(jobResponseRestPage.getPagesCount()).isEqualTo(4);
 
             List<String> titles = jobResponseRestPage.getContent().stream().map(JobResponse::getTitle).toList();
             // by default, jobs are sorted by creation date desc
@@ -128,14 +127,14 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             RestPage<JobResponse> jobResponseRestPage = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<RestPage<JobResponse>>() {});
             assertThat(jobResponseRestPage).isNotNull();
             assertThat(jobResponseRestPage.getContent()).isNotNull();
-            assertThat(jobResponseRestPage.getContent()).hasSize(3);
-            assertThat(jobResponseRestPage.getTotalElementsCount()).isEqualTo(3);
+            assertThat(jobResponseRestPage.getContent()).hasSize(4);
+            assertThat(jobResponseRestPage.getTotalElementsCount()).isEqualTo(4);
             assertThat(jobResponseRestPage.getPageSize()).isEqualTo(10);
             assertThat(jobResponseRestPage.getPagesCount()).isEqualTo(1);
             assertThat(jobResponseRestPage.getCurrentPage()).isZero();
 
             List<String> titles = jobResponseRestPage.getContent().stream().map(JobResponse::getTitle).toList();
-            assertThat(titles).containsExactly("My third job", "My job", "My second job");
+            assertThat(titles).containsExactly("My third job", "My job", "My refused job", "My second job");
         }
 
         @Test
@@ -150,14 +149,14 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             RestPage<JobResponse> jobResponseRestPage = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<RestPage<JobResponse>>() {});
             assertThat(jobResponseRestPage).isNotNull();
             assertThat(jobResponseRestPage.getContent()).isNotNull();
-            assertThat(jobResponseRestPage.getContent()).hasSize(3);
-            assertThat(jobResponseRestPage.getTotalElementsCount()).isEqualTo(3);
+            assertThat(jobResponseRestPage.getContent()).hasSize(4);
+            assertThat(jobResponseRestPage.getTotalElementsCount()).isEqualTo(4);
             assertThat(jobResponseRestPage.getPageSize()).isEqualTo(10);
             assertThat(jobResponseRestPage.getPagesCount()).isEqualTo(1);
             assertThat(jobResponseRestPage.getCurrentPage()).isZero();
 
             List<String> titles = jobResponseRestPage.getContent().stream().map(JobResponse::getTitle).toList();
-            assertThat(titles).containsExactly("My job", "My second job", "My third job");
+            assertThat(titles).containsExactly("My job", "My second job", "My third job", "My refused job");
         }
 
         @Test
@@ -180,6 +179,28 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
 
             List<String> titles = jobResponseRestPage.getContent().stream().map(JobResponse::getTitle).toList();
             assertThat(titles).containsExactly("My second job");
+        }
+
+        @Test
+        void shouldGetJobsFilteredByStatusFilter() throws Exception {
+            MvcResult mvcResult = mockMvc.perform(
+                            get(JOBS_URL).cookie(accessTokenCookie)
+                                    .param("statusFilter", "ACTIVE")
+                    )
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            RestPage<JobResponse> jobResponseRestPage = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<RestPage<JobResponse>>() {});
+            assertThat(jobResponseRestPage).isNotNull();
+            assertThat(jobResponseRestPage.getContent()).isNotNull();
+            assertThat(jobResponseRestPage.getContent()).hasSize(3);
+            assertThat(jobResponseRestPage.getTotalElementsCount()).isEqualTo(3);
+            assertThat(jobResponseRestPage.getPageSize()).isEqualTo(10);
+            assertThat(jobResponseRestPage.getPagesCount()).isEqualTo(1);
+            assertThat(jobResponseRestPage.getCurrentPage()).isZero();
+
+            List<String> titles = jobResponseRestPage.getContent().stream().map(JobResponse::getTitle).toList();
+            assertThat(titles).containsExactly("My third job", "My second job", "My job");
         }
 
         @Test

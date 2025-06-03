@@ -14,16 +14,13 @@ import com.wilzwert.myjobs.core.domain.model.attachment.command.DeleteAttachment
 import com.wilzwert.myjobs.core.domain.model.attachment.command.DownloadAttachmentCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.exception.AttachmentFileNotReadableException;
 import com.wilzwert.myjobs.core.domain.model.attachment.exception.AttachmentNotFoundException;
+import com.wilzwert.myjobs.core.domain.model.job.*;
 import com.wilzwert.myjobs.core.domain.model.job.command.CreateJobCommand;
 import com.wilzwert.myjobs.core.domain.model.job.command.DeleteJobCommand;
 import com.wilzwert.myjobs.core.domain.model.job.command.UpdateJobCommand;
 import com.wilzwert.myjobs.core.domain.model.job.exception.JobAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.model.job.exception.JobNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.user.exception.UserNotFoundException;
-import com.wilzwert.myjobs.core.domain.model.job.EnrichedJob;
-import com.wilzwert.myjobs.core.domain.model.job.Job;
-import com.wilzwert.myjobs.core.domain.model.job.JobId;
-import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobDataManager;
 import com.wilzwert.myjobs.core.domain.shared.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.User;
@@ -131,27 +128,36 @@ class JobUseCaseImplTest {
 
             UserId userId = new UserId(UUID.randomUUID());
 
-            assertThrows(UserNotFoundException.class, () -> underTest.getUserJobs(userId, 0, 10, JobStatus.PENDING, false, "date,desc"));
+            assertThrows(UserNotFoundException.class, () -> underTest.getUserJobs(userId, 0, 10, JobStatus.PENDING, null, "date,desc"));
         }
 
 
         @Test
-        void whenFilterLateTrue_thenShouldGetLateUserJobs() {
+        void whenFilterLate_thenShouldGetLateUserJobs() {
             DomainPage<Job> mockJobPage = DomainPage.builder(List.of(testFollowUpLateJob)).pageSize(1).currentPage(0).totalElementsCount(1).build();
 
             when(jobDataManager.findPaginated(any(), eq(0), eq(10))).thenReturn(mockJobPage);
 
-            DomainPage<EnrichedJob> result = underTest.getUserJobs(testUser.getId(), 0, 10, JobStatus.PENDING, true, "date,desc");
+            DomainPage<EnrichedJob> result = underTest.getUserJobs(testUser.getId(), 0, 10, JobStatus.PENDING, JobStatusFilter.LATE, "date,desc");
 
             // check specification passed to the jobDataManager
             verify(jobDataManager).findPaginated(
                     argThat(specification -> {
+                        System.out.println(specification);
                         // TODO we MUST check userId, filter late and sort specs
                         DomainSpecification.And spec = (DomainSpecification.And) specification;
-                        return spec.getSpecifications().size() == 3 &&
+                        System.out.println("Size is "+spec.getSpecifications().size());
+
+                        // specs include spec for JobStatus.PENDING + specs for the late filter
+                        return spec.getSpecifications().size() == 4 &&
+                                // user id
                                 spec.getSpecifications().getFirst() instanceof DomainSpecification.Eq &&
+                                // active statuses for late filter
                                 spec.getSpecifications().get(1) instanceof DomainSpecification.In<?> &&
-                                spec.getSpecifications().get(2) instanceof DomainSpecification.Lt<?>;
+                                // status update
+                                spec.getSpecifications().get(2) instanceof DomainSpecification.Lt<?> &&
+                                // JobStatus.PENDING
+                                spec.getSpecifications().get(3) instanceof DomainSpecification.Eq<?>;
 
                     }), eq(0), eq(10));
 
@@ -167,7 +173,7 @@ class JobUseCaseImplTest {
 
             when(jobDataManager.findPaginated(any(DomainSpecification.class), eq(0), eq(10))).thenReturn(mockJobPage);
 
-            DomainPage<EnrichedJob> result = underTest.getUserJobs(testUser.getId(), 0, 10, JobStatus.PENDING, false, "date");
+            DomainPage<EnrichedJob> result = underTest.getUserJobs(testUser.getId(), 0, 10, JobStatus.PENDING, null, "date");
 
             // TODO : check that the DomainSpecification is correctly built
             // as is, we only check that some spec has been built
@@ -185,7 +191,7 @@ class JobUseCaseImplTest {
             when(jobDataManager.findPaginated(any(DomainSpecification.class), eq(0), eq(10))).thenReturn(mockJobPage);
 
             // call test method
-            DomainPage<EnrichedJob> result = underTest.getUserJobs(testUser.getId(), 0, 10, JobStatus.PENDING, false, "date");
+            DomainPage<EnrichedJob> result = underTest.getUserJobs(testUser.getId(), 0, 10, JobStatus.PENDING, null, "date");
 
             // check result is enriched
             assertNotNull(result);

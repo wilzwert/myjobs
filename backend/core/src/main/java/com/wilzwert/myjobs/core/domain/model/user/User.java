@@ -255,6 +255,14 @@ public class User extends DomainEntity<UserId> {
         }
     }
 
+    public Boolean isJobLate(Instant updatedAt) {
+        if(jobFollowUpReminderDays == null) {
+            return false;
+        }
+        Instant maxInstant = Instant.now().minusSeconds((long) jobFollowUpReminderDays * 86_400);
+        return updatedAt.isBefore(maxInstant);
+    }
+
     private void requireFull() {
         requireLoadedProperty(jobs);
     }
