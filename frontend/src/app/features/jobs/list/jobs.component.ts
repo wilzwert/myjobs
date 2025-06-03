@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable, take, tap } from 'rxjs';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, KeyValuePipe } from '@angular/common';
 import { MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card';
 import { Page } from '../../../core/model/page.interface';
-import { Job, JobStatus } from '../../../core/model/job.interface';
+import { Job, JobStatus, JobStatusMeta } from '../../../core/model/job.interface';
 import { JobService } from '../../../core/services/job.service';
 import { ModalService } from '../../../core/services/modal.service';
 import { StatusLabelPipe } from '../../../core/pipe/status-label.pipe';
@@ -21,11 +21,13 @@ import { UserService } from '../../../core/services/user.service';
 import { MatIcon } from '@angular/material/icon';
 import { JobSummaryComponent } from '../job-summary/job-summary.component';
 import { ComponentInputDomainData } from '../../../core/model/component-input-data.interface';
+import { UserSummary } from '@app/core/model/user-summary.interface';
+import { StatusFilterLabelPipe } from '@app/core/pipe/status-filter-label.pipe';
 
 
 @Component({
   selector: 'app-jobs',
-  imports: [AsyncPipe, MatMenuModule, MatRippleModule, MatCardModule, MatPaginatorModule, MatIcon, JobSummaryComponent, StatusLabelPipe, MatButton, FormsModule, ReactiveFormsModule],
+  imports: [AsyncPipe, KeyValuePipe, MatMenuModule, MatRippleModule, MatCardModule, MatPaginatorModule, MatIcon, JobSummaryComponent, StatusLabelPipe, StatusFilterLabelPipe, MatButton, FormsModule, ReactiveFormsModule],
   providers: [{ provide: MatPaginatorIntl, useClass: CustomPaginatorIntl }],
   templateUrl: './jobs.component.html',
   styleUrl: './jobs.component.scss'
@@ -34,12 +36,13 @@ export class JobsComponent implements OnInit {
 
   public jobs$!: Observable<Page<Job>>;
   protected user$: Observable<User>;
+  protected userSummary$: Observable<UserSummary>;
 
   public currentPage: number;
   public currentPageSize: number;
   public currentStatus: keyof typeof JobStatus | null = null;
+  public currentStatusMeta: keyof typeof JobStatusMeta | null = null;
   public currentSort: string = 'createdAt,desc';
-  public filterLate = false;
 
   statusKeys: string[] = [];
 
@@ -55,10 +58,11 @@ export class JobsComponent implements OnInit {
 
     this.statusKeys = Object.keys(JobStatus);
     this.user$ = this.userService.getUser();
+    this.userSummary$ = this.userService.getUserSummary();
   }
 
   ngOnInit(): void {
-    this.jobs$ = this.jobService.getAllJobs(this.currentPage, this.currentPageSize, this.currentStatus, this.filterLate, this.currentSort);
+    this.jobs$ = this.jobService.getAllJobs(this.currentPage, this.currentPageSize, this.currentStatus, this.currentStatusMeta, this.currentSort);
   }
 
   sortBy(sort: string): void {
@@ -66,29 +70,38 @@ export class JobsComponent implements OnInit {
     this.reloadJobs();
   }
 
-  filterByStatus(status: String): void {
-    // having two properties to handle status or "filter-late" filters may seem unclean, as they are exclusive at the moment
+  filter(status: String | null, statusMeta: String | null): void {
+    // having two properties to handle status or statusMeta filters may seem unclean, as they are exclusive at the moment
     // but it actually allow us to change our mind in the future and use both filters cumulatively 
 
-    // clicking on the current status filter removes the filter
-    if(status === 'filter-late' && this.filterLate) {
-      console.log('removing filter late');
-      this.filterLate = false;
-    }
-    else {
+
+    if(status !== null) {
+      this.currentStatusMeta = null;
       const newStatus: keyof typeof JobStatus = status as keyof typeof JobStatus;
+      // clicking on the current status removes the filter
       if(newStatus === this.currentStatus) {
           this.currentStatus = null;
           console.log('removing current status');
       }
       else {
-        this.currentStatus = status === "filter-late" ? null : status as keyof typeof JobStatus;
+        this.currentStatus = status as keyof typeof JobStatus;
         console.log('setting currentstatus ', this.currentStatus);
-        this.filterLate = status === "filter-late";
-        console.log('setting filterLate ', this.filterLate);
       }
     }
-    
+    else if(statusMeta !== null) {
+      const newStatusFilter: keyof typeof JobStatusMeta = statusMeta as keyof typeof JobStatusMeta;
+      // clicking on the current status filter removes the filter
+      if(newStatusFilter === this.currentStatusMeta) {
+          this.currentStatusMeta = null;
+          console.log('removing current status filter');
+      }
+      else {
+        this.currentStatusMeta = statusMeta as keyof typeof JobStatusMeta;
+        console.log('setting currentstatus filter ', this.currentStatusMeta);
+      }
+      this.currentStatus = null;
+    }
+
     this.reloadJobs();
   }
 
@@ -97,14 +110,15 @@ export class JobsComponent implements OnInit {
   }
 
   handlePageEvent(event: PageEvent) {
-    this.jobs$ = this.jobService.getAllJobs(event.pageIndex, event.pageSize, this.currentStatus, this.filterLate, this.currentSort);
+    this.jobs$ = this.jobService.getAllJobs(event.pageIndex, event.pageSize, this.currentStatus, this.currentStatusMeta, this.currentSort);
     this.currentPage = event.pageIndex;
     this.currentPageSize = event.pageSize;
   }
 
   reloadJobs(job: Job | null = null): void {
     this.currentPage = 0;
-    this.jobs$ = this.jobService.getAllJobs(this.currentPage, this.currentPageSize, this.currentStatus, this.filterLate, this.currentSort);
+    this.userSummary$ = this.userService.getUserSummary();
+    this.jobs$ = this.jobService.getAllJobs(this.currentPage, this.currentPageSize, this.currentStatus, this.currentStatusMeta, this.currentSort);
   }
 
   createJobWithUrl(): void {

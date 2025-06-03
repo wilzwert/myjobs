@@ -49,7 +49,16 @@ export class TranslatorService {
     RELAUNCHED : $localize `:@@job.status.relaunched:Relaunched`,
     APPLICANT_REFUSED : $localize `:@@job.status.applicant_refused:Refused (by me)`,
     COMPANY_REFUSED : $localize `:@@job.status.company_refused:Refused (by company)`,
+    EXPIRED: $localize `:@@job.status.expired:Expired`,
+    CANCELLED: $localize `:@@job.status.cancelled:Candelled`,    
     ACCEPTED: $localize `:@@job.status.accepted:Accepted`,
+    HIRED:  $localize `:@@job.status.hired:Hired`
+  };
+
+  private jobStatusesFilter: Record<string, string> = {
+    ACTIVE : $localize `:@@job.status.filter.active:Active`,
+    INACTIVE : $localize `:@@job.status.filter.inactive:Inactive`,
+    LATE : $localize `:@@job.status.filter.late:Late`
   };
 
   private activityTypes: Record<keyof typeof ActivityType, string> = {
@@ -83,6 +92,11 @@ export class TranslatorService {
   translateJobStatus(jobStatus: string) :string {
     const s = jobStatus as keyof typeof JobStatus;
     const status = this.jobStatuses[s];
+    return status ?? 'unknown';
+  }
+
+  translateJobStatusFilter(jobStatusFilter: string) :string {
+    const status = this.jobStatusesFilter[jobStatusFilter];
     return status ?? 'unknown';
   }
 

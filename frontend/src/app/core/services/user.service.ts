@@ -9,6 +9,7 @@ import { User } from '@core/model/user.interface';
 import { ChangePasswordRequest } from '@core/model/change-password-request.interface';
 import { EditUserRequest } from '@core/model/edit-user-request.interface';
 import { EditUserLangRequest } from '@core/model/edit-user-lang-request.interface';
+import { UserSummary } from '../model/user-summary.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -55,6 +56,15 @@ export class UserService {
     /*return this.captchaService.getCaptchaToken().pipe(
       switchMap(() => {*/
         return this.dataService.get<User>(`${this.apiPath}/me`);
+        // return this.dataService.get<User>(`${this.apiPath}`).pipe(map((user: User) => {user.emailStatus = user.emailStatus as EmailStatus; return user;}));
+      /*})
+    );*/
+  }
+
+  public getUserSummary(): Observable<UserSummary> {
+    /*return this.captchaService.getCaptchaToken().pipe(
+      switchMap(() => {*/
+        return this.dataService.get<UserSummary>(`${this.apiPath}/me/summary`);
         // return this.dataService.get<User>(`${this.apiPath}`).pipe(map((user: User) => {user.emailStatus = user.emailStatus as EmailStatus; return user;}));
       /*})
     );*/

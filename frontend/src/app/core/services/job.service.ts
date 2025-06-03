@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DataService } from './data.service';
-import { Job, JobStatus } from '@core/model/job.interface';
+import { Job, JobStatus, JobStatusMeta } from '@core/model/job.interface';
 import { BehaviorSubject, forkJoin, map, Observable, of, switchMap, tap } from 'rxjs';
 import { Page } from '@core/model/page.interface';
 import { CreateJobRequest } from '@core/model/create-job-request.interface';
@@ -24,7 +24,8 @@ export class JobService {
   private currentPage: number = -1;
   private itemsPerPage: number = -1;
   private currentStatus: keyof typeof JobStatus | null = null;
-  private filterLate = false;
+  // "meta" status
+  private currentStatusMeta: keyof typeof JobStatusMeta | null = null;
   private currentSort: string | null = null;
 
   constructor(private dataService: DataService, private sessionService: SessionService) {
@@ -48,17 +49,17 @@ export class JobService {
    * Retrieves the sorted jobs loded from the backend 
    * @returns the jobs
    */
-  public getAllJobs(page: number, itemsPerPage: number, status: keyof typeof JobStatus | null = null, filterLate: boolean, sort: string): Observable<Page<Job>> {
+  public getAllJobs(page: number, itemsPerPage: number, status: keyof typeof JobStatus | null = null, statusMeta: keyof typeof JobStatusMeta | null = null, sort: string): Observable<Page<Job>> {
 
     return this.jobsSubject.pipe(
       switchMap((jobsPage: Page<Job> | null) => {
-        if(jobsPage === null || page != this.currentPage || status != this.currentStatus || filterLate != this.filterLate || sort != this.currentSort) {
+        if(jobsPage === null || page != this.currentPage || status != this.currentStatus || statusMeta != this.currentStatusMeta || sort != this.currentSort) {
           this.currentPage = page;
           this.currentStatus = status;
-          this.filterLate = filterLate;
+          this.currentStatusMeta = statusMeta;
           this.itemsPerPage = itemsPerPage;
           this.currentSort = sort;
-          const statusOrFilterParam = (status != null ?  `status=${status}`  : filterLate ? `filterLate=true` : '');
+          const statusOrFilterParam = (status != null ?  `status=${status}`  : statusMeta ? `statusMeta=${statusMeta}` : '');
           return this.dataService.get<Page<Job>>(`jobs?page=${page}&itemsPerPage=${itemsPerPage}`+(statusOrFilterParam ? `&${statusOrFilterParam}` : '')+`&sort=${sort}`).pipe(
             switchMap((fetchedJobs: Page<Job>) => {
               this.jobsSubject.next(fetchedJobs);

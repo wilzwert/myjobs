@@ -1,4 +1,5 @@
 @let user = user$ | async;
+@let summary = userSummary$ | async;
 
 
 <button (click)="createJobWithUrl()" mat-fab extended aria-label="Create a job" i18n-aria-label="@@job.create" mat-flat-button>
@@ -12,20 +13,29 @@
             <mat-icon>filter_alt</mat-icon><span i18n="sort@@action.filter.status">Status</span>
         </button>
         <mat-menu #filterMenu="matMenu">
-            @for(status of statusKeys ; track $index) {
-                <button mat-menu-item (click)="filterByStatus(status)">
-                    @if(status === currentStatus) {
-                        <mat-icon>check</mat-icon>
-                    }
-                    {{ status | statusLabel }}
-                </button>
-        }
-        <button mat-menu-item (click)="filterByStatus('filter-late')">
-            @if(filterLate) {
-                <mat-icon>check</mat-icon>
+
+            @if(summary) {
+                @for (item of summary.jobStatuses | keyvalue; track item.key) {
+                    <button mat-menu-item (click)="filter(item.key, null)">
+                        {{ item.key | statusLabel }}
+                    </button>
+                }
+                @for (item of summary.usableJobStatusMetas; track $index) {
+                    <button mat-menu-item (click)="filter(null, item)">
+                        {{ item | statusFilterLabel }}
+                    </button>
+                }
             }
-            <span i18n="late only label|the late only filter label@@filter.job.late">Late only</span>
-        </button>
+            @else {
+                @for(status of statusKeys ; track $index) {
+                    <button mat-menu-item (click)="filter(status, null)">
+                        @if(status === currentStatus) {
+                            <mat-icon>check</mat-icon>
+                        }
+                        {{ status | statusLabel }}
+                    </button>
+                }
+            }
         </mat-menu>
     </div>
 
