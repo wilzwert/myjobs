@@ -4,7 +4,7 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.JobMetadata;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
-import com.wilzwert.myjobs.core.domain.model.job.JobStatusFilter;
+import com.wilzwert.myjobs.core.domain.model.job.JobStatusMeta;
 import com.wilzwert.myjobs.core.domain.model.job.command.*;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driving.*;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.GetUserJobUseCase;
@@ -105,7 +105,7 @@ public class JobController {
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer itemsPerPage,
             @RequestParam(required = false) JobStatus status,
-            @RequestParam(required = false) JobStatusFilter statusFilter,
+            @RequestParam(required = false) JobStatusMeta statusMeta,
             @RequestParam(required = false) String sort) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         if(page == null) {
@@ -115,6 +115,6 @@ public class JobController {
             itemsPerPage = 10;
         }
 
-        return jobMapper.toEnrichedResponse(getUserJobsUseCase.getUserJobs(userDetails.getId(), page, itemsPerPage, status, statusFilter, sort));
+        return jobMapper.toEnrichedResponse(getUserJobsUseCase.getUserJobs(userDetails.getId(), page, itemsPerPage, status, statusMeta, sort));
     }
 }

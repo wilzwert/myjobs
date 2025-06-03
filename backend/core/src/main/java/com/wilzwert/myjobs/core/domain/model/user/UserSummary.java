@@ -2,7 +2,7 @@ package com.wilzwert.myjobs.core.domain.model.user;
 
 
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
-import com.wilzwert.myjobs.core.domain.model.job.JobStatusFilter;
+import com.wilzwert.myjobs.core.domain.model.job.JobStatusMeta;
 
 import java.util.Map;
 import java.util.Set;
@@ -28,15 +28,15 @@ public final class UserSummary {
 
     private final Map<JobStatus, Integer> jobStatuses;
 
-    private final Set<JobStatusFilter> usableJobStatusFilters;
+    private final Set<JobStatusMeta> usableJobStatusMetas;
 
-    public UserSummary(int jobsCount, int activeJobsCount, int inactiveJobsCount, int lateJobsCount, Map<JobStatus, Integer> jobStatuses, Set<JobStatusFilter> usableJobStatusFilters) {
+    public UserSummary(int jobsCount, int activeJobsCount, int inactiveJobsCount, int lateJobsCount, Map<JobStatus, Integer> jobStatuses, Set<JobStatusMeta> usableJobStatusMetas) {
         this.jobsCount = jobsCount;
         this.activeJobsCount = activeJobsCount;
         this.inactiveJobsCount = inactiveJobsCount;
         this.lateJobsCount = lateJobsCount;
         this.jobStatuses = jobStatuses;
-        this.usableJobStatusFilters = usableJobStatusFilters;
+        this.usableJobStatusMetas = usableJobStatusMetas;
     }
 
     public int getJobsCount() {
@@ -59,8 +59,8 @@ public final class UserSummary {
         return jobStatuses;
     }
 
-    public Set<JobStatusFilter> getUsableJobStatusFilters() {
-        return usableJobStatusFilters;
+    public Set<JobStatusMeta> getUsableJobStatusMetas() {
+        return usableJobStatusMetas;
     }
 
     @Override
@@ -70,7 +70,7 @@ public final class UserSummary {
                 + ", inactiveJobsCount=" + inactiveJobsCount
                 + ", lateJobsCount=" + lateJobsCount
                 + ", jobStatuses=" + jobStatuses
-                + ", usableJobStatusFilters=" + usableJobStatusFilters
+                + ", usableJobStatusMetas=" + usableJobStatusMetas
                 + "]";
     }
 }

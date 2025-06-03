@@ -3,7 +3,7 @@ package com.wilzwert.myjobs.core.domain.model.user.collector;
 
 import com.wilzwert.myjobs.core.domain.model.job.JobState;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
-import com.wilzwert.myjobs.core.domain.model.job.JobStatusFilter;
+import com.wilzwert.myjobs.core.domain.model.job.JobStatusMeta;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserSummary;
 
@@ -53,6 +53,8 @@ public class UserSummaryCollector implements Collector<JobState, Map<JobStatus, 
     @Override
     public Function<Map<JobStatus, List<JobState>>, UserSummary> finisher() {
         return (statusToStates) -> {
+
+            System.out.println(statusToStates);
             // FIXME : it may actually be better to loop through statusToStates to compute useful data
             // than to use numerous streams
 
@@ -66,12 +68,12 @@ public class UserSummaryCollector implements Collector<JobState, Map<JobStatus, 
             int inactiveJobsCount = jobsCount - activeJobsCount;
 
             // compute usable filters
-            Set<JobStatusFilter> filters = new HashSet<>();
+            Set<JobStatusMeta> filters = new HashSet<>();
             if(statusToStates.entrySet().stream().anyMatch(e -> JobStatus.activeStatuses().contains(e.getKey()))) {
-                filters.add(JobStatusFilter.ACTIVE);
+                filters.add(JobStatusMeta.ACTIVE);
             }
             if(statusToStates.entrySet().stream().anyMatch(e -> JobStatus.inactiveStatuses().contains(e.getKey()))) {
-                filters.add(JobStatusFilter.INACTIVE);
+                filters.add(JobStatusMeta.INACTIVE);
             }
 
             long lateJobsCount = statusToStates.entrySet().stream()
@@ -85,7 +87,7 @@ public class UserSummaryCollector implements Collector<JobState, Map<JobStatus, 
             }
 
             if(lateJobsCount > 0) {
-                filters.add(JobStatusFilter.LATE);
+                filters.add(JobStatusMeta.LATE);
             }
 
             return new UserSummary(jobsCount, activeJobsCount, inactiveJobsCount, (int)lateJobsCount, statusToCount, filters);

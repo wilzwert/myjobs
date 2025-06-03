@@ -185,7 +185,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
         void shouldGetJobsFilteredByStatusFilter() throws Exception {
             MvcResult mvcResult = mockMvc.perform(
                             get(JOBS_URL).cookie(accessTokenCookie)
-                                    .param("statusFilter", "ACTIVE")
+                                    .param("statusMeta", "ACTIVE")
                     )
                     .andExpect(status().isOk())
                     .andReturn();

@@ -138,7 +138,7 @@ class JobUseCaseImplTest {
 
             when(jobDataManager.findPaginated(any(), eq(0), eq(10))).thenReturn(mockJobPage);
 
-            DomainPage<EnrichedJob> result = underTest.getUserJobs(testUser.getId(), 0, 10, JobStatus.PENDING, JobStatusFilter.LATE, "date,desc");
+            DomainPage<EnrichedJob> result = underTest.getUserJobs(testUser.getId(), 0, 10, JobStatus.PENDING, JobStatusMeta.LATE, "date,desc");
 
             // check specification passed to the jobDataManager
             verify(jobDataManager).findPaginated(

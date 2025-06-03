@@ -4,7 +4,7 @@ package com.wilzwert.myjobs.core.domain.model.job;
 /**
  * @author Wilhelm Zwertvaegher
  */
-public enum JobStatusFilter {
+public enum JobStatusMeta {
     ACTIVE,
     INACTIVE,
     LATE

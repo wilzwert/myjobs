@@ -2,7 +2,7 @@ package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
 
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
-import com.wilzwert.myjobs.core.domain.model.job.JobStatusFilter;
+import com.wilzwert.myjobs.core.domain.model.job.JobStatusMeta;
 import lombok.*;
 
 import java.util.Map;
@@ -29,5 +29,5 @@ public class UserSummaryResponse {
 
     private Map<JobStatus, Integer> jobStatuses;
 
-    private Set<JobStatusFilter> usableJobStatusFilters;
+    private Set<JobStatusMeta> usableJobStatusMetas;
 }

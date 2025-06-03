@@ -2,7 +2,7 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
-import com.wilzwert.myjobs.core.domain.model.job.JobStatusFilter;
+import com.wilzwert.myjobs.core.domain.model.job.JobStatusMeta;
 import com.wilzwert.myjobs.core.domain.model.user.Lang;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
@@ -289,7 +289,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(summary.getJobsCount()).isEqualTo(4);
             assertThat(summary.getLateJobsCount()).isEqualTo(3);
             assertThat(summary.getJobStatuses()).containsExactlyInAnyOrderEntriesOf(Map.of(JobStatus.PENDING, 1, JobStatus.CREATED, 2, JobStatus.COMPANY_REFUSED, 1));
-            assertThat(summary.getUsableJobStatusFilters()).containsAll(List.of(JobStatusFilter.ACTIVE, JobStatusFilter.INACTIVE, JobStatusFilter.LATE));
+            assertThat(summary.getUsableJobStatusMetas()).containsAll(List.of(JobStatusMeta.ACTIVE, JobStatusMeta.INACTIVE, JobStatusMeta.LATE));
         }
     }
 }

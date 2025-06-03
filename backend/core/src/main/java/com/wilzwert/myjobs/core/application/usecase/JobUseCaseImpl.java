@@ -118,7 +118,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
     }
 
     @Override
-    public DomainPage<EnrichedJob> getUserJobs(UserId userId, int page, int size, JobStatus status, JobStatusFilter statusFilter, String sort) {
+    public DomainPage<EnrichedJob> getUserJobs(UserId userId, int page, int size, JobStatus status, JobStatusMeta statusMeta, String sort) {
         Optional<User> foundUser = userDataManager.findById(userId);
         if(foundUser.isEmpty()) {
             throw new UserNotFoundException();
@@ -130,9 +130,9 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
         DomainPage<Job> jobs;
 
-        if(statusFilter != null) {
+        if(statusMeta != null) {
             // threshold instant : jobs not updated since that instant are considered late
-            switch (statusFilter) {
+            switch (statusMeta) {
                 case ACTIVE: specs.add(DomainSpecification.in("status", JobStatus.activeStatuses())); break;
                 case INACTIVE: specs.add(DomainSpecification.in("status", JobStatus.inactiveStatuses())); break;
                 case LATE:
