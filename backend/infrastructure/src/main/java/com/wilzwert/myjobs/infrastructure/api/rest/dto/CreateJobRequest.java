@@ -22,16 +22,16 @@ public class CreateJobRequest {
 
     private String company;
 
-    @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
-    @URL(message = "INVALID_URL")
-    private String url;
+    private String profile;
 
     @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
     private String description;
 
-    private String profile;
-
-    private String comment;
+    @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
+    @URL(message = "INVALID_URL")
+    private String url;
 
     private String salary;
+
+    private String comment;
 }

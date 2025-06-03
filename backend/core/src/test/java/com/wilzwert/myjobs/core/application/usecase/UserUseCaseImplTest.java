@@ -1,6 +1,8 @@
 package com.wilzwert.myjobs.core.application.usecase;
 
 
+import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
+import com.wilzwert.myjobs.core.domain.model.user.UserSummary;
 import com.wilzwert.myjobs.core.domain.model.user.command.UpdateUserCommand;
 import com.wilzwert.myjobs.core.domain.model.user.EmailStatus;
 import com.wilzwert.myjobs.core.domain.model.user.User;
@@ -14,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -97,5 +100,32 @@ class UserUseCaseImplTest {
         assertEquals(12, updatedUser.getJobFollowUpReminderDays());
         verify(userDataManager, times(1)).save(user);
         verify(emailVerificationMessageProvider, times(1)).send(user);
+    }
+
+    @Test
+    void shouldGetUserSummary() {
+        UserId userId = UserId.generate();
+        User user = getValidTestUser(userId);
+        List<JobStatus> statuses = List.of(
+            JobStatus.CREATED,
+            JobStatus.CREATED,
+            JobStatus.PENDING,
+            JobStatus.ACCEPTED,
+            JobStatus.APPLICANT_REFUSED,
+            JobStatus.APPLICANT_REFUSED,
+            JobStatus.APPLICANT_REFUSED,
+            JobStatus.CANCELLED,
+            JobStatus.EXPIRED
+        );
+
+        when(userDataManager.findMinimalById(userId)).thenReturn(Optional.of(user));
+        when(userDataManager.getJobsStatuses(user)).thenReturn(statuses);
+
+        UserSummary result = underTest.getUserSummary(userId);
+
+        assertEquals(9, result.getJobsCount());
+        assertEquals(4, result.getActiveJobsCount());
+        assertEquals(5, result.getInactiveJobsCount());
+        assertEquals(6, result.getJobStatuses().size());
     }
 }

@@ -35,23 +35,18 @@ public record CreateJobCommand(String title, String company, String url, String 
             return this;
         }
 
-        public Builder company(String company) {
-            this.company = company;
-            return this;
-        }
-
         public Builder url(String url) {
             this.url = url;
             return this;
         }
 
-        public Builder description(String description) {
-            this.description = description;
+        public Builder company(String company) {
+            this.company = company;
             return this;
         }
 
-        public Builder profile(String profile) {
-            this.profile = profile;
+        public Builder description(String description) {
+            this.description = description;
             return this;
         }
 
@@ -62,6 +57,11 @@ public record CreateJobCommand(String title, String company, String url, String 
 
         public Builder salary(String salary) {
             this.salary = salary;
+            return this;
+        }
+
+        public Builder profile(String profile) {
+            this.profile = profile;
             return this;
         }
 

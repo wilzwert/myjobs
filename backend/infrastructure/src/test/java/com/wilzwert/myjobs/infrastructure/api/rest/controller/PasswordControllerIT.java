@@ -2,11 +2,15 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wilzwert.myjobs.core.domain.model.user.User;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.PasswordHasher;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.ChangePasswordRequest;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.NewPasswordRequest;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.ResetPasswordRequest;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
+import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,7 +23,9 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Fail.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -33,6 +39,12 @@ public class PasswordControllerIT extends AbstractBaseIntegrationTest {
 
     @Autowired
     private UserDataManager userDataManager;
+
+    @Autowired
+    private JwtService jwtService;
+
+    @Autowired
+    private PasswordHasher passwordHasher;
 
     @Nested
     class PasswordControllerResetPasswordIT {
@@ -141,5 +153,87 @@ public class PasswordControllerIT extends AbstractBaseIntegrationTest {
                     .andExpect(status().isOk());
         }
 
+    }
+
+    @Nested
+    class UserControllerChangePasswordIT {
+
+        private static final String CHANGE_PASSWORD_URL = "/api/user/me/password";
+
+        // id of the User to use for password changes tests
+        private static final String USER_FOR_CHANGE_PASSWORD_TEST_ID = "abcd6543-6543-6543-6543-123456789012";
+
+        private ChangePasswordRequest changePasswordRequest;
+
+        private Cookie accessTokenCookie;
+
+        @BeforeEach
+        void setUp()  {
+            // this is a valid password request
+            // it should be changed per case for testing
+            changePasswordRequest = new ChangePasswordRequest();
+            changePasswordRequest.setPassword("Dcba4321!");
+            changePasswordRequest.setOldPassword("Abcd1234!");
+
+            accessTokenCookie = new Cookie("access_token", jwtService.generateToken(USER_FOR_CHANGE_PASSWORD_TEST_ID));
+        }
+
+        @Test
+        void whenNoAuth_thenShouldReturnUnauthorized() throws Exception {
+            mockMvc.perform(put(CHANGE_PASSWORD_URL))
+                    .andExpect(status().isUnauthorized());
+        }
+
+        @Test
+        void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
+            mockMvc.perform(put(CHANGE_PASSWORD_URL).cookie(accessTokenCookie))
+                    .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void whenOldPasswordEmpty_thenShouldReturnBadRequest() throws Exception {
+            changePasswordRequest.setOldPassword("");
+            mockMvc.perform(put(CHANGE_PASSWORD_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("message").value(ErrorCode.VALIDATION_FAILED.name()))
+                    .andExpect(jsonPath("errors.oldPassword[0].code").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
+        }
+
+        @Test
+        void whenNewPasswordEmpty_thenShouldReturnBadRequest() throws Exception {
+            changePasswordRequest.setPassword("");
+            mockMvc.perform(put(CHANGE_PASSWORD_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("message").value(ErrorCode.VALIDATION_FAILED.name()))
+                    .andExpect(jsonPath("errors.password[0].code").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
+        }
+
+        @Test
+        void whenOldPasswordDoesntMatch_thenShouldReturnBadRequest() throws Exception {
+            changePasswordRequest.setOldPassword("Pqrs4321!");
+            mockMvc.perform(put(CHANGE_PASSWORD_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("message").value(ErrorCode.USER_PASSWORD_MATCH_FAILED.name()));
+        }
+
+        @Test
+        void whenNewPasswordWeak_thenShouldReturnBadRequest() throws Exception {
+            changePasswordRequest.setPassword("abcd1234!");
+            mockMvc.perform(put(CHANGE_PASSWORD_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("message").value(ErrorCode.VALIDATION_FAILED.name()))
+                    .andExpect(jsonPath("errors.password[0].code").value(ErrorCode.USER_WEAK_PASSWORD.name()));
+        }
+
+        @Test
+        void shouldUpdatePassword() throws Exception {
+            mockMvc.perform(put(CHANGE_PASSWORD_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
+                    .andExpect(status().isOk());
+
+            // check that the password actually changed
+            User foundUser = userDataManager.findByEmail("changepassword@example.com").orElse(null);
+            assertThat(foundUser).isNotNull();
+            assertTrue(passwordHasher.verifyPassword("Dcba4321!", foundUser.getPassword()));
+        }
     }
 }

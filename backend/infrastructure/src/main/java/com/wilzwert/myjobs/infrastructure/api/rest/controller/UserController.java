@@ -1,9 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 
-import com.wilzwert.myjobs.core.domain.model.user.command.ChangePasswordCommand;
 import com.wilzwert.myjobs.core.domain.model.user.command.UpdateUserLangCommand;
-import com.wilzwert.myjobs.core.domain.model.user.command.ValidateEmailCommand;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.*;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.UserMapper;
@@ -22,11 +20,6 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RequestMapping("/api/user/me")
 public class UserController {
-    private final ValidateEmailUseCase validateEmailUseCase;
-
-    private final ChangePasswordUseCase changePasswordUseCase;
-
-    private final SendVerificationEmailUseCase sendVerificationEmailUseCase;
 
     private final GetUserViewUseCase getUserViewUseCase;
 
@@ -36,16 +29,16 @@ public class UserController {
 
     private final DeleteAccountUseCase deleteAccountUseCase;
 
+    private final GetUserSummaryUseCase getUserSummaryUseCase;
+
     private final UserMapper userMapper;
 
-    public UserController(ValidateEmailUseCase validateEmailUseCase, ChangePasswordUseCase changePasswordUseCase, SendVerificationEmailUseCase sendVerificationEmailUseCase, GetUserViewUseCase getUserViewUseCase, UpdateUserUseCase updateUserUseCase, UpdateUserLangUseCase updateUserLangUseCase, DeleteAccountUseCase deleteAccountUseCase, UserMapper userMapper) {
-        this.validateEmailUseCase = validateEmailUseCase;
-        this.changePasswordUseCase = changePasswordUseCase;
-        this.sendVerificationEmailUseCase = sendVerificationEmailUseCase;
+    public UserController(GetUserViewUseCase getUserViewUseCase, UpdateUserUseCase updateUserUseCase, UpdateUserLangUseCase updateUserLangUseCase, DeleteAccountUseCase deleteAccountUseCase, GetUserSummaryUseCase getUserSummaryUseCase, UserMapper userMapper) {
         this.getUserViewUseCase = getUserViewUseCase;
         this.updateUserUseCase = updateUserUseCase;
         this.updateUserLangUseCase = updateUserLangUseCase;
         this.deleteAccountUseCase = deleteAccountUseCase;
+        this.getUserSummaryUseCase = getUserSummaryUseCase;
         this.userMapper = userMapper;
     }
 
@@ -75,23 +68,10 @@ public class UserController {
         updateUserLangUseCase.updateUserLang(new UpdateUserLangCommand(updateUserLangRequest.getLang(), userDetails.getId()));
     }
 
-    @PutMapping("/password")
+    @GetMapping("/summary")
     @ResponseStatus(HttpStatus.OK)
-    public void changePassword(@RequestBody @Valid ChangePasswordRequest changePasswordRequest, Authentication authentication) {
+    public UserSummaryResponse getSummary(Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        changePasswordUseCase.changePassword(new ChangePasswordCommand(changePasswordRequest.getPassword(), changePasswordRequest.getOldPassword(), userDetails.getId()));
-    }
-
-    @PostMapping("/email/validation")
-    @ResponseStatus(HttpStatus.OK)
-    public void validateEmail(@RequestBody @Valid ValidateEmailRequest validateEmailRequest) {
-        validateEmailUseCase.validateEmail(new ValidateEmailCommand(validateEmailRequest.getCode()));
-    }
-
-    @PostMapping("/email/verification")
-    @ResponseStatus(HttpStatus.OK)
-    public void sendVerificationEmail(Authentication authentication) {
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        sendVerificationEmailUseCase.sendVerificationEmail(userDetails.getId());
+        return userMapper.toResponse(getUserSummaryUseCase.getUserSummary(userDetails.getId()));
     }
 }

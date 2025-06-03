@@ -3,12 +3,14 @@ package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 
 import com.mongodb.bulk.BulkWriteResult;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
+import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.user.UserView;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
 import com.wilzwert.myjobs.core.domain.shared.bulk.BulkDataSaveResult;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoJob;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoUser;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.UserMapper;
@@ -206,5 +208,14 @@ public class UserDataManagerAdapter implements UserDataManager {
 
         BulkWriteResult result = bulkOps.execute();
         return new BulkDataSaveResult(users.size(), result.getModifiedCount(), result.getInsertedCount(), result.getDeletedCount());
+    }
+
+    @Override
+    public List<JobStatus> getJobsStatuses(User user) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where("userId").is(user.getId().value()));
+        query.fields().include("status");
+        List<MongoJob> projection = mongoTemplate.find(query, MongoJob.class);
+        return projection.stream().map(MongoJob::getStatus).collect(Collectors.toList());
     }
 }
