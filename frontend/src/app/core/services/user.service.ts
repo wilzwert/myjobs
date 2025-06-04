@@ -1,5 +1,5 @@
-import { Injectable } from '@angular/core';
-import { Observable, switchMap } from 'rxjs';
+import { Injectable, signal, Signal, WritableSignal } from '@angular/core';
+import { map, Observable, switchMap } from 'rxjs';
 import { DataService } from './data.service';
 import { CaptchaService } from './captcha.service';
 import { ResetPasswordRequest } from '@core/model/reset-password-request.interface';
@@ -17,6 +17,10 @@ import { UserSummary } from '../model/user-summary.interface';
 export class UserService {
 
   private apiPath = 'user';
+
+  private userSummary: WritableSignal<UserSummary | null> = signal(null); 
+
+  private userSummaryLoaded: boolean = false;
 
   constructor(private dataService: DataService, private captchaService: CaptchaService) { }
 
@@ -61,13 +65,42 @@ export class UserService {
     );*/
   }
 
-  public getUserSummary(): Observable<UserSummary> {
+
+  /** Méthode à appeler pour recharger manuellement */
+  public async reloadUserSummary(): Promise<void> {
+    await this.loadUserSummary();
+  }
+
+
+   private async loadUserSummary(): Promise<void> {
+    console.log('getting getUserSummary');
+    this.userSummaryLoaded = true;
     /*return this.captchaService.getCaptchaToken().pipe(
       switchMap(() => {*/
-        return this.dataService.get<UserSummary>(`${this.apiPath}/me/summary`);
+        this.dataService.get<UserSummary>(`${this.apiPath}/me/summary`)
+        .subscribe(summary => {
+          console.log('setting UserSummary signal');
+          this.userSummary.set(summary);
+        })
+          /*.pipe(
+            map(s => {
+              s.jobStatuses = new Map(Object.entries(s.jobStatuses));
+              return s;
+            })
+          )*/;
         // return this.dataService.get<User>(`${this.apiPath}`).pipe(map((user: User) => {user.emailStatus = user.emailStatus as EmailStatus; return user;}));
       /*})
-    );*/
+    )*/;
+  }
+
+  
+
+  public getUserSummary(): Signal<UserSummary | null> {
+    if(!this.userSummaryLoaded) {
+      // force first load if necessary
+      this.loadUserSummary();
+    }
+    return this.userSummary.asReadonly();
   }
 
   public deleteUser() :Observable<void> {

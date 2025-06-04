@@ -1,70 +1,69 @@
 @let user = user$ | async;
-@let summary = userSummary$ | async;
-
+@let summary = userSummary();
+@let options = jobsOptions();
+@let page = jobs$ | async;
 
 <button (click)="createJobWithUrl()" mat-fab extended aria-label="Create a job" i18n-aria-label="@@job.create" mat-flat-button>
     <mat-icon>add</mat-icon>
     <span i18n="@@job.create">Create a job</span>
 </button>
 
+
 <div class="list-config">
+    
+@if(summary && options) {
     <div>
         <button mat-button [matMenuTriggerFor]="filterMenu">
             <mat-icon>filter_alt</mat-icon><span i18n="sort@@action.filter.status">Status</span>
         </button>
         <mat-menu #filterMenu="matMenu">
-
-            @if(summary) {
-                @for (item of summary.jobStatuses | keyvalue; track item.key) {
+            
+                @for (item of summary?.jobStatuses | keyvalue; track item.key) {
                     <button mat-menu-item (click)="filter(item.key, null)">
+                        @if(item.key === options.getStatus()) {
+                            <mat-icon>check</mat-icon>
+                        }
                         {{ item.key | statusLabel }}
                     </button>
                 }
-                @for (item of summary.usableJobStatusMetas; track $index) {
+                @for (item of summary?.usableJobStatusMetas; track $index) {
                     <button mat-menu-item (click)="filter(null, item)">
+                        @if(item === options.getStatusMeta()) {
+                            <mat-icon>check</mat-icon>
+                        }
                         {{ item | statusFilterLabel }}
                     </button>
                 }
-            }
-            @else {
-                @for(status of statusKeys ; track $index) {
-                    <button mat-menu-item (click)="filter(status, null)">
-                        @if(status === currentStatus) {
-                            <mat-icon>check</mat-icon>
-                        }
-                        {{ status | statusLabel }}
-                    </button>
-                }
-            }
         </mat-menu>
     </div>
+}
 
-@let page = jobs$ | async;
-@if(page !== null) {
+
+@if(page !== null && options !== null) {
     <button mat-button [matMenuTriggerFor]="sortMenu">
         <mat-icon>sort</mat-icon><span i18n="sort@@action.sort">Sort</span>
     </button>
     <mat-menu #sortMenu="matMenu">
         <button mat-menu-item (click)="sortBy('createdAt,desc')">
-            @if(currentSort === 'createdAt,desc') {
+            @if(options.getSort() === 'createdAt,desc') {
                 <mat-icon>check</mat-icon>
             }
             <span i18n="sort jobs by date desc@@input.jobs.sort.option.date_desc">Date (newest first)</span>
         </button>
         <button mat-menu-item (click)="sortBy('createdAt,asc')" >
-            @if(currentSort === 'createdAt,asc') {
+            @if(options.getSort() === 'createdAt,asc') {
                 <mat-icon>check</mat-icon>
             }
             <span i18n="sort jobs by date asc@@input.jobs.sort.option.date_asc">Date (oldest first)</span>
         </button>
         <button mat-menu-item (click)="sortBy('rating,desc')">
-            @if(currentSort === 'rating,desc') {
+            @if(options.getSort() === 'rating,desc') {
                 <mat-icon>check</mat-icon>
             }
             <span i18n="sort jobs by rating desc@@input.jobs.sort.option.rating_desc">Rating (highest first)</span>
         </button>
         <button mat-menu-item (click)="sortBy('rating,asc')">
-            @if(currentSort === 'rating,asc') {
+            @if(options.getSort() === 'rating,asc') {
                 <mat-icon>check</mat-icon>
             }
             <span i18n="sort jobs by rating asc@@input.jobs.sort.option.rating_asc">Rating (lowest first)</span>
@@ -75,14 +74,14 @@
 </div>
 
 
-@if(page !== null) {
+@if(page !== null && options !== null) {
     <div class="paginator-container">
         <mat-paginator #paginator
                 class="jobs-paginator"
                 (page)="handlePageEvent($event)"
                 [length]="page.totalElementsCount"
-                [pageSize]="currentPageSize"
-                [pageIndex]="currentPage"
+                [pageSize]="options!.getItemsPerPage()"
+                [pageIndex]="options!.getCurrentPage()"
                 aria-label="Select list page"
                 i18n-aria-label="Select list page@@pagination.jobs.select_page_label">
         </mat-paginator>
@@ -90,7 +89,7 @@
     @let content = page.content;
     @if(content !== null && user !== null) {
         @for (job of page.content ; track $index) {
-            <app-job-summary [job]="job" (deleted)="onDelete(job)"></app-job-summary>
+            <app-job-summary [job]="job" (deleted)="onDelete($event)" (statusChanged)="onStatusChanged($event)"></app-job-summary>
         }
     }
 }

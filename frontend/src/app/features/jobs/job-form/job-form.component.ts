@@ -14,10 +14,17 @@ import { MatButton } from '@angular/material/button';
 import { JobMetadata } from '@core/model/job-metadata.interface';
 import { StatusIconComponent } from "@layout/shared/status-icon/status-icon.component";
 import { ErrorProcessorService } from '@core/services/error-processor.service';
+import { CommentInputComponent } from '../forms/inputs/comment-input.component';
+import { SalaryInputComponent } from '../forms/inputs/salary-input.component';
+import { ProfileInputComponent } from '../forms/inputs/profile-input.component';
+import { DescriptionInputComponent } from '../forms/inputs/description-input.component';
+import { CompanyInputComponent } from '../forms/inputs/company-input.component';
+import { TitleInputComponent } from '../forms/inputs/title-input.component';
+import { UrlInputComponent } from '../forms/inputs/url-input.component';
 
 @Component({
   selector: 'app-job-form',
-  imports: [ReactiveFormsModule, MatFormField, MatInput, MatLabel, MatHint, MatButton, EditorComponent, StatusIconComponent],
+  imports: [ReactiveFormsModule, MatButton, CommentInputComponent, SalaryInputComponent, ProfileInputComponent, DescriptionInputComponent, CompanyInputComponent, TitleInputComponent, UrlInputComponent],
   providers: [
     { provide: TINYMCE_SCRIPT_SRC, useValue: 'tinymce/tinymce.min.js' }
   ],
@@ -29,6 +36,7 @@ export class JobFormComponent implements OnInit {
   @Input() jobMetadata: JobMetadata | null = null;
   @Output() jobSaved = new EventEmitter<Job>();
 
+  protected valueSource: Job | JobMetadata | null = null;
   public loading = false;
   public error: string |null = null;
   public form: FormGroup | undefined;
@@ -41,8 +49,8 @@ export class JobFormComponent implements OnInit {
     statusbar: false
   };
 
-  constructor(private jobService: JobService, private notificationService: NotificationService, private fb: FormBuilder, private errorProcessorService: ErrorProcessorService) {
-  }
+  constructor(private jobService: JobService, private notificationService: NotificationService, private fb: FormBuilder, private errorProcessorService: ErrorProcessorService) {}
+
   ngOnInit(): void {
     this.initForm();
   }
@@ -65,6 +73,10 @@ export class JobFormComponent implements OnInit {
 
   get profile() {
     return this.form?.get('profile');
+  }
+
+  get comment() {
+    return this.form?.get('comment');
   }
 
   get salary() {
@@ -114,47 +126,7 @@ export class JobFormComponent implements OnInit {
   }
 
   private initForm(): void {
-    const valueSource = this.job?? this.jobMetadata;
-    this.form = this.fb.group({
-      url: [
-        valueSource?.url,
-        [
-          Validators.required,
-          Validators.pattern('(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)')
-        ]
-      ],
-      title: [
-        valueSource?.title, 
-        [
-          Validators.required,
-          Validators.minLength(3)
-        ]
-      ],
-      company: [
-        valueSource?.company, 
-        [
-          Validators.required,
-          Validators.minLength(2)
-        ]
-      ],
-      description: [
-        valueSource?.description,
-        [
-          Validators.required
-        ]
-      ],
-      profile: [
-        valueSource?.profile,
-        [
-          
-        ]
-      ],
-      salary: [
-        valueSource?.salary,
-        [
-          
-        ]
-      ]
-    });
+    this.valueSource = this.job ? this.job : this.jobMetadata;
+    this.form = this.fb.group({});
   }  
 }

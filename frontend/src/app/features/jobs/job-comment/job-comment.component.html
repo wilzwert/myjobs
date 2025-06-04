@@ -1,0 +1,5 @@
+ <div class="job-comment">
+    <span matTooltip="Comment" aria-label="Comment" i18n-aria-label="job comment|label preceeding a job's comment@@job.comment" i18n-matTooltip="@@job.comment" ><mat-icon>chat</mat-icon></span>
+
+    <app-job-editable-field (fieldEdited)="onJobEdited($event)" [job]="job" field="comment" actionLabel="Edit comment" i18n-actionLabel="Edit comment|label for job comment edit action@@action.job.comment.edit"></app-job-editable-field>
+</div>

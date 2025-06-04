@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { SessionStorageService } from './token-storage.service';
+import { SessionStorageService } from './session-storage.service';
 import { Router } from '@angular/router';
 import { SessionInformation } from '@core/model/session-information.interface';
 import { RefreshTokenResponse } from '@core/model/refresh-token-response.interface';

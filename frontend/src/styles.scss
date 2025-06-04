@@ -14,12 +14,14 @@ html {
   font-family: Roboto, sans-serif;
   --app-max-width: 835px;
   --app-main-color: $main-color;
+  --md-sys-color-error: #d32f2f;
+  --color-warning: #ffa000;
+   --color-success: #388e3c;
   color: $main-color;
   @include mat.theme((
     color: (
       primary: myjobs-theme.$primary-palette,
       tertiary: myjobs-theme.$tertiary-palette
-      
     ),
     typography: Roboto,
     density: 0,
@@ -114,6 +116,17 @@ button:disabled mat-icon[svgIcon="send"] {
 
 .spacer {
   flex: 1 1 auto;
+}
+
+editor {
+    margin-top: 3em;
+}
+
+textarea {
+    height: 0;
+    width: 0;
+    max-height: 0;
+    overflow: hidden;
 }
 
 .list-config {

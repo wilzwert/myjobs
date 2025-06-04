@@ -11,12 +11,7 @@
             <mat-card-title i18n="@@job.description.label">Description</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-            @if(job.description !== '') {
-                <div [innerHTML]="job.description"></div>
-            }
-            @else {
-                <div class="empty-info" i18n="empty field|short text to tell that a field is empty@@info.empty">Empty</div>
-            }
+            <app-job-editable-field [job]="job" field="description"></app-job-editable-field>
         </mat-card-content>
     </mat-card>
 
@@ -25,12 +20,7 @@
             <mat-card-title i18n="@@job.profile.label">Profile</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-            @if(job.profile !== '') {
-                <div [innerHTML]="job.profile"></div>
-            }
-            @else {
-                <div class="empty-info" i18n="empty field|short text to tell that a field is empty@@info.empty">Empty</div>
-            }
+            <app-job-editable-field [job]="job" field="profile"></app-job-editable-field>
         </mat-card-content>
     </mat-card>
 

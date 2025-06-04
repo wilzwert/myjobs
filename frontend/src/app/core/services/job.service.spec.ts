@@ -11,6 +11,7 @@ import { UpdateJobRequest } from '@core/model/update-job-request.interface';
 import { CreateJobAttachmentRequest } from '@core/model/create-job-attachment-request.interface';
 import { UpdateJobRatingRequest } from '@core/model/update-job-rating-request.interface';
 import { SessionService } from './session.service';
+import { JobsListOptions } from '../model/jobs-list-options';
 
 describe('JobService', () => {
   let dataServiceMock: jest.Mocked<DataService>;
@@ -49,11 +50,6 @@ describe('JobService', () => {
       done();
     }, 0);
   });
-
-  it('current page and items per page should be -1 before any call', () => {
-    expect(jobService.getCurrentPage()).toEqual(-1);
-    expect(jobService.getItemsPerPage()).toEqual(-1);
-  })
 
   it('getJobById should call dataService.get with job id', (done) => {
     const job: Job = { id: '123' } as Job;
@@ -172,7 +168,10 @@ describe('JobService', () => {
 
     dataServiceMock.get.mockReturnValue(of(page));
 
-    const result = await firstValueFrom(jobService.getAllJobs(1, 10, null, false, 'createdAt'));
+    const options = new JobsListOptions();
+    options.changePagination(1, 10);
+
+    const result = await firstValueFrom(jobService.getAllJobs(options));
     expect(result).toEqual(page);
     expect(dataServiceMock.get).toHaveBeenCalledWith('jobs?page=1&itemsPerPage=10&sort=createdAt');
   });

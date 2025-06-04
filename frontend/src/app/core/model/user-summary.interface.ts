@@ -5,6 +5,6 @@ export interface UserSummary {
   activeJobsCount: number;
   inactiveJobsCount: number;
   lateJobsCount: number;
-  jobStatuses: Map<JobStatus, number> ;
+  jobStatuses: Record<JobStatus, number> ;
   usableJobStatusMetas: JobStatusMeta[];
 }

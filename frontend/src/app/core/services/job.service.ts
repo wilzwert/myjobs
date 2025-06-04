@@ -14,6 +14,7 @@ import { UpdateJobRatingRequest } from '@core/model/update-job-rating-request.in
 import { JobMetadata } from '@core/model/job-metadata.interface';
 import { SessionService } from './session.service';
 import { ProtectedFile } from '../model/protected-file.interface';
+import { JobsListOptions } from '../model/jobs-list-options';
 
 @Injectable({
   providedIn: 'root'
@@ -21,12 +22,9 @@ import { ProtectedFile } from '../model/protected-file.interface';
 export class JobService {
 
   private jobsSubject: BehaviorSubject<Page<Job> | null> = new BehaviorSubject<Page<Job> | null> (null);
-  private currentPage: number = -1;
-  private itemsPerPage: number = -1;
-  private currentStatus: keyof typeof JobStatus | null = null;
-  // "meta" status
-  private currentStatusMeta: keyof typeof JobStatusMeta | null = null;
-  private currentSort: string | null = null;
+  
+  private currentOptions: JobsListOptions = new JobsListOptions();
+
 
   constructor(private dataService: DataService, private sessionService: SessionService) {
     
@@ -36,31 +34,22 @@ export class JobService {
       });
    }
 
-  getCurrentPage() :number {
-    return this.currentPage
-  }
-
-  getItemsPerPage() :number {
-    return this.itemsPerPage
-  }
-
-
    /**
-   * Retrieves the sorted jobs loded from the backend 
+   * Retrieves the sorted jobs loaded from the backend 
+   * trying to avoid unncessary data service requests
    * @returns the jobs
    */
-  public getAllJobs(page: number, itemsPerPage: number, status: keyof typeof JobStatus | null = null, statusMeta: keyof typeof JobStatusMeta | null = null, sort: string): Observable<Page<Job>> {
-
+  public getAllJobs(jobsListOptions: JobsListOptions): Observable<Page<Job>> {
     return this.jobsSubject.pipe(
       switchMap((jobsPage: Page<Job> | null) => {
-        if(jobsPage === null || page != this.currentPage || status != this.currentStatus || statusMeta != this.currentStatusMeta || sort != this.currentSort) {
-          this.currentPage = page;
-          this.currentStatus = status;
-          this.currentStatusMeta = statusMeta;
-          this.itemsPerPage = itemsPerPage;
-          this.currentSort = sort;
+        if(jobsPage === null || jobsListOptions.getMustReload() || !this.currentOptions.equals(jobsListOptions)) {
+          // create a new instance to store current options, otherwise the current instance would be the same as the one in the service
+          this.currentOptions = jobsListOptions;
+          this.currentOptions.forceReload(null);
+          const status = this.currentOptions.getStatus();
+          const statusMeta = this.currentOptions.getStatusMeta();
           const statusOrFilterParam = (status != null ?  `status=${status}`  : statusMeta ? `statusMeta=${statusMeta}` : '');
-          return this.dataService.get<Page<Job>>(`jobs?page=${page}&itemsPerPage=${itemsPerPage}`+(statusOrFilterParam ? `&${statusOrFilterParam}` : '')+`&sort=${sort}`).pipe(
+          return this.dataService.get<Page<Job>>(`jobs?page=${this.currentOptions.getCurrentPage()}&itemsPerPage=${this.currentOptions.getItemsPerPage()}`+(statusOrFilterParam ? `&${statusOrFilterParam}` : '')+`&sort=${this.currentOptions.getSort()}`).pipe(
             switchMap((fetchedJobs: Page<Job>) => {
               this.jobsSubject.next(fetchedJobs);
               return of(fetchedJobs);

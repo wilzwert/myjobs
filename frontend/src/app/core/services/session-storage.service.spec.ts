@@ -1,8 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 
-import { SessionStorageService } from './token-storage.service';
+import { SessionStorageService } from './session-storage.service';
 
-describe('TokenStorageService', () => {
+describe('SessionStorageService', () => {
   let service: SessionStorageService;
 
   beforeEach(() => {

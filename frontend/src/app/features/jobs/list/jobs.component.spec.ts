@@ -47,15 +47,10 @@ describe('JobsComponent', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    fb = new FormBuilder();
-
-    jobServiceMock.getCurrentPage.mockReturnValue(0);
-    jobServiceMock.getItemsPerPage.mockReturnValue(10);
     jobServiceMock.getAllJobs.mockReturnValue(of({ content: [], totalElementsCount: 0, pagesCount: 0 } as unknown as Page<Job>));
     userServiceMock.getUser.mockReturnValue(of({ id: 'user1', name: 'Test User' } as unknown as User));
 
     component = new JobsComponent(
-      fb,
       userServiceMock,
       jobServiceMock,
       modalServiceMock,

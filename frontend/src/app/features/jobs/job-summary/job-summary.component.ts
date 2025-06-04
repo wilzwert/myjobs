@@ -15,36 +15,40 @@ import { ConfirmDialogService } from '@core/services/confirm-dialog.service';
 import { take, tap } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { MatIconButton } from '@angular/material/button';
+import { MatTooltip } from '@angular/material/tooltip';
+import { JobCommentComponent } from "../job-comment/job-comment.component";
+import { JobEditableFieldComponent } from "../job-editable-field/job-editable-field.component";
 
 @Component({
   selector: 'app-job-summary',
-  imports: [MatMenuModule, RatingComponent, MatIcon, MatIconButton, JobStatusComponent, MatCardModule, RouterLink, DatePipe],
+  imports: [MatMenuModule, RatingComponent, MatIcon, MatTooltip, MatIconButton, JobStatusComponent, MatCardModule, RouterLink, DatePipe, JobCommentComponent, JobEditableFieldComponent],
   templateUrl: './job-summary.component.html',
   styleUrl: './job-summary.component.scss'
 })
 export class JobSummaryComponent {
   @Input({ required: true }) job!: Job;
   @Output() deleted = new EventEmitter<Job>();
+  @Output() statusChanged = new EventEmitter<Job>();
 
   constructor(private jobService:JobService, private notificationService: NotificationService, private modalService: ModalService, private confirmDialogService: ConfirmDialogService) {}
 
-  editJobStatus(job: Job, status: string): void {
-      // don't reload list as the edited job is replaced after update by the service
-      this.jobService.updateJobStatus(job.id, { status: status } as UpdateJobStatusRequest).subscribe(
-        (j) => {
-          this.notificationService.confirmation($localize`:@@info.job.status.updated:Status updated successfully.`);
-        }
-      );
-    }
-  
-    updateJobRating(job: Job, event: number): void {
-      // don't reload list as the edited job is replaced after update by the service
-      this.jobService.updateJobRating(job.id, { rating: event } as UpdateJobRatingRequest).subscribe(
-        (j) => {
-          this.notificationService.confirmation($localize`:@@info.job.rating.updated:Rating updated successfully.`);
-        }
-      );
-    }
+  onCommentChanged(job: Job): void {
+    this.job = job;
+  }
+
+  onJobStatusChanged(job: Job): void {
+    this.job = job;
+    this.statusChanged.emit(job);
+  }
+
+  updateJobRating(job: Job, event: number): void {
+    // don't reload list as the edited job is replaced after update by the service
+    this.jobService.updateJobRating(job.id, { rating: event } as UpdateJobRatingRequest).subscribe(
+      (j) => {
+        this.notificationService.confirmation($localize`:@@info.job.rating.updated:Rating updated successfully.`);
+      }
+    );
+  }
   
   editJob(event: Event, job: Job): void {
     // don't reload list as the edited job is replaced after update by the service

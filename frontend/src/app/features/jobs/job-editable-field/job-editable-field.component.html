@@ -1,0 +1,51 @@
+@if(formVisible) {
+    <form [formGroup]="form" (ngSubmit)="submit()">
+        @switch (field) {
+            @case('comment') {
+                <app-job-comment-input [initialValue]="job[field]" [form]="form"></app-job-comment-input>
+            }
+            @case('description') {
+                <app-job-description-input [initialValue]="job[field]" [form]="form"></app-job-description-input>
+            }
+            @case('profile') {
+                <app-job-profile-input [initialValue]="job[field]" [form]="form"></app-job-profile-input>
+            }
+            @case('title') {
+                <app-job-title-input [initialValue]="job[field]" [form]="form"></app-job-title-input>
+            }
+            @case('company') {
+                <app-job-company-input [initialValue]="job[field]" [form]="form"></app-job-company-input>
+            }
+        }
+        <button mat-flat-button type="submit" [disabled]="form.invalid || loading">
+            @if (loading) { 
+                <span i18n="loading|inform the user loading occurs@@info.loading">Loading...</span>
+            } 
+            @else { 
+                <span i18n="save|Save action label@@action.save">Save</span>
+            }
+        </button>
+
+        <button mat-flat-button type="submit" (click)="cancel()">
+            <span i18n="@@action.cancel">Cancel</span>
+        </button>
+        
+    </form>
+}
+@else {
+    @if(hasContent) {
+        <ng-content></ng-content>
+    }
+    @else {
+        @if(job[field] !== '') {
+            <div [innerHTML]="job[field]"></div>
+        }
+        @else {
+            <div class="empty-info" i18n="empty field|short text to tell that a field is empty@@info.empty">Empty</div>
+        }
+    }
+
+    <a [matTooltip]="actionLabel" (click)="displayForm()">
+        <mat-icon aria-hidden="false">edit</mat-icon>
+    </a>
+}

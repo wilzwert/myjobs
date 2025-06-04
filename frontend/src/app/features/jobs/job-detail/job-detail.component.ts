@@ -18,10 +18,11 @@ import { JobSummaryComponent } from '@features/jobs/job-summary/job-summary.comp
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
 import { ErrorProcessorService } from '@core/services/error-processor.service';
+import { JobEditableFieldComponent } from '../job-editable-field/job-editable-field.component';
 
 @Component({
   selector: 'app-job-detail',
-  imports: [AsyncPipe, JobSummaryComponent, MatCardModule, MatButton, JobAttachmentsComponent, JobActivitiesComponent, MatButton, MatIconButton, MatIcon, MatTooltip, RouterLink],
+  imports: [AsyncPipe, JobSummaryComponent, MatCardModule, MatButton, JobAttachmentsComponent, JobActivitiesComponent, MatButton, MatIconButton, MatIcon, MatTooltip, RouterLink, JobEditableFieldComponent],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss'
 })

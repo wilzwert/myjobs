@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { SessionInformation } from '@core/model/session-information.interface';
 import { RefreshTokenResponse } from '@core/model/refresh-token-response.interface';
 import { BehaviorSubject } from 'rxjs';
+import { DataStorageService } from './data-storage.service';
 
 const SESSION_INFO_KEY = 'session-info';
 
@@ -13,17 +14,15 @@ export class SessionStorageService {
   private sessionInfo: SessionInformation|null = null;
   private sessionInfoSubject = new BehaviorSubject<SessionInformation|null>(null);
 
-  constructor() { 
-    let rawInfo = window.localStorage.getItem(SESSION_INFO_KEY);
-    if(rawInfo !== null) {
-      this.sessionInfo = JSON.parse(rawInfo);
-    }
+  constructor(private dataStorageService: DataStorageService) { 
+    this.sessionInfo = this.dataStorageService.getItem<SessionInformation>(SESSION_INFO_KEY);
     this.sessionInfoSubject.next(this.sessionInfo);
   }
 
   public clearSessionInformation() :void {
-    window.localStorage.removeItem(SESSION_INFO_KEY);
+    this.dataStorageService.removeItem(SESSION_INFO_KEY);
     this.sessionInfo = null;
+    this.sessionInfoSubject.next(null);
   }
 
   public getSessionInformation() :SessionInformation | null {
@@ -36,7 +35,7 @@ export class SessionStorageService {
 
   public saveSessionInformation(data : SessionInformation) :void {
     this.sessionInfo = data;
-    window.localStorage.setItem(SESSION_INFO_KEY, JSON.stringify(data));
+    this.dataStorageService.setItem(SESSION_INFO_KEY, data);
     this.sessionInfoSubject.next(this.sessionInfo);
   }
 
