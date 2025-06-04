@@ -115,6 +115,8 @@ public class JobController {
             itemsPerPage = 10;
         }
 
+        log.info("Getting user jobs with status[{}], statusMeta[[{}]", status, statusMeta);
+
         return jobMapper.toEnrichedResponse(getUserJobsUseCase.getUserJobs(userDetails.getId(), page, itemsPerPage, status, statusMeta, sort));
     }
 }

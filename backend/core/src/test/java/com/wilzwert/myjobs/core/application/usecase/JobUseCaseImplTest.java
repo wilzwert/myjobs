@@ -143,10 +143,8 @@ class JobUseCaseImplTest {
             // check specification passed to the jobDataManager
             verify(jobDataManager).findPaginated(
                     argThat(specification -> {
-                        System.out.println(specification);
                         // TODO we MUST check userId, filter late and sort specs
                         DomainSpecification.And spec = (DomainSpecification.And) specification;
-                        System.out.println("Size is "+spec.getSpecifications().size());
 
                         // specs include spec for JobStatus.PENDING + specs for the late filter
                         return spec.getSpecifications().size() == 4 &&

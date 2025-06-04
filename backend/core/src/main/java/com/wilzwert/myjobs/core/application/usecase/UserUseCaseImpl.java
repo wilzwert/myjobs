@@ -85,8 +85,6 @@ public class UserUseCaseImpl implements SendVerificationEmailUseCase, GetUserVie
         User user = userDataManager.findMinimalById(userId).orElseThrow(UserNotFoundException::new);
 
         List<JobState> jobStatuses = userDataManager.getJobsState(user);
-        System.out.println(jobStatuses);
-        System.out.println(jobStatuses.stream().collect(new UserSummaryCollector(user)));
 
         return jobStatuses.stream().collect(new UserSummaryCollector(user));
     }

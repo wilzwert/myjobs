@@ -53,9 +53,7 @@ public class UserSummaryCollector implements Collector<JobState, Map<JobStatus, 
     @Override
     public Function<Map<JobStatus, List<JobState>>, UserSummary> finisher() {
         return (statusToStates) -> {
-
-            System.out.println(statusToStates);
-            // FIXME : it may actually be better to loop through statusToStates to compute useful data
+            // FIXME : it may actually be better to loop through statusToStates
             // than to use numerous streams
 
             // map statuses to jobs count

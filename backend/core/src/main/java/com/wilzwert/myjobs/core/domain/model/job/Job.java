@@ -261,7 +261,6 @@ public class Job extends DomainEntity<JobId> {
 
         ValidationErrors validationErrors = validate();
         if(validationErrors.hasErrors()) {
-            System.out.println(validationErrors);
             throw new ValidationException(validationErrors);
         }
     }

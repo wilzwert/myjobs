@@ -367,7 +367,6 @@ public class User extends DomainEntity<UserId> {
                     .build()
         );
 
-        System.out.println(newJobs);
         return copy(newJobs, Instant.now());
     }
 
