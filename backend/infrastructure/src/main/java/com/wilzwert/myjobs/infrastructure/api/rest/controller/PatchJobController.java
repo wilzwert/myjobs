@@ -24,7 +24,7 @@ import java.util.UUID;
  */
 @RestController
 @Slf4j
-@RequestMapping("/api/jobs/{id}")
+@RequestMapping("/api/jobs")
 public class PatchJobController {
 
     private final UpdateJobDtoFactory updateJobDtoFactory;
@@ -52,7 +52,7 @@ public class PatchJobController {
         this.validator = validator;
     }
 
-    @PatchMapping()
+    @PatchMapping("/{id}")
     public JobResponse patch(@PathVariable("id") String id, @RequestBody Map<String, Object> fields, Authentication authentication) {
         // we need the right DTO for the right job
         // the factory will build one based on the request contents
