@@ -9,7 +9,7 @@ import { BaseInputComponent } from "./baseinput.component";
 
 @Component({
   selector: 'app-job-profile-input',
-  imports: [ReactiveFormsModule, MatFormField, MatInput, MatLabel, MatHint, MatButton, EditorComponent, StatusIconComponent],
+  imports: [ReactiveFormsModule, MatFormField, MatInput, MatLabel, MatHint, EditorComponent, StatusIconComponent],
   providers: [
     { provide: TINYMCE_SCRIPT_SRC, useValue: 'tinymce/tinymce.min.js' }
   ],

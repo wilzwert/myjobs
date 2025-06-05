@@ -2,9 +2,9 @@ import { AfterViewInit, Component, EventEmitter, Inject, OnInit, Output, ViewChi
 import { MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef } from '@angular/material/dialog';
 import { MatStepper, MatStepperIntl, MatStepperModule } from '@angular/material/stepper';
 import { Job } from '@core/model/job.interface';
-import { JobFormComponent } from '@features/jobs/job-form/job-form.component';
-import { JobActivitiesFormComponent } from '@features/jobs/job-actitivies-form/job-actitivities-form.component';
-import { JobAttachmentsFormComponent } from '@features/jobs/job-attachments-form/job-attachments-form.component';
+import { JobFormComponent } from '@app/features/jobs/forms/job-form/job-form.component';
+import { JobActivitiesFormComponent } from '@app/features/jobs/forms/job-actitivies-form/job-actitivities-form.component';
+import { JobAttachmentsFormComponent } from '@app/features/jobs/forms/job-attachments-form/job-attachments-form.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { BaseChildComponent } from '@core/component/base-child.component';

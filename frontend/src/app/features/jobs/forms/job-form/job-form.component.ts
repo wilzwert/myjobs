@@ -14,13 +14,13 @@ import { MatButton } from '@angular/material/button';
 import { JobMetadata } from '@core/model/job-metadata.interface';
 import { StatusIconComponent } from "@layout/shared/status-icon/status-icon.component";
 import { ErrorProcessorService } from '@core/services/error-processor.service';
-import { CommentInputComponent } from '../forms/inputs/comment-input.component';
-import { SalaryInputComponent } from '../forms/inputs/salary-input.component';
-import { ProfileInputComponent } from '../forms/inputs/profile-input.component';
-import { DescriptionInputComponent } from '../forms/inputs/description-input.component';
-import { CompanyInputComponent } from '../forms/inputs/company-input.component';
-import { TitleInputComponent } from '../forms/inputs/title-input.component';
-import { UrlInputComponent } from '../forms/inputs/url-input.component';
+import { CommentInputComponent } from '../inputs/comment-input.component';
+import { SalaryInputComponent } from '../inputs/salary-input.component';
+import { ProfileInputComponent } from '../inputs/profile-input.component';
+import { DescriptionInputComponent } from '../inputs/description-input.component';
+import { CompanyInputComponent } from '../inputs/company-input.component';
+import { TitleInputComponent } from '../inputs/title-input.component';
+import { UrlInputComponent } from '../inputs/url-input.component';
 
 @Component({
   selector: 'app-job-form',

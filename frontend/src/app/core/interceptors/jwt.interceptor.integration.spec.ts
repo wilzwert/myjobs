@@ -1,121 +1,111 @@
-import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
+import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { HTTP_INTERCEPTORS, HttpClient, HttpErrorResponse, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { JwtInterceptor } from './jwt.interceptor';
 import { SessionService } from '@core/services/session.service';
-import { TestBed } from "@angular/core/testing";
-import { HttpTestingController, provideHttpClientTesting } from "@angular/common/http/testing";
-import { JwtInterceptor } from "./jwt.interceptor";
-import { SessionInformation } from "@core/model/session-information.interface"; 
-import { RefreshTokenRequest } from "@core/model/refresh-token-request.interface"; 
-import { RefreshTokenResponse } from "@core/model/refresh-token-response.interface"; 
+import { AuthService } from '@core/services/auth.service';
+import { ErrorProcessorService } from '@core/services/error-processor.service';
+import { of, throwError } from 'rxjs';
+import { SessionInformation } from '@core/model/session-information.interface';
 
 describe('JwtInterceptor', () => {
-  let httpTestingController: HttpTestingController;
-  let httpClient: HttpClient;
-  let sessionService: SessionService;
-  let interceptor: JwtInterceptor;
+  let http: HttpClient;
+  let httpMock: HttpTestingController;
+  let sessionService: jest.Mocked<SessionService>;
+  let authService: jest.Mocked<AuthService>;
+  let errorProcessorService: jest.Mocked<ErrorProcessorService>;
 
-  
   beforeEach(() => {
+    sessionService = {
+      isLogged: jest.fn(),
+      logIn: jest.fn(),
+      logOut: jest.fn(),
+    } as any;
+
+    authService = {
+      refreshToken: jest.fn()
+    } as any;
+
+    errorProcessorService = {
+      processError: jest.fn().mockImplementation((e) => throwError(() => e))
+    } as any;
+
     TestBed.configureTestingModule({
       imports: [],
       providers: [
+        { provide: SessionService, useValue: sessionService },
+        { provide: AuthService, useValue: authService },
+        { provide: ErrorProcessorService, useValue: errorProcessorService },
+        {
+          provide: HTTP_INTERCEPTORS,
+          useClass: JwtInterceptor,
+          multi: true,
+        },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
-        { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
       ],
-    }).compileComponents();
+    });
 
-    interceptor = TestBed.inject(JwtInterceptor);
-    sessionService = TestBed.inject(SessionService);
-    httpTestingController = TestBed.inject(HttpTestingController);
-    httpClient = TestBed.inject(HttpClient);
+    http = TestBed.inject(HttpClient);
+    httpMock = TestBed.inject(HttpTestingController);
   });
 
   afterEach(() => {
-    httpTestingController.verify();
-  });
-  
-  it('should be created', () => {
-    expect(interceptor).toBeTruthy();
+    httpMock.verify();
   });
 
-  it('should not add bearer to token in request headers if not logged in', () => {
-    const url = '/api/me';
-    httpClient.get(url).subscribe();
-    const req = httpTestingController.expectOne(url);
-    expect(req.request.headers.get('Authorization')).toBeNull();
-  });
-
-  it('should add bearer to token in request headers if logged in', () => {
-    const mockSessionInformation: SessionInformation = {
-      email: 'john@doe.com',
-      username: 'johndoe',
+  it('should refresh token on 401 and retry request', () => {
+    const fakeSession: SessionInformation = {
+      email: 'user@example.com',
+      username: 'user',
       role: 'USER'
-    }
+    };
 
-    sessionService.logIn(mockSessionInformation);
+    sessionService.isLogged.mockReturnValue(true);
+    authService.refreshToken.mockReturnValue(of(fakeSession));
 
-    const url = '/api/me';
-    httpClient.get(url).subscribe();
+    http.get('/api/resource').subscribe();
 
-    const req = httpTestingController.expectOne(url);
+    const req1 = httpMock.expectOne('/api/resource');
+    req1.flush(null, { status: 401, statusText: 'Unauthorized' });
 
-    expect(req.request.headers.get('Authorization')).toBe(`${mockSessionInformation.type} ${mockSessionInformation.token}`);
-  });
-  
-  it('should try to refresh token if api returns 401 for a loggedin user', () => {
-    const mockSessionInformation: SessionInformation = {
-      id: 1,
-      username: 'johndoe',
-      token: 'token123',
-      type: 'Bearer',
-      refreshToken: 'refresh_token'
-    }
+    const req2 = httpMock.expectOne('/api/resource');
+    expect(req2.request.url).toBe('/api/resource');
 
-    sessionService.logIn(mockSessionInformation);
-
-    const url = '/api/me';
-    httpClient.get(url).subscribe();
-
-    const req = httpTestingController.expectOne(url);
-    req.error(new  ProgressEvent('error'), { status: 401 });
-
-    expect(req.request.headers.get('Authorization')).toBe(`${mockSessionInformation.type} ${mockSessionInformation.token}`);
-    const refreshRequest = httpTestingController.expectOne("/api/auth/refreshToken");
-    expect(refreshRequest.request.body).toMatchObject({refreshToken: "refresh_token"} as RefreshTokenRequest);
-
-    const refreshTokenResponse: RefreshTokenResponse = {token: "new_token", type: "Bearer", refreshToken: "refresh_token"} as RefreshTokenResponse;
-    refreshRequest.flush(refreshTokenResponse);
-    
-    const secondReq = httpTestingController.expectOne(url);
-    expect(secondReq.request.headers.get('Authorization')).toBe(`${refreshTokenResponse.type} ${refreshTokenResponse.token}`);
-  });
-  
-  it('should try to refresh token if api returns 401 for a loggedin user and logout on failure', () => {
-    const mockSessionInformation: SessionInformation = {
-      id: 1,
-      username: 'johndoe',
-      token: 'token123',
-      type: 'Bearer',
-      refreshToken: 'refresh_token'
-    }
-
-    sessionService.logIn(mockSessionInformation);
-
-    const url = '/api/me';
-    httpClient.get(url).subscribe();
-
-    const req = httpTestingController.expectOne(url);
-    req.error(new  ProgressEvent('error'), { status: 401 });
-    expect(req.request.headers.get('Authorization')).toBe(`${mockSessionInformation.type} ${mockSessionInformation.token}`);
-
-    const refreshRequest = httpTestingController.expectOne("/api/auth/refreshToken");
-    expect(refreshRequest.request.body).toMatchObject({refreshToken: "refresh_token"} as RefreshTokenRequest);
-    expect(refreshRequest.request.headers.get('Authorization')).toBe(`${mockSessionInformation.type} ${mockSessionInformation.token}`);
-    refreshRequest.error(new ProgressEvent('error'), {status: 401});
-
-    // every attempt failed, the interceptor couldn't get any token from the API
-    // user should avec been disconnected
-    expect(sessionService.isLogged()).toBe(false);
+    expect(sessionService.logIn).toHaveBeenCalledWith(fakeSession);
   });
 
-})
+  it('should logout and call processError on refresh failure', () => {
+    sessionService.isLogged.mockReturnValue(true);
+    authService.refreshToken.mockReturnValue(throwError(() => new HttpErrorResponse({ status: 403 })));
+
+    http.get('/api/resource').subscribe({
+      error: (err) => {
+        expect(sessionService.logOut).toHaveBeenCalled();
+        expect(errorProcessorService.processError).toHaveBeenCalled();
+        expect(err.status).toBe(403);
+      }
+    });
+
+    const req1 = httpMock.expectOne('/api/resource');
+    req1.flush(null, { status: 401, statusText: 'Unauthorized' });
+  });
+
+  it('should bypass interceptor if not logged in', () => {
+    sessionService.isLogged.mockReturnValue(false);
+
+    http.get('/api/resource').subscribe();
+
+    const req = httpMock.expectOne('/api/resource');
+    expect(req.request.url).toBe('/api/resource');
+  });
+
+  it('should bypass interceptor for non-api urls', () => {
+    sessionService.isLogged.mockReturnValue(true);
+
+    http.get('/other/resource').subscribe();
+
+    const req = httpMock.expectOne('/other/resource');
+    expect(req.request.url).toBe('/other/resource');
+  });
+});

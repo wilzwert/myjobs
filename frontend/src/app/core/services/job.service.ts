@@ -4,7 +4,7 @@ import { Job, JobStatus, JobStatusMeta } from '@core/model/job.interface';
 import { BehaviorSubject, forkJoin, map, Observable, of, switchMap, tap } from 'rxjs';
 import { Page } from '@core/model/page.interface';
 import { CreateJobRequest } from '@core/model/create-job-request.interface';
-import { UpdateJobRequest } from '@core/model/update-job-request.interface';
+import { UpdateJobFieldRequest, UpdateJobRequest } from '@core/model/update-job-request.interface';
 import { CreateJobAttachmentsRequest } from '@core/model/create-job-attachments-request.interface';
 import { CreateJobAttachmentRequest } from '@core/model/create-job-attachment-request.interface';
 import { CreateJobActivitiesRequest } from '@core/model/create-job-activities-request.interface';
@@ -121,7 +121,7 @@ export class JobService {
    */
   public updateJobStatus(jobId: string, request: UpdateJobStatusRequest): Observable<Job> {
     // using patch because only some fields are edited
-    return this.dataService.put<Job>(`jobs/${jobId}/status`, request).pipe(
+    return this.dataService.patch<Job>(`jobs/${jobId}`, request).pipe(
       map((j: Job) => {
         this.reloadIfNecessary(j);
         return j;
@@ -135,7 +135,7 @@ export class JobService {
    */
   public updateJobRating(jobId: string, request: UpdateJobRatingRequest): Observable<Job> {
     // using patch because only some fields are edited
-    return this.dataService.put<Job>(`jobs/${jobId}/rating`, request).pipe(
+    return this.dataService.patch<Job>(`jobs/${jobId}`, request).pipe(
       map((j: Job) => {
         this.reloadIfNecessary(j);
         return j;
@@ -158,6 +158,16 @@ export class JobService {
     );
   }
 
+  public updateJobField(jobId: string, request: UpdateJobFieldRequest): Observable<Job> {
+    // using patch because only some fields are edited
+    return this.dataService.patch<Job>(`jobs/${jobId}`, request).pipe(
+      map((j: Job) => {
+        this.reloadIfNecessary(j);
+        return j;
+      })
+    );
+  }
+
   public createAttachment(jobId: string, request: CreateJobAttachmentRequest): Observable<Job> {
     return this.dataService.post<Job>(`jobs/${jobId}/attachments`, request).pipe(
       map((j: Job) => {
@@ -169,11 +179,11 @@ export class JobService {
 
   public createAttachments(jobId: string, request: CreateJobAttachmentsRequest): Observable<Job> {
     const attachmentRequests = request.attachments.map(attachment => 
-      this.createAttachment(jobId, attachment) // Appel de createAttachment pour chaque pièce jointe
+      this.createAttachment(jobId, attachment) // calls createAttachment for each attachment
     );
 
     return forkJoin(attachmentRequests).pipe(
-        map((jobs: Job[]) => jobs[jobs.length - 1]) // Retourne le dernier Job mis à jour
+        map((jobs: Job[]) => jobs[jobs.length - 1]) // returns the last updated job
     );
   }
 
@@ -196,11 +206,11 @@ export class JobService {
 
   public createActivities(jobId: string, request: CreateJobActivitiesRequest): Observable<Job> {
     const attachmentRequests = request.activities.map(activity => 
-      this.createActivity(jobId, activity) // Appel de createAttachment pour chaque pièce jointe
+      this.createActivity(jobId, activity) // calls createAttachment for each activity
     );
 
     return forkJoin(attachmentRequests).pipe(
-        map((jobs: Job[]) => jobs[jobs.length - 1]) // Retourne le dernier Job mis à jour
+        map((jobs: Job[]) => jobs[jobs.length - 1]) // returns the last updated job
     );
   }
 

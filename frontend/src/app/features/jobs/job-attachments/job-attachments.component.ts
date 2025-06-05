@@ -6,7 +6,7 @@ import { catchError, EMPTY, of, switchMap, take, tap } from 'rxjs';
 import { ConfirmDialogService } from '@core/services/confirm-dialog.service';
 import { FileService } from '@core/services/file.service';
 import { MatButton } from '@angular/material/button';
-import { JobAttachmentsFormComponent } from '@features/jobs/job-attachments-form/job-attachments-form.component';
+import { JobAttachmentsFormComponent } from '@app/features/jobs/forms/job-attachments-form/job-attachments-form.component';
 import { ModalService } from '@core/services/modal.service';
 import { DatePipe } from '@angular/common';
 import { ProtectedFile } from '@app/core/model/protected-file.interface';

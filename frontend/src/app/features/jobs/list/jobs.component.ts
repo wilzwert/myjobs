@@ -1,15 +1,14 @@
 import { Component, effect, OnDestroy, OnInit, Signal } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, take, takeUntil, tap } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { AsyncPipe, KeyValuePipe } from '@angular/common';
 import { MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card';
 import { Page } from '../../../core/model/page.interface';
-import { Job, JobStatus, JobStatusMeta } from '../../../core/model/job.interface';
+import { Job, JobStatus } from '../../../core/model/job.interface';
 import { JobService } from '../../../core/services/job.service';
 import { ModalService } from '../../../core/services/modal.service';
 import { StatusLabelPipe } from '../../../core/pipe/status-label.pipe';
 import { MatButton } from '@angular/material/button';
-import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
@@ -49,7 +48,12 @@ export class JobsComponent implements OnInit, OnDestroy {
   // make options available to the template
   protected jobsOptions!: Signal<JobsListOptions | null>;
 
-  constructor(private userService: UserService, private jobService: JobService, private jobsListOptionsService: JobsListOptionsService, private modalService: ModalService, private confirmDialogService: ConfirmDialogService, private notificationService: NotificationService) {
+  constructor(
+    private userService: UserService, 
+    private jobService: JobService, 
+    private jobsListOptionsService: JobsListOptionsService, 
+    private modalService: ModalService,
+    private notificationService: NotificationService) {
     this.statusKeys = Object.keys(JobStatus);
     this.user$ = this.userService.getUser();
 

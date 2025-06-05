@@ -10,6 +10,8 @@ import { DescriptionInputComponent } from "../forms/inputs/description-input.com
 import { ProfileInputComponent } from '../forms/inputs/profile-input.component';
 import { TitleInputComponent } from '../forms/inputs/title-input.component';
 import { CompanyInputComponent } from "../forms/inputs/company-input.component";
+import { UpdateJobFieldRequest } from '@app/core/model/update-job-request.interface';
+import { NotificationService } from '@app/core/services/notification.service';
 
 @Component({
   selector: 'app-job-editable-field',
@@ -31,7 +33,7 @@ export class JobEditableFieldComponent implements AfterContentInit {
   protected form!: FormGroup;
   protected formFieldType = 'textarea';
 
-  constructor(private fb: FormBuilder, private jobService: JobService) {}
+  constructor(private fb: FormBuilder, private jobService: JobService, private notificationService: NotificationService) {}
 
   ngAfterContentInit() {
     this.hasContent = !!this.content;
@@ -51,10 +53,19 @@ export class JobEditableFieldComponent implements AfterContentInit {
 
   submit(): void {
     console.log(this.form?.value);
+    if (this.form.valid) {
+      this.loading = true;
+      this.jobService.updateJobField(this.job.id, this.form.value as UpdateJobFieldRequest).subscribe((job) => {
+        this.loading = false;
+        this.formVisible = false;
+        const term = $localize `:@@info.job.updated:updated`;
+        this.notificationService.confirmation($localize `:@@job.created_or_saved:Job ${term} successfully`);
+        this.fieldEdited.emit(job);
+      });
+    }
   }
 
   cancel(): void {
     this.formVisible = false;
   }
-
 }

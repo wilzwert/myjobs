@@ -17,11 +17,12 @@ export class JobsListOptionsService {
   private jobsListOptionsSignal: WritableSignal<JobsListOptions | null> = signal(null); 
 
   constructor(private userService: UserService, private dataStorageService: DataStorageService) { 
-
+    console.log('constructing');
     // a UserSummary change triggers a JobsListOptions change
     effect(() => {
       const userSummary = this.userService.getUserSummary()();
       if(!userSummary) {
+        console.log('nope ?');
         return;
       }
       let forceReload = false;
@@ -102,7 +103,7 @@ export class JobsListOptionsService {
     
     if(currentStatusMeta !== null) {
       const statusMeta = JobStatusMeta[currentStatusMeta as keyof typeof JobStatusMeta];
-      if(summary.usableJobStatusMetas.includes(statusMeta)) {
+      if(!summary.usableJobStatusMetas.includes(statusMeta)) {
         removeStatusMeta = true;
       }
     }
