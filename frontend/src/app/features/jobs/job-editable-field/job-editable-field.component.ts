@@ -12,10 +12,12 @@ import { TitleInputComponent } from '../forms/inputs/title-input.component';
 import { CompanyInputComponent } from "../forms/inputs/company-input.component";
 import { UpdateJobFieldRequest } from '@app/core/model/update-job-request.interface';
 import { NotificationService } from '@app/core/services/notification.service';
+import { SalaryInputComponent } from "../forms/inputs/salary-input.component";
+import { UrlInputComponent } from "../forms/inputs/url-input.component";
 
 @Component({
   selector: 'app-job-editable-field',
-  imports: [MatIcon, MatButton, MatTooltip, ReactiveFormsModule, CommentInputComponent, DescriptionInputComponent, ProfileInputComponent, TitleInputComponent, CompanyInputComponent],
+  imports: [MatIcon, MatButton, MatTooltip, ReactiveFormsModule, CommentInputComponent, DescriptionInputComponent, ProfileInputComponent, TitleInputComponent, CompanyInputComponent, SalaryInputComponent, UrlInputComponent],
   templateUrl: './job-editable-field.component.html',
   styleUrl: './job-editable-field.component.scss'
 })
@@ -28,10 +30,10 @@ export class JobEditableFieldComponent implements AfterContentInit {
   @ContentChild('fieldDisplayContent', { static: false }) content: ElementRef | undefined;
   hasContent = false;
 
-  protected formVisible = false;
-  protected loading = false;
-  protected form!: FormGroup;
-  protected formFieldType = 'textarea';
+  formVisible = false;
+  loading = false;
+  form!: FormGroup;
+  formFieldType = 'textarea';
 
   constructor(private fb: FormBuilder, private jobService: JobService, private notificationService: NotificationService) {}
 
@@ -52,8 +54,8 @@ export class JobEditableFieldComponent implements AfterContentInit {
   }
 
   submit(): void {
-    console.log(this.form?.value);
     if (this.form.valid) {
+      console.log('isvalid');
       this.loading = true;
       this.jobService.updateJobField(this.job.id, this.form.value as UpdateJobFieldRequest).subscribe((job) => {
         this.loading = false;

@@ -27,27 +27,15 @@ import { JobEditableFieldComponent } from "../job-editable-field/job-editable-fi
 })
 export class JobSummaryComponent {
   @Input({ required: true }) job!: Job;
+  @Input() context: 'list' | 'detail' = 'list';
   @Output() deleted = new EventEmitter<Job>();
-  @Output() statusChanged = new EventEmitter<Job>();
+  @Output() jobChanged = new EventEmitter<Job>();
 
   constructor(private jobService:JobService, private notificationService: NotificationService, private modalService: ModalService, private confirmDialogService: ConfirmDialogService) {}
 
-  onCommentChanged(job: Job): void {
+  onJobChanged(job: Job): void {
     this.job = job;
-  }
-
-  onJobStatusChanged(job: Job): void {
-    this.job = job;
-    this.statusChanged.emit(job);
-  }
-
-  updateJobRating(job: Job, event: number): void {
-    // don't reload list as the edited job is replaced after update by the service
-    this.jobService.updateJobRating(job.id, { rating: event } as UpdateJobRatingRequest).subscribe(
-      (j) => {
-        this.notificationService.confirmation($localize`:@@info.job.rating.updated:Rating updated successfully.`);
-      }
-    );
+    this.jobChanged.emit(job);
   }
   
   editJob(event: Event, job: Job): void {

@@ -92,7 +92,7 @@ describe('JobsComponent', () => {
 
   it('should reload jobs on onStatusChanged', () => {
     jest.spyOn(component, 'reloadJobs');
-    component.onStatusChanged({} as any);
+    component.onJobChanged({} as any);
     expect(component.reloadJobs).toHaveBeenCalled();
   });
 

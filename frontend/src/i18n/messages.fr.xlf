@@ -358,12 +358,10 @@
       <trans-unit id="action.job.status.edit" datatype="html">
         <source>Change status</source>
         <target state="translated">Modifier le statut</target>
-        <note priority="1" from="description">label for job status change action</note>
-        <note priority="1" from="meaning">Change status</note>
       </trans-unit>
       <trans-unit id="job.created" datatype="html">
-        <source>Job creation date count</source>
-        <target state="translated">Créé</target>
+        <source>Job creation date</source>
+        <target state="new">Créé</target>
       </trans-unit>
       <trans-unit id="job.activities.count" datatype="html">
         <source>Job activities count</source>
@@ -551,12 +549,6 @@
         <target state="translated">Profil</target>
         <note priority="1" from="description">job profile input label</note>
         <note priority="1" from="meaning">job profile</note>
-      </trans-unit>
-      <trans-unit id="input.job.profile.placeholder" datatype="html">
-        <source>Job profile</source>
-        <target state="translated">Profile recherché</target>
-        <note priority="1" from="description">job profile input placeholder</note>
-        <note priority="1" from="meaning">job profile placeholder</note>
       </trans-unit>
       <trans-unit id="input.job.salary.label" datatype="html">
         <source>Salary</source>
@@ -861,7 +853,7 @@
       </trans-unit>
       <trans-unit id="info.empty" datatype="html">
         <source>Empty</source>
-        <target state="translated">Vide</target>
+        <target state="translated">Non renseigné</target>
         <note priority="1" from="description">short text to tell that a field is empty</note>
         <note priority="1" from="meaning">empty field</note>
       </trans-unit>
@@ -897,12 +889,6 @@
         <target state="translated">Actions pour ce job</target>
         <note priority="1" from="description">label for job actions in a jobs list</note>
         <note priority="1" from="meaning">Actions for this job</note>
-      </trans-unit>
-      <trans-unit id="filter.job.late" datatype="html">
-        <source>Late only</source>
-        <target state="translated">En retard uniquement</target>
-        <note priority="1" from="description">the late only filter label</note>
-        <note priority="1" from="meaning">late only label</note>
       </trans-unit>
       <trans-unit id="info.email.validated" datatype="html">
         <source>Your email has been validated.</source>
@@ -1067,6 +1053,52 @@
       <trans-unit id="message.attachment.deleted" datatype="html">
         <source>Attachment deleted successfully</source>
         <target state="translated">La pièce jointe a été supprimée</target>
+      </trans-unit>
+      <trans-unit id="job.status.expired" datatype="html">
+        <source>Expired</source>
+        <target state="translated">Expiré</target>
+      </trans-unit>
+      <trans-unit id="job.status.cancelled" datatype="html">
+        <source>Cancelled</source>
+        <target state="translated">Annulé</target>
+      </trans-unit>
+      <trans-unit id="job.status.hired" datatype="html">
+        <source>Hired</source>
+        <target state="translated">Recruté</target>
+      </trans-unit>
+      <trans-unit id="job.status.filter.active" datatype="html">
+        <source>Active</source>
+        <target state="translated">Actif</target>
+      </trans-unit>
+      <trans-unit id="job.status.filter.inactive" datatype="html">
+        <source>Inactive</source>
+        <target state="translated">Inactif</target>
+      </trans-unit>
+      <trans-unit id="job.status.filter.late" datatype="html">
+        <source>Late</source>
+        <target state="translated">En retard</target>
+      </trans-unit>
+      <trans-unit id="input.job.comment.label" datatype="html">
+        <source>Comment</source>
+        <target state="translated">Commentaire</target>
+        <note priority="1" from="description">job comment input label</note>
+        <note priority="1" from="meaning">job comment</note>
+      </trans-unit>
+      <trans-unit id="input.job.comment.placeholder" datatype="html">
+        <source>Job comment</source>
+        <target state="translated">Commentaire sur le job</target>
+        <note priority="1" from="description">job comment input placeholder</note>
+        <note priority="1" from="meaning">job comment placeholder</note>
+      </trans-unit>
+      <trans-unit id="job.comment" datatype="html">
+        <source>Comment</source>
+        <target state="translated">Commentaire</target>
+      </trans-unit>
+      <trans-unit id="action.job.comment.edit" datatype="html">
+        <source>Edit comment</source>
+        <target state="translated">Modifier le commentaire</target>
+        <note priority="1" from="description">label for job comment edit action</note>
+        <note priority="1" from="meaning">Edit comment</note>
       </trans-unit>
     </body>
   </file>

@@ -16,6 +16,12 @@
             @case('company') {
                 <app-job-company-input [initialValue]="job[field]" [form]="form"></app-job-company-input>
             }
+            @case('salary') {
+                <app-job-salary-input [initialValue]="job[field]" [form]="form"></app-job-salary-input>
+            }
+            @case('url') {
+                <app-job-url-input [initialValue]="job[field]" [form]="form"></app-job-url-input>
+            }
         }
         <button mat-flat-button type="submit" [disabled]="form.invalid || loading">
             @if (loading) { 
@@ -26,26 +32,28 @@
             }
         </button>
 
-        <button mat-flat-button type="submit" (click)="cancel()">
+        <button type="button" mat-flat-button (click)="cancel()">
             <span i18n="@@action.cancel">Cancel</span>
         </button>
         
     </form>
 }
 @else {
-    @if(hasContent) {
-        <ng-content></ng-content>
-    }
-    @else {
-        @if(job[field] !== '') {
-            <div [innerHTML]="job[field]"></div>
+    <div class="editable-field-content" (dblclick)="displayForm()">
+        @if(hasContent) {
+            <ng-content></ng-content>
         }
         @else {
-            <div class="empty-info" i18n="empty field|short text to tell that a field is empty@@info.empty">Empty</div>
+            @if(job[field] !== null && job[field] !== '') {
+                <div [innerHTML]="job[field]"></div>
+            }
+            @else {
+                <div class="empty-info" i18n="empty field|short text to tell that a field is empty@@info.empty">Empty</div>
+            }
         }
-    }
 
-    <a [matTooltip]="actionLabel" (click)="displayForm()">
-        <mat-icon aria-hidden="false">edit</mat-icon>
-    </a>
+        <a [matTooltip]="actionLabel" (click)="displayForm()">
+            <mat-icon aria-hidden="false">edit</mat-icon>
+        </a>
+    </div>
 }

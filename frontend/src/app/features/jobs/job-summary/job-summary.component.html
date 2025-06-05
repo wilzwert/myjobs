@@ -1,20 +1,24 @@
 <mat-card appearance="outlined" [class]="{ 'follow-up-needed': job.followUpLate }" aria-label="Job details" i18n-aria-label="job details@@job.details">
     <mat-card-header>
         <mat-card-title class="job-title">
-            <app-job-editable-field [job]="job" field="title">
-                <a #fieldDisplayContent target="_blank" [routerLink]="job.id">{{ job.title }}</a><a class="job-view-original" taget="_blank" href="{{job.url}}" title="View original job" i18n-title="View original job|label for displayed link to original url@@action.job.view.original"><mat-icon>open_in_new</mat-icon></a>
+            <app-job-editable-field [job]="job" field="title" (fieldEdited)="onJobChanged($event)">
+                @if(context === 'list') {
+                    <a #fieldDisplayContent [routerLink]="'/jobs/'+job.id">{{ job.title }}</a><a class="job-view-original" target="_blank" href="{{job.url}}" title="View original job" i18n-title="View original job|label for displayed link to original url@@action.job.view.original"><mat-icon>open_in_new</mat-icon></a>
+                }
+                @else {
+                    <span #fieldDisplayContent [routerLink]="'/jobs/'+job.id">{{ job.title }}</span><a class="job-view-original" target="_blank" href="{{job.url}}" title="View original job" i18n-title="View original job|label for displayed link to original url@@action.job.view.original"><mat-icon>open_in_new</mat-icon></a>
+                }
             </app-job-editable-field>
 
         </mat-card-title>
         <mat-card-subtitle>
-            <app-job-editable-field [job]="job" field="company"></app-job-editable-field>
+            <app-job-editable-field [job]="job" field="company" (fieldEdited)="onJobChanged($event)"></app-job-editable-field>
         </mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
-    
-        <app-job-comment (commentChanged)="onCommentChanged($event)" [job]="job"></app-job-comment>
+        <app-job-comment (commentChanged)="onJobChanged($event)" [job]="job"></app-job-comment>
 
-        <app-job-status (statusChanged)="onJobStatusChanged($event)" [job]="job"></app-job-status>
+        <app-job-status (statusChanged)="onJobChanged($event)" [job]="job"></app-job-status>
         
         <div class="job-metadata">
             <span matTooltip="Job creation date" aria-label="Job creation date" i18n-aria-label="job creation date|label preceeding a job's creationg date@@job.created" i18n-matTooltip="@@job.created" ><mat-icon>calendar_month</mat-icon>{{ job.createdAt | date }}</span>
@@ -23,7 +27,7 @@
         </div>
 
         <div class="job-actions">
-            <app-rating [rating]="job.rating ? job.rating.value : 0" (ratingChange)="updateJobRating(job, $event)"></app-rating>
+            <app-rating [job]="job" (ratingChange)="onJobChanged($event)"></app-rating>
 
             <button mat-icon-button [matMenuTriggerFor]="actionsMenu">
                 <mat-icon aria-hidden="false" aria-label="Actions for this job" i18n-aria-label="Actions for this job|label for job actions in a jobs list@@action.job.actions" fontIcon="settings">Actions</mat-icon>

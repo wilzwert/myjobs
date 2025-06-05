@@ -88,7 +88,7 @@ export class JobsComponent implements OnInit, OnDestroy {
     this.jobsListOptionsService.changePagination(event.pageIndex, event.pageSize);
   }
 
-  onStatusChanged(job: Job): void {
+  onJobChanged(job: Job): void {
     this.reloadJobs();
   }
 

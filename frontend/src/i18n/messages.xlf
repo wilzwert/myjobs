@@ -384,11 +384,6 @@
         <note priority="1" from="description">job profile input label</note>
         <note priority="1" from="meaning">job profile</note>
       </trans-unit>
-      <trans-unit id="input.job.profile.placeholder" datatype="html">
-        <source>Job profile</source>
-        <note priority="1" from="description">job profile input placeholder</note>
-        <note priority="1" from="meaning">job profile placeholder</note>
-      </trans-unit>
       <trans-unit id="input.job.salary.label" datatype="html">
         <source>Salary</source>
         <note priority="1" from="description">job salary input label</note>
@@ -423,8 +418,6 @@
       </trans-unit>
       <trans-unit id="action.job.status.edit" datatype="html">
         <source>Change status</source>
-        <note priority="1" from="description">label for job status change action</note>
-        <note priority="1" from="meaning">Change status</note>
       </trans-unit>
       <trans-unit id="info.job.status.updated" datatype="html">
         <source>Status updated successfully.</source>
@@ -455,7 +448,7 @@
         <note priority="1" from="meaning">View original job</note>
       </trans-unit>
       <trans-unit id="job.created" datatype="html">
-        <source>Job creation date count</source>
+        <source>Job creation date</source>
       </trans-unit>
       <trans-unit id="job.activities.count" datatype="html">
         <source>Job activities count</source>
@@ -480,11 +473,6 @@
       </trans-unit>
       <trans-unit id="info.job.rating.updated" datatype="html">
         <source>Rating updated successfully.</source>
-      </trans-unit>
-      <trans-unit id="filter.job.late" datatype="html">
-        <source>Late only</source>
-        <note priority="1" from="description">the late only filter label</note>
-        <note priority="1" from="meaning">late only label</note>
       </trans-unit>
       <trans-unit id="input.jobs.sort.option.date_desc" datatype="html">
         <source>Date (newest first)</source>
@@ -850,6 +838,42 @@
       </trans-unit>
       <trans-unit id="message.attachment.deleted" datatype="html">
         <source>Attachment deleted successfully</source>
+      </trans-unit>
+      <trans-unit id="action.job.comment.edit" datatype="html">
+        <source>Edit comment</source>
+        <note priority="1" from="description">label for job comment edit action</note>
+        <note priority="1" from="meaning">Edit comment</note>
+      </trans-unit>
+      <trans-unit id="input.job.comment.label" datatype="html">
+        <source>Comment</source>
+        <note priority="1" from="description">job comment input label</note>
+        <note priority="1" from="meaning">job comment</note>
+      </trans-unit>
+      <trans-unit id="input.job.comment.placeholder" datatype="html">
+        <source>Job comment</source>
+        <note priority="1" from="description">job comment input placeholder</note>
+        <note priority="1" from="meaning">job comment placeholder</note>
+      </trans-unit>
+      <trans-unit id="job.comment" datatype="html">
+        <source>Comment</source>
+      </trans-unit>
+      <trans-unit id="job.status.cancelled" datatype="html">
+        <source>Cancelled</source>
+      </trans-unit>
+      <trans-unit id="job.status.expired" datatype="html">
+        <source>Expired</source>
+      </trans-unit>
+      <trans-unit id="job.status.filter.active" datatype="html">
+        <source>Active</source>
+      </trans-unit>
+      <trans-unit id="job.status.filter.inactive" datatype="html">
+        <source>Inactive</source>
+      </trans-unit>
+      <trans-unit id="job.status.filter.late" datatype="html">
+        <source>Late</source>
+      </trans-unit>
+      <trans-unit id="job.status.hired" datatype="html">
+        <source>Hired</source>
       </trans-unit>
     </body>
   </file>

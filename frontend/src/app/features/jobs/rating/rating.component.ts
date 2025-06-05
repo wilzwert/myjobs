@@ -1,8 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
+import { Job } from '@app/core/model/job.interface';
+import { UpdateJobRatingRequest } from '@app/core/model/update-job-rating-request.interface';
+import { JobService } from '@app/core/services/job.service';
+import { NotificationService } from '@app/core/services/notification.service';
 
 @Component({
   selector: 'app-rating',
@@ -10,17 +14,18 @@ import { MatTooltip } from '@angular/material/tooltip';
   templateUrl: './rating.component.html',
   styleUrl: './rating.component.scss'
 })
-export class RatingComponent {
-  @Input() rating: number = 0;
-  @Output() ratingChange = new EventEmitter<number>();
+export class RatingComponent implements OnInit {
+  @Input() job!: Job;
+  @Output() ratingChange = new EventEmitter<Job>();
 
+  rating!: number;
   protected color: string = 'primary';
   protected ratingArr = [0, 1, 2, 3, 4];
 
-  onClick(index: number) :void {
-    this.rating = index;
-    this.ratingChange.emit(this.rating);
-    
+  constructor(private jobService: JobService, private notificationService: NotificationService) {}
+
+  ngOnInit(): void {
+    this.rating = this.job.rating ? this.job.rating.value : 0;
   }
 
   showIcon(index:number) {
@@ -30,5 +35,18 @@ export class RatingComponent {
       return 'star_border';
     }
   }
+
+  updateJobRating(job: Job, rating: number): void {
+      // don't reload list as the edited job is replaced after update by the service
+      this.jobService.updateJobRating(job.id, { rating: rating } as UpdateJobRatingRequest).subscribe(
+        (j) => {
+          console.log('rating changed', j);
+          this.job = j;
+          this.rating = this.job.rating.value;
+          this.ratingChange.emit(j);
+          this.notificationService.confirmation($localize`:@@info.job.rating.updated:Rating updated successfully.`);
+        }
+      );
+    }
 
 }

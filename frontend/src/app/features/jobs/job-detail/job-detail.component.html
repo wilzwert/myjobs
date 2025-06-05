@@ -1,17 +1,17 @@
-@if(job$ | async ; as job) {
+@if(job) {
     <button mat-flat-button (click)="editJob(job)" i18n="@@action.job.edit">Edit</button>
     <button mat-flat-button (click)="deleteJob(job)" i18n="@@action.job.delete">Delete</button>
 
     <button routerLink="/jobs" class="action-back" matTooltip="Go back to jobs" i18n-matTooltip="back to jobs|back to jobs action label@@action.jobs.back" aria-label="Go back to jobs" i18n-aria-label="@@action.jobs.back" mat-icon-button><mat-icon>arrow_back</mat-icon></button>
 
-    <app-job-summary [job]="job" (deleted)="onDelete(job)"></app-job-summary>
+    <app-job-summary [job]="job" (deleted)="onDelete(job)" (jobChanged)="onJobChanged($event)" context="detail"></app-job-summary>
 
     <mat-card appearance="outlined" i18n-aria-label="job description label@@job.description.label" aria-label="Job description">
         <mat-card-header>
             <mat-card-title i18n="@@job.description.label">Description</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-            <app-job-editable-field [job]="job" field="description"></app-job-editable-field>
+            <app-job-editable-field [job]="job" field="description" (fieldEdited)="onJobChanged($event)"></app-job-editable-field>
         </mat-card-content>
     </mat-card>
 
@@ -20,7 +20,7 @@
             <mat-card-title i18n="@@job.profile.label">Profile</mat-card-title>
         </mat-card-header>
         <mat-card-content>
-            <app-job-editable-field [job]="job" field="profile"></app-job-editable-field>
+            <app-job-editable-field [job]="job" field="profile" (fieldEdited)="onJobChanged($event)"></app-job-editable-field>
         </mat-card-content>
     </mat-card>
 

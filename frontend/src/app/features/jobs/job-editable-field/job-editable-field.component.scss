@@ -1,4 +1,28 @@
 :host {
+    flex-grow: 1;
+}
+
+.editable-field-content {
+    padding: 2px;
     display: flex;
     align-items: center;
+    position: relative;
+    border: 1px dashed transparent;
+    border-radius: 5px;
+
+    & > a {
+        visibility: hidden;
+    }
+
+    &:hover {
+        border: 1px dashed var(--app-main-color);
+        
+        a {
+            visibility: visible;
+        }
+    }
+}
+
+.empty-info {
+    font-style: italic;
 }

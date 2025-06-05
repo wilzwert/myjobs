@@ -1,7 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 @use '@angular/material' as mat;
 @use './styles/styles_theme-colors.scss' as myjobs-theme; // location of generated file
-@use './styles/vars.scss' as *;
+@use 'vars' as *;
 
 $my-shape: (
   small: 0px,
@@ -13,10 +13,10 @@ html {
   color-scheme: light;
   font-family: Roboto, sans-serif;
   --app-max-width: 835px;
-  --app-main-color: $main-color;
+  --app-main-color: #{$main-color};
   --md-sys-color-error: #d32f2f;
   --color-warning: #ffa000;
-   --color-success: #388e3c;
+  --color-success: #388e3c;
   color: $main-color;
   @include mat.theme((
     color: (
@@ -120,6 +120,14 @@ button:disabled mat-icon[svgIcon="send"] {
 
 editor {
     margin-top: 3em;
+}
+
+.editable-field-content > div > :first-child {
+    margin-top: 0;
+}
+
+.editable-field-content > div > :last-child {
+    margin-bottom: 0;
 }
 
 textarea {

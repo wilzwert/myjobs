@@ -1,4 +1,4 @@
-import { of, Subject, throwError } from 'rxjs';
+import { of, Subject, takeUntil, throwError } from 'rxjs';
 import { JobDetailComponent } from './job-detail.component';
 import { Job } from '@core/model/job.interface';
 import { fakeAsync } from '@angular/core/testing';
@@ -14,8 +14,6 @@ const mockJob: Job = {
 
 describe('JobDetailComponent', () => {
   let component: JobDetailComponent;
-
-  let loadJobSubject: Subject<any>;
 
   const jobServiceMock = {
     getJobById: jest.fn(),
@@ -53,8 +51,7 @@ describe('JobDetailComponent', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    loadJobSubject = new Subject();
-
+    
     jobServiceMock.getJobById.mockReturnValue(of(mockJob));
     jobServiceMock.deleteJob.mockReturnValue(of(void 0));
     jobServiceMock.updateJobRating.mockReturnValue(of(void 0));
@@ -72,26 +69,20 @@ describe('JobDetailComponent', () => {
     );
   });
   
-  it('should load job on init and set title', async () => {
+  it('should load job on init and set title', () => {
     component.ngOnInit();
-
-    component.job$.subscribe(job => {
-      expect(job).toEqual(mockJob);
-      expect(jobServiceMock.getJobById).toHaveBeenCalledWith('job123');
-      expect(titleServiceMock.setTitle).toHaveBeenCalledWith('Job - Test Job');
-    });
+    expect(jobServiceMock.getJobById).toHaveBeenCalledWith('job123');
+    expect(component.job).toEqual(mockJob);
+    expect(titleServiceMock.setTitle).toHaveBeenCalledWith('Job - Test Job');
   });
 
-  it('should handle error when job loading fails', fakeAsync(() => {
+  it('should handle error when job loading fails', () => {
     jobServiceMock.getJobById.mockReturnValueOnce(throwError(() => new ApiError({ message: 'error'} as unknown as HttpErrorResponse)));
     
     component.ngOnInit();
 
-    component.job$.subscribe({
-      error: () => {}
-    });
     expect(routerMock.navigate).toHaveBeenCalledWith(['/jobs']);
-  }));
+  });
   
   it('should reload job when reloadJob is called', async () => {
     
@@ -106,7 +97,7 @@ describe('JobDetailComponent', () => {
     expect(modalServiceMock.openJobModal).toHaveBeenCalledWith('job', mockJob, expect.any(Function));
   });
 
-  it('should delete job when confirmed', async () => {
+  it('should show notification and navigate to /jobs on job delete', async () => {
     component.onDelete(mockJob);
     expect(jobServiceMock.deleteJob).not.toHaveBeenCalledWith('job123');
     expect(notificationServiceMock.confirmation).toHaveBeenCalledWith($localize`:@@job.deleted:Job successfully deleted.`);
@@ -127,6 +118,26 @@ describe('JobDetailComponent', () => {
       `Delete job "${mockJob.title}" ? All data will be lost.`,
       expect.any(Function)
     );
+  });
+
+  it('should complete destroy$ on ngOnDestroy', (done) => {
+    // test observable
+    const testObservable = new Subject<boolean>();
+    const emitted: boolean[] = [];
+
+    // subscribe until destroyed
+    testObservable.pipe(takeUntil(component['destroy$'])).subscribe({
+      next: (val) => emitted.push(val),
+      complete: () => {
+        expect(emitted).toEqual([]);
+        done();
+      }
+    });
+
+    // Act : destroy component
+    component.ngOnDestroy();
+
+    testObservable.next(true);
   });
 
 });

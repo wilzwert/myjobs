@@ -89,7 +89,7 @@
     @let content = page.content;
     @if(content !== null && user !== null) {
         @for (job of page.content ; track $index) {
-            <app-job-summary [job]="job" (deleted)="onDelete($event)" (statusChanged)="onStatusChanged($event)"></app-job-summary>
+            <app-job-summary [job]="job" (deleted)="onDelete($event)"></app-job-summary>
         }
     }
 }

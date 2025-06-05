@@ -50,7 +50,7 @@ export class TranslatorService {
     APPLICANT_REFUSED : $localize `:@@job.status.applicant_refused:Refused (by me)`,
     COMPANY_REFUSED : $localize `:@@job.status.company_refused:Refused (by company)`,
     EXPIRED: $localize `:@@job.status.expired:Expired`,
-    CANCELLED: $localize `:@@job.status.cancelled:Candelled`,    
+    CANCELLED: $localize `:@@job.status.cancelled:Cancelled`,    
     ACCEPTED: $localize `:@@job.status.accepted:Accepted`,
     HIRED:  $localize `:@@job.status.hired:Hired`
   };
