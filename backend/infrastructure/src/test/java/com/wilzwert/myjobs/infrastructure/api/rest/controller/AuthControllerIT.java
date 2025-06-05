@@ -106,18 +106,18 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
         }
 
         @Test
-        void whenUsernameTooShort_thenShouldReturnBadRequest() throws Exception {
+        void whenUsernameTooShort_thenShouldReturnUnprocessableEntity() throws Exception {
             registerUserRequest.setUsername("T");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
-                    .andExpect(status().isBadRequest())
+                    .andExpect(status().isUnprocessableEntity())
                     .andExpect(jsonPath("errors.username[0].code").value(ErrorCode.FIELD_TOO_SHORT.name()));
         }
 
         @Test
-        void whenUsernameTooLong_thenShouldReturnBadRequest() throws Exception {
+        void whenUsernameTooLong_thenShouldReturnUnprocessableEntity() throws Exception {
             registerUserRequest.setUsername("thisisafartoolongusernamethatshouldtriggeravalidationerror");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
-                    .andExpect(status().isBadRequest())
+                    .andExpect(status().isUnprocessableEntity())
                     .andExpect(jsonPath("errors.username[0].code").value(ErrorCode.FIELD_TOO_LONG.name()));
         }
 
@@ -130,10 +130,10 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
         }
 
         @Test
-        void whenPasswordInvalid_thenShouldReturnBadRequest() throws Exception {
+        void whenPasswordInvalid_thenShouldReturnUnprocessableEntity() throws Exception {
             registerUserRequest.setPassword("pass");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
-                    .andExpect(status().isBadRequest())
+                    .andExpect(status().isUnprocessableEntity())
                     .andExpect(jsonPath("errors.password[0].code").value(ErrorCode.USER_WEAK_PASSWORD.name()));
         }
 

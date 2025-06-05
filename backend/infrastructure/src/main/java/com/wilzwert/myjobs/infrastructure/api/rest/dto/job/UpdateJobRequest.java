@@ -1,4 +1,4 @@
-package com.wilzwert.myjobs.infrastructure.api.rest.dto;
+package com.wilzwert.myjobs.infrastructure.api.rest.dto.job;
 
 
 import jakarta.validation.constraints.NotBlank;
@@ -11,7 +11,7 @@ import org.hibernate.validator.constraints.URL;
 
 @Data
 // TODO @Schema(description = "Object expected for job update request" )
-public class UpdateJobRequest {
+public final class UpdateJobRequest implements UpdateJobDto {
     // TODO @Schema(description = "")
     @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
     private String title;

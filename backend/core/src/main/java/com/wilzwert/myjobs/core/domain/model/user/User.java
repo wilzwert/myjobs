@@ -6,6 +6,7 @@ import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
+import com.wilzwert.myjobs.core.domain.model.job.command.UpdateJobFieldCommand;
 import com.wilzwert.myjobs.core.domain.model.job.exception.JobAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.model.job.exception.JobNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.user.exception.ResetPasswordExpiredException;
@@ -267,12 +268,11 @@ public class User extends DomainEntity<UserId> {
         requireLoadedProperty(jobs);
     }
 
-    private User copy(List<Job> jobs, Instant updatedAt) {
+    private User copy(List<Job> jobs) {
 
         return new User(
                 from(this)
-                        .updatedAt(updatedAt != null ? updatedAt : getUpdatedAt())
-                        .jobs(jobs != null ? jobs : getJobs())
+                    .jobs(jobs != null ? jobs : getJobs())
         );
     }
 
@@ -330,7 +330,7 @@ public class User extends DomainEntity<UserId> {
         // automatically create first activity
         newJobs.add(job.addActivity(Activity.builder().type(ActivityType.CREATION).build()));
 
-        return copy(newJobs, Instant.now());
+        return copy(newJobs);
     }
 
     public Optional<Job> getJobById(JobId jobId) {
@@ -339,6 +339,35 @@ public class User extends DomainEntity<UserId> {
 
     public Optional<Job> getJobByUrl(String url) {
         return getJobs().stream().filter(j -> j.getUrl().equals(url)).findFirst();
+    }
+
+    public User updateJobField(Job job, UpdateJobFieldCommand.Field field, String value) {
+        requireFull();
+
+        if(!jobs.contains(job)) {
+            throw new JobNotFoundException();
+        }
+
+        if(field.equals(UpdateJobFieldCommand.Field.URL) && !value.equals(job.getUrl())) {
+            jobs.stream().filter(j -> j.getUrl().equals(value)).findAny().ifPresent(found -> {throw new JobAlreadyExistsException();});
+        }
+
+        int index = jobs.indexOf(job);
+        Job.Builder builder = Job.from(job).updatedAt(Instant.now());
+
+        switch(field) {
+            case TITLE -> builder.title(value);
+            case URL -> builder.url(value);
+            case DESCRIPTION -> builder.description(value);
+            case PROFILE -> builder.profile(value);
+            case SALARY -> builder.salary(value);
+            case COMMENT -> builder.comment(value);
+            case COMPANY -> builder.company(value);
+        }
+
+        List<Job> newJobs = new ArrayList<>(jobs);
+        newJobs.set(index, builder.build());
+        return copy(newJobs);
     }
 
     public User updateJob(Job job, String url, String title, String company, String description, String profile, String comment, String salary) {
@@ -367,7 +396,7 @@ public class User extends DomainEntity<UserId> {
                     .build()
         );
 
-        return copy(newJobs, Instant.now());
+        return copy(newJobs);
     }
 
     public User removeJob(Job job) {
@@ -378,7 +407,7 @@ public class User extends DomainEntity<UserId> {
         }
         List<Job> newJobs = new ArrayList<>(jobs);
         newJobs.remove(job);
-        return copy(newJobs, Instant.now());
+        return copy(newJobs);
     }
 
     /**

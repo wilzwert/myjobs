@@ -1,6 +1,8 @@
-package com.wilzwert.myjobs.infrastructure.api.rest.dto;
+package com.wilzwert.myjobs.infrastructure.api.rest.dto.job;
 
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.ActivityResponse;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.AttachmentResponse;
 import lombok.*;
 
 import java.time.Instant;

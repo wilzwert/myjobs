@@ -1,4 +1,4 @@
-package com.wilzwert.myjobs.infrastructure.api.rest.dto;
+package com.wilzwert.myjobs.infrastructure.api.rest.dto.job;
 
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -9,7 +9,7 @@ import lombok.Data;
 
 @Data
 // TODO @Schema(description = "Object expected for job rating update request" )
-public class UpdateJobRatingRequest {
+public final class UpdateJobRatingRequest implements UpdateJobDto {
 
     // TODO @Schema(description = "")
     @NotNull(message = "FIELD_CANNOT_BE_EMPTY")

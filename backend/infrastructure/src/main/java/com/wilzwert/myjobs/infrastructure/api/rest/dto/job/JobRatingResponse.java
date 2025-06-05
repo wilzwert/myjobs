@@ -1,4 +1,4 @@
-package com.wilzwert.myjobs.infrastructure.api.rest.dto;
+package com.wilzwert.myjobs.infrastructure.api.rest.dto.job;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -10,5 +10,5 @@ import com.wilzwert.myjobs.core.domain.model.user.UserId;
  * @author Wilhelm Zwertvaegher
  */
 
-public record UpdateJobRatingCommand(JobId jobId, UserId userId, JobRating rating) {
+public record UpdateJobRatingCommand(JobId jobId, UserId userId, JobRating rating)  implements UpdateJobCommand {
 }

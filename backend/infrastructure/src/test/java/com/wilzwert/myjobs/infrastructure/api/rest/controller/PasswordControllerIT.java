@@ -131,10 +131,10 @@ public class PasswordControllerIT extends AbstractBaseIntegrationTest {
         }
 
         @Test
-        void whenNewPasswordWeak_thenShouldReturnBadRequest() throws Exception {
+        void whenNewPasswordWeak_thenShouldReturnUnprocessableEntity() throws Exception {
             changePasswordRequest.setPassword("abcd1234!");
             mockMvc.perform(post(CREATE_PASSWORD_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
-                    .andExpect(status().isBadRequest())
+                    .andExpect(status().isUnprocessableEntity())
                     .andExpect(jsonPath("message").value(ErrorCode.VALIDATION_FAILED.name()))
                     .andExpect(jsonPath("errors.password[0].code").value(ErrorCode.USER_WEAK_PASSWORD.name()));
         }
@@ -217,10 +217,10 @@ public class PasswordControllerIT extends AbstractBaseIntegrationTest {
         }
 
         @Test
-        void whenNewPasswordWeak_thenShouldReturnBadRequest() throws Exception {
+        void whenNewPasswordWeak_thenShouldReturnUnprocessableEntity() throws Exception {
             changePasswordRequest.setPassword("abcd1234!");
             mockMvc.perform(put(CHANGE_PASSWORD_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
-                    .andExpect(status().isBadRequest())
+                    .andExpect(status().isUnprocessableEntity())
                     .andExpect(jsonPath("message").value(ErrorCode.VALIDATION_FAILED.name()))
                     .andExpect(jsonPath("errors.password[0].code").value(ErrorCode.USER_WEAK_PASSWORD.name()));
         }

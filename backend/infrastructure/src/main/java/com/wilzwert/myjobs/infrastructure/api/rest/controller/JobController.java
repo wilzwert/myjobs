@@ -10,6 +10,7 @@ import com.wilzwert.myjobs.core.domain.model.job.ports.driving.*;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.GetUserJobUseCase;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.GetUserJobsUseCase;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.job.*;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
 import jakarta.validation.Valid;
@@ -30,23 +31,23 @@ import java.util.UUID;
 public class JobController {
 
     private final CreateJobUseCase createJobUseCase;
-    private final UpdateJobUseCase updateJobUseCase;
     private final DeleteJobUseCase deleteJobUseCase;
     private final GetUserJobUseCase getUserJobUseCase;
     private final GetUserJobsUseCase getUserJobsUseCase;
-    private final UpdateJobStatusUseCase updateJobStatusUseCase;
-    private final UpdateJobRatingUseCase updateJobRatingUseCase;
     private final ExtractJobMetadataUseCase extractJobMetadataUseCase;
     private final JobMapper jobMapper;
 
-    public JobController(CreateJobUseCase createJobUseCase, GetUserJobUseCase getUserJobUseCase,  UpdateJobUseCase updateJobUseCase, DeleteJobUseCase deleteJobUseCase, GetUserJobsUseCase getUserJobsUseCase, UpdateJobStatusUseCase updateJobStatusUseCase, UpdateJobRatingUseCase updateJobRatingUseCase, ExtractJobMetadataUseCase extractJobMetadataUseCase, JobMapper jobMapper) {
+    public JobController(
+            CreateJobUseCase createJobUseCase,
+            GetUserJobUseCase getUserJobUseCase,
+            DeleteJobUseCase deleteJobUseCase,
+            GetUserJobsUseCase getUserJobsUseCase,
+            ExtractJobMetadataUseCase extractJobMetadataUseCase,
+            JobMapper jobMapper) {
         this.createJobUseCase = createJobUseCase;
         this.getUserJobUseCase = getUserJobUseCase;
-        this.updateJobUseCase = updateJobUseCase;
         this.deleteJobUseCase = deleteJobUseCase;
         this.getUserJobsUseCase = getUserJobsUseCase;
-        this.updateJobStatusUseCase = updateJobStatusUseCase;
-        this.updateJobRatingUseCase = updateJobRatingUseCase;
         this.extractJobMetadataUseCase = extractJobMetadataUseCase;
         this.jobMapper = jobMapper;
     }
@@ -65,30 +66,9 @@ public class JobController {
     }
 
     @GetMapping("/{id}")
-    public JobResponse get(@PathVariable("id") String id,Authentication authentication) {
+    public JobResponse get(@PathVariable("id") String id, Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         return jobMapper.toResponse(getUserJobUseCase.getUserJob(userDetails.getId(), new JobId(UUID.fromString(id))));
-    }
-
-    @PatchMapping("/{id}")
-    public JobResponse patch(@PathVariable("id") String id, @RequestBody @Valid final UpdateJobRequest updateJobRequest, Authentication authentication) {
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        UpdateJobCommand updateJobCommand = jobMapper.toCommand(updateJobRequest, userDetails.getId(), new JobId(UUID.fromString(id)));
-        return jobMapper.toResponse(updateJobUseCase.updateJob(updateJobCommand));
-    }
-
-    @PutMapping("/{id}/status")
-    public JobResponse updateStatus(@PathVariable("id") String id, @RequestBody @Valid final UpdateJobStatusRequest updateJobStatusRequest, Authentication authentication) {
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        UpdateJobStatusCommand updateJobStatusCommand = jobMapper.toCommand(updateJobStatusRequest, userDetails.getId(), new JobId(UUID.fromString(id)));
-        return jobMapper.toResponse(updateJobStatusUseCase.updateJobStatus(updateJobStatusCommand));
-    }
-
-    @PutMapping("/{id}/rating")
-    public JobResponse updateRating(@PathVariable("id") String id, @RequestBody @Valid final UpdateJobRatingRequest updateJobRatingRequest, Authentication authentication) {
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        UpdateJobRatingCommand updateJobRatingCommand = jobMapper.toCommand(updateJobRatingRequest, userDetails.getId(), new JobId(UUID.fromString(id)));
-        return jobMapper.toResponse(updateJobRatingUseCase.updateJobRating(updateJobRatingCommand));
     }
 
     @DeleteMapping("/{id}")

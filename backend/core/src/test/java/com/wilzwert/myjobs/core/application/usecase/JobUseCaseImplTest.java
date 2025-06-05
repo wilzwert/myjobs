@@ -17,7 +17,8 @@ import com.wilzwert.myjobs.core.domain.model.attachment.exception.AttachmentNotF
 import com.wilzwert.myjobs.core.domain.model.job.*;
 import com.wilzwert.myjobs.core.domain.model.job.command.CreateJobCommand;
 import com.wilzwert.myjobs.core.domain.model.job.command.DeleteJobCommand;
-import com.wilzwert.myjobs.core.domain.model.job.command.UpdateJobCommand;
+import com.wilzwert.myjobs.core.domain.model.job.command.UpdateJobFullCommand;
+import com.wilzwert.myjobs.core.domain.model.job.command.UpdateJobFieldCommand;
 import com.wilzwert.myjobs.core.domain.model.job.exception.JobAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.model.job.exception.JobNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.user.exception.UserNotFoundException;
@@ -289,7 +290,7 @@ class JobUseCaseImplTest {
             reset(userDataManager);
             when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.empty());
 
-            var command = new UpdateJobCommand.Builder()
+            var command = new UpdateJobFullCommand.Builder()
                     .jobId(JobId.generate())
                     .userId(UserId.generate())
                     .title("UpdatedJob")
@@ -302,7 +303,7 @@ class JobUseCaseImplTest {
         void whenJobNotFound_thenUpdateJob_shouldThrowJobAlreadyExistsException() {
             reset(userDataManager);
             when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
-            var command = new UpdateJobCommand.Builder()
+            var command = new UpdateJobFullCommand.Builder()
                     .jobId(JobId.generate())
                     .userId(UserId.generate())
                     .title("UpdatedJob")
@@ -319,7 +320,7 @@ class JobUseCaseImplTest {
             when(htmlSanitizer.sanitize(any(String.class))).thenAnswer(i -> i.getArgument(0));
 
 
-            var command = new UpdateJobCommand.Builder()
+            var command = new UpdateJobFullCommand.Builder()
                     .jobId(testJob.getId())
                     .userId(UserId.generate())
                     .title("UpdatedJob")
@@ -340,7 +341,7 @@ class JobUseCaseImplTest {
             when(htmlSanitizer.sanitize(any(String.class))).thenAnswer(i -> i.getArgument(0));
             when(userDataManager.saveUserAndJob(userArgumentCaptor.capture(), jobArgumentCaptor.capture())).thenAnswer(i -> i.getArgument(0));
 
-            var command = new UpdateJobCommand.Builder()
+            var command = new UpdateJobFullCommand.Builder()
                     .jobId(testJob.getId())
                     .userId(UserId.generate())
                     .url("http://www.example.com/new-job")
@@ -370,6 +371,94 @@ class JobUseCaseImplTest {
             assertEquals("Updated job profile", updatedJob.getProfile());
             assertEquals("Updated job comment", updatedJob.getComment());
             assertEquals("Updated job salary", updatedJob.getSalary());
+            assertTrue(updatedJob.getUpdatedAt().getEpochSecond() - Instant.now().getEpochSecond() < 1);
+        }
+    }
+
+    @Nested
+    class UpdateJobFieldTest {
+        @Test
+        void whenUserNotFound_thenUpdateJobField_shouldThrowUserNotFoundException() {
+            reset(userDataManager);
+            when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.empty());
+
+            var command = new UpdateJobFieldCommand.Builder()
+                    .jobId(JobId.generate())
+                    .userId(UserId.generate())
+                    .field(UpdateJobFieldCommand.Field.TITLE)
+                    .value("UpdatedJob")
+                    .build();
+
+            assertThrows(UserNotFoundException.class, () -> underTest.updateJobField(command));
+        }
+
+        @Test
+        void whenJobNotFound_thenUpdateJobField_shouldThrowJobAlreadyExistsException() {
+            reset(userDataManager);
+            when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+            var command = new UpdateJobFieldCommand.Builder()
+                    .jobId(JobId.generate())
+                    .userId(UserId.generate())
+                    .field(UpdateJobFieldCommand.Field.TITLE)
+                    .value("UpdatedJob")
+                    .build();
+
+            assertThrows(JobNotFoundException.class, () -> underTest.updateJobField(command));
+        }
+
+        @Test
+        void whenUpdatingAlreadyExistingUrl_thenUpdateJobField_shouldThrowJobAlreadyExistsException() {
+            reset(userDataManager);
+            when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+            when(jobDataManager.findByIdAndUserId(testJob.getId(), testUser.getId())).thenReturn(Optional.of(testJob));
+            when(htmlSanitizer.sanitize(any(String.class))).thenAnswer(i -> i.getArgument(0));
+
+            var command = new UpdateJobFieldCommand.Builder()
+                    .jobId(testJob.getId())
+                    .userId(UserId.generate())
+                    .field(UpdateJobFieldCommand.Field.URL)
+                    .value("http://www.example.com/2")
+                    .build();
+
+            assertThrows(JobAlreadyExistsException.class, () -> underTest.updateJobField(command));
+        }
+
+        @Test
+        void shouldUpdateJobField() {
+            ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
+            ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
+
+            reset(userDataManager);
+            when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+            when(jobDataManager.findByIdAndUserId(testJob.getId(), testUser.getId())).thenReturn(Optional.of(testJob));
+            when(htmlSanitizer.sanitize(any(String.class))).thenAnswer(i -> i.getArgument(0));
+            when(userDataManager.saveUserAndJob(userArgumentCaptor.capture(), jobArgumentCaptor.capture())).thenAnswer(i -> i.getArgument(0));
+
+            var command = new UpdateJobFieldCommand.Builder()
+                    .jobId(testJob.getId())
+                    .userId(UserId.generate())
+                    .field(UpdateJobFieldCommand.Field.URL)
+                    .value("http://www.example.com/new-job")
+                    .build();
+
+            var updatedJob = assertDoesNotThrow(() -> underTest.updateJobField(command));
+            verify(jobDataManager).findByIdAndUserId(testJob.getId(), testUser.getId());
+            verify(userDataManager).saveUserAndJob(userArgumentCaptor.capture(), jobArgumentCaptor.capture());
+
+            User user = userArgumentCaptor.getValue();
+            assertNotNull(user);
+            assertEquals(2, user.getJobs().size());
+
+            Job job = jobArgumentCaptor.getValue();
+            assertNotNull(job);
+            assertEquals(updatedJob, job);
+            assertEquals(testJob.getTitle(), updatedJob.getTitle());
+            assertEquals(testJob.getCompany(), updatedJob.getCompany());
+            assertEquals("http://www.example.com/new-job", updatedJob.getUrl());
+            assertEquals(testJob.getDescription(), updatedJob.getDescription());
+            assertEquals(testJob.getProfile(), updatedJob.getProfile());
+            assertEquals(testJob.getComment(), updatedJob.getComment());
+            assertEquals(testJob.getSalary(), updatedJob.getSalary());
             assertTrue(updatedJob.getUpdatedAt().getEpochSecond() - Instant.now().getEpochSecond() < 1);
         }
     }

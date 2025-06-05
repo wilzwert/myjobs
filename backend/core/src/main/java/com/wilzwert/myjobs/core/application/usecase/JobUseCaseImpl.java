@@ -157,19 +157,27 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
     }
 
     @Override
-    public Job updateJob(UpdateJobCommand command) {
-        Optional<User> foundUser = userDataManager.findById(command.userId());
-        if(foundUser.isEmpty()) {
-            throw new UserNotFoundException();
-        }
-        User user = foundUser.get();
+    public Job updateJobField(UpdateJobFieldCommand command) {
+        User user = userDataManager.findById(command.userId()).orElseThrow(UserNotFoundException::new);
+        Job job = jobDataManager.findByIdAndUserId(command.jobId(), user.getId()).orElseThrow(JobNotFoundException::new);
+        command = sanitizeCommandFields(command, List.of("value"));
+        User updatedUser = user.updateJobField(job, command.field(), command.value());
+        // soft reload the updatedJob in the loaded collection
+        Job updatedJob = updatedUser.getJobById(job.getId()).orElseThrow(() -> new DomainException(ErrorCode.UNEXPECTED_ERROR));
 
-        Optional<Job> foundJob = jobDataManager.findByIdAndUserId(command.jobId(), user.getId());
-        if(foundJob.isEmpty()) {
-            throw new JobNotFoundException();
-        }
+        // FIXME
+        // this is an ugly workaround to force the infra (persistence in particular) to save all data
+        // as I understand DDD, only the root aggregate should be explicitly persisted
+        // but I just don't how to do it cleanly for now
+        userDataManager.saveUserAndJob(updatedUser, updatedJob);
+        return updatedJob;
+    }
 
-        Job job = foundJob.get();
+    @Override
+    public Job updateJob(UpdateJobFullCommand command) {
+        User user = userDataManager.findById(command.userId()).orElseThrow(UserNotFoundException::new);
+        Job job = jobDataManager.findByIdAndUserId(command.jobId(), user.getId()).orElseThrow(JobNotFoundException::new);
+
         command = sanitizeCommandFields(command, List.of("title", "company", "description", "profile", "comment", "salary"));
 
         User updatedUser = user.updateJob(job, command.url(), command.title(), command.company(), command.description(), command.profile(), command.comment(), command.salary());
@@ -232,6 +240,13 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         return jobDataManager.findByIdAndUserId(jobId, userId).orElseThrow(JobNotFoundException::new);
     }
 
+    /**
+     * FIXME : this should be improved to avoir reflection and ugly casts
+     * @param command the command to sanitize
+     * @param fieldsToSanitize the command fields to sanitize
+     * @return a new comment of the same class
+     * @param <T> the command class
+     */
     private <T> T sanitizeCommandFields(T command, List<String> fieldsToSanitize) {
         Class<?> clazz = command.getClass();
 

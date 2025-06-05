@@ -61,7 +61,7 @@ public class GlobalExceptionHandlerTest {
     void shouldHandleValidationException() {
         var ex = new ValidationException(new ValidationErrors());
         ResponseEntity<ErrorResponse> response = handler.generateError(ex);
-        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, response.getStatusCode());
         assertNotNull(response.getBody());
     }
 

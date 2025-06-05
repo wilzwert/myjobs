@@ -1,4 +1,4 @@
-package com.wilzwert.myjobs.infrastructure.api.rest.dto;
+package com.wilzwert.myjobs.infrastructure.api.rest.dto.job;
 
 
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
@@ -11,7 +11,7 @@ import lombok.Data;
 
 @Data
 // TODO @Schema(description = "Object expected for job status update request" )
-public class UpdateJobStatusRequest {
+public final class UpdateJobStatusRequest implements UpdateJobDto {
     // TODO @Schema(description = "")
     @NotNull(message = "FIELD_CANNOT_BE_EMPTY")
     private JobStatus status;

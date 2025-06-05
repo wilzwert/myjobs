@@ -216,7 +216,7 @@ public class ErrorResponseTest {
         ValidationErrors errors = new ValidationErrors();
         errors.add(new ValidationError("param", ErrorCode.FIELD_CANNOT_BE_EMPTY));
         ErrorResponse response = ErrorResponse.fromException(new ValidationException(errors));
-        assertEquals(HttpStatus.BAD_REQUEST, response.getHttpStatusCode());
+        assertEquals(HttpStatus.UNPROCESSABLE_ENTITY, response.getHttpStatusCode());
         assertEquals(ErrorCode.VALIDATION_FAILED.name(), response.getMessage());
         assertEquals(1, response.getErrors().size());
         assertEquals(1, response.getErrors().get("param").size());
