@@ -6,7 +6,7 @@
 
     <app-job-summary [job]="job" (deleted)="onDelete(job)" (jobChanged)="onJobChanged($event)" context="detail"></app-job-summary>
 
-    <mat-card appearance="outlined" i18n-aria-label="job description label@@job.description.label" aria-label="Job description">
+    <mat-card appearance="outlined" i18n-aria-label="job description label@@job.description.label" aria-label="Description">
         <mat-card-header>
             <mat-card-title i18n="@@job.description.label">Description</mat-card-title>
         </mat-card-header>
@@ -15,7 +15,7 @@
         </mat-card-content>
     </mat-card>
 
-    <mat-card appearance="outlined" i18n-aria-label="job profile label@@job.profile.label" aria-label="Job profile">
+    <mat-card appearance="outlined" i18n-aria-label="job profile label@@job.profile.label" aria-label="Profile">
         <mat-card-header>
             <mat-card-title i18n="@@job.profile.label">Profile</mat-card-title>
         </mat-card-header>
@@ -25,7 +25,7 @@
     </mat-card>
 
     @if(job.attachments !== null) {
-        <mat-card appearance="outlined" i18n-aria-label="job attachments label@@job.attachments.label" aria-label="Job attachments">
+        <mat-card appearance="outlined" i18n-aria-label="job attachments label@@job.attachments.label" aria-label="Attachments">
             <mat-card-header>
                 <mat-card-title i18n="@@job.attachments.label">Attachments</mat-card-title>
             </mat-card-header>
@@ -35,7 +35,7 @@
         </mat-card>
     }   
     @if(job.activities !== null) {
-        <mat-card appearance="outlined" i18n-aria-label="job activities label@@job.activities.label" aria-label="Job activities">
+        <mat-card appearance="outlined" i18n-aria-label="job activities label@@job.activities.label" aria-label="Activities">
             <mat-card-header>
                 <mat-card-title i18n="@@job.activities.label">Activities</mat-card-title>
             </mat-card-header>

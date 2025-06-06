@@ -1,9 +1,9 @@
 <div class="job-status">
-    <span matTooltip="Current status" i18n-aria-label="current job status|label preceeding a job's status@@job.status" ii8n-matTooltip="@@job.status">
+    <span matTooltip="Current status" aria-label="Current status" i18n-aria-label="current job status|label preceeding a job's status@@job.status" ii8n-matTooltip="@@job.status">
         <mat-icon>{{ icon }}</mat-icon>
          {{ job.status | statusLabel}}  
     </span>
-    <span matTooltip="Current status date" i18n-aria-label="current job status date|label preceeding a job's status date@@job.status.date" ii8n-matTooltip="@@job.status.date"><mat-icon>calendar_month</mat-icon>{{ job.statusUpdatedAt | date }}</span>
+    <span matTooltip="Current status date" aria-label="Current status date" i18n-aria-label="current job status date|label preceeding a job's status date@@job.status.date" ii8n-matTooltip="@@job.status.date"><mat-icon>calendar_month</mat-icon>{{ job.statusUpdatedAt | date }}</span>
     
     <a matTooltip="Change status" i18n-matTooltip="@@action.job.status.edit" [matMenuTriggerFor]="statusMenu">
         <mat-icon aria-hidden="false" aria-label="Change status" i18n-aria-label="Change status|label for job status change action@@action.job.status.edit" fontIcon="edit">Edit</mat-icon>
@@ -15,7 +15,7 @@
     </mat-menu>
 
     @if(job.followUpLate) {
-        <span class="job-late-warning" matTooltip="This job has not been updated recently" i18n-aria-label="late job|tooltip label for job late warning@@job.late" ii8n-matTooltip="@@job.late">
+        <span class="job-late-warning" aria-label="This job has not been updated recently" matTooltip="This job has not been updated recently" i18n-aria-label="late job|tooltip label for job late warning@@job.late" ii8n-matTooltip="@@job.late">
             <mat-icon>priority_high</mat-icon>
         </span>
     }

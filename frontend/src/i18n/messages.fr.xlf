@@ -361,10 +361,10 @@
       </trans-unit>
       <trans-unit id="job.created" datatype="html">
         <source>Job creation date</source>
-        <target state="new">Créé</target>
+        <target state="translated">Créé</target>
       </trans-unit>
       <trans-unit id="job.activities.count" datatype="html">
-        <source>Job activities count</source>
+        <source>Activities count</source>
         <target state="translated">Activités</target>
       </trans-unit>
       <trans-unit id="job.attachments.count" datatype="html">
@@ -491,7 +491,7 @@
         <note priority="1" from="meaning">edit job</note>
       </trans-unit>
       <trans-unit id="job.create" datatype="html">
-        <source>Create job</source>
+        <source>Create a job</source>
         <target state="translated">Créer un job</target>
         <note priority="1" from="description">create job ui title</note>
         <note priority="1" from="meaning">create job</note>
@@ -847,7 +847,7 @@
         <note priority="1" from="meaning">back to jobs</note>
       </trans-unit>
       <trans-unit id="job.description.label" datatype="html">
-        <source>Job description</source>
+        <source>Description</source>
         <target state="translated">Description du poste</target>
         <note priority="1" from="description">job description label</note>
       </trans-unit>
@@ -858,17 +858,17 @@
         <note priority="1" from="meaning">empty field</note>
       </trans-unit>
       <trans-unit id="job.profile.label" datatype="html">
-        <source>Job profile</source>
+        <source>Profile</source>
         <target state="translated">Profil recherché</target>
         <note priority="1" from="description">job profile label</note>
       </trans-unit>
       <trans-unit id="job.attachments.label" datatype="html">
-        <source>Job attachments</source>
+        <source>Attachments</source>
         <target state="translated">Pièces jointes</target>
         <note priority="1" from="description">job attachments label</note>
       </trans-unit>
       <trans-unit id="job.activities.label" datatype="html">
-        <source>Job activities</source>
+        <source>Activities</source>
         <target state="translated">Activités</target>
         <note priority="1" from="description">job activities label</note>
       </trans-unit>
@@ -1099,6 +1099,34 @@
         <target state="translated">Modifier le commentaire</target>
         <note priority="1" from="description">label for job comment edit action</note>
         <note priority="1" from="meaning">Edit comment</note>
+      </trans-unit>
+      <trans-unit id="alert.file_too_big" datatype="html">
+        <source>File too big</source>
+        <target state="translated">Fichier trop volumineux</target>
+      </trans-unit>
+      <trans-unit id="input.job.profile.placeholder" datatype="html">
+        <source>Job profile</source>
+        <target state="translated">Profil</target>
+        <note priority="1" from="description">job profile input placeholder</note>
+        <note priority="1" from="meaning">job profile placeholder</note>
+      </trans-unit>
+      <trans-unit id="job.status" datatype="html">
+        <source>Current status</source>
+        <target state="translated">Statut actuel</target>
+        <note priority="1" from="description">label preceeding a job's status</note>
+        <note priority="1" from="meaning">current job status</note>
+      </trans-unit>
+      <trans-unit id="job.status.date" datatype="html">
+        <source>Current status date</source>
+        <target state="translated">Date du statut actuel</target>
+        <note priority="1" from="description">label preceeding a job's status date</note>
+        <note priority="1" from="meaning">current job status date</note>
+      </trans-unit>
+      <trans-unit id="job.late" datatype="html">
+        <source>This job has not been updated recently</source>
+        <target state="translated">Ce job n'a pas été mis à jour récemment</target>
+        <note priority="1" from="description">tooltip label for job late warning</note>
+        <note priority="1" from="meaning">late job</note>
       </trans-unit>
     </body>
   </file>
