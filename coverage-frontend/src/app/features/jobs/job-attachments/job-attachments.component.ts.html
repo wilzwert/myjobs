@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">67.85% </span>
+                <span class="strong">69.35% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>38/56</span>
+                <span class='fraction'>43/62</span>
             </div>
         
             
@@ -37,16 +37,16 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">54.16% </span>
+                <span class="strong">60% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>13/24</span>
+                <span class='fraction'>15/25</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">97.22% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>35/36</span>
+                <span class='fraction'>39/39</span>
             </div>
         
             
@@ -153,7 +153,11 @@
 <a name='L88'></a><a href='#L88'>88</a>
 <a name='L89'></a><a href='#L89'>89</a>
 <a name='L90'></a><a href='#L90'>90</a>
-<a name='L91'></a><a href='#L91'>91</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">9x</span>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -213,11 +217,15 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -251,7 +259,7 @@ import { catchError, EMPTY, of, switchMap, take, tap } from 'rxjs';
 import { ConfirmDialogService } from '@core/services/confirm-dialog.service';
 import { FileService } from '@core/services/file.service';
 import { MatButton } from '@angular/material/button';
-import { JobAttachmentsFormComponent } from '@features/jobs/job-attachments-form/job-attachments-form.component';
+import { JobAttachmentsFormComponent } from '@app/features/jobs/forms/job-attachments-form/job-attachments-form.component';
 import { ModalService } from '@core/services/modal.service';
 import { DatePipe } from '@angular/common';
 import { ProtectedFile } from '@app/core/model/protected-file.interface';
@@ -302,17 +310,21 @@ export class JobAttachmentsComponent implements OnInit {
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" >  confirmDeleteAttachment(</span>job: Job, attachment: Attachment) :void {
+<span class="cstat-no" title="statement not covered" >    console.log('deleting attachment');</span>
 <span class="cstat-no" title="statement not covered" >    this.jobService.deleteAttachment(job.id, attachment.id).pipe(</span>
       take(1),
       tap(() =&gt; {
 <span class="cstat-no" title="statement not covered" >        this.notificationService.confirmation($localize `:@@message.attachment.deleted:Attachment deleted successfully`);</span>
-<span class="cstat-no" title="statement not covered" >        job.attachments = job.attachments.filter(<span class="fstat-no" title="function not covered" >(a</span>) =&gt; <span class="cstat-no" title="statement not covered" >a.id != attachment.id </span>)</span>
+<span class="cstat-no" title="statement not covered" >        console.log('filtering attachments');</span>
+        job.attachments = job.attachments.filter((a) =&gt; a.id != attachment.id )
     })
-    ).subscribe();
+    ).subscribe(() =&gt; {
+<span class="cstat-no" title="statement not covered" >      console.log('something happened');</span>
+    });
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" > deleteAttachment(</span>job: Job, attachment: Attachment) :void {
-<span class="cstat-no" title="statement not covered" >    this.confirmDialogService.openConfirmDialog($localize `:@@info.attachment.delete.confirmation_required:Delete attachment "${attachment.name}" ?`, <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >this.confirmDeleteAttachment(job, attachment))</span>;</span>
+<span class="cstat-no" title="statement not covered" >    this.confirmDialogService.openConfirmDialog($localize `:@@info.attachment.delete.confirmation_required:Delete attachment "${attachment.name}" ?`, <span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >t</span>his.confirmDeleteAttachment(job, attachment))</span>;</span>
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" >  cancelForm(</span>) :void {
@@ -324,7 +336,7 @@ export class JobAttachmentsComponent implements OnInit {
 <span class="cstat-no" title="statement not covered" >    this.displayForm = true;</span>
   }
   else {
-<span class="cstat-no" title="statement not covered" >    this.modalService.openJobModal('attachments-form', job, <span class="fstat-no" title="function not covered" >() =</span>&gt; <span class="cstat-no" title="statement not covered" >this.onAttachmentsSaved(job),</span> {defaultAttachments: 1});</span>
+<span class="cstat-no" title="statement not covered" >    this.modalService.openJobModal('attachments-form', job, <span class="fstat-no" title="function not covered" >() =&gt; <span class="cstat-no" title="statement not covered" >t</span>his.onAttachmentsSaved(job),</span> {defaultAttachments: 1});</span>
   }
  }
 &nbsp;
@@ -340,7 +352,7 @@ export class JobAttachmentsComponent implements OnInit {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-06-02T08:37:43.728Z
+                at 2025-06-06T11:24:12.354Z
             </div>
         <script src="../../../../../prettify.js"></script>
         <script>
