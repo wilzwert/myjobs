@@ -1,5 +1,5 @@
 import { Injectable, signal, Signal, WritableSignal } from '@angular/core';
-import { map, Observable, switchMap } from 'rxjs';
+import { catchError, map, Observable, switchMap, throwError } from 'rxjs';
 import { DataService } from './data.service';
 import { CaptchaService } from './captcha.service';
 import { ResetPasswordRequest } from '@core/model/reset-password-request.interface';
@@ -18,7 +18,7 @@ export class UserService {
 
   private apiPath = 'user';
 
-  private userSummary: WritableSignal<UserSummary | null> = signal(null); 
+  private userSummary: WritableSignal<UserSummary | null | false> = signal(null); 
 
   private userSummaryLoaded: boolean = false;
 
@@ -66,36 +66,26 @@ export class UserService {
   }
 
 
-  /** Méthode à appeler pour recharger manuellement */
+  /** Manually reload summary */
   public async reloadUserSummary(): Promise<void> {
     await this.loadUserSummary();
   }
 
-
-   private async loadUserSummary(): Promise<void> {
-    console.log('getting getUserSummary');
+  private async loadUserSummary(): Promise<void> {
     this.userSummaryLoaded = true;
-    /*return this.captchaService.getCaptchaToken().pipe(
-      switchMap(() => {*/
-        this.dataService.get<UserSummary>(`${this.apiPath}/me/summary`)
-        .subscribe(summary => {
-          console.log('setting UserSummary signal');
-          this.userSummary.set(summary);
-        })
-          /*.pipe(
-            map(s => {
-              s.jobStatuses = new Map(Object.entries(s.jobStatuses));
-              return s;
-            })
-          )*/;
-        // return this.dataService.get<User>(`${this.apiPath}`).pipe(map((user: User) => {user.emailStatus = user.emailStatus as EmailStatus; return user;}));
-      /*})
-    )*/;
+    this.dataService.get<UserSummary>(`${this.apiPath}/me/summary`)
+    .pipe(
+      catchError((error) => {
+        this.userSummary.set(false);
+        return throwError(() => error);
+      })
+    )
+    .subscribe(summary => {
+      this.userSummary.set(summary);
+    });
   }
 
-  
-
-  public getUserSummary(): Signal<UserSummary | null> {
+  public getUserSummary(): Signal<UserSummary | null | false> {
     if(!this.userSummaryLoaded) {
       // force first load if necessary
       this.loadUserSummary();

@@ -55,7 +55,7 @@ export class TranslatorService {
     HIRED:  $localize `:@@job.status.hired:Hired`
   };
 
-  private jobStatusesFilter: Record<string, string> = {
+  private jobStatusMetas: Record<string, string> = {
     ACTIVE : $localize `:@@job.status.filter.active:Active`,
     INACTIVE : $localize `:@@job.status.filter.inactive:Inactive`,
     LATE : $localize `:@@job.status.filter.late:Late`
@@ -95,8 +95,8 @@ export class TranslatorService {
     return status ?? 'unknown';
   }
 
-  translateJobStatusFilter(jobStatusFilter: string) :string {
-    const status = this.jobStatusesFilter[jobStatusFilter];
+  translateJobStatusMeta(jobStatusMeta: string) :string {
+    const status = this.jobStatusMetas[jobStatusMeta];
     return status ?? 'unknown';
   }
 

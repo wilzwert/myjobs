@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { SessionInformation } from '@core/model/session-information.interface';
-import { RefreshTokenResponse } from '@core/model/refresh-token-response.interface';
 import { BehaviorSubject } from 'rxjs';
 import { DataStorageService } from './data-storage.service';
 
@@ -37,10 +36,5 @@ export class SessionStorageService {
     this.sessionInfo = data;
     this.dataStorageService.setItem(SESSION_INFO_KEY, data);
     this.sessionInfoSubject.next(this.sessionInfo);
-  }
-
-  // TODO ?
-  public saveTokenAfterRefresh(data: RefreshTokenResponse): void {
-    // this.clearSessionInformation();
   }
 }

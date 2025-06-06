@@ -37,10 +37,6 @@ export class SessionService {
     return this.sessionStorageService.$getSessionInformation();
   }
 
-  public handleTokenAfterRefresh(data: RefreshTokenResponse): void {
-    this.sessionStorageService.saveTokenAfterRefresh(data);
-  }
-
   public logIn(data: SessionInformation): void {
     this.sessionStorageService.saveSessionInformation(data);
     this.logged = true;

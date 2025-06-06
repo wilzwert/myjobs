@@ -1,5 +1,5 @@
 import { Directive, inject, Input, OnInit } from "@angular/core";
-import { AbstractControl, FormBuilder, FormControl, FormGroup } from "@angular/forms";
+import { FormBuilder, FormControl, FormGroup } from "@angular/forms";
 import { EditorComponent } from "@tinymce/tinymce-angular";
 
 @Directive()
@@ -9,7 +9,7 @@ export abstract class BaseInputComponent implements OnInit {
 
     protected fb = inject(FormBuilder);
 
-    // for riche text editors
+    // for rich text editors
     init: EditorComponent['init'] = {
         plugins: ['link', 'autolink', 'lists'],
         toolbar: 'undo redo | bold italic | link | bullist',

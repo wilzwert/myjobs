@@ -71,7 +71,7 @@ export class JobAttachmentsFormComponent implements OnInit {
   
       if(file.size > this.maxFileSize) {
         input.value = '';
-        alert('File too big');
+        alert($localize`:@@alert.file_too_big:File too big`);
       }
       else {
         // Lire le fichier et le convertir en Base64

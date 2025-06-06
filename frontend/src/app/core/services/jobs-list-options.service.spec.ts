@@ -18,15 +18,8 @@ describe('JobsListOptionsService', () => {
     setItem,
   };
 
-  let userSummarySignal = signal<UserSummary | null>(null);
-  userSummarySignal.set({
-    jobsCount: 3,
-    activeJobsCount: 2,
-    inactiveJobsCount: 1,
-    lateJobsCount: 0,
-    jobStatuses: { [JobStatus.CREATED]: 1 },
-    usableJobStatusMetas: [],
-    } as UserSummary);
+  let userSummarySignal = signal<UserSummary | null | false>(null);
+ 
   const userServiceMock = {
     getUserSummary: jest.fn(() => userSummarySignal),
   };
@@ -44,9 +37,55 @@ describe('JobsListOptionsService', () => {
 
     service = TestBed.inject(JobsListOptionsService);
   });
-  
-  it('should initialize from stored options on first load', () => {
+
+  it('should initialize from stored options when summary unable to load', () => {
     const stored = new JobsListOptions();
+    stored.changePagination(1, 15);
+    stored.filter(JobStatus.PENDING, null);
+    stored.sort("rating,asc");
+    getItem.mockReturnValue(stored);
+
+    // simulate a summary loading error
+    userSummarySignal.set(false);
+    TestBed.flushEffects();
+
+    // check options have been retrieved from the storage service
+    expect(getItem).toHaveBeenCalledWith('jobs-filter');
+    expect(service.getCurrentOptions()).toBeInstanceOf(JobsListOptions);
+    const currentOptions = service.getCurrentOptions();
+    expect(currentOptions).toBeInstanceOf(JobsListOptions);
+    expect(currentOptions.getStatus()).toEqual(JobStatus.PENDING);
+    expect(currentOptions.getSort()).toEqual("rating,asc");
+    expect(currentOptions.getCurrentPage()).toEqual(1);
+    expect(currentOptions.getItemsPerPage()).toEqual(15);
+    expect(dataStorageMock.setItem).toHaveBeenCalled(); // sauvegarde appelée
+  });
+
+  it('should create default options when no options stored and summary unable to load', () => {
+    // no stored options
+    getItem.mockReturnValue(null);
+
+    // simulate a summary loading error
+    userSummarySignal.set(false);
+    TestBed.flushEffects();
+
+    // check options have been retrieved from the storage service
+    expect(getItem).toHaveBeenCalledWith('jobs-filter');
+    expect(service.getCurrentOptions()).toBeInstanceOf(JobsListOptions);
+    const currentOptions = service.getCurrentOptions();
+    expect(currentOptions).toBeInstanceOf(JobsListOptions);
+    expect(currentOptions.getStatus()).toEqual(null);
+    expect(currentOptions.getCurrentPage()).toEqual(0);
+    expect(currentOptions.getItemsPerPage()).toEqual(10);
+    expect(currentOptions.getSort()).toEqual("createdAt,desc");
+    expect(dataStorageMock.setItem).toHaveBeenCalled(); // sauvegarde appelée
+  });
+  
+  it('should handle new summary on summary load', () => {
+    const stored = new JobsListOptions();
+    stored.changePagination(1, 15);
+    stored.filter(JobStatus.PENDING, null);
+    stored.sort("rating,asc");
     getItem.mockReturnValue(stored);
 
     // Changer le userSummary doit déclencher l'effect
@@ -61,8 +100,12 @@ describe('JobsListOptionsService', () => {
     userSummarySignal.set(summary);
     TestBed.flushEffects();
 
+    // check options have been retrieved from the storage service
     expect(getItem).toHaveBeenCalledWith('jobs-filter');
-    expect(service.getCurrentOptions()).toBeInstanceOf(JobsListOptions);
+    const currentOptions = service.getCurrentOptions();
+    expect(currentOptions).toBeInstanceOf(JobsListOptions);
+    expect(currentOptions.getStatus()).toEqual(null);
+    expect(currentOptions.getSort()).toEqual("rating,asc");
     expect(dataStorageMock.setItem).toHaveBeenCalled(); // sauvegarde appelée
   });
   

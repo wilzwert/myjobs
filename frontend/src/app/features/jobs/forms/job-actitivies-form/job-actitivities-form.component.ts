@@ -89,6 +89,7 @@ export class JobActivitiesFormComponent implements OnInit {
             )
           )
           .subscribe((job) => {
+            console.log('received job');
             this.loading = false;
             this.notificationService.confirmation(
               activities.length > 1 ?

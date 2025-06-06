@@ -10,7 +10,7 @@ describe('StatusLabelFilterPipe', () => {
     const pipe = new StatusFilterLabelPipe(mockTranslatorService);
 
     const result = pipe.transform('IN_PROGRESS');
-    expect(mockTranslatorService.translateJobStatusFilter).toHaveBeenCalledWith('IN_PROGRESS');
+    expect(mockTranslatorService.translateJobStatusMeta).toHaveBeenCalledWith('IN_PROGRESS');
     expect(result).toBe('translated-IN_PROGRESS');
   });
 });

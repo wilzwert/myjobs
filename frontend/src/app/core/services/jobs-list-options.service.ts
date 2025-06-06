@@ -5,6 +5,7 @@ import { UserSummary } from '../model/user-summary.interface';
 import { JobStatus, JobStatusMeta } from '../model/job.interface';
 import { UserService } from './user.service';
 
+// storage key for list options
 const JOBS_FILTER_KEY = 'jobs-filter';
 
 @Injectable({
@@ -12,22 +13,31 @@ const JOBS_FILTER_KEY = 'jobs-filter';
 })
 export class JobsListOptionsService {
 
+  // first load is specific, we have to know if it has been done
   private firstLoadDone = false;
+  // current list options 
   private jobsListOptions!: JobsListOptions;
+  // every change of options result in a signal update
   private jobsListOptionsSignal: WritableSignal<JobsListOptions | null> = signal(null); 
 
   constructor(private userService: UserService, private dataStorageService: DataStorageService) { 
-    console.log('constructing');
     // a UserSummary change triggers a JobsListOptions change
     effect(() => {
       const userSummary = this.userService.getUserSummary()();
-      if(!userSummary) {
-        console.log('nope ?');
+
+      // null summary only implies that the loading hasn't been done yet
+      // we do nothing for now because we make sure to get a value in the UserService :
+      // in case of a loading error it will be false
+      // if loading is ok, then userSummary will be a UserSummary instance
+      if(null === userSummary) {
+        // wait for the summary to load
         return;
       }
+
+      // forceReload will be used to force a list reload by setting forceReload(true) on the options
       let forceReload = false;
       if(!this.firstLoadDone) {
-        // on first load, get options from storage, default to empty options, check UserSummary consistency then save
+        // on first load, get options from storage, default to empty options
         const storedOptions = this.dataStorageService.getItem<JobsListOptions>(JOBS_FILTER_KEY);
         let newOptions = null === storedOptions ? new JobsListOptions() : Object.assign(new JobsListOptions(), storedOptions);
         // no need to force reloading when loading options from storage, as it is done before any jobs list loading
@@ -41,8 +51,13 @@ export class JobsListOptionsService {
         forceReload = true;
       }
 
-      // checking options against user's summary
-      let result = this.checkOptions(userSummary);
+      let result = null;
+      // summary may be false in case of a loading error
+      if(userSummary !== false) {
+        // checking options against user's summary
+        result = this.checkOptions(userSummary);
+      }
+      // fallback to current options if needed
       if(!(result instanceof JobsListOptions)) {
         result = Object.assign(new JobsListOptions(), this.jobsListOptions);
       }
@@ -109,7 +124,8 @@ export class JobsListOptionsService {
     }
 
     if(removeStatus || removeStatusMeta) {
-      const newOptions = new JobsListOptions();
+      // new options should reflect previous one, only status and/or statusMeta will be removed
+      const newOptions = Object.assign(new JobsListOptions(), this.jobsListOptions);
       newOptions.filter(removeStatus ? null : currentStatus, removeStatusMeta ? null : currentStatusMeta);
       return newOptions;
     }

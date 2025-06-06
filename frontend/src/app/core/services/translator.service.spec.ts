@@ -34,6 +34,14 @@ describe('TranslatorService', () => {
     expect(service.translateJobStatus("PENDING")).toEqual("Pending");
   });
 
+  it('when job status meta is unknown then should return unknown', () => {
+    expect(service.translateJobStatusMeta("some_status_meta")).toEqual("unknown");
+  });
+
+  it('when job status meta is known then should return its translation', () => {
+    expect(service.translateJobStatusMeta("ACTIVE")).toEqual("Active");
+  });
+
   it('when activity type is unknown then should return unknown', () => {
     expect(service.translateActivityType("some_type")).toEqual("unknown");
   })

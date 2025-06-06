@@ -43,7 +43,7 @@ export class JobsComponent implements OnInit, OnDestroy {
   protected user$: Observable<User>;
 
   // make user's summary available to template
-  protected userSummary!: Signal<UserSummary | null>;
+  protected userSummary!: Signal<UserSummary | null | false>;
 
   // make options available to the template
   protected jobsOptions!: Signal<JobsListOptions | null>;

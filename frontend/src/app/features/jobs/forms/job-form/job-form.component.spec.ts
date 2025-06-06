@@ -102,7 +102,8 @@ describe('JobFormComponent', () => {
       company: 'Test Corp',
       description: 'Some description',
       profile: '',
-      salary: ''
+      salary: '',
+      comment: ''
     });
 
     fixture.detectChanges();
@@ -117,7 +118,8 @@ describe('JobFormComponent', () => {
       company: 'Test Corp',
       description: 'Some description',
       profile: '',
-      salary: ''
+      salary: '',
+      comment: ''
     });
 
     expect(emitSpy).toHaveBeenCalledWith({ id: '123' });
@@ -126,7 +128,7 @@ describe('JobFormComponent', () => {
 
   it('should show an error if jobService fails', () => {
     jobServiceMock.createJob.mockReturnValue(
-      throwError(() => ({ message: 'Oups' }))
+      throwError(() => ({ message: 'Error' }))
     );
 
     component.job = null;
@@ -138,7 +140,8 @@ describe('JobFormComponent', () => {
       company: 'Test Corp',
       description: 'Some description',
       profile: '',
-      salary: ''
+      salary: '',
+      comment: ''
     });
 
     fixture.detectChanges();
@@ -146,6 +149,15 @@ describe('JobFormComponent', () => {
     component.submit();
 
     expect(component.loading).toBe(false);
+    expect(jobServiceMock.createJob).toHaveBeenCalledWith({
+      url: 'https://test.com',
+      title: 'Dev',
+      company: 'Test Corp',
+      description: 'Some description',
+      profile: '',
+      salary: '',
+      comment: ''
+    });
     expect(component.error).toContain('Job could not be created');
   });
 });
