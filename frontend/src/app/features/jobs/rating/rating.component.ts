@@ -36,9 +36,10 @@ export class RatingComponent implements OnInit {
     }
   }
 
-  updateJobRating(job: Job, rating: number): void {
+  updateJobRating(job: Job, newRating: number): void {
+    console.log('updating rating');
       // don't reload list as the edited job is replaced after update by the service
-      this.jobService.updateJobRating(job.id, { rating: rating } as UpdateJobRatingRequest).subscribe(
+      this.jobService.updateJobRating(job.id, { rating: newRating } as UpdateJobRatingRequest).subscribe(
         (j) => {
           console.log('rating changed', j);
           this.job = j;
