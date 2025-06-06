@@ -130,21 +130,23 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
         DomainPage<Job> jobs;
 
+        String statusField = "status";
+
         if(statusMeta != null) {
             // threshold instant : jobs not updated since that instant are considered late
             switch (statusMeta) {
-                case ACTIVE: specs.add(DomainSpecification.in("status", JobStatus.activeStatuses())); break;
-                case INACTIVE: specs.add(DomainSpecification.in("status", JobStatus.inactiveStatuses())); break;
+                case ACTIVE: specs.add(DomainSpecification.in(statusField, JobStatus.activeStatuses())); break;
+                case INACTIVE: specs.add(DomainSpecification.in(statusField, JobStatus.inactiveStatuses())); break;
                 case LATE:
                     Instant nowMinusReminderDays = Instant.now().minus(user.getJobFollowUpReminderDays(), ChronoUnit.DAYS);
-                    specs.add(DomainSpecification.in("status", JobStatus.activeStatuses()));
+                    specs.add(DomainSpecification.in(statusField, JobStatus.activeStatuses()));
                     specs.add(DomainSpecification.lt("statusUpdatedAt", nowMinusReminderDays));
                     break;
             }
         }
 
         if( status != null) {
-            specs.add(DomainSpecification.eq("status", status, JobStatus.class));
+            specs.add(DomainSpecification.eq(statusField, status, JobStatus.class));
         }
 
         var finalSpecs = DomainSpecification.and(specs);

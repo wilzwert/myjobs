@@ -49,7 +49,8 @@ class UpdateJobDtoFactoryTest {
 
     @Test
     void whenEmptyMapProvided_thenShouldThrowException() {
-        assertThatThrownBy(() -> factory.createUpdateJobDto(Map.of()))
+        Map<String, Object> emptyMap = Map.of();
+        assertThatThrownBy(() -> factory.createUpdateJobDto(emptyMap))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("cannot be empty");
     }

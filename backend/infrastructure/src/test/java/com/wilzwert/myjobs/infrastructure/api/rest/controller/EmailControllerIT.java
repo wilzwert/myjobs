@@ -34,8 +34,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 @Import(SyncTestExecutorConfiguration.class)
-public class EmailControllerIT extends AbstractBaseIntegrationTest {
-    private final static String USER_FOR_EMAIL_VALIDATION_TEST_ID = "abcd4321-4321-4321-4321-123456789012";
+class EmailControllerIT extends AbstractBaseIntegrationTest {
+    private static final String USER_FOR_EMAIL_VALIDATION_TEST_ID = "abcd4321-4321-4321-4321-123456789012";
 
     @MockitoSpyBean
     private JavaMailSender mailSender;

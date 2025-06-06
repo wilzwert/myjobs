@@ -52,7 +52,7 @@ public class UserSummaryCollector implements Collector<JobState, Map<JobStatus, 
 
     @Override
     public Function<Map<JobStatus, List<JobState>>, UserSummary> finisher() {
-        return (statusToStates) -> {
+        return statusToStates -> {
             // FIXME : it may actually be better to loop through statusToStates
             // than to use numerous streams
 

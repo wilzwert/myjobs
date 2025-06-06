@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * @author Wilhelm Zwertvaegher
  */
 
-public class JobRatingConverterTest {
+class JobRatingConverterTest {
 
     private final JobRatingConverter underTest = new JobRatingConverter();
 

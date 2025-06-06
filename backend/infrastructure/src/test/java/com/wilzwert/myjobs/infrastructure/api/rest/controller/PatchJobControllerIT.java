@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 // TODO : find a way to do some useful and meaningful IT on the /api/jobs/metadata API endpoint
 
 @AutoConfigureMockMvc
-public class PatchJobControllerIT extends AbstractBaseIntegrationTest  {
+class PatchJobControllerIT extends AbstractBaseIntegrationTest  {
     private static final String JOBS_URL = "/api/jobs";
 
     private static final String JOB_FOR_TEST_ID =  "77777777-7777-7777-7777-123456789012";
