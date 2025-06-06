@@ -1,5 +1,4 @@
-@use 'vars' as *;
-
 .welcome-username {
-    color: $main-color;
+    color: var(--app-main-color);
+    font-weight: 700;
 }

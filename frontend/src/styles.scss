@@ -1,23 +1,34 @@
 /* You can add global styles to this file, and also import other style files */
 @use '@angular/material' as mat;
 @use './styles/styles_theme-colors.scss' as myjobs-theme; // location of generated file
-@use 'vars' as *;
 
+// shape for buttons -> no radius
 $my-shape: (
   small: 0px,
   medium: 0px,
   large: 0px
 );
 
+@media (prefers-color-scheme: light) {
+  :root {
+    --app-main-color: #0c1a3c;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --app-main-color: #8390b9;
+  }
+}
+
 html {
-  color-scheme: light;
+  color-scheme: light dark;
   font-family: Roboto, sans-serif;
   --app-max-width: 835px;
-  --app-main-color: #{$main-color};
   --md-sys-color-error: #d32f2f;
   --color-warning: #ffa000;
   --color-success: #388e3c;
-  color: $main-color;
+   
   @include mat.theme((
     color: (
       primary: myjobs-theme.$primary-palette,
@@ -30,7 +41,12 @@ html {
 
   @include mat.toolbar-overrides((
     standard-height: 94px,
-    mobile-height: 62px
+    mobile-height: 62px,
+    container-background-color: transparent
+  ));
+
+  @include mat.paginator-overrides((
+    container-background-color: transparent
   ));
 
   @include mat.card-overrides((
@@ -59,7 +75,6 @@ body {
   margin: 0;
   padding-top: calc(var(--mat-toolbar-standard-height) + 2rem);
   padding-bottom: 2rem;
-  background: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
 }
 
@@ -71,19 +86,14 @@ main {
 }
 
 h1 {
-  color: $main-color;
+  color: var(--app-main-color);
 }
 
 a {
   cursor: pointer;
-  font-size: var(--content-font-size);
-  color: $main-color;
+  color: var(--app-main-color);
   text-decoration: none;
   font-weight: 800;
-}
-
-p {
-  font-size: var(--content-font-size);
 }
 
 mat-paginator, mat-card, mat-card-header {
@@ -95,11 +105,11 @@ mat-form-field {
     padding: .75em  0;
 }
 mat-icon.input-invalid {
-  color: #D32F2F;
+  color: var(--md-sys-color-error);
 }
 
 mat-icon.input-valid {
-  color: #3CB371;
+  color: var(--color-success);
 }
 
 .mdc-button {
@@ -108,10 +118,6 @@ mat-icon.input-valid {
 
 button mat-icon[svgIcon="send"] {
   stroke: var(--main-color);
-}
-
-button:disabled mat-icon[svgIcon="send"] {
-  stroke: #999;
 }
 
 .spacer {
