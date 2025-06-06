@@ -31,6 +31,11 @@ describe('CommentInputComponent', () => {
   });
 
   it('should render textarea bound to comment form control', () => {
+    expect(component.control).toBeTruthy();
+
+     const compiled = fixture.nativeElement as HTMLElement;
+    
+    expect(compiled.textContent).toContain('Comment');
     const textarea = fixture.debugElement.query(By.css('textarea'));
     expect(textarea).toBeTruthy();
     expect(textarea.nativeElement.value).toBe('Initial comment');

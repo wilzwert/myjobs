@@ -4,7 +4,7 @@ import { TranslatorService } from '@core/services/translator.service';
 @Pipe({
   name: 'statusFilterLabel'
 })
-export class StatusFilterLabelPipe implements PipeTransform {
+export class StatusMetaLabelPipe implements PipeTransform {
 
   constructor(private translatorService: TranslatorService){}
 

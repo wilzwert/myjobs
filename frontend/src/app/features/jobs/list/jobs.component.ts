@@ -21,14 +21,14 @@ import { MatIcon } from '@angular/material/icon';
 import { JobSummaryComponent } from '../job-summary/job-summary.component';
 import { ComponentInputDomainData } from '../../../core/model/component-input-data.interface';
 import { UserSummary } from '@app/core/model/user-summary.interface';
-import { StatusFilterLabelPipe } from '@app/core/pipe/status-filter-label.pipe';
+import { StatusMetaLabelPipe } from '@app/core/pipe/status-filter-label.pipe';
 import { JobsListOptions } from '@app/core/model/jobs-list-options';
 import { JobsListOptionsService } from '@app/core/services/jobs-list-options.service';
 
 
 @Component({
   selector: 'app-jobs',
-  imports: [AsyncPipe, KeyValuePipe, MatMenuModule, MatRippleModule, MatCardModule, MatPaginatorModule, MatIcon, JobSummaryComponent, StatusLabelPipe, StatusFilterLabelPipe, MatButton, FormsModule, ReactiveFormsModule],
+  imports: [AsyncPipe, KeyValuePipe, MatMenuModule, MatRippleModule, MatCardModule, MatPaginatorModule, MatIcon, JobSummaryComponent, StatusLabelPipe, StatusMetaLabelPipe, MatButton, FormsModule, ReactiveFormsModule],
   providers: [{ provide: MatPaginatorIntl, useClass: CustomPaginatorIntl }],
   templateUrl: './jobs.component.html',
   styleUrl: './jobs.component.scss'
