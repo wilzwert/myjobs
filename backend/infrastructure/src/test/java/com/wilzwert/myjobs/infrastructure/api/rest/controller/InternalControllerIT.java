@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "application.internal.secret=secret"
 })
 @AutoConfigureMockMvc
-public class BatchControllerIT extends AbstractBaseIntegrationTest {
+public class InternalControllerIT extends AbstractBaseIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;

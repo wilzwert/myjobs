@@ -16,6 +16,7 @@ import com.wilzwert.myjobs.core.domain.model.attachment.ports.driving.DownloadAt
 import com.wilzwert.myjobs.core.domain.model.attachment.ports.driving.GetAttachmentFileInfoUseCase;
 import com.wilzwert.myjobs.core.domain.model.job.*;
 import com.wilzwert.myjobs.core.domain.model.job.command.*;
+import com.wilzwert.myjobs.core.domain.model.job.event.integration.JobCreatedEvent;
 import com.wilzwert.myjobs.core.domain.model.job.exception.JobNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobDataManager;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driving.*;
@@ -30,6 +31,8 @@ import com.wilzwert.myjobs.core.domain.model.user.ports.driving.GetUserJobsUseCa
 import com.wilzwert.myjobs.core.domain.model.job.service.JobEnricher;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.HtmlSanitizer;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.event.IntegrationEventPublisher;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.transaction.TransactionProvider;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 
@@ -44,6 +47,10 @@ import java.util.*;
 
 public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, UpdateJobUseCase, UpdateJobStatusUseCase, UpdateJobRatingUseCase, DeleteJobUseCase, GetUserJobsUseCase, AddActivityToJobUseCase, UpdateActivityUseCase, AddAttachmentToJobUseCase, DownloadAttachmentUseCase, DeleteAttachmentUseCase, GetAttachmentFileInfoUseCase {
 
+    private final TransactionProvider transactionProvider;
+
+    private final IntegrationEventPublisher integrationEventPublisher;
+
     private final JobDataManager jobDataManager;
 
     private final UserDataManager userDataManager;
@@ -54,7 +61,15 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
     private final JobEnricher jobEnricher = new JobEnricher();
 
-    public JobUseCaseImpl(JobDataManager jobDataManager, UserDataManager userDataManager, FileStorage fileStorage, HtmlSanitizer htmlSanitizer) {
+    public JobUseCaseImpl(
+            TransactionProvider transactionProvider,
+            IntegrationEventPublisher integrationEventPublisher,
+            JobDataManager jobDataManager,
+            UserDataManager userDataManager,
+            FileStorage fileStorage,
+            HtmlSanitizer htmlSanitizer) {
+        this.transactionProvider = transactionProvider;
+        this.integrationEventPublisher = integrationEventPublisher;
         this.jobDataManager = jobDataManager;
         this.userDataManager = userDataManager;
         this.fileStorage = fileStorage;
@@ -68,24 +83,27 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
             throw new UserNotFoundException();
         }
 
-        command = sanitizeCommandFields(command, List.of("title", "company", "description", "profile", "comment", "salary"));
+        CreateJobCommand actualCommand = sanitizeCommandFields(command, List.of("title", "company", "description", "profile", "comment", "salary"));
 
-        Job jobToCreate = Job.create(
-                Job.builder()
-                .url(command.url())
-                .title(command.title())
-                .company(command.company())
-                .description(command.description())
-                .profile(command.profile())
-                .comment(command.comment())
-                .salary(command.salary())
-                .userId(user.get().getId())
-        );
+        return transactionProvider.executeInTransaction(() -> {
+            Job jobToCreate = Job.create(
+                    Job.builder()
+                            .url(actualCommand.url())
+                            .title(actualCommand.title())
+                            .company(actualCommand.company())
+                            .description(actualCommand.description())
+                            .profile(actualCommand.profile())
+                            .comment(actualCommand.comment())
+                            .salary(actualCommand.salary())
+                            .userId(user.get().getId())
+            );
+            User updatedUser = user.get().addJob(jobToCreate);
 
-        User updatedUser = user.get().addJob(jobToCreate);
-        Job job = updatedUser.getJobByUrl(jobToCreate.getUrl()).orElseThrow(() -> new DomainException(ErrorCode.UNEXPECTED_ERROR));
-        userDataManager.saveUserAndJob(updatedUser, job);
-        return job;
+            Job job = updatedUser.getJobByUrl(jobToCreate.getUrl()).orElseThrow(() -> new DomainException(ErrorCode.UNEXPECTED_ERROR));
+            userDataManager.saveUserAndJob(updatedUser, job);
+            integrationEventPublisher.publish(new JobCreatedEvent(job.getId()));
+            return job;
+        });
     }
 
     @Override

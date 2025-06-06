@@ -148,6 +148,11 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy-agent -->
         <dependency>
             <groupId>net.bytebuddy</groupId>
@@ -186,9 +191,22 @@
             <artifactId>spring-boot-testcontainers</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>mongodb</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>kafka</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka-test</artifactId>
             <scope>test</scope>
         </dependency>
 
@@ -219,6 +237,7 @@
             <artifactId>myjobs-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+
 
     </dependencies>
 

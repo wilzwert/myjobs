@@ -11,6 +11,7 @@ import com.wilzwert.myjobs.core.domain.model.job.ports.driven.extractor.impl.Jso
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.SendJobsRemindersUseCase;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.HtmlSanitizer;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.event.IntegrationEventPublisher;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.fetcher.HtmlFetcherService;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.fetcher.JsHtmlFetcher;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.fetcher.StaticHtmlFetcher;
@@ -19,6 +20,7 @@ import com.wilzwert.myjobs.core.domain.model.job.ports.driving.ExtractJobMetadat
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.LoginUseCase;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.RegisterUseCase;
 import com.wilzwert.myjobs.core.domain.model.job.service.JobMetadataService;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.transaction.TransactionProvider;
 import com.wilzwert.myjobs.infrastructure.adapter.fetcher.CustomHtmlFetcherService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,8 +48,8 @@ public class BeanConfiguration {
     }
 
     @Bean
-    JobUseCaseImpl jobUseCase(JobDataManager jobDataManager, UserDataManager userDataManager, FileStorage fileStorage, HtmlSanitizer htmlSanitizer) {
-        return new JobUseCaseImpl(jobDataManager, userDataManager, fileStorage, htmlSanitizer);
+    JobUseCaseImpl jobUseCase(TransactionProvider transactionProvider, IntegrationEventPublisher integrationEventPublisher, JobDataManager jobDataManager, UserDataManager userDataManager, FileStorage fileStorage, HtmlSanitizer htmlSanitizer) {
+        return new JobUseCaseImpl(transactionProvider, integrationEventPublisher, jobDataManager, userDataManager, fileStorage, htmlSanitizer);
     }
 
     @Bean

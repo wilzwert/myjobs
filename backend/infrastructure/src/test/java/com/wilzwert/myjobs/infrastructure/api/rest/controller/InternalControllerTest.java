@@ -12,19 +12,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-class BatchControllerTest {
+class InternalControllerTest {
 
     private SendJobsRemindersBatchRunner batchRunner;
     private UsersJobsBatchResultMapper mapper;
 
 
-    private BatchController underTest;
+    private InternalController underTest;
 
     @BeforeEach
     void setUp() {
         batchRunner = mock(SendJobsRemindersBatchRunner.class);
         mapper = mock(UsersJobsBatchResultMapper.class);
-        underTest = new BatchController(batchRunner, mapper);
+        underTest = new InternalController(batchRunner, mapper);
     }
 
     @Test

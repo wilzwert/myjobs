@@ -29,6 +29,8 @@ import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.HtmlSanitizer;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.event.IntegrationEventPublisher;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.transaction.TransactionProvider;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -41,6 +43,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.File;
 import java.time.Instant;
 import java.util.*;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -48,6 +51,10 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class JobUseCaseImplTest {
 
+    @Mock
+    private TransactionProvider transactionProvider;
+    @Mock
+    private IntegrationEventPublisher integrationEventPublisher;
     @Mock
     private JobDataManager jobDataManager;
     @Mock
@@ -115,8 +122,7 @@ class JobUseCaseImplTest {
 
         // Mocks UserDataManager
         when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
-
-        underTest = new JobUseCaseImpl(jobDataManager, userDataManager, fileStorage, htmlSanitizer);
+        underTest = new JobUseCaseImpl(transactionProvider, integrationEventPublisher, jobDataManager, userDataManager, fileStorage, htmlSanitizer);
     }
 
     @Nested
@@ -224,6 +230,7 @@ class JobUseCaseImplTest {
             reset(userDataManager);
             when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
             when(htmlSanitizer.sanitize(any(String.class))).thenAnswer(i -> i.getArgument(0));
+            when(transactionProvider.executeInTransaction(any(Supplier.class))).thenAnswer(i -> ((Supplier<?>)i.getArgument(0)).get());
 
             var command = new CreateJobCommand.Builder()
                     .userId(userId)
@@ -245,6 +252,7 @@ class JobUseCaseImplTest {
             ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
             reset(userDataManager);
             when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
+            when(transactionProvider.executeInTransaction(any(Supplier.class))).thenAnswer(i -> ((Supplier<?>)i.getArgument(0)).get());
             // mocks htmlSanitizer
             when(htmlSanitizer.sanitize(any(String.class))).thenAnswer(i -> i.getArgument(0));
             // using ArgumentCaptor for both user and job allows us to check that upon saving, they are as expected

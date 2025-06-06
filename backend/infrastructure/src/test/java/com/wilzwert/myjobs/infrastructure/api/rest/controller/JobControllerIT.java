@@ -10,6 +10,9 @@ import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.job.*;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.EventStatus;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoIntegrationEvent;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoIntegrationEventRepository;
 import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,6 +57,9 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
 
     @Autowired
     private JobDataManager jobDataManager;
+
+    @Autowired
+    private MongoIntegrationEventRepository integrationEventRepository;
 
     Cookie accessTokenCookie;
 
@@ -363,6 +369,16 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(createdJob.getProfile()).isEqualTo("My new job profile");
             assertThat(createdJob.getComment()).isEqualTo("My new job comment");
             assertThat(createdJob.getSalary()).isEqualTo("My new job salary");
+
+            // let's check an event has been created
+            // Assert
+            List<MongoIntegrationEvent> events = integrationEventRepository.findByType("JobCreatedEvent");
+            assertThat(events).hasSize(1);
+
+            MongoIntegrationEvent event = events.getFirst();
+            System.out.println(event);
+            assertThat(event.getStatus()).isEqualTo(EventStatus.PENDING);
+            assertThat(event.getPayload()).contains(createdJob.getId().toString());
         }
     }
 

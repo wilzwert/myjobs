@@ -40,6 +40,13 @@ spring:
       uri: mongodb://${MONGODB_USERNAME:mongouser}:${MONGODB_PASSWORD:mongopwd}@${MONGODB_HOST:localhost}:${MONGODB_PORT:27017}/${MONGODB_DATABASE:myjobs}?retryWrites=true&w=majority
   thymeleaf:
     encoding: UTF-8
+  kafka:
+    producer:
+      bootstrap-servers: localhost:29092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+    template:
+      default-topic: myjobs
 
 
 # security

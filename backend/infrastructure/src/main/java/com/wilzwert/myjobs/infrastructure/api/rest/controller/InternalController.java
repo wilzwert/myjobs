@@ -23,7 +23,7 @@ import java.time.Instant;
 @RestController
 @RequestMapping("/internal")
 @Slf4j
-public class BatchController {
+public class InternalController {
 
     private final SendJobsRemindersBatchRunner sendJobsRemindersBatchRunner;
 
@@ -31,7 +31,7 @@ public class BatchController {
 
 
 
-    public BatchController(SendJobsRemindersBatchRunner jobsRemindersBatchRunner, UsersJobsBatchResultMapper usersJobsBatchResultMapper) {
+    public InternalController(SendJobsRemindersBatchRunner jobsRemindersBatchRunner, UsersJobsBatchResultMapper usersJobsBatchResultMapper) {
         this.sendJobsRemindersBatchRunner = jobsRemindersBatchRunner;
         this.usersJobsBatchResultMapper = usersJobsBatchResultMapper;
     }
