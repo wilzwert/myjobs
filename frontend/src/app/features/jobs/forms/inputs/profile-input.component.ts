@@ -13,18 +13,7 @@ import { BaseInputComponent } from "./baseinput.component";
   providers: [
     { provide: TINYMCE_SCRIPT_SRC, useValue: 'tinymce/tinymce.min.js' }
   ],
-  template: `@if(control) {
-        <mat-form-field>
-            <mat-label i18n="job profile|job profile input label@@input.job.profile.label">Profile</mat-label>
-            <editor [init]="init" (onKeyDown)="updateRichText($event)" (onChange)="updateRichText($event)" [initialValue]="control.value"
-            i18n-placeholder="job profile placeholder|job profile input placeholder@@input.job.description.placeholder"
-                placeholder="Job profile"
-            ></editor>
-            <mat-hint class="content-hint" align="end">
-                <app-status-icon [isValid]="!control.invalid"/>
-            </mat-hint>
-            <textarea matInput placeholder="Job profile" [formControl]="control" class=""></textarea>
-        </mat-form-field>}`
+  templateUrl: './profile-input.component.html'
 })
 export class ProfileInputComponent extends BaseInputComponent {
     override configure(): void {

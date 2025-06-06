@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { JobAttachmentsComponent } from './job-attachments.component';
 import { of, throwError } from 'rxjs';
 import { JobService } from '@core/services/job.service';
@@ -14,11 +14,11 @@ describe('JobAttachmentsComponent', () => {
   let component: JobAttachmentsComponent;
   let fixture: ComponentFixture<JobAttachmentsComponent>;
 
-  let mockJobService: jest.Mocked<JobService>;
-  let mockFileService: jest.Mocked<FileService>;
-  let mockConfirmDialogService: jest.Mocked<ConfirmDialogService>;
-  let mockModalService: jest.Mocked<ModalService>;
-  let mockNotificationService: jest.Mocked<NotificationService>;
+  let jobServiceMock: jest.Mocked<JobService>;
+  let fileServiceMock: jest.Mocked<FileService>;
+  let confirmDialogServiceMock: jest.Mocked<ConfirmDialogService>;
+  let modalServiceMock: jest.Mocked<ModalService>;
+  let notificationServiceMock: jest.Mocked<NotificationService>;
 
   const dummyJob: Job = {
     id: 'job1',
@@ -37,35 +37,36 @@ describe('JobAttachmentsComponent', () => {
     });
 
     
-    mockJobService = {
+    jobServiceMock = {
       getProtectedFile: jest.fn(),
       deleteAttachment: jest.fn()
-    } as any;
+    } as unknown as jest.Mocked<JobService>;
 
-    mockFileService = {
+    fileServiceMock = {
       downloadFile: jest.fn()
-    } as any;
+    } as unknown as jest.Mocked<FileService>;
 
-    mockConfirmDialogService = {
+    confirmDialogServiceMock = {
       openConfirmDialog: jest.fn()
-    } as any;
+    } as unknown as jest.Mocked<ConfirmDialogService>;
 
-    mockModalService = {
+    modalServiceMock = {
       openJobModal: jest.fn()
-    } as any;
+    } as unknown as jest.Mocked<ModalService>;
 
-    mockNotificationService = {
-      error: jest.fn()
-    } as any;
+    notificationServiceMock = {
+      error: jest.fn(),
+      confirmation: jest.fn()
+    } as unknown as jest.Mocked<NotificationService>;
 
     await TestBed.configureTestingModule({
       imports: [JobAttachmentsComponent],
       providers: [
-        { provide: JobService, useValue: mockJobService },
-        { provide: FileService, useValue: mockFileService },
-        { provide: ConfirmDialogService, useValue: mockConfirmDialogService },
-        { provide: ModalService, useValue: mockModalService },
-        { provide: NotificationService, useValue: mockNotificationService }
+        { provide: JobService, useValue: jobServiceMock },
+        { provide: FileService, useValue: fileServiceMock },
+        { provide: ConfirmDialogService, useValue: confirmDialogServiceMock },
+        { provide: ModalService, useValue: modalServiceMock },
+        { provide: NotificationService, useValue: notificationServiceMock }
       ]
     }).compileComponents();
 
@@ -89,45 +90,48 @@ describe('JobAttachmentsComponent', () => {
     const spyOpen = jest.spyOn(window, 'open').mockImplementation(() => null);
     const spyRevoke = jest.spyOn(global.URL, 'revokeObjectURL').mockImplementation(() => {});
 
-    mockJobService.getProtectedFile.mockReturnValue(of({ url: 'protected-url' } as ProtectedFile));
-    mockFileService.downloadFile.mockReturnValue(of(fakeBlob));
+    jobServiceMock.getProtectedFile.mockReturnValue(of({ url: 'protected-url' } as ProtectedFile));
+    fileServiceMock.downloadFile.mockReturnValue(of(fakeBlob));
 
     component.downloadAttachement(dummyJob, attachment);
 
-    expect(mockJobService.getProtectedFile).toHaveBeenCalledWith('job1', 'att1');
-    expect(mockFileService.downloadFile).toHaveBeenCalledWith('protected-url', true);
+    expect(jobServiceMock.getProtectedFile).toHaveBeenCalledWith('job1', 'att1');
+    expect(fileServiceMock.downloadFile).toHaveBeenCalledWith('protected-url', true);
     expect(spyCreateObjectURL).toHaveBeenCalled();
     expect(spyOpen).toHaveBeenCalledWith('blob:url', '_blank');
     expect(spyRevoke).toHaveBeenCalledWith('blob:url');
   });
 
   it('should handle download errors gracefully', () => {
-    mockJobService.getProtectedFile.mockReturnValue(throwError(() => new Error('fail')));
+    jobServiceMock.getProtectedFile.mockReturnValue(throwError(() => new Error('fail')));
 
     component.downloadAttachement(dummyJob, dummyJob.attachments[0]);
 
-    expect(mockNotificationService.error).toHaveBeenCalledWith(expect.stringContaining('File download failed.'), expect.any(Error));
+    expect(notificationServiceMock.error).toHaveBeenCalledWith(expect.stringContaining('File download failed'), expect.any(Error));
   });
 
   it('should call confirm dialog for deletion', () => {
     const attachment = dummyJob.attachments[0];
     component.deleteAttachment(dummyJob, attachment);
 
-    expect(mockConfirmDialogService.openConfirmDialog).toHaveBeenCalledWith(
+    expect(confirmDialogServiceMock.openConfirmDialog).toHaveBeenCalledWith(
       `Delete attachment "${attachment.name}" ?`,
       expect.any(Function)
     );
   });
 
-  it('should delete the attachment from job', () => {
+  it('should delete the attachment from job', fakeAsync(() => {
     const attachment = dummyJob.attachments[0];
-    mockJobService.deleteAttachment.mockReturnValue(of(void 0));
+    jobServiceMock.deleteAttachment.mockReturnValue(of(void 0));
 
     component.confirmDeleteAttachment(dummyJob, attachment);
 
-    expect(mockJobService.deleteAttachment).toHaveBeenCalledWith('job1', 'att1');
+    tick();
+
+    expect(jobServiceMock.deleteAttachment).toHaveBeenCalledWith('job1', 'att1');
+    expect(notificationServiceMock.confirmation).toHaveBeenCalledWith(expect.stringContaining('Attachment deleted successfully'))
     expect(dummyJob.attachments.length).toBe(0);
-  });
+  }));
 
   it('should emit attachmentsSaved in modal mode', () => {
     component.formMode = 'modal';
@@ -146,7 +150,7 @@ describe('JobAttachmentsComponent', () => {
   it('should open modal in modal mode when adding attachment', () => {
     component.formMode = 'modal';
     component.addAttachment(dummyJob);
-    expect(mockModalService.openJobModal).toHaveBeenCalledWith('attachments-form', dummyJob, expect.any(Function), { defaultAttachments: 1 });
+    expect(modalServiceMock.openJobModal).toHaveBeenCalledWith('attachments-form', dummyJob, expect.any(Function), { defaultAttachments: 1 });
   });
 
   it('should hide form when cancelForm is called', () => {

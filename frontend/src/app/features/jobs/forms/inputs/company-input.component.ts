@@ -8,14 +8,7 @@ import { BaseInputComponent } from "./baseinput.component";
 @Component({
   selector: 'app-job-company-input',
   imports: [ReactiveFormsModule, MatFormField, MatInput, MatLabel, MatHint, StatusIconComponent],
-  template: `@if(control) {
-    <mat-form-field>
-        <mat-label i18n="job company|job company input label@@input.job.company.label">Company</mat-label>
-        <input matInput [formControl]="control" i18n-placeholder="job company placeholder|job company input placeholder@@input.job.company.placeholder" placeholder="Company">
-        <mat-hint class="company-hint" align="end">
-            <app-status-icon [isValid]="!control.invalid"/>
-        </mat-hint>
-    </mat-form-field>}`
+  templateUrl: './company-input.component.html'
 })
 export class CompanyInputComponent extends BaseInputComponent {
     override configure(): void {

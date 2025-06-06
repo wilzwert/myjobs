@@ -8,14 +8,7 @@ import { BaseInputComponent } from "./baseinput.component";
 @Component({
   selector: 'app-job-salary-input',
   imports: [ReactiveFormsModule, MatFormField, MatInput, MatLabel, MatHint, StatusIconComponent],
-  template: `@if(control) {
-    <mat-form-field>
-        <mat-label i18n="job salary|job salary input label@@input.job.salary.label">Salary</mat-label>
-        <input matInput [formControl]="control" i18n-placeholder="job salary placeholder|job salary input placeholder@@input.job.salary.placeholder" placeholder="Salary">
-        <mat-hint class="salary-hint" align="end">
-            <app-status-icon [isValid]="!control.invalid"/>
-        </mat-hint>
-    </mat-form-field>}`
+  templateUrl: './salary-input.component.html'
 })
 export class SalaryInputComponent extends BaseInputComponent {
     override configure(): void {

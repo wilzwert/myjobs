@@ -8,14 +8,7 @@ import { BaseInputComponent } from "./baseinput.component";
 @Component({
   selector: 'app-job-url-input',
   imports: [ReactiveFormsModule, MatFormField, MatInput, MatLabel, MatHint, StatusIconComponent],
-  template: `@if(control) {
-    <mat-form-field>
-        <mat-label i18n="url|url input label@@input.url.label">Url</mat-label>
-        <input matInput [formControl]="control" type="url" i18n-placeholder="url placeholder|url input placeholder@@input.url.placeholder" placeholder="Job url">
-        <mat-hint class="url-hint" align="end">
-            <app-status-icon [isValid]="!control.invalid"/>
-        </mat-hint>
-    </mat-form-field>}`
+  templateUrl: './url-input.component.html'
 })
 export class UrlInputComponent extends BaseInputComponent {
     override configure(): void {
