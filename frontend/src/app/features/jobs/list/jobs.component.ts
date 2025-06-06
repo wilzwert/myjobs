@@ -1,6 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { Observable, take, tap } from 'rxjs';
-import { AsyncPipe } from '@angular/common';
+import { Component, effect, OnDestroy, OnInit, Signal } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
+import { AsyncPipe, KeyValuePipe } from '@angular/common';
 import { MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card';
 import { Page } from '../../../core/model/page.interface';
@@ -9,9 +9,8 @@ import { JobService } from '../../../core/services/job.service';
 import { ModalService } from '../../../core/services/modal.service';
 import { StatusLabelPipe } from '../../../core/pipe/status-label.pipe';
 import { MatButton } from '@angular/material/button';
-import { ConfirmDialogService } from '../../../core/services/confirm-dialog.service';
 import { NotificationService } from '../../../core/services/notification.service';
-import { FormBuilder, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatMenuModule } from '@angular/material/menu';
 import { JobMetadata } from '../../../core/model/job-metadata.interface';
@@ -21,90 +20,78 @@ import { UserService } from '../../../core/services/user.service';
 import { MatIcon } from '@angular/material/icon';
 import { JobSummaryComponent } from '../job-summary/job-summary.component';
 import { ComponentInputDomainData } from '../../../core/model/component-input-data.interface';
+import { UserSummary } from '@app/core/model/user-summary.interface';
+import { StatusMetaLabelPipe } from '@app/core/pipe/status-meta-label.pipe';
+import { JobsListOptions } from '@app/core/model/jobs-list-options';
+import { JobsListOptionsService } from '@app/core/services/jobs-list-options.service';
 
 
 @Component({
   selector: 'app-jobs',
-  imports: [AsyncPipe, MatMenuModule, MatRippleModule, MatCardModule, MatPaginatorModule, MatIcon, JobSummaryComponent, StatusLabelPipe, MatButton, FormsModule, ReactiveFormsModule],
+  imports: [AsyncPipe, KeyValuePipe, MatMenuModule, MatRippleModule, MatCardModule, MatPaginatorModule, MatIcon, JobSummaryComponent, StatusLabelPipe, StatusMetaLabelPipe, MatButton, FormsModule, ReactiveFormsModule],
   providers: [{ provide: MatPaginatorIntl, useClass: CustomPaginatorIntl }],
   templateUrl: './jobs.component.html',
   styleUrl: './jobs.component.scss'
 })
-export class JobsComponent implements OnInit {
+export class JobsComponent implements OnDestroy {
+
+  private readonly destroy$: Subject<boolean> = new Subject<boolean>();
+
+  statusKeys: string[] = [];
 
   public jobs$!: Observable<Page<Job>>;
   protected user$: Observable<User>;
 
-  public currentPage: number;
-  public currentPageSize: number;
-  public currentStatus: keyof typeof JobStatus | null = null;
-  public currentSort: string = 'createdAt,desc';
-  public filterLate = false;
+  // make user's summary available to template
+  protected userSummary!: Signal<UserSummary | null | false>;
 
-  statusKeys: string[] = [];
+  // make options available to the template
+  protected jobsOptions!: Signal<JobsListOptions | null>;
 
-  constructor(private fb: FormBuilder, private userService: UserService, private jobService: JobService, private modalService: ModalService, private confirmDialogService: ConfirmDialogService, private notificationService: NotificationService) {
-    this.currentPage = jobService.getCurrentPage();
-    if (this.currentPage == -1) {
-      this.currentPage = 0;
-    }
-    this.currentPageSize = jobService.getItemsPerPage();
-    if (this.currentPageSize == -1) {
-      this.currentPageSize = 10;
-    }
-
+  constructor(
+    private readonly userService: UserService, 
+    private readonly jobService: JobService, 
+    private readonly jobsListOptionsService: JobsListOptionsService, 
+    private readonly modalService: ModalService,
+    private readonly notificationService: NotificationService) {
     this.statusKeys = Object.keys(JobStatus);
     this.user$ = this.userService.getUser();
+
+    // make summary available to template
+    this.userSummary = userService.getUserSummary();
+    this.jobsOptions = this.jobsListOptionsService.getJobsListOptions();
+    effect(() => {
+      const options = this.jobsOptions();
+      if(options === null) {
+        return;
+      }
+      this.jobs$ = this.jobService.getAllJobs(options);
+    })
   }
 
-  ngOnInit(): void {
-    this.jobs$ = this.jobService.getAllJobs(this.currentPage, this.currentPageSize, this.currentStatus, this.filterLate, this.currentSort);
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
   }
 
   sortBy(sort: string): void {
-    this.currentSort = sort;
-    this.reloadJobs();
+    this.jobsListOptionsService.sort(sort);
   }
 
-  filterByStatus(status: String): void {
-    // having two properties to handle status or "filter-late" filters may seem unclean, as they are exclusive at the moment
-    // but it actually allow us to change our mind in the future and use both filters cumulatively 
-
-    // clicking on the current status filter removes the filter
-    if(status === 'filter-late' && this.filterLate) {
-      console.log('removing filter late');
-      this.filterLate = false;
-    }
-    else {
-      const newStatus: keyof typeof JobStatus = status as keyof typeof JobStatus;
-      if(newStatus === this.currentStatus) {
-          this.currentStatus = null;
-          console.log('removing current status');
-      }
-      else {
-        this.currentStatus = status === "filter-late" ? null : status as keyof typeof JobStatus;
-        console.log('setting currentstatus ', this.currentStatus);
-        this.filterLate = status === "filter-late";
-        console.log('setting filterLate ', this.filterLate);
-      }
-    }
-    
-    this.reloadJobs();
-  }
-
-  changeSort(): void {
-    this.reloadJobs();
+  filter(status: string | null, statusMeta: string | null): void {
+    this.jobsListOptionsService.filter(status, statusMeta);
   }
 
   handlePageEvent(event: PageEvent) {
-    this.jobs$ = this.jobService.getAllJobs(event.pageIndex, event.pageSize, this.currentStatus, this.filterLate, this.currentSort);
-    this.currentPage = event.pageIndex;
-    this.currentPageSize = event.pageSize;
+    this.jobsListOptionsService.changePagination(event.pageIndex, event.pageSize);
   }
 
-  reloadJobs(job: Job | null = null): void {
-    this.currentPage = 0;
-    this.jobs$ = this.jobService.getAllJobs(this.currentPage, this.currentPageSize, this.currentStatus, this.filterLate, this.currentSort);
+  onJobChanged(job: Job): void {
+    this.reloadJobs();
+  }
+
+  reloadJobs(): void {
+    // reloading user summary will trigger options and jobs loading
+    this.userService.reloadUserSummary();
   }
 
   createJobWithUrl(): void {
@@ -116,27 +103,14 @@ export class JobsComponent implements OnInit {
   }
 
   createJob(): void {
-    this.modalService.openJobStepperModal(() => this.reloadJobs());
+    this.modalService.openJobStepperModal(() => {this.reloadJobs()});
   }
 
   onDelete(job: Job) :void {
+    this.reloadJobs();
     this.notificationService.confirmation($localize`:@@job.deleted:Job successfully deleted.`);
   }
   
-  confirmDeleteJob(job: Job): void {
-    this.jobService.deleteJob(job.id).pipe(
-      take(1),
-      tap(() => {
-        this.notificationService.confirmation($localize`:@@job.deleted:Job successfully deleted.`);
-        this.reloadJobs();
-      })
-    ).subscribe();
-  }
-
-  deleteJob(job: Job): void {
-    this.confirmDialogService.openConfirmDialog($localize`:@@warning.job.delete:Delete job "${job.title}" ? All data will be lost.`, () => this.confirmDeleteJob(job));
-  }
-
   manageAttachments(event: Event, job: Job): void {
     // prevent routing to job detail 
     event.stopPropagation();

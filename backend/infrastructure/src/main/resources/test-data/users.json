@@ -19,6 +19,7 @@
     "id": "abcd4321-4321-4321-4321-123456789012",
     "email": "otherexisting@example.com",
     "emailStatus": "PENDING",
+    "emailValidationCode": "other-existing-email-validation-code",
     "password": "$2a$12$vPvJzKLkMXfThur0MBAfD.f.Aaj.PZaPQDriZlWd9KUaXyVdeyGmC",
     "username": "otherexistinguser",
     "firstName": "OtherExisting",

@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { DataService } from './data.service';
-import { Job, JobStatus } from '@core/model/job.interface';
+import { Job } from '@core/model/job.interface';
 import { BehaviorSubject, forkJoin, map, Observable, of, switchMap, tap } from 'rxjs';
 import { Page } from '@core/model/page.interface';
 import { CreateJobRequest } from '@core/model/create-job-request.interface';
-import { UpdateJobRequest } from '@core/model/update-job-request.interface';
+import { UpdateJobFieldRequest, UpdateJobRequest } from '@core/model/update-job-request.interface';
 import { CreateJobAttachmentsRequest } from '@core/model/create-job-attachments-request.interface';
 import { CreateJobAttachmentRequest } from '@core/model/create-job-attachment-request.interface';
 import { CreateJobActivitiesRequest } from '@core/model/create-job-activities-request.interface';
@@ -14,6 +14,7 @@ import { UpdateJobRatingRequest } from '@core/model/update-job-rating-request.in
 import { JobMetadata } from '@core/model/job-metadata.interface';
 import { SessionService } from './session.service';
 import { ProtectedFile } from '../model/protected-file.interface';
+import { JobsListOptions } from '../model/jobs-list-options';
 
 @Injectable({
   providedIn: 'root'
@@ -21,11 +22,9 @@ import { ProtectedFile } from '../model/protected-file.interface';
 export class JobService {
 
   private jobsSubject: BehaviorSubject<Page<Job> | null> = new BehaviorSubject<Page<Job> | null> (null);
-  private currentPage: number = -1;
-  private itemsPerPage: number = -1;
-  private currentStatus: keyof typeof JobStatus | null = null;
-  private filterLate = false;
-  private currentSort: string | null = null;
+  
+  private currentOptions: JobsListOptions = new JobsListOptions();
+
 
   constructor(private dataService: DataService, private sessionService: SessionService) {
     
@@ -35,31 +34,28 @@ export class JobService {
       });
    }
 
-  getCurrentPage() :number {
-    return this.currentPage
-  }
-
-  getItemsPerPage() :number {
-    return this.itemsPerPage
-  }
-
-
    /**
-   * Retrieves the sorted jobs loded from the backend 
+   * Retrieves the sorted jobs loaded from the backend 
+   * trying to avoid unncessary data service requests
    * @returns the jobs
    */
-  public getAllJobs(page: number, itemsPerPage: number, status: keyof typeof JobStatus | null = null, filterLate: boolean, sort: string): Observable<Page<Job>> {
-
+  public getAllJobs(jobsListOptions: JobsListOptions): Observable<Page<Job>> {
     return this.jobsSubject.pipe(
       switchMap((jobsPage: Page<Job> | null) => {
-        if(jobsPage === null || page != this.currentPage || status != this.currentStatus || filterLate != this.filterLate || sort != this.currentSort) {
-          this.currentPage = page;
-          this.currentStatus = status;
-          this.filterLate = filterLate;
-          this.itemsPerPage = itemsPerPage;
-          this.currentSort = sort;
-          const statusOrFilterParam = (status != null ?  `status=${status}`  : filterLate ? `filterLate=true` : '');
-          return this.dataService.get<Page<Job>>(`jobs?page=${page}&itemsPerPage=${itemsPerPage}`+(statusOrFilterParam ? `&${statusOrFilterParam}` : '')+`&sort=${sort}`).pipe(
+        if(jobsPage === null || jobsListOptions.getMustReload() || !this.currentOptions.equals(jobsListOptions)) {
+          // create a new instance to store current options, otherwise the current instance would be the same as the one in the service
+          this.currentOptions = jobsListOptions;
+          this.currentOptions.forceReload(null);
+          const status = this.currentOptions.getStatus();
+          const statusMeta = this.currentOptions.getStatusMeta();
+          let statusOrFilterParam = '';
+          if(status !== null) {
+            statusOrFilterParam += `status=${status}`;
+          }
+          else if (statusMeta !== null) {
+            statusOrFilterParam += `statusMeta=${statusMeta}`;
+          }
+          return this.dataService.get<Page<Job>>(`jobs?page=${this.currentOptions.getCurrentPage()}&itemsPerPage=${this.currentOptions.getItemsPerPage()}`+(statusOrFilterParam ? `&${statusOrFilterParam}` : '')+`&sort=${this.currentOptions.getSort()}`).pipe(
             switchMap((fetchedJobs: Page<Job>) => {
               this.jobsSubject.next(fetchedJobs);
               return of(fetchedJobs);
@@ -131,7 +127,7 @@ export class JobService {
    */
   public updateJobStatus(jobId: string, request: UpdateJobStatusRequest): Observable<Job> {
     // using patch because only some fields are edited
-    return this.dataService.put<Job>(`jobs/${jobId}/status`, request).pipe(
+    return this.dataService.patch<Job>(`jobs/${jobId}`, request).pipe(
       map((j: Job) => {
         this.reloadIfNecessary(j);
         return j;
@@ -145,7 +141,7 @@ export class JobService {
    */
   public updateJobRating(jobId: string, request: UpdateJobRatingRequest): Observable<Job> {
     // using patch because only some fields are edited
-    return this.dataService.put<Job>(`jobs/${jobId}/rating`, request).pipe(
+    return this.dataService.patch<Job>(`jobs/${jobId}`, request).pipe(
       map((j: Job) => {
         this.reloadIfNecessary(j);
         return j;
@@ -168,6 +164,16 @@ export class JobService {
     );
   }
 
+  public updateJobField(jobId: string, request: UpdateJobFieldRequest): Observable<Job> {
+    // using patch because only some fields are edited
+    return this.dataService.patch<Job>(`jobs/${jobId}`, request).pipe(
+      map((j: Job) => {
+        this.reloadIfNecessary(j);
+        return j;
+      })
+    );
+  }
+
   public createAttachment(jobId: string, request: CreateJobAttachmentRequest): Observable<Job> {
     return this.dataService.post<Job>(`jobs/${jobId}/attachments`, request).pipe(
       map((j: Job) => {
@@ -179,11 +185,11 @@ export class JobService {
 
   public createAttachments(jobId: string, request: CreateJobAttachmentsRequest): Observable<Job> {
     const attachmentRequests = request.attachments.map(attachment => 
-      this.createAttachment(jobId, attachment) // Appel de createAttachment pour chaque pièce jointe
+      this.createAttachment(jobId, attachment) // calls createAttachment for each attachment
     );
 
     return forkJoin(attachmentRequests).pipe(
-        map((jobs: Job[]) => jobs[jobs.length - 1]) // Retourne le dernier Job mis à jour
+        map((jobs: Job[]) => jobs[jobs.length - 1]) // returns the last updated job
     );
   }
 
@@ -206,11 +212,11 @@ export class JobService {
 
   public createActivities(jobId: string, request: CreateJobActivitiesRequest): Observable<Job> {
     const attachmentRequests = request.activities.map(activity => 
-      this.createActivity(jobId, activity) // Appel de createAttachment pour chaque pièce jointe
+      this.createActivity(jobId, activity) // calls createAttachment for each activity
     );
 
     return forkJoin(attachmentRequests).pipe(
-        map((jobs: Job[]) => jobs[jobs.length - 1]) // Retourne le dernier Job mis à jour
+        map((jobs: Job[]) => jobs[jobs.length - 1]) // returns the last updated job
     );
   }
 

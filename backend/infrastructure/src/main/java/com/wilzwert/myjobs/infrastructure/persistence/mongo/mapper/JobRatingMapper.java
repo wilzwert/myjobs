@@ -2,7 +2,7 @@ package com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper;
 
 
 import com.wilzwert.myjobs.core.domain.model.job.JobRating;
-import com.wilzwert.myjobs.infrastructure.api.rest.dto.JobRatingResponse;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.job.JobRatingResponse;
 import org.mapstruct.Mapper;
 
 /**

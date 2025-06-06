@@ -35,6 +35,7 @@ export class JwtInterceptor implements HttpInterceptor {
   }
 
   private shouldTryToRefreshToken(request: HttpRequest<unknown>, error: HttpErrorResponse) :boolean {
+    console.log('shouldTryToRefreshToken?');
     return error instanceof HttpErrorResponse && error.status === 401 && !request.url.includes('auth/login') && !request.url.includes('auth/refresh-token')
   }
 

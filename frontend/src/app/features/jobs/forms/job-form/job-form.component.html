@@ -1,0 +1,47 @@
+{{ job?.title }}
+
+@if (form) {
+    <form [formGroup]="form" (ngSubmit)="submit()">
+            
+        <p>
+            <app-job-url-input [initialValue]="valueSource?.url" [form]="form"></app-job-url-input>
+        </p>
+        <p>
+            <app-job-title-input [initialValue]="valueSource?.title" [form]="form"></app-job-title-input>
+        </p>
+
+        <p>
+            <app-job-company-input [initialValue]="valueSource?.company" [form]="form"></app-job-company-input>
+        </p>
+
+        <p>
+            <app-job-description-input [initialValue]="valueSource?.description" [form]="form"></app-job-description-input>
+        </p>
+        <p>
+            <app-job-profile-input [initialValue]="valueSource?.profile" [form]="form"></app-job-profile-input>
+        </p>
+         <p>
+            <app-job-comment-input [initialValue]="job?.comment" [form]="form"></app-job-comment-input>
+        </p>
+
+        <p>
+            <app-job-salary-input [initialValue]="valueSource?.salary" [form]="form"></app-job-salary-input>
+        </p>
+        
+        <button mat-flat-button type="submit" [disabled]="form.invalid || loading"> 
+            @if (loading) { 
+                <span i18n="loading|inform the user loading occurs@@info.loading">Loading...</span>
+            } 
+            @else { 
+                @if(job?.id !== null) {
+                    <span i18n="save|Save action label@@action.save">Save</span>
+                } 
+                @else {
+                    <span i18n="create|Create action label@@action.create">Create</span>
+                } 
+            }</button>
+        @if (error) {
+            <p class="error"><span i18n="an error occurred|a label to inform user that an error occurred@@error.label">An error occurred</span> : {{error}}</p>
+        }
+    </form>
+}

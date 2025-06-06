@@ -8,7 +8,7 @@ import { UserEditComponent } from '@features/user/user-edit/user-edit.component'
 import { ModalComponent } from '@layout/modal/modal.component';
 import { Job } from '@core/model/job.interface';
 import { User } from '@core/model/user.interface';
-import { CreateJobWithUrlFormComponent } from '@features/jobs/create-job-with-url-form/create-job-with-url-form.component';
+import { CreateJobWithUrlFormComponent } from '@app/features/jobs/forms/create-job-with-url-form/create-job-with-url-form.component';
 
 describe('ModalService', () => {
   let modalService: ModalService;

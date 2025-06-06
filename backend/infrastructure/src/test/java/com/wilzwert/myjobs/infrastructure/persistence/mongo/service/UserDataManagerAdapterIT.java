@@ -1,6 +1,8 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 
 
+import com.wilzwert.myjobs.core.domain.model.job.JobState;
+import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.user.UserView;
@@ -208,5 +210,17 @@ public class UserDataManagerAdapterIT extends AbstractBaseIntegrationTest {
 
         // when + then
         assertThrows(IllegalArgumentException.class, () -> underTest.saveAll(emptySet));
+    }
+
+    @Test
+    void shouldGetJobStatuses() {
+        UserId userId = new UserId(UUID.fromString("abcd1234-1234-1234-1234-123456789012"));
+        Optional<User> user = underTest.findMinimalById(userId);
+        assertThat(user).isPresent();
+
+        List<JobState> states = underTest.getJobsState(user.get());
+
+        assertThat(states).hasSize(4);
+        assertThat(states.stream().map(JobState::status)).containsExactlyInAnyOrder(JobStatus.CREATED, JobStatus.PENDING, JobStatus.CREATED, JobStatus.COMPANY_REFUSED);
     }
 }

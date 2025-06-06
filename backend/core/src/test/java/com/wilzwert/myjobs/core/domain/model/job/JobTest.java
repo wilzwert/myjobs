@@ -49,6 +49,7 @@ class JobTest {
                 .company("Job company")
                 .description("Job description")
                 .profile("Job profile")
+                .comment("Job comment")
                 .salary("TBD")
                 .userId(userId)
         );
@@ -62,6 +63,7 @@ class JobTest {
         assertEquals("Job company", job.getCompany());
         assertEquals("Job description", job.getDescription());
         assertEquals("Job profile", job.getProfile());
+        assertEquals("Job comment", job.getComment());
         assertEquals("TBD", job.getSalary());
         assertEquals(userId, job.getUserId());
         Instant createdAt = job.getCreatedAt();
@@ -128,6 +130,7 @@ class JobTest {
                 .company("Job company")
                 .description("Job description")
                 .profile("Job profile")
+                .comment("Job comment")
                 .salary("TBD")
                 .userId(userId)
                 .createdAt(now)
@@ -145,6 +148,7 @@ class JobTest {
         assertEquals("Job company", job.getCompany());
         assertEquals("Job description", job.getDescription());
         assertEquals("Job profile", job.getProfile());
+        assertEquals("Job comment", job.getComment());
         assertEquals("TBD", job.getSalary());
         assertEquals(userId, job.getUserId());
         assertEquals(now, job.getCreatedAt());
@@ -224,6 +228,7 @@ class JobTest {
                 .company("Job company")
                 .description("Job description")
                 .profile("Job profile")
+                .comment("Job comment")
                 .salary("TBD")
                 .userId(userId)
                 .createdAt(now)
@@ -253,6 +258,7 @@ class JobTest {
         assertEquals("Job company", updatedJob.getCompany());
         assertEquals("Job description", updatedJob.getDescription());
         assertEquals("Job profile", updatedJob.getProfile());
+        assertEquals("Job comment", updatedJob.getComment());
         assertEquals("TBD", updatedJob.getSalary());
         assertEquals(userId.value(), updatedJob.getUserId().value());
         assertEquals(now, updatedJob.getCreatedAt());

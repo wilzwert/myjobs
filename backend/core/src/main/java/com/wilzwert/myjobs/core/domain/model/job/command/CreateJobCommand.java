@@ -6,13 +6,14 @@ import com.wilzwert.myjobs.core.domain.model.user.UserId;
  * @author Wilhelm Zwertvaegher
  */
 
-public record CreateJobCommand(String title, String company, String url, String description, String profile, String salary, UserId userId) {
+public record CreateJobCommand(String title, String company, String url, String description, String profile, String comment, String salary, UserId userId) {
     public static class Builder {
         private String title;
         private String company;
         private String url;
         private String description;
         private String profile;
+        private String comment;
         private String salary;
         private UserId userId;
 
@@ -24,6 +25,7 @@ public record CreateJobCommand(String title, String company, String url, String 
             this.url = command.url();
             this.description = command.description();
             this.profile = command.profile();
+            this.comment = command.comment();
             this.salary = command.salary();
             this.userId = command.userId();
         }
@@ -33,13 +35,13 @@ public record CreateJobCommand(String title, String company, String url, String 
             return this;
         }
 
-        public Builder company(String company) {
-            this.company = company;
+        public Builder url(String url) {
+            this.url = url;
             return this;
         }
 
-        public Builder url(String url) {
-            this.url = url;
+        public Builder company(String company) {
+            this.company = company;
             return this;
         }
 
@@ -48,13 +50,18 @@ public record CreateJobCommand(String title, String company, String url, String 
             return this;
         }
 
-        public Builder profile(String profile) {
-            this.profile = profile;
+        public Builder comment(String comment) {
+            this.comment = comment;
             return this;
         }
 
         public Builder salary(String salary) {
             this.salary = salary;
+            return this;
+        }
+
+        public Builder profile(String profile) {
+            this.profile = profile;
             return this;
         }
 
@@ -64,7 +71,7 @@ public record CreateJobCommand(String title, String company, String url, String 
         }
 
         public CreateJobCommand build() {
-            return new CreateJobCommand(title, company, url, description, profile, salary, userId);
+            return new CreateJobCommand(title, company, url, description, profile, comment, salary, userId);
         }
     }
 }

@@ -6,9 +6,9 @@ import com.wilzwert.myjobs.core.domain.shared.exception.EntityAlreadyExistsExcep
 import com.wilzwert.myjobs.core.domain.shared.exception.EntityNotFoundException;
 import com.wilzwert.myjobs.core.domain.shared.exception.ValidationException;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.ErrorResponse;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
@@ -45,14 +45,13 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * In this case, the build of the ResponseEntity will be a list of errors instead of an ErrorResponse
      * @param ex a ValidationException
      * @return the response entity
      */
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<ErrorResponse> generateError(ValidationException ex) {
         ErrorResponse errorResponse = ErrorResponse.fromException(ex);
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatusCode());
     }
 
 
@@ -70,11 +69,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ErrorResponse> generateResponseStatusException(ResponseStatusException ex) {
-        return new ResponseEntity<>(ErrorResponse.fromException(ex), ex.getStatusCode());
+        ErrorResponse errorResponse = ErrorResponse.fromException(ex);
+        return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatusCode());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> generateMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        ErrorResponse errorResponse = ErrorResponse.fromException(ex);
+        return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatusCode());
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> generateConstraintViolation(ConstraintViolationException ex) {
         ErrorResponse errorResponse = ErrorResponse.fromException(ex);
         return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatusCode());
     }

@@ -44,6 +44,8 @@ public class MongoJob {
 
     private String profile;
 
+    private String comment;
+
     private String salary;
 
     private JobRating rating;

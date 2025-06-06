@@ -8,7 +8,7 @@ import { User } from '@core/model/user.interface';
 import { ModalComponent } from '@layout/modal/modal.component';
 import { ComponentInputData, ComponentInputDomainData } from '@core/model/component-input-data.interface';
 import { UserEditComponent } from '@features/user/user-edit/user-edit.component';
-import { CreateJobWithUrlFormComponent } from '@features/jobs/create-job-with-url-form/create-job-with-url-form.component';
+import { CreateJobWithUrlFormComponent } from '@app/features/jobs/forms/create-job-with-url-form/create-job-with-url-form.component';
 
 @Injectable({
   providedIn: 'root'

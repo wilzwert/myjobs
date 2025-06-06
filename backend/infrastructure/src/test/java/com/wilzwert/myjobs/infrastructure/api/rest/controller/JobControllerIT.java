@@ -4,11 +4,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
-import com.wilzwert.myjobs.core.domain.model.job.JobRating;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobDataManager;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.job.*;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
 import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
 import jakarta.servlet.http.Cookie;
@@ -76,26 +76,25 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
                     .andExpect(status().isOk())
                     .andReturn();
 
-            RestPage<JobResponse> jobResponseRestPage = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<>() {
-            });
+            RestPage<JobResponse> jobResponseRestPage = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<>() {});
             assertThat(jobResponseRestPage).isNotNull();
             assertThat(jobResponseRestPage.getContent()).isNotNull();
-            assertThat(jobResponseRestPage.getContent()).hasSize(3);
-            assertThat(jobResponseRestPage.getTotalElementsCount()).isEqualTo(3);
+            assertThat(jobResponseRestPage.getContent()).hasSize(4);
+            assertThat(jobResponseRestPage.getTotalElementsCount()).isEqualTo(4);
             assertThat(jobResponseRestPage.getPageSize()).isEqualTo(10);
             assertThat(jobResponseRestPage.getPagesCount()).isEqualTo(1);
             assertThat(jobResponseRestPage.getCurrentPage()).isZero();
 
             List<String> titles = jobResponseRestPage.getContent().stream().map(JobResponse::getTitle).toList();
             // by default, we expect jobs sorted by creation date desc
-            assertThat(titles).containsExactly("My third job", "My second job", "My job");
+            assertThat(titles).containsExactly("My refused job", "My third job", "My second job", "My job");
         }
 
         @Test
         void shouldGetJobsWithUserPagination() throws Exception {
             MvcResult mvcResult = mockMvc.perform(
                     get(JOBS_URL).cookie(accessTokenCookie)
-                            .param("page", "2") // third page
+                            .param("page", "3") // fourth page
                             .param("itemsPerPage", "1") // 1 Job per page
                 )
                 .andExpect(status().isOk())
@@ -105,10 +104,10 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(jobResponseRestPage).isNotNull();
             assertThat(jobResponseRestPage.getContent()).isNotNull();
             assertThat(jobResponseRestPage.getContent()).hasSize(1);
-            assertThat(jobResponseRestPage.getTotalElementsCount()).isEqualTo(3);
+            assertThat(jobResponseRestPage.getTotalElementsCount()).isEqualTo(4);
             assertThat(jobResponseRestPage.getPageSize()).isEqualTo(1);
-            assertThat(jobResponseRestPage.getCurrentPage()).isEqualTo(2);
-            assertThat(jobResponseRestPage.getPagesCount()).isEqualTo(3);
+            assertThat(jobResponseRestPage.getCurrentPage()).isEqualTo(3);
+            assertThat(jobResponseRestPage.getPagesCount()).isEqualTo(4);
 
             List<String> titles = jobResponseRestPage.getContent().stream().map(JobResponse::getTitle).toList();
             // by default, jobs are sorted by creation date desc
@@ -128,14 +127,14 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             RestPage<JobResponse> jobResponseRestPage = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<RestPage<JobResponse>>() {});
             assertThat(jobResponseRestPage).isNotNull();
             assertThat(jobResponseRestPage.getContent()).isNotNull();
-            assertThat(jobResponseRestPage.getContent()).hasSize(3);
-            assertThat(jobResponseRestPage.getTotalElementsCount()).isEqualTo(3);
+            assertThat(jobResponseRestPage.getContent()).hasSize(4);
+            assertThat(jobResponseRestPage.getTotalElementsCount()).isEqualTo(4);
             assertThat(jobResponseRestPage.getPageSize()).isEqualTo(10);
             assertThat(jobResponseRestPage.getPagesCount()).isEqualTo(1);
             assertThat(jobResponseRestPage.getCurrentPage()).isZero();
 
             List<String> titles = jobResponseRestPage.getContent().stream().map(JobResponse::getTitle).toList();
-            assertThat(titles).containsExactly("My third job", "My job", "My second job");
+            assertThat(titles).containsExactly("My third job", "My job", "My refused job", "My second job");
         }
 
         @Test
@@ -150,14 +149,14 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             RestPage<JobResponse> jobResponseRestPage = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<RestPage<JobResponse>>() {});
             assertThat(jobResponseRestPage).isNotNull();
             assertThat(jobResponseRestPage.getContent()).isNotNull();
-            assertThat(jobResponseRestPage.getContent()).hasSize(3);
-            assertThat(jobResponseRestPage.getTotalElementsCount()).isEqualTo(3);
+            assertThat(jobResponseRestPage.getContent()).hasSize(4);
+            assertThat(jobResponseRestPage.getTotalElementsCount()).isEqualTo(4);
             assertThat(jobResponseRestPage.getPageSize()).isEqualTo(10);
             assertThat(jobResponseRestPage.getPagesCount()).isEqualTo(1);
             assertThat(jobResponseRestPage.getCurrentPage()).isZero();
 
             List<String> titles = jobResponseRestPage.getContent().stream().map(JobResponse::getTitle).toList();
-            assertThat(titles).containsExactly("My job", "My second job", "My third job");
+            assertThat(titles).containsExactly("My job", "My second job", "My third job", "My refused job");
         }
 
         @Test
@@ -180,6 +179,28 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
 
             List<String> titles = jobResponseRestPage.getContent().stream().map(JobResponse::getTitle).toList();
             assertThat(titles).containsExactly("My second job");
+        }
+
+        @Test
+        void shouldGetJobsFilteredByStatusFilter() throws Exception {
+            MvcResult mvcResult = mockMvc.perform(
+                            get(JOBS_URL).cookie(accessTokenCookie)
+                                    .param("statusMeta", "ACTIVE")
+                    )
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            RestPage<JobResponse> jobResponseRestPage = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<RestPage<JobResponse>>() {});
+            assertThat(jobResponseRestPage).isNotNull();
+            assertThat(jobResponseRestPage.getContent()).isNotNull();
+            assertThat(jobResponseRestPage.getContent()).hasSize(3);
+            assertThat(jobResponseRestPage.getTotalElementsCount()).isEqualTo(3);
+            assertThat(jobResponseRestPage.getPageSize()).isEqualTo(10);
+            assertThat(jobResponseRestPage.getPagesCount()).isEqualTo(1);
+            assertThat(jobResponseRestPage.getCurrentPage()).isZero();
+
+            List<String> titles = jobResponseRestPage.getContent().stream().map(JobResponse::getTitle).toList();
+            assertThat(titles).containsExactly("My third job", "My second job", "My job");
         }
 
         @Test
@@ -267,6 +288,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             createJobRequest.setCompany("My new company");
             createJobRequest.setDescription("My new job description");
             createJobRequest.setProfile("My new job profile");
+            createJobRequest.setComment("My new job comment");
             createJobRequest.setSalary("My new job salary");
 
             mockMvc.perform(post(JOBS_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(createJobRequest)))
@@ -302,6 +324,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             createJobRequest.setCompany("My new company");
             createJobRequest.setDescription("My new job description");
             createJobRequest.setProfile("My new job profile");
+            createJobRequest.setComment("My new job comment");
             createJobRequest.setSalary("My new job salary");
 
             Instant beforeCall = Instant.now();
@@ -328,6 +351,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(jobResponse.getCompany()).isEqualTo("My new company");
             assertThat(jobResponse.getDescription()).isEqualTo("My new job description");
             assertThat(jobResponse.getProfile()).isEqualTo("My new job profile");
+            assertThat(jobResponse.getComment()).isEqualTo("My new job comment");
             assertThat(jobResponse.getSalary()).isEqualTo("My new job salary");
 
             // let's check the update job is retrievable and consistent
@@ -337,282 +361,8 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(createdJob.getCompany()).isEqualTo("My new company");
             assertThat(createdJob.getDescription()).isEqualTo("My new job description");
             assertThat(createdJob.getProfile()).isEqualTo("My new job profile");
+            assertThat(createdJob.getComment()).isEqualTo("My new job comment");
             assertThat(createdJob.getSalary()).isEqualTo("My new job salary");
-        }
-    }
-
-    @Nested
-    class JobControllerUpdateIt {
-
-        @Test
-        void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
-            mockMvc.perform(patch(JOB_FOR_TEST_URL))
-                    .andExpect(status().isUnauthorized());
-        }
-
-        @Test
-        void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
-            mockMvc.perform(patch(JOB_FOR_TEST_URL).cookie(accessTokenCookie))
-                    .andExpect(status().isBadRequest());
-        }
-
-        @Test
-        void whenJobIdInvalid_thenShouldReturnBadRequest() throws Exception {
-            UpdateJobRequest updateJobRequest = new UpdateJobRequest();
-            mockMvc.perform(patch(JOBS_URL+"/invalid").cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateJobRequest)))
-                    .andExpect(status().isBadRequest());
-        }
-
-        @Test
-        void whenJobNotFound_thenShouldReturnBadRequest() throws Exception {
-            // we need a fully valid request, because data validation occurs before use case call
-            UpdateJobRequest updateJobRequest = new UpdateJobRequest();
-            updateJobRequest.setUrl("http://www.example.com/updated");
-            updateJobRequest.setTitle("My job [updated]");
-            updateJobRequest.setCompany("My company");
-            updateJobRequest.setDescription("My job description [updated]");
-            updateJobRequest.setProfile("My job profile [updated]");
-            updateJobRequest.setSalary("My job salary [updated]");
-            mockMvc.perform(patch(JOBS_URL+"/11111111-1111-1111-1111-111111111111").cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateJobRequest)))
-                    .andExpect(status().isNotFound());
-        }
-
-        @Test
-        void whenRequestInvalid_thenShouldReturnBadRequestWithErrors() throws Exception {
-            UpdateJobRequest updateJobRequest = new UpdateJobRequest();
-            updateJobRequest.setUrl("invalid-url");
-
-            MvcResult mvcResult = mockMvc.perform(patch(JOB_FOR_TEST_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateJobRequest)))
-                    .andExpect(status().isBadRequest())
-                    .andReturn();
-
-            ErrorResponse errorResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ErrorResponse.class);
-            assertThat(errorResponse).isNotNull();
-            assertThat(errorResponse.getStatus()).isEqualTo("400");
-            assertThat(errorResponse.getMessage()).isEqualTo(ErrorCode.VALIDATION_FAILED.name());
-            assertThat(errorResponse.getErrors()).hasSize(3);
-
-            String expectedError = ErrorCode.FIELD_CANNOT_BE_EMPTY.name();
-            assertThat(errorResponse.getErrors().get("description")).extracting(ValidationErrorResponse::getCode).containsExactly(expectedError);
-            assertThat(errorResponse.getErrors().get("title")).extracting(ValidationErrorResponse::getCode).containsExactly(expectedError);
-            assertThat(errorResponse.getErrors().get("url")).extracting(ValidationErrorResponse::getCode).containsExactly(ErrorCode.INVALID_URL.name());
-        }
-
-        @Test
-        void shouldUpdateJob() throws Exception {
-            UpdateJobRequest updateJobRequest = new UpdateJobRequest();
-            updateJobRequest.setUrl("http://www.example.com/updated");
-            updateJobRequest.setTitle("My job [updated]");
-            updateJobRequest.setCompany("My company");
-            updateJobRequest.setDescription("My job description [updated]");
-            updateJobRequest.setProfile("My job profile [updated]");
-            updateJobRequest.setSalary("My job salary [updated]");
-
-            Instant beforeCall = Instant.now();
-            MvcResult result = mockMvc.perform(patch(JOB_FOR_TEST_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateJobRequest)))
-                    .andExpect(status().isOk())
-                    .andReturn();
-
-            Instant afterCall = Instant.now();
-
-            JobResponse jobResponse = objectMapper.readValue(result.getResponse().getContentAsString(), JobResponse.class);
-            assertThat(jobResponse).isNotNull();
-
-            Instant updatedAt = jobResponse.getUpdatedAt();
-
-            // FIXME this is quite ugly but we have to make sure updatedAt is consistent
-            assertThat(updatedAt)
-                    .isAfterOrEqualTo(beforeCall)
-                    .isBeforeOrEqualTo(afterCall);
-            assertThat(jobResponse.getTitle()).isEqualTo("My job [updated]");
-            assertThat(jobResponse.getCompany()).isEqualTo("My company");
-            assertThat(jobResponse.getDescription()).isEqualTo("My job description [updated]");
-            assertThat(jobResponse.getProfile()).isEqualTo("My job profile [updated]");
-            assertThat(jobResponse.getSalary()).isEqualTo("My job salary [updated]");
-
-
-            // let's check the update job is retrievable and consistent
-            Job updatedJob = jobDataManager.findById(new JobId(UUID.fromString(JOB_FOR_TEST_ID))).orElse(null);
-            assertThat(updatedJob).isNotNull();
-            assertThat(updatedJob.getTitle()).isEqualTo("My job [updated]");
-            assertThat(updatedJob.getCompany()).isEqualTo("My company");
-            assertThat(updatedJob.getDescription()).isEqualTo("My job description [updated]");
-            assertThat(updatedJob.getProfile()).isEqualTo("My job profile [updated]");
-            assertThat(updatedJob.getSalary()).isEqualTo("My job salary [updated]");
-        }
-    }
-
-    @Nested
-    class JobControllerUpdateStatusIt {
-
-        private static final String JOB_STATUS_UPDATE_URL = JOB_FOR_TEST_URL+"/status";
-
-        @Test
-        void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
-            mockMvc.perform(put(JOB_STATUS_UPDATE_URL))
-                    .andExpect(status().isUnauthorized());
-        }
-
-        @Test
-        void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
-            mockMvc.perform(put(JOB_STATUS_UPDATE_URL).cookie(accessTokenCookie))
-                    .andExpect(status().isBadRequest());
-        }
-
-        @Test
-        void whenJobIdInvalid_thenShouldReturnBadRequest() throws Exception {
-            UpdateJobStatusRequest updateJobStatusRequest = new UpdateJobStatusRequest();
-            updateJobStatusRequest.setStatus(JobStatus.PENDING);
-            mockMvc.perform(put(JOBS_URL+"/invalid/status").cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateJobStatusRequest)))
-                    .andExpect(status().isBadRequest());
-        }
-
-        @Test
-        void whenJobNotFound_thenShouldReturnNotFound() throws Exception {
-            // we need a fully valid request, because data validation occurs before use case call
-            UpdateJobStatusRequest updateJobStatusRequest = new UpdateJobStatusRequest();
-            updateJobStatusRequest.setStatus(JobStatus.PENDING);
-            mockMvc.perform(put(JOBS_URL+"/11111111-1111-1111-1111-111111111111/status").cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateJobStatusRequest)))
-                    .andExpect(status().isNotFound());
-        }
-
-        @Test
-        void whenRequestInvalid_thenShouldReturnBadRequestWithErrors() throws Exception {
-            String invalidJson = """
-                {
-                    "status": "NOT_A_VALID_JOB_STATUS"
-                }
-            """;
-
-            MvcResult mvcResult = mockMvc.perform(put(JOB_STATUS_UPDATE_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(invalidJson))
-                    .andExpect(status().isBadRequest())
-                    .andReturn();
-
-            ErrorResponse errorResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ErrorResponse.class);
-
-            assertThat(errorResponse).isNotNull();
-            assertThat(errorResponse.getStatus()).isEqualTo("400");
-            assertThat(errorResponse.getMessage()).isEqualTo(ErrorCode.VALIDATION_FAILED.name());
-            assertThat(errorResponse.getErrors()).hasSize(1);
-            assertThat(errorResponse.getErrors().get("status")).extracting(ValidationErrorResponse::getCode).containsExactly(ErrorCode.INVALID_VALUE.name());
-        }
-
-        @Test
-        void shouldUpdateJobStatus() throws Exception {
-            // we need a fully valid request, because data validation occurs before use case call
-            UpdateJobStatusRequest updateJobStatusRequest = new UpdateJobStatusRequest();
-            updateJobStatusRequest.setStatus(JobStatus.RELAUNCHED);
-
-            Instant beforeCall = Instant.now();
-            MvcResult result = mockMvc.perform(put(JOB_STATUS_UPDATE_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateJobStatusRequest)))
-                    .andExpect(status().isOk())
-                    .andReturn();
-
-            Instant afterCall = Instant.now();
-
-            JobResponse jobResponse = objectMapper.readValue(result.getResponse().getContentAsString(), JobResponse.class);
-            assertThat(jobResponse).isNotNull();
-
-            Instant updatedAt = jobResponse.getUpdatedAt();
-
-            // FIXME this is quite ugly but we have to make sure updatedAt is consistent
-            assertThat(updatedAt)
-                    .isAfterOrEqualTo(beforeCall)
-                    .isBeforeOrEqualTo(afterCall);
-            assertThat(jobResponse.getStatus()).isEqualTo(JobStatus.RELAUNCHED);
-
-            // let's check the update job is retrievable and consistent
-            Job updatedJob = jobDataManager.findById(new JobId(UUID.fromString(JOB_FOR_TEST_ID))).orElse(null);
-            assertThat(updatedJob).isNotNull();
-            assertThat(updatedJob.getStatus()).isEqualTo(JobStatus.RELAUNCHED);
-        }
-    }
-
-    @Nested
-    class JobControllerUpdateRatingIT {
-
-        private static final String JOB_RATING_UPDATE_URL = JOB_FOR_TEST_URL+"/rating";
-
-        @Test
-        void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
-            mockMvc.perform(put(JOB_RATING_UPDATE_URL))
-                    .andExpect(status().isUnauthorized());
-        }
-
-        @Test
-        void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
-            mockMvc.perform(put(JOB_RATING_UPDATE_URL).cookie(accessTokenCookie))
-                    .andExpect(status().isBadRequest());
-        }
-
-        @Test
-        void whenJobIdInvalid_thenShouldReturnBadRequest() throws Exception {
-            // we need a fully valid request, because data validation occurs before use case call
-            UpdateJobRatingRequest updateJobRatingRequest = new UpdateJobRatingRequest();
-            updateJobRatingRequest.setRating(JobRating.of(5));
-            mockMvc.perform(put(JOBS_URL+"/invalid/rating").cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateJobRatingRequest)))
-                    .andExpect(status().isBadRequest());
-        }
-
-        @Test
-        void whenJobNotFound_thenShouldReturnNotFound() throws Exception {
-            // we need a fully valid request, because data validation occurs before use case call
-            UpdateJobRatingRequest updateJobRatingRequest = new UpdateJobRatingRequest();
-            updateJobRatingRequest.setRating(JobRating.of(5));
-            mockMvc.perform(put(JOBS_URL+"/11111111-1111-1111-1111-111111111111/rating").cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateJobRatingRequest)))
-                    .andExpect(status().isNotFound());
-        }
-
-        @Test
-        void whenRequestInvalid_thenShouldReturnBadRequestWithErrors() throws Exception {
-            String invalidJson = """
-                {
-                    "rating": "NAN"
-                }
-            """;
-
-            MvcResult mvcResult = mockMvc.perform(put(JOB_RATING_UPDATE_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(invalidJson))
-                    .andExpect(status().isBadRequest())
-                    .andReturn();
-
-            ErrorResponse errorResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ErrorResponse.class);
-
-            assertThat(errorResponse).isNotNull();
-            assertThat(errorResponse.getStatus()).isEqualTo("400");
-            assertThat(errorResponse.getMessage()).isEqualTo(ErrorCode.VALIDATION_FAILED.name());
-            assertThat(errorResponse.getErrors()).hasSize(1);
-            assertThat(errorResponse.getErrors().get("rating")).extracting(ValidationErrorResponse::getCode).containsExactly(ErrorCode.INVALID_VALUE.name());
-        }
-
-        @Test
-        void shouldUpdateJobRating() throws Exception {
-            // we need a fully valid request, because data validation occurs before use case call
-            UpdateJobRatingRequest updateJobRatingRequest = new UpdateJobRatingRequest();
-            updateJobRatingRequest.setRating(JobRating.of(5));
-
-            Instant beforeCall = Instant.now();
-            MvcResult result = mockMvc.perform(put(JOB_RATING_UPDATE_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateJobRatingRequest)))
-                    .andExpect(status().isOk())
-                    .andReturn();
-
-            Instant afterCall = Instant.now();
-
-            JobResponse jobResponse = objectMapper.readValue(result.getResponse().getContentAsString(), JobResponse.class);
-            assertThat(jobResponse).isNotNull();
-
-            Instant updatedAt = jobResponse.getUpdatedAt();
-
-            // FIXME this is quite ugly but we have to make sure updatedAt is consistent
-            assertThat(updatedAt)
-                    .isAfterOrEqualTo(beforeCall)
-                    .isBeforeOrEqualTo(afterCall);
-            assertThat(jobResponse.getRating()).isEqualTo(new JobRatingResponse(5));
-
-            // let's check the update job is retrievable and consistent
-            Job updatedJob = jobDataManager.findById(new JobId(UUID.fromString(JOB_FOR_TEST_ID))).orElse(null);
-
-            assertThat(updatedJob).isNotNull();
-            assertThat(updatedJob.getRating()).isEqualTo(JobRating.of(5));
         }
     }
 

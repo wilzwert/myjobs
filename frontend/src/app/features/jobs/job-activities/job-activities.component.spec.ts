@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { JobActivitiesComponent } from './job-activities.component';
-import { JobActivitiesFormComponent } from '@features/jobs/job-actitivies-form/job-actitivities-form.component';
+import { JobActivitiesFormComponent } from '@app/features/jobs/forms/job-actitivies-form/job-actitivities-form.component';
 import { JobService } from '@core/services/job.service';
 import { ModalService } from '@core/services/modal.service';
 import { DatePipe } from '@angular/common';

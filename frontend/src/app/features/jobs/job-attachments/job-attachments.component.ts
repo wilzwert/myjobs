@@ -6,7 +6,7 @@ import { catchError, EMPTY, of, switchMap, take, tap } from 'rxjs';
 import { ConfirmDialogService } from '@core/services/confirm-dialog.service';
 import { FileService } from '@core/services/file.service';
 import { MatButton } from '@angular/material/button';
-import { JobAttachmentsFormComponent } from '@features/jobs/job-attachments-form/job-attachments-form.component';
+import { JobAttachmentsFormComponent } from '@app/features/jobs/forms/job-attachments-form/job-attachments-form.component';
 import { ModalService } from '@core/services/modal.service';
 import { DatePipe } from '@angular/common';
 import { ProtectedFile } from '@app/core/model/protected-file.interface';
@@ -57,13 +57,17 @@ export class JobAttachmentsComponent implements OnInit {
   }
 
   confirmDeleteAttachment(job: Job, attachment: Attachment) :void {
+    console.log('deleting attachment');
     this.jobService.deleteAttachment(job.id, attachment.id).pipe(
       take(1),
       tap(() => {
         this.notificationService.confirmation($localize `:@@message.attachment.deleted:Attachment deleted successfully`);
+        console.log('filtering attachments');
         job.attachments = job.attachments.filter((a) => a.id != attachment.id )
     })
-    ).subscribe();
+    ).subscribe(() => {
+      console.log('something happened');
+    });
   }
 
  deleteAttachment(job: Job, attachment: Attachment) :void {

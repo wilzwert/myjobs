@@ -39,5 +39,4 @@ export class AuthService {
   public refreshToken(): Observable<SessionInformation> {
     return this.dataService.post<SessionInformation>(`${this.apiPath}/refresh-token`, null);
   }
-
 }

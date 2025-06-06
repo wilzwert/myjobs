@@ -2,6 +2,7 @@ package com.wilzwert.myjobs.core.domain.model.user.ports.driven;
 
 
 import com.wilzwert.myjobs.core.domain.model.job.Job;
+import com.wilzwert.myjobs.core.domain.model.job.JobState;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.user.UserView;
@@ -67,4 +68,11 @@ public interface UserDataManager {
     void deleteUser(User user);
 
     BulkDataSaveResult saveAll(Set<User> users);
+
+    /**
+     * Returns the list of ALL jobs statuses
+     * @param user the user
+     * @return the status list
+     */
+    List<JobState> getJobsState(User user);
 }

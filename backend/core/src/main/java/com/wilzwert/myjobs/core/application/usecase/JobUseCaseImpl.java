@@ -14,10 +14,7 @@ import com.wilzwert.myjobs.core.domain.model.attachment.command.DownloadAttachme
 import com.wilzwert.myjobs.core.domain.model.attachment.exception.AttachmentNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.attachment.ports.driving.DownloadAttachmentUseCase;
 import com.wilzwert.myjobs.core.domain.model.attachment.ports.driving.GetAttachmentFileInfoUseCase;
-import com.wilzwert.myjobs.core.domain.model.job.EnrichedJob;
-import com.wilzwert.myjobs.core.domain.model.job.Job;
-import com.wilzwert.myjobs.core.domain.model.job.JobId;
-import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
+import com.wilzwert.myjobs.core.domain.model.job.*;
 import com.wilzwert.myjobs.core.domain.model.job.command.*;
 import com.wilzwert.myjobs.core.domain.model.job.exception.JobNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobDataManager;
@@ -71,7 +68,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
             throw new UserNotFoundException();
         }
 
-        command = sanitizeCommandFields(command, List.of("title", "company", "description", "profile", "salary"));
+        command = sanitizeCommandFields(command, List.of("title", "company", "description", "profile", "comment", "salary"));
 
         Job jobToCreate = Job.create(
                 Job.builder()
@@ -80,6 +77,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
                 .company(command.company())
                 .description(command.description())
                 .profile(command.profile())
+                .comment(command.comment())
                 .salary(command.salary())
                 .userId(user.get().getId())
         );
@@ -120,7 +118,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
     }
 
     @Override
-    public DomainPage<EnrichedJob> getUserJobs(UserId userId, int page, int size, JobStatus status, boolean filterLate, String sort) {
+    public DomainPage<EnrichedJob> getUserJobs(UserId userId, int page, int size, JobStatus status, JobStatusMeta statusMeta, String sort) {
         Optional<User> foundUser = userDataManager.findById(userId);
         if(foundUser.isEmpty()) {
             throw new UserNotFoundException();
@@ -131,17 +129,26 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         List<DomainSpecification> specs = new ArrayList<>(List.of(DomainSpecification.eq("userId", user.getId(), UserId.class)));
 
         DomainPage<Job> jobs;
-        if(filterLate) {
+
+        String statusField = "status";
+
+        if(statusMeta != null) {
             // threshold instant : jobs not updated since that instant are considered late
-            Instant nowMinusReminderDays = Instant.now().minus(user.getJobFollowUpReminderDays(), ChronoUnit.DAYS);
-            specs.add(DomainSpecification.in("status", JobStatus.activeStatuses()));
-            specs.add(DomainSpecification.lt("statusUpdatedAt", nowMinusReminderDays));
-        }
-        else {
-            if( status != null) {
-                specs.add(DomainSpecification.eq("status", status, JobStatus.class));
+            switch (statusMeta) {
+                case ACTIVE: specs.add(DomainSpecification.in(statusField, JobStatus.activeStatuses())); break;
+                case INACTIVE: specs.add(DomainSpecification.in(statusField, JobStatus.inactiveStatuses())); break;
+                case LATE:
+                    Instant nowMinusReminderDays = Instant.now().minus(user.getJobFollowUpReminderDays(), ChronoUnit.DAYS);
+                    specs.add(DomainSpecification.in(statusField, JobStatus.activeStatuses()));
+                    specs.add(DomainSpecification.lt("statusUpdatedAt", nowMinusReminderDays));
+                    break;
             }
         }
+
+        if( status != null) {
+            specs.add(DomainSpecification.eq(statusField, status, JobStatus.class));
+        }
+
         var finalSpecs = DomainSpecification.and(specs);
         if(sort != null && !sort.isEmpty()) {
             DomainSpecification.applySort(finalSpecs, DomainSpecification.sort(sort));
@@ -152,22 +159,30 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
     }
 
     @Override
-    public Job updateJob(UpdateJobCommand command) {
-        Optional<User> foundUser = userDataManager.findById(command.userId());
-        if(foundUser.isEmpty()) {
-            throw new UserNotFoundException();
-        }
-        User user = foundUser.get();
+    public Job updateJobField(UpdateJobFieldCommand command) {
+        User user = userDataManager.findById(command.userId()).orElseThrow(UserNotFoundException::new);
+        Job job = jobDataManager.findByIdAndUserId(command.jobId(), user.getId()).orElseThrow(JobNotFoundException::new);
+        command = sanitizeCommandFields(command, List.of("value"));
+        User updatedUser = user.updateJobField(job, command.field(), command.value());
+        // soft reload the updatedJob in the loaded collection
+        Job updatedJob = updatedUser.getJobById(job.getId()).orElseThrow(() -> new DomainException(ErrorCode.UNEXPECTED_ERROR));
 
-        Optional<Job> foundJob = jobDataManager.findByIdAndUserId(command.jobId(), user.getId());
-        if(foundJob.isEmpty()) {
-            throw new JobNotFoundException();
-        }
+        // FIXME
+        // this is an ugly workaround to force the infra (persistence in particular) to save all data
+        // as I understand DDD, only the root aggregate should be explicitly persisted
+        // but I just don't how to do it cleanly for now
+        userDataManager.saveUserAndJob(updatedUser, updatedJob);
+        return updatedJob;
+    }
 
-        Job job = foundJob.get();
-        command = sanitizeCommandFields(command, List.of("title", "company", "description", "profile", "salary"));
+    @Override
+    public Job updateJob(UpdateJobFullCommand command) {
+        User user = userDataManager.findById(command.userId()).orElseThrow(UserNotFoundException::new);
+        Job job = jobDataManager.findByIdAndUserId(command.jobId(), user.getId()).orElseThrow(JobNotFoundException::new);
 
-        User updatedUser = user.updateJob(job, command.url(), command.title(), command.company(), command.description(), command.profile(), command.salary());
+        command = sanitizeCommandFields(command, List.of("title", "company", "description", "profile", "comment", "salary"));
+
+        User updatedUser = user.updateJob(job, command.url(), command.title(), command.company(), command.description(), command.profile(), command.comment(), command.salary());
         // soft reload the updatedJob in the loaded collection
         Job updatedJob = updatedUser.getJobById(job.getId()).orElseThrow(() -> new DomainException(ErrorCode.UNEXPECTED_ERROR));
 
@@ -227,6 +242,13 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         return jobDataManager.findByIdAndUserId(jobId, userId).orElseThrow(JobNotFoundException::new);
     }
 
+    /**
+     * FIXME : this should be improved to avoir reflection and ugly casts
+     * @param command the command to sanitize
+     * @param fieldsToSanitize the command fields to sanitize
+     * @return a new comment of the same class
+     * @param <T> the command class
+     */
     private <T> T sanitizeCommandFields(T command, List<String> fieldsToSanitize) {
         Class<?> clazz = command.getClass();
 

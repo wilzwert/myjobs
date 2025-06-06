@@ -1,10 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { JobService } from '@core/services/job.service';
-import { catchError, Observable, Subject, take, takeUntil, tap, throwError } from 'rxjs';
+import { catchError, Subject, take, takeUntil, tap } from 'rxjs';
 import { Job } from '@core/model/job.interface';
 import { Title } from '@angular/platform-browser';
-import { AsyncPipe } from '@angular/common';
 import { ActivityType } from '@core/model/activity-type';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import { ConfirmDialogService } from '@core/services/confirm-dialog.service';
@@ -18,10 +17,11 @@ import { JobSummaryComponent } from '@features/jobs/job-summary/job-summary.comp
 import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
 import { ErrorProcessorService } from '@core/services/error-processor.service';
+import { JobEditableFieldComponent } from '../job-editable-field/job-editable-field.component';
 
 @Component({
   selector: 'app-job-detail',
-  imports: [AsyncPipe, JobSummaryComponent, MatCardModule, MatButton, JobAttachmentsComponent, JobActivitiesComponent, MatButton, MatIconButton, MatIcon, MatTooltip, RouterLink],
+  imports: [JobSummaryComponent, MatCardModule, MatButton, JobAttachmentsComponent, JobActivitiesComponent, MatButton, MatIconButton, MatIcon, MatTooltip, RouterLink, JobEditableFieldComponent],
   templateUrl: './job-detail.component.html',
   styleUrl: './job-detail.component.scss'
 })
@@ -29,7 +29,7 @@ export class JobDetailComponent implements OnInit, OnDestroy {
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  public job$!: Observable<Job>;
+  public job!: Job;
 
   public ActivityType = ActivityType;
 
@@ -45,14 +45,18 @@ export class JobDetailComponent implements OnInit, OnDestroy {
   ) {}
 
   private loadJob(jobId: string): void {
-    this.job$ = this.jobService.getJobById(jobId).pipe(
+    this.jobService.getJobById(jobId).pipe(
+      take(1),
       // set page title once the job  is available
-      tap((job: Job) =>{this.title.setTitle(`Job - ${job.title}`)}),
+      tap((job: Job) =>{
+        this.title.setTitle(`Job - ${job.title}`);
+      }),
       catchError((error: ApiError) => {
+        console.log(error);
         this.router.navigate(["/jobs"]);
         return this.errorProcessorService.processError(error);
       })
-    );
+    ).subscribe((job) => this.job = job);
   }
 
   reloadJob(job: Job) {
@@ -71,9 +75,12 @@ export class JobDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-
   editJob(job: Job) :void {
     this.modalService.openJobModal('job', job, () => this.loadJob(job.id))
+  }
+
+  onJobChanged(job: Job): void {
+    this.job = job;
   }
 
   onDelete(job: Job) :void {

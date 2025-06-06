@@ -1,81 +1,117 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { JobSummaryComponent } from './job-summary.component';
-import { JobStatusComponent } from '@features/jobs/job-status/job-status.component';
 import { JobService } from '@core/services/job.service';
+import { NotificationService } from '@core/services/notification.service';
 import { ModalService } from '@core/services/modal.service';
 import { ConfirmDialogService } from '@core/services/confirm-dialog.service';
-import { NotificationService } from '@core/services/notification.service';
 import { of } from 'rxjs';
-import { Job, JobStatus } from '@core/model/job.interface';
+import { Job } from '@core/model/job.interface';
+import { ActivatedRoute } from '@angular/router';
 
 describe('JobSummaryComponent', () => {
   let component: JobSummaryComponent;
-  
-    // Mocks des services injectés
-    const jobServiceMock = {
-      getCurrentPage: jest.fn(),
-      getItemsPerPage: jest.fn(),
-      getAllJobs: jest.fn(),
-      updateJobStatus: jest.fn(),
-      updateJobRating: jest.fn(),
-      getJobMetadata: jest.fn(),
-      deleteJob: jest.fn(),
-    } as unknown as jest.Mocked<JobService>;
-  
-    const modalServiceMock = {
-      openJobStepperModal: jest.fn(),
-      openJobModal: jest.fn(),
-    } as unknown as jest.Mocked<ModalService>;
-  
-    const confirmDialogServiceMock = {
-      openConfirmDialog: jest.fn(),
-    } as unknown as jest.Mocked<ConfirmDialogService>;
-  
-    const notificationServiceMock = {
-      confirmation: jest.fn(),
-    } as unknown as jest.Mocked<NotificationService>;;
+  let fixture: ComponentFixture<JobSummaryComponent>;
 
-    beforeEach(() => {
-      jest.clearAllMocks();
-      component = new JobSummaryComponent(jobServiceMock, notificationServiceMock, modalServiceMock, confirmDialogServiceMock);
-    })
+  const jobServiceMock = {
+    deleteJob: jest.fn()
+  };
 
-    it('should update job status and show notification', done => {
-        jobServiceMock.updateJobStatus.mockReturnValue(of({ id: 'job1', status: JobStatus.RELAUNCHED } as Job));
-    
-        const job = { id: 'job1', status: JobStatus.PENDING } as Job;
-    
-        component.editJobStatus(job, JobStatus.RELAUNCHED);
-    
-        setTimeout(() => {
-          expect(jobServiceMock.updateJobStatus).toHaveBeenCalledWith('job1', { status: JobStatus.RELAUNCHED } as any);
-          expect(notificationServiceMock.confirmation).toHaveBeenCalledWith(expect.stringContaining('Status updated successfully'));
-          done();
-        }, 0);
-      });
-    
-      it('should update job rating and show notification', done => {
-        jobServiceMock.updateJobRating.mockReturnValue(of({ id: 'job1', rating: 4 } as unknown as Job));
-    
-        const job = { id: 'job1', rating: 3 } as unknown as Job;
-    
-        component.updateJobRating(job, 4);
-    
-        setTimeout(() => {
-          expect(jobServiceMock.updateJobRating).toHaveBeenCalledWith('job1', { rating: 4 });
-          expect(notificationServiceMock.confirmation).toHaveBeenCalledWith(expect.stringContaining('Rating updated successfully'));
-          done();
-        }, 0);
-      });
+  const activatedRouteMock = {
+    params: of({ id: 'job123' })
+  };
 
-      it('should edit job and open modal', () => {
-        const job = { id: 'job1' } as Job;
-        const event = { stopPropagation: jest.fn() } as any;
+  const notificationServiceMock = {
+    confirmation: jest.fn()
+  };
 
-        component.editJob(event, job);
+  const modalServiceMock = {
+    openJobModal: jest.fn()
+  };
 
-        expect(modalServiceMock.openJobModal).toHaveBeenCalledWith('job', job, expect.any(Function));
-      });
-  
+  const confirmDialogServiceMock = {
+    openConfirmDialog: jest.fn()
+  };
+
+  const fakeJob: Job = {
+    id: '123',
+    title: 'Test Job',
+    url: "https://www.example.com",
+    company: "Company",
+    profile: "Profile",
+    comment: "Comment",
+    description: '',
+    status: 'PENDING',
+    salary: "Salary",
+    rating: {value: 5},
+    statusUpdatedAt:  new Date().toISOString();
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    activities: [],
+    attachments: []
+  } as Job;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [JobSummaryComponent],
+      providers: [
+        { provide: ActivatedRoute, useValue: activatedRouteMock },
+        { provide: JobService, useValue: jobServiceMock },
+        { provide: NotificationService, useValue: notificationServiceMock },
+        { provide: ModalService, useValue: modalServiceMock },
+        { provide: ConfirmDialogService, useValue: confirmDialogServiceMock }
+      ]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(JobSummaryComponent);
+    component = fixture.componentInstance;
+    component.job = fakeJob;
+    fixture.detectChanges();
+
+    jest.clearAllMocks();
+  });
+
+  it('should emit jobChanged and update local job on onJobChanged()', () => {
+    const newJob = { ...fakeJob, title: 'Updated Title' };
+    const spy = jest.spyOn(component.jobChanged, 'emit');
+
+    component.onJobChanged(newJob);
+
+    expect(component.job.title).toBe('Updated Title');
+    expect(spy).toHaveBeenCalledWith(newJob);
+  });
+
+  it('should call modalService.openJobModal on editJob()', () => {
+    const event = new MouseEvent('click');
+    component.editJob(event, fakeJob);
+
+    expect(modalServiceMock.openJobModal).toHaveBeenCalledWith('job', fakeJob, expect.any(Function));
+  });
+
+  it('should call confirmDialogService with job title on deleteJob()', () => {
+    component.deleteJob(fakeJob);
+
+    expect(confirmDialogServiceMock.openConfirmDialog).toHaveBeenCalled();
+    const [message, callback] = confirmDialogServiceMock.openConfirmDialog.mock.calls[0];
+    expect(message).toContain(fakeJob.title);
+    expect(typeof callback).toBe('function');
+  });
+
+  it('should call jobService.deleteJob and emit deleted on confirmDeleteJob()', () => {
+    jobServiceMock.deleteJob.mockReturnValueOnce(of(void 0));
+    const spy = jest.spyOn(component.deleted, 'emit');
+
+    component.confirmDeleteJob(fakeJob);
+
+    expect(jobServiceMock.deleteJob).toHaveBeenCalledWith(fakeJob.id);
+    expect(spy).toHaveBeenCalledWith(fakeJob);
+  });
+
+  it('should stop propagation and open attachment modal on manageAttachments()', () => {
+    const event = { stopPropagation: jest.fn() } as unknown as MouseEvent;
+
+    component.manageAttachments(event, fakeJob);
+
+    expect(event.stopPropagation).toHaveBeenCalled();
+    expect(modalServiceMock.openJobModal).toHaveBeenCalledWith('attachments', fakeJob, expect.any(Function));
+  });
 });

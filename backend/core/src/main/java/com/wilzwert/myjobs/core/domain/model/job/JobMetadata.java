@@ -26,18 +26,13 @@ public record JobMetadata(String title, String company, String url, String descr
             this.salary = metadata.salary();
         }
 
-        public Builder title(String title) {
-            this.title = title;
-            return this;
-        }
-
-        public Builder company(String company) {
-            this.company = company;
-            return this;
-        }
-
         public Builder url(String url) {
             this.url = url;
+            return this;
+        }
+
+        public Builder title(String title) {
+            this.title = title;
             return this;
         }
 
@@ -53,6 +48,11 @@ public record JobMetadata(String title, String company, String url, String descr
 
         public Builder salary(String salary) {
             this.salary = salary;
+            return this;
+        }
+
+        public Builder company(String company) {
+            this.company = company;
             return this;
         }
 

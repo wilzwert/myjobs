@@ -1,16 +1,17 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
+import com.wilzwert.myjobs.core.domain.model.job.JobStatusMeta;
 import com.wilzwert.myjobs.core.domain.model.user.Lang;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
-import com.wilzwert.myjobs.core.domain.model.user.ports.driven.PasswordHasher;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
-import com.wilzwert.myjobs.infrastructure.api.rest.dto.ChangePasswordRequest;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.UpdateUserLangRequest;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.UpdateUserRequest;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.UserResponse;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.UserSummaryResponse;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
 import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
 import jakarta.servlet.http.Cookie;
@@ -23,11 +24,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -38,8 +40,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
 
     // id for the User to use for get /api/user tests
     private static final String USER_FOR_GET_TEST_ID = "abcd4321-4321-4321-4321-123456789012";
-    // id of the User to use for password changes tests
-    private static final String USER_FOR_CHANGE_PASSWORD_TEST_ID = "abcd6543-6543-6543-6543-123456789012";
+
     // id of the User to user for deletion tests
     private static final String USER_FOR_DELETE_TEST_ID = "abcd9876-9876-9876-9876-123456789012";
 
@@ -167,18 +168,18 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
-        void whenUsernameTooShort_thenShouldReturnBadRequest() throws Exception {
+        void whenUsernameTooShort_thenShouldReturnUnprocessableEntity() throws Exception {
             updateUserRequest.setUsername("T");
             mockMvc.perform(patch(UPDATE_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateUserRequest)))
-                    .andExpect(status().isBadRequest())
+                    .andExpect(status().isUnprocessableEntity())
                     .andExpect(jsonPath("errors.username[0].code").value(ErrorCode.FIELD_TOO_SHORT.name()));
         }
 
         @Test
-        void whenUsernameTooLong_thenShouldReturnBadRequest() throws Exception {
+        void whenUsernameTooLong_thenShouldReturnUnprocessableEntity() throws Exception {
             updateUserRequest.setUsername("thisisafartoolongusernamethatshouldtriggeravalidationerror");
             mockMvc.perform(patch(UPDATE_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateUserRequest)))
-                    .andExpect(status().isBadRequest())
+                    .andExpect(status().isUnprocessableEntity())
                     .andExpect(jsonPath("errors.username[0].code").value(ErrorCode.FIELD_TOO_LONG.name()));
         }
 
@@ -252,84 +253,43 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
     }
 
     @Nested
-    class UserControllerChangePasswordIT {
-
-        private static final String CHANGE_PASSWORD_URL = USER_URL + "/password";
-
-        private ChangePasswordRequest changePasswordRequest;
-
-        private Cookie accessTokenCookie;
-
-        @Autowired
-        private PasswordHasher passwordHasher;
+    class UserControllerGetUserSummaryIT {
+        private static final String SUMMARY_URL = USER_URL+"/summary";
 
         @BeforeEach
-        void setUp()  {
-            // this is a valid password request
-            // it should be changed per case for testing
-            changePasswordRequest = new ChangePasswordRequest();
-            changePasswordRequest.setPassword("Dcba4321!");
-            changePasswordRequest.setOldPassword("Abcd1234!");
-
-            accessTokenCookie = new Cookie("access_token", jwtService.generateToken(USER_FOR_CHANGE_PASSWORD_TEST_ID));
+        void setUp() {
+            // for summary tests, lets take our first user, who actually has jobs
+            // (see jobs.json and users.json in test-data)
+            accessTokenCookie = new Cookie("access_token", jwtService.generateToken("abcd1234-1234-1234-1234-123456789012"));
         }
 
         @Test
-        void whenNoAuth_thenShouldReturnUnauthorized() throws Exception {
-            mockMvc.perform(put(CHANGE_PASSWORD_URL))
+        void whenUnauthenticated_thenShouldReturnUnauthorized() throws Exception {
+            mockMvc.perform(get(SUMMARY_URL))
                     .andExpect(status().isUnauthorized());
         }
 
         @Test
-        void whenRequestBodyEmpty_thenShouldReturnBadRequest() throws Exception {
-            mockMvc.perform(put(CHANGE_PASSWORD_URL).cookie(accessTokenCookie))
-                    .andExpect(status().isBadRequest());
+        void whenUnsupportedMethod_thenVerificationShouldReturnUnsupported() throws Exception {
+            mockMvc.perform(post(SUMMARY_URL).cookie(accessTokenCookie))
+                    .andExpect(status().isMethodNotAllowed());
         }
 
         @Test
-        void whenOldPasswordEmpty_thenShouldReturnBadRequest() throws Exception {
-            changePasswordRequest.setOldPassword("");
-            mockMvc.perform(put(CHANGE_PASSWORD_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
-                    .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("message").value(ErrorCode.VALIDATION_FAILED.name()))
-                    .andExpect(jsonPath("errors.oldPassword[0].code").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
-        }
+        void shouldGetUserSummary() throws Exception {
+            MvcResult result = mockMvc.perform(get(SUMMARY_URL).cookie(accessTokenCookie))
+                    .andExpect(status().isOk())
+                    .andReturn();
 
-        @Test
-        void whenNewPasswordEmpty_thenShouldReturnBadRequest() throws Exception {
-            changePasswordRequest.setPassword("");
-            mockMvc.perform(put(CHANGE_PASSWORD_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
-                    .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("message").value(ErrorCode.VALIDATION_FAILED.name()))
-                    .andExpect(jsonPath("errors.password[0].code").value(ErrorCode.FIELD_CANNOT_BE_EMPTY.name()));
-        }
+            var summary = objectMapper.readValue(result.getResponse().getContentAsString(), UserSummaryResponse.class);
 
-        @Test
-        void whenOldPasswordDoesntMatch_thenShouldReturnBadRequest() throws Exception {
-            changePasswordRequest.setOldPassword("Pqrs4321!");
-            mockMvc.perform(put(CHANGE_PASSWORD_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
-                    .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("message").value(ErrorCode.USER_PASSWORD_MATCH_FAILED.name()));
-        }
-
-        @Test
-        void whenNewPasswordWeak_thenShouldReturnBadRequest() throws Exception {
-            changePasswordRequest.setPassword("abcd1234!");
-            mockMvc.perform(put(CHANGE_PASSWORD_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
-                    .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("message").value(ErrorCode.VALIDATION_FAILED.name()))
-                    .andExpect(jsonPath("errors.password[0].code").value(ErrorCode.USER_WEAK_PASSWORD.name()));
-        }
-
-        @Test
-        void shouldUpdatePassword() throws Exception {
-            mockMvc.perform(put(CHANGE_PASSWORD_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
-                    .andExpect(status().isOk());
-
-            // check that the password actually changed
-            User foundUser = userDataManager.findByEmail("changepassword@example.com").orElse(null);
-            assertThat(foundUser).isNotNull();
-            assertTrue(passwordHasher.verifyPassword("Dcba4321!", foundUser.getPassword()));
+            assertThat(summary).isNotNull();
+            assertThat(summary.getActiveJobsCount()).isEqualTo(3);
+            assertThat(summary.getInactiveJobsCount()).isEqualTo(1);
+            assertThat(summary.getJobsCount()).isEqualTo(4);
+            assertThat(summary.getLateJobsCount()).isEqualTo(3);
+            assertThat(summary.getJobStatuses()).containsExactlyInAnyOrderEntriesOf(Map.of(JobStatus.PENDING, 1, JobStatus.CREATED, 2, JobStatus.COMPANY_REFUSED, 1));
+            assertThat(summary.getUsableJobStatusMetas()).containsAll(List.of(JobStatusMeta.ACTIVE, JobStatusMeta.INACTIVE, JobStatusMeta.LATE));
         }
     }
 }

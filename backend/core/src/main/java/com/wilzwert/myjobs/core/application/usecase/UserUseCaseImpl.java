@@ -1,7 +1,10 @@
 package com.wilzwert.myjobs.core.application.usecase;
 
 
+import com.wilzwert.myjobs.core.domain.model.job.JobState;
+import com.wilzwert.myjobs.core.domain.model.user.UserSummary;
 import com.wilzwert.myjobs.core.domain.model.user.UserView;
+import com.wilzwert.myjobs.core.domain.model.user.collector.UserSummaryCollector;
 import com.wilzwert.myjobs.core.domain.model.user.command.UpdateUserCommand;
 import com.wilzwert.myjobs.core.domain.model.user.command.UpdateUserLangCommand;
 import com.wilzwert.myjobs.core.domain.model.user.exception.UserAlreadyExistsException;
@@ -10,16 +13,15 @@ import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.EmailVerificationMessageProvider;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
-import com.wilzwert.myjobs.core.domain.model.user.ports.driving.GetUserViewUseCase;
-import com.wilzwert.myjobs.core.domain.model.user.ports.driving.SendVerificationEmailUseCase;
-import com.wilzwert.myjobs.core.domain.model.user.ports.driving.UpdateUserLangUseCase;
-import com.wilzwert.myjobs.core.domain.model.user.ports.driving.UpdateUserUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.*;
+
+import java.util.List;
 
 /**
  * @author Wilhelm Zwertvaegher
  */
 
-public class UserUseCaseImpl implements SendVerificationEmailUseCase, GetUserViewUseCase, UpdateUserUseCase, UpdateUserLangUseCase {
+public class UserUseCaseImpl implements SendVerificationEmailUseCase, GetUserViewUseCase, UpdateUserUseCase, UpdateUserLangUseCase, GetUserSummaryUseCase {
 
     private final UserDataManager userDataManager;
 
@@ -76,5 +78,14 @@ public class UserUseCaseImpl implements SendVerificationEmailUseCase, GetUserVie
     @Override
     public UserView getUser(UserId userId) {
         return userDataManager.findViewById(userId).orElseThrow(UserNotFoundException::new);
+    }
+
+    @Override
+    public UserSummary getUserSummary(UserId userId) {
+        User user = userDataManager.findMinimalById(userId).orElseThrow(UserNotFoundException::new);
+
+        List<JobState> jobStatuses = userDataManager.getJobsState(user);
+
+        return jobStatuses.stream().collect(new UserSummaryCollector(user));
     }
 }

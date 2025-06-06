@@ -32,6 +32,6 @@ describe('UnauthGuard', () => {
   it('should return false and redirect to posts if logged in', () => {
     mockSessionService.isLogged.mockReturnValue(true);
     expect(guard.canActivate()).toBe(false);
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['posts']);
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['jobs']);
   })
 });

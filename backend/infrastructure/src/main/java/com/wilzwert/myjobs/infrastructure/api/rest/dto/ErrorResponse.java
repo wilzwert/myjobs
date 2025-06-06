@@ -9,6 +9,8 @@ import com.wilzwert.myjobs.core.domain.shared.exception.EntityNotFoundException;
 import com.wilzwert.myjobs.core.domain.shared.exception.ValidationException;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.core.domain.shared.validation.ValidationError;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.apache.coyote.BadRequestException;
@@ -52,7 +54,7 @@ public class ErrorResponse {
         for (ValidationError error : ex.getFlatErrors()) {
             errors.computeIfAbsent(error.field(), k -> new ArrayList<>()).add(new ValidationErrorResponse(error.code().name(), error.details()));
         }
-        return build(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_FAILED.name(), errors);
+        return build(HttpStatus.UNPROCESSABLE_ENTITY, ErrorCode.VALIDATION_FAILED.name(), errors);
     }
 
     public static ErrorResponse fromException(DomainException ex) {
@@ -72,6 +74,15 @@ public class ErrorResponse {
             errors.computeIfAbsent(fieldError.getField(), k -> new ArrayList<>()).add(new ValidationErrorResponse(fieldError.getDefaultMessage() != null ? fieldError.getDefaultMessage() : ErrorCode.UNEXPECTED_ERROR.name()));
         }
         return build(ex.getStatusCode(), ErrorCode.VALIDATION_FAILED.name(), errors);
+    }
+
+    public static ErrorResponse fromException(ConstraintViolationException ex) {
+        Map<String, List<ValidationErrorResponse>> errors = new HashMap<>();
+
+        for(ConstraintViolation<?> violation : ex.getConstraintViolations()){
+            errors.computeIfAbsent(violation.getPropertyPath().toString(), k -> new ArrayList<>()).add(new ValidationErrorResponse(violation.getMessage() != null ? violation.getMessage() : ErrorCode.UNEXPECTED_ERROR.name()));
+        }
+        return build(HttpStatus.UNPROCESSABLE_ENTITY, ErrorCode.VALIDATION_FAILED.name(), errors);
     }
 
     public static ErrorResponse fromException(LoginException ex) {

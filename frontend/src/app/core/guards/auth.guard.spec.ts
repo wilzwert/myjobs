@@ -34,7 +34,7 @@ describe('AuthGuard', () => {
 
   it('should return false and redirect to home if not logged in', () => {
     expect(guard.canActivate()).toBe(false);
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['']);
+    expect(mockRouter.navigate).toHaveBeenCalledWith(['/login']);
   })
 
 

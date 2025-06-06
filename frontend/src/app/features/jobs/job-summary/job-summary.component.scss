@@ -1,6 +1,14 @@
+
+
+.follow-up-needed {
+    border: 1px solid var(--color-warning);
+    background-color: rgba(255, 160, 0, 0.15);
+}
+
 .job-title {
     display: flex;
     align-items: center;
+    font-weight: 700;
     .job-view-original {
         margin-left: 1em;
     }

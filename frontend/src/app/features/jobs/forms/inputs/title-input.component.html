@@ -1,0 +1,9 @@
+@if(control) {
+    <mat-form-field>
+        <mat-label i18n="job title|job title input label@@input.job.title.label">Title</mat-label>
+        <input matInput [formControl]="control" i18n-placeholder="job title placeholder|job title input placeholder@@input.job.title.placeholder" placeholder="Job title" >
+        <mat-hint class="title-hint" align="end">
+            <app-status-icon [isValid]="!control.invalid"/>    
+        </mat-hint>
+    </mat-form-field>
+}

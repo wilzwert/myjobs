@@ -15,7 +15,7 @@
     <mat-label i18n="username|username input label@@input.username.label">Username</mat-label>
     <input matInput minlength="5" formControlName="username" i18n-placeholder="username placeholder|username input placeholder@@input.username.placeholder" placeholder="Type your username">
         @if(username?.hasError('usernameExists')) {
-            <mat-hint><span i18n="username exists|inform the user the username already exists@@info.username_exists">Username already taken</span>. <a routerLink="/login" i18n="@@action.login">Log in</a></mat-hint>
+            <mat-hint><span i18n="username exists|inform the user the username already exists@@info.username_exists">Username already taken</span>. <a routerLink="/login" i18n="@@action.login">Login</a></mat-hint>
         }
         <app-input-backend-errors [control]="username" />
         <mat-hint class="username-hint" align="end">

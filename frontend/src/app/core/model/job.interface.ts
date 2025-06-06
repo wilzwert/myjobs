@@ -13,6 +13,7 @@ export interface Job {
     company: string,
     description: string,
     profile: string,
+    comment: string,
     salary: string,
     rating: JobRating,
     createdAt: string
@@ -31,5 +32,14 @@ export enum JobStatus {
     RELAUNCHED = "RELAUNCHED",
     APPLICANT_REFUSED = "APPLICANT_REFUSED",
     COMPANY_REFUSED = "COMPANY_REFUSED",
-    ACCEPTED = "ACCEPTED"
+    EXPIRED = "EXPIRED",
+    CANCELLED = "CANCELLED",
+    ACCEPTED = "ACCEPTED",
+    HIRED = "HIRED"
+}
+
+export enum JobStatusMeta { 
+    ACTIVE = "ACTIVE",
+    INACTIVE = "INACTIVE",
+    LATE = "LATE"
 }

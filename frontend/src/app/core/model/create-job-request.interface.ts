@@ -4,5 +4,6 @@ export interface CreateJobRequest {
     company: string,
     description: string,
     profile: string,
+    comment: string,
     salary: string
 }

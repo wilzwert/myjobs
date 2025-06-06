@@ -1,8 +1,10 @@
-<div class="rating">
-    <button mat-icon-button  *ngFor="let ratingId of ratingArr;index as i" [id]="'star_'+i" (click)="onClick(i+1)" [matTooltip]="ratingId+1+''" matTooltipPosition="above">
-        <mat-icon color="accent">
-          {{showIcon(i)}}
-        </mat-icon>
-      </button>
+@if(job) {
+  <div class="rating">
+      <button mat-icon-button  *ngFor="let ratingId of ratingArr;index as i" [id]="'star_'+i" (click)="updateJobRating(job, i+1)" [matTooltip]="ratingId+1+''" matTooltipPosition="above">
+          <mat-icon color="accent">
+            {{showIcon(i)}}
+          </mat-icon>
+        </button>
 
-  </div>
+    </div>
+}

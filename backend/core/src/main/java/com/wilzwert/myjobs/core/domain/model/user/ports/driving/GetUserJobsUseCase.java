@@ -2,6 +2,7 @@ package com.wilzwert.myjobs.core.domain.model.user.ports.driving;
 
 
 import com.wilzwert.myjobs.core.domain.model.job.EnrichedJob;
+import com.wilzwert.myjobs.core.domain.model.job.JobStatusMeta;
 import com.wilzwert.myjobs.core.domain.shared.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
@@ -10,5 +11,5 @@ import com.wilzwert.myjobs.core.domain.model.user.UserId;
  * @author Wilhelm Zwertvaegher
  */
 public interface GetUserJobsUseCase {
-    DomainPage<EnrichedJob> getUserJobs(UserId userId, int page, int size, JobStatus status, boolean filterLate, String sort);
+    DomainPage<EnrichedJob> getUserJobs(UserId userId, int page, int size, JobStatus status, JobStatusMeta statusMeta, String sort);
 }

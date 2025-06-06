@@ -23,7 +23,7 @@ spring:
           starttls:
             enable: ${MAIL_SMTP_STARTTLS:false}
             require: ${MAIL_SMTP_STARTTLS:false}
-    test-connection: true
+    # test-connection: true
   data:
     mongodb:
 
