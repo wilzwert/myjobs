@@ -3,12 +3,14 @@
 
 import com.mongodb.bulk.BulkWriteResult;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
+import com.wilzwert.myjobs.core.domain.model.job.JobState;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.user.UserView;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
 import com.wilzwert.myjobs.core.domain.shared.bulk.BulkDataSaveResult;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoJob;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoUser;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.UserMapper;
@@ -46,82 +48,82 @@ public class UserDataManagerAdapter implements UserDataManager {
     private final MongoRefreshTokenRepository mongoRefreshTokenRepository;
     private final MongoTemplate mongoTemplate;
 
-<span class="fc" id="L49">    public UserDataManagerAdapter(final MongoUserRepository mongoUserRepository, final MongoJobRepository mongoJobRepository, final AggregationService aggregationService, final UserMapper userMapper, JobMapper jobMapper, MongoRefreshTokenRepository mongoRefreshTokenRepository, MongoTemplate mongoTemplate) {</span>
-<span class="fc" id="L50">        this.mongoUserRepository = mongoUserRepository;</span>
-<span class="fc" id="L51">        this.mongoJobRepository = mongoJobRepository;</span>
-<span class="fc" id="L52">        this.aggregationService = aggregationService;</span>
-<span class="fc" id="L53">        this.userMapper = userMapper;</span>
-<span class="fc" id="L54">        this.jobMapper = jobMapper;</span>
-<span class="fc" id="L55">        this.mongoRefreshTokenRepository = mongoRefreshTokenRepository;</span>
-<span class="fc" id="L56">        this.mongoTemplate = mongoTemplate;</span>
-<span class="fc" id="L57">    }</span>
+<span class="fc" id="L51">    public UserDataManagerAdapter(final MongoUserRepository mongoUserRepository, final MongoJobRepository mongoJobRepository, final AggregationService aggregationService, final UserMapper userMapper, JobMapper jobMapper, MongoRefreshTokenRepository mongoRefreshTokenRepository, MongoTemplate mongoTemplate) {</span>
+<span class="fc" id="L52">        this.mongoUserRepository = mongoUserRepository;</span>
+<span class="fc" id="L53">        this.mongoJobRepository = mongoJobRepository;</span>
+<span class="fc" id="L54">        this.aggregationService = aggregationService;</span>
+<span class="fc" id="L55">        this.userMapper = userMapper;</span>
+<span class="fc" id="L56">        this.jobMapper = jobMapper;</span>
+<span class="fc" id="L57">        this.mongoRefreshTokenRepository = mongoRefreshTokenRepository;</span>
+<span class="fc" id="L58">        this.mongoTemplate = mongoTemplate;</span>
+<span class="fc" id="L59">    }</span>
 
     @Override
     public List&lt;UserView&gt; findView(DomainSpecification specifications) {
-<span class="fc" id="L61">        Aggregation aggregation = aggregationService.createAggregation(specifications);</span>
-<span class="fc" id="L62">        return userMapper.toDomainView(aggregationService.aggregate(aggregation, &quot;users&quot;, MongoUser.class));</span>
+<span class="fc" id="L63">        Aggregation aggregation = aggregationService.createAggregation(specifications);</span>
+<span class="fc" id="L64">        return userMapper.toDomainView(aggregationService.aggregate(aggregation, &quot;users&quot;, MongoUser.class));</span>
     }
 
     @Override
     public Map&lt;UserId, User&gt; findMinimal(DomainSpecification specifications) {
-<span class="fc" id="L67">        Aggregation aggregation = aggregationService.createAggregation(specifications);</span>
-<span class="fc" id="L68">        return userMapper.toDomain(aggregationService.aggregate(aggregation, &quot;users&quot;, MongoUser.class))</span>
-<span class="fc" id="L69">                .stream()</span>
-<span class="fc" id="L70">                .collect(Collectors.toMap(User::getId, user -&gt; user));</span>
+<span class="fc" id="L69">        Aggregation aggregation = aggregationService.createAggregation(specifications);</span>
+<span class="fc" id="L70">        return userMapper.toDomain(aggregationService.aggregate(aggregation, &quot;users&quot;, MongoUser.class))</span>
+<span class="fc" id="L71">                .stream()</span>
+<span class="fc" id="L72">                .collect(Collectors.toMap(User::getId, user -&gt; user));</span>
     }
 
     @Override
     public Optional&lt;User&gt; findByEmail(String email) {
-<span class="fc" id="L75">        return getFullUser(mongoUserRepository.findByEmail(email));</span>
+<span class="fc" id="L77">        return getFullUser(mongoUserRepository.findByEmail(email));</span>
     }
 
     @Override
     public Optional&lt;User&gt; findMinimalByEmailValidationCode(String code) {
-<span class="fc" id="L80">        return mongoUserRepository.findByEmailValidationCode(code).map(userMapper::toDomain);</span>
+<span class="fc" id="L82">        return mongoUserRepository.findByEmailValidationCode(code).map(userMapper::toDomain);</span>
     }
 
     @Override
     public Optional&lt;User&gt; findByResetPasswordToken(String token) {
-<span class="fc" id="L85">        return getFullUser(mongoUserRepository.findByResetPasswordToken(token));</span>
+<span class="fc" id="L87">        return getFullUser(mongoUserRepository.findByResetPasswordToken(token));</span>
     }
 
     @Override
     public Optional&lt;User&gt; findByUsername(String username) {
-<span class="fc" id="L90">        return getFullUser(mongoUserRepository.findByUsername(username));</span>
+<span class="fc" id="L92">        return getFullUser(mongoUserRepository.findByUsername(username));</span>
     }
 
     @Override
     public Optional&lt;User&gt; findByEmailOrUsername(String email, String username) {
-<span class="fc" id="L95">        return getFullUser(mongoUserRepository.findByEmailOrUsername(email, username));</span>
+<span class="fc" id="L97">        return getFullUser(mongoUserRepository.findByEmailOrUsername(email, username));</span>
     }
 
     @Override
     public Optional&lt;UserView&gt; findViewById(UserId id) {
-<span class="fc" id="L100">        return mongoUserRepository.findById(id.value()).map(userMapper::toDomainView);</span>
+<span class="fc" id="L102">        return mongoUserRepository.findById(id.value()).map(userMapper::toDomainView);</span>
     }
 
     @Override
     public Optional&lt;User&gt; findMinimalByUsername(String username) {
-<span class="fc" id="L105">        return mongoUserRepository.findByUsername(username).map(userMapper::toDomain);</span>
+<span class="fc" id="L107">        return mongoUserRepository.findByUsername(username).map(userMapper::toDomain);</span>
     }
 
     @Override
     public Optional&lt;User&gt; findMinimalByEmail(String email) {
-<span class="fc" id="L110">        return mongoUserRepository.findByEmail(email).map(userMapper::toDomain).or(Optional::empty);</span>
+<span class="fc" id="L112">        return mongoUserRepository.findByEmail(email).map(userMapper::toDomain).or(Optional::empty);</span>
     }
 
     private Optional&lt;User&gt; getFullUser(Optional&lt;MongoUser&gt; user) {
-<span class="fc" id="L114">        return user.map(u -&gt; userMapper.toDomain(u).completeWith(jobMapper.toDomain(mongoJobRepository.findByUserId(u.getId()))));</span>
+<span class="fc" id="L116">        return user.map(u -&gt; userMapper.toDomain(u).completeWith(jobMapper.toDomain(mongoJobRepository.findByUserId(u.getId()))));</span>
     }
 
     @Override
     public Optional&lt;User&gt; findById(UserId id) {
-<span class="fc" id="L119">        return getFullUser(mongoUserRepository.findById(id.value()));</span>
+<span class="fc" id="L121">        return getFullUser(mongoUserRepository.findById(id.value()));</span>
     }
 
     @Override
     public Optional&lt;User&gt; findMinimalById(UserId id) {
-<span class="fc" id="L124">        return mongoUserRepository.findById(id.value()).map(userMapper::toDomain);</span>
+<span class="fc" id="L126">        return mongoUserRepository.findById(id.value()).map(userMapper::toDomain);</span>
     }
 
 
@@ -138,34 +140,34 @@ public class UserDataManagerAdapter implements UserDataManager {
         }
     )
     public User save(User user) {
-<span class="fc" id="L141">        return userMapper.toDomain(mongoUserRepository.save(this.userMapper.toEntity(user)));</span>
+<span class="fc" id="L143">        return userMapper.toDomain(mongoUserRepository.save(this.userMapper.toEntity(user)));</span>
     }
 
 
     @Override
     @Transactional
     public User saveUserAndJob(User user, Job job) {
-<span class="fc" id="L148">        mongoJobRepository.save(this.jobMapper.toEntity(job));</span>
-<span class="fc" id="L149">        return save(user);</span>
+<span class="fc" id="L150">        mongoJobRepository.save(this.jobMapper.toEntity(job));</span>
+<span class="fc" id="L151">        return save(user);</span>
     }
 
     @Override
     @Transactional
     public User deleteJobAndSaveUser(User user, Job job) {
-<span class="fc" id="L155">        mongoJobRepository.delete(this.jobMapper.toEntity(job));</span>
-<span class="fc" id="L156">        return userMapper.toDomain(this.mongoUserRepository.save(this.userMapper.toEntity(user)));</span>
+<span class="fc" id="L157">        mongoJobRepository.delete(this.jobMapper.toEntity(job));</span>
+<span class="fc" id="L158">        return userMapper.toDomain(this.mongoUserRepository.save(this.userMapper.toEntity(user)));</span>
     }
 
     @Override
     @Cacheable(value = &quot;emailExists&quot;, key = &quot;#email&quot;)
     public boolean emailExists(String email) {
-<span class="fc" id="L162">        return findByEmail(email).isPresent();</span>
+<span class="fc" id="L164">        return findByEmail(email).isPresent();</span>
     }
 
     @Override
     @Cacheable(value = &quot;usernameExists&quot;, key = &quot;#username&quot;)
     public boolean usernameExists(String username) {
-<span class="fc" id="L168">        return findByUsername(username).isPresent();</span>
+<span class="fc" id="L170">        return findByUsername(username).isPresent();</span>
     }
 
 
@@ -183,29 +185,38 @@ public class UserDataManagerAdapter implements UserDataManager {
     )
     @Transactional
     public void deleteUser(User user) {
-<span class="fc" id="L186">        mongoJobRepository.deleteByUserId(user.getId().value());</span>
-<span class="fc" id="L187">        mongoRefreshTokenRepository.deleteByUserId(user.getId().value());</span>
-<span class="fc" id="L188">        mongoUserRepository.delete(userMapper.toEntity(user));</span>
-<span class="fc" id="L189">    }</span>
+<span class="fc" id="L188">        mongoJobRepository.deleteByUserId(user.getId().value());</span>
+<span class="fc" id="L189">        mongoRefreshTokenRepository.deleteByUserId(user.getId().value());</span>
+<span class="fc" id="L190">        mongoUserRepository.delete(userMapper.toEntity(user));</span>
+<span class="fc" id="L191">    }</span>
 
     @Override
     public BulkDataSaveResult saveAll(Set&lt;User&gt; users) {
         // we chose to throw an exception because it seems like something went wrong if someone tries to save an empty set
-<span class="fc bfc" id="L194" title="All 2 branches covered.">        if(users.isEmpty()) {</span>
-<span class="fc" id="L195">            throw new IllegalArgumentException(&quot;users must not be empty&quot;);</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">        if(users.isEmpty()) {</span>
+<span class="fc" id="L197">            throw new IllegalArgumentException(&quot;users must not be empty&quot;);</span>
         }
 
-<span class="fc" id="L198">        BulkOperations bulkOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.ORDERED, MongoUser.class);</span>
+<span class="fc" id="L200">        BulkOperations bulkOps = mongoTemplate.bulkOps(BulkOperations.BulkMode.ORDERED, MongoUser.class);</span>
 
-<span class="fc" id="L200">        List&lt;MongoUser&gt; mongoUsers = userMapper.toEntity(users.stream().toList());</span>
-<span class="fc bfc" id="L201" title="All 2 branches covered.">        for(MongoUser user : mongoUsers) {</span>
-<span class="fc" id="L202">            Update update = new Update();</span>
-<span class="fc" id="L203">            update.set(&quot;jobFollowUpReminderSentAt&quot;, user.getJobFollowUpReminderSentAt());</span>
-<span class="fc" id="L204">            bulkOps.updateOne(Query.query(Criteria.where(&quot;_id&quot;).is(user.getId())), update);</span>
-<span class="fc" id="L205">        }</span>
+<span class="fc" id="L202">        List&lt;MongoUser&gt; mongoUsers = userMapper.toEntity(users.stream().toList());</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">        for(MongoUser user : mongoUsers) {</span>
+<span class="fc" id="L204">            Update update = new Update();</span>
+<span class="fc" id="L205">            update.set(&quot;jobFollowUpReminderSentAt&quot;, user.getJobFollowUpReminderSentAt());</span>
+<span class="fc" id="L206">            bulkOps.updateOne(Query.query(Criteria.where(&quot;_id&quot;).is(user.getId())), update);</span>
+<span class="fc" id="L207">        }</span>
 
-<span class="fc" id="L207">        BulkWriteResult result = bulkOps.execute();</span>
-<span class="fc" id="L208">        return new BulkDataSaveResult(users.size(), result.getModifiedCount(), result.getInsertedCount(), result.getDeletedCount());</span>
+<span class="fc" id="L209">        BulkWriteResult result = bulkOps.execute();</span>
+<span class="fc" id="L210">        return new BulkDataSaveResult(users.size(), result.getModifiedCount(), result.getInsertedCount(), result.getDeletedCount());</span>
+    }
+
+    @Override
+    public List&lt;JobState&gt; getJobsState(User user) {
+<span class="fc" id="L215">        Query query = new Query();</span>
+<span class="fc" id="L216">        query.addCriteria(Criteria.where(&quot;userId&quot;).is(user.getId().value()));</span>
+<span class="fc" id="L217">        query.fields().include(&quot;status&quot;).include(&quot;updatedAt&quot;).include(&quot;statusUpdatedAt&quot;);</span>
+<span class="fc" id="L218">        List&lt;MongoJob&gt; projection = mongoTemplate.find(query, MongoJob.class);</span>
+<span class="fc" id="L219">        return projection.stream().map(j -&gt; new JobState(j.getStatus(), j.getUpdatedAt(), j.getStatusUpdatedAt())).collect(Collectors.toList());</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

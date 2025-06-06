@@ -80,38 +80,37 @@ public class LocalFileStorage implements FileStorage {
 <span class="fc" id="L80">        Path filePath = Paths.get(fileId);</span>
 <span class="fc" id="L81">        FileSystemResource resource = new FileSystemResource(filePath.toFile());</span>
 <span class="pc bpc" id="L82" title="1 of 4 branches missed.">        if (!resource.exists() || !resource.isReadable()) {</span>
-<span class="fc" id="L83">            System.out.println(resource.getFilename());</span>
-<span class="fc" id="L84">            throw new AttachmentFileNotReadableException();</span>
+<span class="fc" id="L83">            throw new AttachmentFileNotReadableException();</span>
         }
 
         try {
             // for now, target path and fileId are the same
-<span class="fc" id="L89">            return new DownloadableFile(filePath.toString(), filePath.toString(), getContentType(originalFilename, fileId), originalFilename);</span>
+<span class="fc" id="L88">            return new DownloadableFile(filePath.toString(), filePath.toString(), getContentType(originalFilename, fileId), originalFilename);</span>
         }
-<span class="nc" id="L91">        catch (IOException e) {</span>
-<span class="nc" id="L92">            throw new AttachmentFileNotReadableException();</span>
+<span class="nc" id="L90">        catch (IOException e) {</span>
+<span class="nc" id="L91">            throw new AttachmentFileNotReadableException();</span>
         }
     }
 
     @Override
     public String generateProtectedUrl(JobId jobId, AttachmentId attachmentId, String fileId) {
-<span class="fc" id="L98">        return backendUrl+&quot;/api/jobs/&quot;+jobId.value().toString()+&quot;/attachments/&quot;+attachmentId.value().toString()+&quot;/file&quot;;</span>
+<span class="fc" id="L97">        return backendUrl+&quot;/api/jobs/&quot;+jobId.value().toString()+&quot;/attachments/&quot;+attachmentId.value().toString()+&quot;/file&quot;;</span>
     }
 
     private String getContentType(String originalFilename, String filePath) throws IOException {
         // get file MIME type
-<span class="fc" id="L103">        String contentType = Files.probeContentType(Paths.get(filePath));</span>
-<span class="pc bpc" id="L104" title="1 of 2 branches missed.">        if(contentType == null) {</span>
-<span class="nc" id="L105">            Optional&lt;MediaType&gt; mimeTypeOptional = MediaTypeFactory.getMediaType(originalFilename);</span>
-<span class="nc bnc" id="L106" title="All 2 branches missed.">            if(mimeTypeOptional.isPresent()) {</span>
-<span class="nc" id="L107">                contentType = mimeTypeOptional.get().toString();</span>
+<span class="fc" id="L102">        String contentType = Files.probeContentType(Paths.get(filePath));</span>
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">        if(contentType == null) {</span>
+<span class="nc" id="L104">            Optional&lt;MediaType&gt; mimeTypeOptional = MediaTypeFactory.getMediaType(originalFilename);</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">            if(mimeTypeOptional.isPresent()) {</span>
+<span class="nc" id="L106">                contentType = mimeTypeOptional.get().toString();</span>
             }
         }
-<span class="pc bpc" id="L110" title="1 of 2 branches missed.">        if (contentType == null) {</span>
-<span class="nc" id="L111">            contentType = &quot;application/octet-stream&quot;; // default value</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">        if (contentType == null) {</span>
+<span class="nc" id="L110">            contentType = &quot;application/octet-stream&quot;; // default value</span>
         }
 
-<span class="fc" id="L114">        return contentType;</span>
+<span class="fc" id="L113">        return contentType;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
