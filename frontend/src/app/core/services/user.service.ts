@@ -1,5 +1,5 @@
 import { Injectable, signal, Signal, WritableSignal } from '@angular/core';
-import { catchError, map, Observable, switchMap, throwError } from 'rxjs';
+import { catchError, Observable, switchMap, throwError } from 'rxjs';
 import { DataService } from './data.service';
 import { CaptchaService } from './captcha.service';
 import { ResetPasswordRequest } from '@core/model/reset-password-request.interface';
@@ -16,9 +16,9 @@ import { UserSummary } from '../model/user-summary.interface';
 })
 export class UserService {
 
-  private apiPath = 'user';
+  private readonly apiPath = 'user';
 
-  private userSummary: WritableSignal<UserSummary | null | false> = signal(null); 
+  private readonly userSummary: WritableSignal<UserSummary | null | false> = signal(null); 
 
   private userSummaryLoaded: boolean = false;
 

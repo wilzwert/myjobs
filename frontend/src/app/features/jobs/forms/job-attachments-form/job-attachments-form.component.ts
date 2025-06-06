@@ -29,9 +29,9 @@ export class JobAttachmentsFormComponent implements OnInit {
   maxFileSize = 2*1024*1024;
 
   constructor(
-    private fb: FormBuilder, 
-    private jobService: JobService, 
-    private notificationService: NotificationService,
+    private readonly fb: FormBuilder, 
+    private readonly jobService: JobService, 
+    private readonly notificationService: NotificationService,
       private errorProcessorService: ErrorProcessorService) {
   }
 
@@ -90,7 +90,6 @@ export class JobAttachmentsFormComponent implements OnInit {
       this.loading = true;
       const attachments: {}[] = new Array();
       
-      const formData = new FormData();
       this.attachments.controls.forEach((attachment, index) => {
         attachments[index] = {'name': attachment.value.name, 'content':  attachment.value.content, 'filename': attachment.value.filename} as CreateJobAttachmentRequest;
       });

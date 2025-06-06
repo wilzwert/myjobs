@@ -11,9 +11,9 @@ const SESSION_INFO_KEY = 'session-info';
 export class SessionStorageService {
 
   private sessionInfo: SessionInformation|null = null;
-  private sessionInfoSubject = new BehaviorSubject<SessionInformation|null>(null);
+  private readonly sessionInfoSubject = new BehaviorSubject<SessionInformation|null>(null);
 
-  constructor(private dataStorageService: DataStorageService) { 
+  constructor(private readonly dataStorageService: DataStorageService) { 
     this.sessionInfo = this.dataStorageService.getItem<SessionInformation>(SESSION_INFO_KEY);
     this.sessionInfoSubject.next(this.sessionInfo);
   }

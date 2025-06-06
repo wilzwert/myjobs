@@ -18,9 +18,9 @@ export class JobsListOptionsService {
   // current list options 
   private jobsListOptions!: JobsListOptions;
   // every change of options result in a signal update
-  private jobsListOptionsSignal: WritableSignal<JobsListOptions | null> = signal(null); 
+  private readonly jobsListOptionsSignal: WritableSignal<JobsListOptions | null> = signal(null); 
 
-  constructor(private userService: UserService, private dataStorageService: DataStorageService) { 
+  constructor(private readonly userService: UserService, private readonly dataStorageService: DataStorageService) { 
     // a UserSummary change triggers a JobsListOptions change
     effect(() => {
       const userSummary = this.userService.getUserSummary()();
@@ -111,7 +111,7 @@ export class JobsListOptionsService {
 
     if(currentStatus !== null) {
       const status = JobStatus[currentStatus as keyof typeof JobStatus];
-      if(!summary.jobStatuses[status] || summary.jobStatuses[status] === null || summary.jobStatuses[status]! < 1) {
+      if(!summary.jobStatuses[status] || summary.jobStatuses[status] === null) {
         removeStatus = true;
       }
     }

@@ -22,7 +22,7 @@ export class RatingComponent implements OnInit {
   protected color: string = 'primary';
   protected ratingArr = [0, 1, 2, 3, 4];
 
-  constructor(private jobService: JobService, private notificationService: NotificationService) {}
+  constructor(private readonly jobService: JobService, private readonly notificationService: NotificationService) {}
 
   ngOnInit(): void {
     this.rating = this.job.rating ? this.job.rating.value : 0;

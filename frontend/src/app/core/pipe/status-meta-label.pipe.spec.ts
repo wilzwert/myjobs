@@ -1,7 +1,7 @@
-import { StatusMetaLabelPipe } from './status-filter-label.pipe';
+import { StatusMetaLabelPipe } from './status-meta-label.pipe';
 import { TranslatorService } from '@core/services/translator.service';
 
-describe('StatusLabelFilterPipe', () => {
+describe('StatusMetaLabelPipe', () => {
   it('should call translatorService.translateJobStatusFilter and return its result', () => {
     const mockTranslatorService: TranslatorService = {
       translateJobStatusMeta: jest.fn().mockImplementation((status: string) => `translated-${status}`)

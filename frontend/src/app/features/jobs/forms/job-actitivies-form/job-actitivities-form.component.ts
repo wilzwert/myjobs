@@ -1,10 +1,10 @@
-import { Component, EventEmitter, input, Input, model, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { JobService } from '@core/services/job.service';
 import { Job } from '@core/model/job.interface';
-import { catchError, take, throwError } from 'rxjs';
+import { catchError, take } from 'rxjs';
 import { ApiError } from '@core/errors/api-error';
 import { CreateJobActivitiesRequest } from '@core/model/create-job-activities-request.interface';
 import { NotificationService } from '@core/services/notification.service';
@@ -34,11 +34,11 @@ export class JobActivitiesFormComponent implements OnInit {
   activityTypeKeys: string[] = [];
 
   constructor(
-    private fb: FormBuilder, 
-    private jobService: JobService, 
-    private notificationService: NotificationService,
-    private errorProcessorService: ErrorProcessorService,
-    private translatorService: TranslatorService) {
+    private readonly fb: FormBuilder, 
+    private readonly jobService: JobService, 
+    private readonly notificationService: NotificationService,
+    private readonly errorProcessorService: ErrorProcessorService,
+    private readonly translatorService: TranslatorService) {
     this.activityTypeKeys = Object.keys(UserActitivityType);
   }
 

@@ -35,7 +35,7 @@ export class JobEditableFieldComponent implements AfterContentInit {
   form!: FormGroup;
   formFieldType = 'textarea';
 
-  constructor(private fb: FormBuilder, private jobService: JobService, private notificationService: NotificationService) {}
+  constructor(private readonly fb: FormBuilder, private readonly jobService: JobService, private readonly notificationService: NotificationService) {}
 
   ngAfterContentInit() {
     this.hasContent = !!this.content;

@@ -21,7 +21,7 @@ import { MatIcon } from '@angular/material/icon';
 import { JobSummaryComponent } from '../job-summary/job-summary.component';
 import { ComponentInputDomainData } from '../../../core/model/component-input-data.interface';
 import { UserSummary } from '@app/core/model/user-summary.interface';
-import { StatusMetaLabelPipe } from '@app/core/pipe/status-filter-label.pipe';
+import { StatusMetaLabelPipe } from '@app/core/pipe/status-meta-label.pipe';
 import { JobsListOptions } from '@app/core/model/jobs-list-options';
 import { JobsListOptionsService } from '@app/core/services/jobs-list-options.service';
 
@@ -33,9 +33,9 @@ import { JobsListOptionsService } from '@app/core/services/jobs-list-options.ser
   templateUrl: './jobs.component.html',
   styleUrl: './jobs.component.scss'
 })
-export class JobsComponent implements OnInit, OnDestroy {
+export class JobsComponent implements OnDestroy {
 
-  private destroy$: Subject<boolean> = new Subject<boolean>();
+  private readonly destroy$: Subject<boolean> = new Subject<boolean>();
 
   statusKeys: string[] = [];
 
@@ -49,11 +49,11 @@ export class JobsComponent implements OnInit, OnDestroy {
   protected jobsOptions!: Signal<JobsListOptions | null>;
 
   constructor(
-    private userService: UserService, 
-    private jobService: JobService, 
-    private jobsListOptionsService: JobsListOptionsService, 
-    private modalService: ModalService,
-    private notificationService: NotificationService) {
+    private readonly userService: UserService, 
+    private readonly jobService: JobService, 
+    private readonly jobsListOptionsService: JobsListOptionsService, 
+    private readonly modalService: ModalService,
+    private readonly notificationService: NotificationService) {
     this.statusKeys = Object.keys(JobStatus);
     this.user$ = this.userService.getUser();
 
@@ -71,9 +71,6 @@ export class JobsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.destroy$.next(true);
-  }
-
-  ngOnInit(): void {
   }
 
   sortBy(sort: string): void {

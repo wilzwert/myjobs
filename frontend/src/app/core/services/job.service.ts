@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DataService } from './data.service';
-import { Job, JobStatus, JobStatusMeta } from '@core/model/job.interface';
+import { Job } from '@core/model/job.interface';
 import { BehaviorSubject, forkJoin, map, Observable, of, switchMap, tap } from 'rxjs';
 import { Page } from '@core/model/page.interface';
 import { CreateJobRequest } from '@core/model/create-job-request.interface';
@@ -48,7 +48,13 @@ export class JobService {
           this.currentOptions.forceReload(null);
           const status = this.currentOptions.getStatus();
           const statusMeta = this.currentOptions.getStatusMeta();
-          const statusOrFilterParam = (status != null ?  `status=${status}`  : statusMeta ? `statusMeta=${statusMeta}` : '');
+          let statusOrFilterParam = '';
+          if(status !== null) {
+            statusOrFilterParam += `status=${status}`;
+          }
+          else if (statusMeta !== null) {
+            statusOrFilterParam += `statusMeta=${statusMeta}`;
+          }
           return this.dataService.get<Page<Job>>(`jobs?page=${this.currentOptions.getCurrentPage()}&itemsPerPage=${this.currentOptions.getItemsPerPage()}`+(statusOrFilterParam ? `&${statusOrFilterParam}` : '')+`&sort=${this.currentOptions.getSort()}`).pipe(
             switchMap((fetchedJobs: Page<Job>) => {
               this.jobsSubject.next(fetchedJobs);

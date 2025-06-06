@@ -7,7 +7,7 @@ import { ActivityType } from '@core/model/activity-type';
 })
 
 export class TranslatorService {
-  private errorMessages: Record<string, string> = {
+  private readonly errorMessages: Record<string, string> = {
     VALIDATION_FAILED: $localize`:@@error.validation_failed:Validation error`,
     FIELD_CANNOT_BE_EMPTY: $localize`:@@error.field_cannot_be_empty:Field cannot be empty`,
     INVALID_VALUE: $localize`:@@error.invalid_value:Invalid value`,
@@ -43,7 +43,7 @@ export class TranslatorService {
     JOB_NOT_FOUND: $localize`:@@error.job_not_found:Job not found`
   };
 
-  private jobStatuses: Record<keyof typeof JobStatus, string> = {
+  private readonly jobStatuses: Record<keyof typeof JobStatus, string> = {
     CREATED : $localize `:@@job.status.created:Created`,
     PENDING : $localize `:@@job.status.pending:Pending`,
     RELAUNCHED : $localize `:@@job.status.relaunched:Relaunched`,
@@ -55,13 +55,13 @@ export class TranslatorService {
     HIRED:  $localize `:@@job.status.hired:Hired`
   };
 
-  private jobStatusMetas: Record<string, string> = {
+  private readonly jobStatusMetas: Record<string, string> = {
     ACTIVE : $localize `:@@job.status.filter.active:Active`,
     INACTIVE : $localize `:@@job.status.filter.inactive:Inactive`,
     LATE : $localize `:@@job.status.filter.late:Late`
   };
 
-  private activityTypes: Record<keyof typeof ActivityType, string> = {
+  private readonly activityTypes: Record<keyof typeof ActivityType, string> = {
     CREATION : $localize `:@@job.activity.creation:Creation`,
     APPLICANT_REFUSAL : $localize `:@@job.activity.applicant_refusal:Refusal (by me)`,
     ATTACHMENT_CREATION : $localize `:@@job.activity.attachment_creation:Attachement creation`,

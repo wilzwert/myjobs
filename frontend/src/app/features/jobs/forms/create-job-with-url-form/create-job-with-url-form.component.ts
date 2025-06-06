@@ -22,7 +22,7 @@ export class CreateJobWithUrlFormComponent extends BaseChildComponent implements
   public urlForm: FormGroup | undefined;
   public urlFormLoading = false;
 
-  constructor(private fb: FormBuilder, private jobService: JobService, private modalService: ModalService) {
+  constructor(private readonly fb: FormBuilder, private readonly jobService: JobService, private readonly modalService: ModalService) {
     super();
   }
 

@@ -12,7 +12,7 @@ export class JobsListOptions {
     constructor(jobsStatus: string | null = null, jobStatusMeta: string | null = null, sort: string | null = null) {
         this.jobStatus = jobsStatus as keyof typeof JobStatus;
         this.jobStatusMeta = jobStatusMeta as keyof typeof JobStatusMeta;
-        this.currentSort = sort === null ?  'createdAt,desc' : sort;
+        this.currentSort = sort ?? 'createdAt,desc';
     }
 
     getCurrentPage(): number {
@@ -47,7 +47,7 @@ export class JobsListOptions {
             && this.currentSort == jobsListOptions.getSort();
     }
 
-    changePagination(page: number, itemsPerPage: number |null): JobsListOptions {
+    changePagination(page: number, itemsPerPage: number |null): this {
         this.page = page;
         if(itemsPerPage !== null) {
             this.itemsPerPage = itemsPerPage;
@@ -55,12 +55,12 @@ export class JobsListOptions {
         return  this;
     }
     
-    forceReload(force: boolean | null): JobsListOptions {
+    forceReload(force: boolean | null): this {
         this.mustReload = force;
         return this;
     }
 
-    sort(sort: string): JobsListOptions {
+    sort(sort: string): this {
         this.currentSort = sort;
         return this;
     }
@@ -71,7 +71,7 @@ export class JobsListOptions {
      * @param statusMeta the new job "meta" status as a string (keyof JobStatusMeta)
      * @returns true if changed, false otherwise
      */
-    filter(status: string | null, statusMeta: string | null): JobsListOptions {
+    filter(status: string | null, statusMeta: string | null): this {
         // having two properties to handle status or statusMeta filters may seem unclean, as they are exclusive at the moment
         // but it actually allow us to change our mind in the future and use both filters cumulatively 
         if(status !== null) {

@@ -2,11 +2,11 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { TranslatorService } from '@core/services/translator.service';
 
 @Pipe({
-  name: 'statusFilterLabel'
+  name: 'statusMetaLabel'
 })
 export class StatusMetaLabelPipe implements PipeTransform {
 
-  constructor(private translatorService: TranslatorService){}
+  constructor(private readonly translatorService: TranslatorService){}
 
   transform(type: string): string {
     return this.translatorService.translateJobStatusMeta(type);
