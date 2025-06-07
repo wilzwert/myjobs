@@ -16,7 +16,9 @@ import com.wilzwert.myjobs.core.domain.model.attachment.ports.driving.DownloadAt
 import com.wilzwert.myjobs.core.domain.model.attachment.ports.driving.GetAttachmentFileInfoUseCase;
 import com.wilzwert.myjobs.core.domain.model.job.*;
 import com.wilzwert.myjobs.core.domain.model.job.command.*;
+import com.wilzwert.myjobs.core.domain.model.job.event.integration.IntegrationEventId;
 import com.wilzwert.myjobs.core.domain.model.job.event.integration.JobCreatedEvent;
+import com.wilzwert.myjobs.core.domain.model.job.event.integration.JobStatusUpdatedEvent;
 import com.wilzwert.myjobs.core.domain.model.job.exception.JobNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobDataManager;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driving.*;
@@ -101,7 +103,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
             Job job = updatedUser.getJobByUrl(jobToCreate.getUrl()).orElseThrow(() -> new DomainException(ErrorCode.UNEXPECTED_ERROR));
             userDataManager.saveUserAndJob(updatedUser, job);
-            integrationEventPublisher.publish(new JobCreatedEvent(job.getId()));
+            integrationEventPublisher.publish(new JobCreatedEvent(IntegrationEventId.generate(), job.getId()));
             return job;
         });
     }
@@ -391,9 +393,12 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
             throw new JobNotFoundException();
         }
 
-        Job job = foundJob.get().updateStatus(command.status());
-        jobDataManager.saveJobAndActivity(job, job.getActivities().getFirst());
-        return job;
+        return transactionProvider.executeInTransaction(() -> {
+            Job job = foundJob.get().updateStatus(command.status());
+            jobDataManager.saveJobAndActivity(job, job.getActivities().getFirst());
+            integrationEventPublisher.publish(new JobStatusUpdatedEvent(IntegrationEventId.generate(), job.getId(), job.getStatus()));
+            return job;
+        });
     }
 
     @Override

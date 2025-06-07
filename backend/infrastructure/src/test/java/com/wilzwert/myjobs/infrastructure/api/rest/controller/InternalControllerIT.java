@@ -32,6 +32,7 @@ public class InternalControllerIT extends AbstractBaseIntegrationTest {
     private ObjectMapper objectMapper;
 
     private static final String JOBS_REMINDERS_BATCH_URL = "/internal/jobs-reminders-batch";
+    private static final String INTEGRATION_EVENTS_DISPATCH_BATCH_URL = "/internal/integration-events-batch";
 
     @Test
     void whenSecretIsEmpty_thenShouldReturnUnauthorized() throws Exception {
@@ -52,7 +53,7 @@ public class InternalControllerIT extends AbstractBaseIntegrationTest {
     }
 
     @Test
-    void shouldRunAndReturnResultResponse() throws Exception {
+    void shouldRunJobsRemindersAndReturnResultResponse() throws Exception {
 
         MvcResult result = mockMvc.perform(post(JOBS_REMINDERS_BATCH_URL).header("X-Internal-Secret", "secret"))
                 .andExpect(status().isOk())
@@ -66,5 +67,11 @@ public class InternalControllerIT extends AbstractBaseIntegrationTest {
         assertThat(response.getJobsCount()).isEqualTo(3);
         assertThat(response.getSaveErrorsCount()).isZero();
         assertThat(response.getSendErrorsCount()).isZero();
+    }
+
+    @Test
+    void shouldRunIntegrationEventsDispatch() throws Exception {
+        mockMvc.perform(post(INTEGRATION_EVENTS_DISPATCH_BATCH_URL).header("X-Internal-Secret", "secret"))
+                .andExpect(status().isOk());
     }
 }

@@ -17,8 +17,8 @@ public class JobFieldUpdatedEvent extends IntegrationEvent {
 
     private final UpdateJobFieldCommand.Field field;
 
-    public JobFieldUpdatedEvent(JobId jobId, UpdateJobFieldCommand.Field field) {
-        super();
+    public JobFieldUpdatedEvent(IntegrationEventId id, JobId jobId, UpdateJobFieldCommand.Field field) {
+        super(id);
         this.jobId = jobId;
         this.field = field;
     }

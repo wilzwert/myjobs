@@ -11,7 +11,6 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.MongoTransactionManager;
@@ -26,7 +25,6 @@ import org.springframework.data.mongodb.MongoTransactionManager;
 
 @Configuration
 @Slf4j
-@ConditionalOnProperty(name = "application.batch.enabled", havingValue = "true")
 public class JobsRemindersBatchConfiguration {
     @Bean
     public Job jobReminderJob(Step jobReminderStep, JobRepository jobRepository) {
@@ -46,7 +44,13 @@ public class JobsRemindersBatchConfiguration {
     @Bean
     public Tasklet jobReminderTasklet(SendJobsRemindersBatchRunner runner) {
         return (contribution, chunkContext) -> {
-            runner.run();
+            UsersJobsBatchExecutionResult result = runner.run();
+            // store result in context in case access is needed later
+            chunkContext.getStepContext()
+                    .getStepExecution()
+                    .getJobExecution()
+                    .getExecutionContext()
+                    .put("usersJobsBatchExecutionResult", result);
             contribution.setExitStatus(ExitStatus.COMPLETED);
             return RepeatStatus.FINISHED;
         };

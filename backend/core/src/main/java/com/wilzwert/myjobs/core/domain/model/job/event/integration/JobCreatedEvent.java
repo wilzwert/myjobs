@@ -13,8 +13,8 @@ import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEvent
 public class JobCreatedEvent extends IntegrationEvent {
     private final JobId jobId;
 
-    public JobCreatedEvent(JobId jobId) {
-        super();
+    public JobCreatedEvent(IntegrationEventId id, JobId jobId) {
+        super(id);
         this.jobId = jobId;
     }
 
