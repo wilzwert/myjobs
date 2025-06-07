@@ -89,7 +89,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./backend/infrastructure/target/site/jacoco-merged
+          publish_dir: ./backend/report/target/site/jacoco-aggregate
           destination_dir: ./coverage-backend
 
       # we only update codecov if code has actually been pushed to main branch, or if workflow is run manually
