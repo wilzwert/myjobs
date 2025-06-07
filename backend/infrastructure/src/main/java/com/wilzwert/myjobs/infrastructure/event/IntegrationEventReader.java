@@ -1,6 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.event;
 
 import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEvent;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.EventStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.stereotype.Component;
@@ -29,6 +30,9 @@ public class IntegrationEventReader implements ItemReader<IntegrationEvent> {
             if (batch.isEmpty()) {
                 return null;  // end batch
             }
+
+            dataManager.markAllAs(batch, EventStatus.IN_PROGRESS);
+
             currentBatchIterator = batch.iterator();
             log.info("Found {} pending integration events", batch.size());
         }

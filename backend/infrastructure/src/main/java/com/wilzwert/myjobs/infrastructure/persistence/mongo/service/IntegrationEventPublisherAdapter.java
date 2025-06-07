@@ -80,30 +80,14 @@ public class IntegrationEventPublisherAdapter implements IntegrationEventPublish
     }
 
     @Override
-    public IntegrationEvent markAsDispatched(IntegrationEvent event) {
-        MongoIntegrationEvent mongoIntegrationEvent = eventRepository.findById(event.getId().value()).orElseThrow(RuntimeException::new);
-        mongoIntegrationEvent.setStatus(EventStatus.DISPATCHED);
-        eventRepository.save(mongoIntegrationEvent);
-        return event;
-    }
-
-    @Override
-    public List<? extends IntegrationEvent> markAllAsDispatched(List<? extends IntegrationEvent> events) {
+    public List<? extends IntegrationEvent> markAllAs(List<? extends IntegrationEvent> events, EventStatus status) {
         eventRepository.saveAll(
                 eventRepository.findAllById(
                     events.stream().map(e -> e.getId().value()).collect(Collectors.toList())
                 )
-                .stream().peek(e -> e.setStatus(EventStatus.DISPATCHED))
+                .stream().peek(e -> e.setStatus(status))
                 .toList()
         );
         return events;
-    }
-
-    @Override
-    public IntegrationEvent markAsError(IntegrationEvent event) {
-        MongoIntegrationEvent mongoIntegrationEvent = eventRepository.findById(event.getId().value()).orElseThrow(RuntimeException::new);
-        mongoIntegrationEvent.setStatus(EventStatus.ERROR);
-        eventRepository.save(mongoIntegrationEvent);
-        return event;
     }
 }

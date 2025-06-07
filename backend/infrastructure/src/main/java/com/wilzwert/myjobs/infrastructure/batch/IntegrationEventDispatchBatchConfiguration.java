@@ -46,7 +46,7 @@ public class IntegrationEventDispatchBatchConfiguration {
     @Bean
     public Step integrationEventDispatchStep(JobRepository jobRepository, MongoTransactionManager transactionManager) {
         return new StepBuilder("integrationEventStep", jobRepository)
-                .<IntegrationEvent, IntegrationEvent>chunk(10, transactionManager)  // traite 10 events à la fois
+                .<IntegrationEvent, IntegrationEvent>chunk(10, transactionManager)
                 .reader(integrationEventReader)
                 .processor(integrationEventProcessor)
                 .writer(integrationEventWriter)

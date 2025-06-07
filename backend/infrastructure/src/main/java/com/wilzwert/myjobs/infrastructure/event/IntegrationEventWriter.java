@@ -1,6 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.event;
 
 import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEvent;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.EventStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemWriter;
@@ -17,9 +18,9 @@ public class IntegrationEventWriter implements ItemWriter<IntegrationEvent> {
     }
 
     @Override
-    public void write(Chunk<? extends IntegrationEvent> items) throws Exception {
+    public void write(Chunk<? extends IntegrationEvent> items) {
         log.info("Marking {} integration events as dispatched", items.getItems().size());
-        eventDataManager.markAllAsDispatched(items.getItems());
+        eventDataManager.markAllAs(items.getItems(), EventStatus.DISPATCHED);
         log.info("Integration events marked as dispatched");
     }
 }

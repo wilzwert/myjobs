@@ -8,6 +8,7 @@ package com.wilzwert.myjobs.infrastructure.persistence.mongo.entity;
  */
 public enum EventStatus {
     PENDING,
+    IN_PROGRESS,
     ERROR,
     DISPATCHED
 }
