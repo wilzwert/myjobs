@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>UserUseCaseImpl.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">MyJobsAggregateReport</a> &gt; <a href="../index.html" class="el_bundle">myjobs-core</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.core.application.usecase</a> &gt; <span class="el_source">UserUseCaseImpl.java</span></div><h1>UserUseCaseImpl.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.core.application.usecase;
+
+
+import com.wilzwert.myjobs.core.domain.model.job.JobState;
+import com.wilzwert.myjobs.core.domain.model.user.UserSummary;
+import com.wilzwert.myjobs.core.domain.model.user.UserView;
+import com.wilzwert.myjobs.core.domain.model.user.collector.UserSummaryCollector;
+import com.wilzwert.myjobs.core.domain.model.user.command.UpdateUserCommand;
+import com.wilzwert.myjobs.core.domain.model.user.command.UpdateUserLangCommand;
+import com.wilzwert.myjobs.core.domain.model.user.exception.UserAlreadyExistsException;
+import com.wilzwert.myjobs.core.domain.model.user.exception.UserNotFoundException;
+import com.wilzwert.myjobs.core.domain.model.user.User;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.EmailVerificationMessageProvider;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.*;
+
+import java.util.List;
+
+/**
+ * @author Wilhelm Zwertvaegher
+ */
+
+public class UserUseCaseImpl implements SendVerificationEmailUseCase, GetUserViewUseCase, UpdateUserUseCase, UpdateUserLangUseCase, GetUserSummaryUseCase {
+
+    private final UserDataManager userDataManager;
+
+    private final EmailVerificationMessageProvider emailVerificationMessageProvider;
+
+<span class="fc" id="L30">    public UserUseCaseImpl(UserDataManager userDataManager, EmailVerificationMessageProvider emailVerificationMessageProvider) {</span>
+<span class="fc" id="L31">        this.userDataManager = userDataManager;</span>
+<span class="fc" id="L32">        this.emailVerificationMessageProvider = emailVerificationMessageProvider;</span>
+<span class="fc" id="L33">    }</span>
+
+    @Override
+    public void sendVerificationEmail(UserId userId) {
+<span class="fc" id="L37">        userDataManager.findMinimalById(userId).ifPresent(emailVerificationMessageProvider::send);</span>
+<span class="fc" id="L38">    }</span>
+
+    @Override
+    public User updateUser(UpdateUserCommand command) {
+<span class="fc" id="L42">        User user = userDataManager.findMinimalById(command.userId()).orElseThrow(UserNotFoundException::new);</span>
+
+        // if email changes, check availability
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        if(!command.email().equals(user.getEmail())) {</span>
+<span class="fc" id="L46">            User existingUser = userDataManager.findMinimalByEmail(command.email()).orElse(null);</span>
+<span class="pc bpc" id="L47" title="1 of 4 branches missed.">            if(existingUser != null &amp;&amp; !existingUser.equals(user)) {</span>
+<span class="fc" id="L48">                throw new UserAlreadyExistsException();</span>
+            }
+        }
+        // if username changes, check availability
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        if(!command.username().equals(user.getUsername())) {</span>
+<span class="fc" id="L53">            User existingUser = userDataManager.findMinimalByUsername(command.username()).orElse(null);</span>
+<span class="pc bpc" id="L54" title="1 of 4 branches missed.">            if(existingUser != null &amp;&amp; !existingUser.equals(user)) {</span>
+<span class="fc" id="L55">                throw new UserAlreadyExistsException();</span>
+            }
+        }
+
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        boolean shouldResendVerificationEmail = !user.getEmail().equals(command.email());</span>
+
+<span class="fc" id="L61">        user = userDataManager.save(user.update(command.email(), command.username(), command.firstName(), command.lastName(), command.jobFollowUpReminderDays()));</span>
+
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        if(shouldResendVerificationEmail) {</span>
+<span class="fc" id="L64">            emailVerificationMessageProvider.send(user);</span>
+        }
+<span class="fc" id="L66">        return user;</span>
+    }
+
+    @Override
+    public User updateUserLang(UpdateUserLangCommand command) {
+<span class="fc" id="L71">        User user = userDataManager.findMinimalById(command.userId()).orElseThrow(UserNotFoundException::new);</span>
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">        if(user.getLang().equals(command.lang())) {</span>
+<span class="nc" id="L73">            return user;</span>
+        }
+<span class="fc" id="L75">        return userDataManager.save(user.updateLang(command.lang()));</span>
+    }
+
+    @Override
+    public UserView getUser(UserId userId) {
+<span class="fc" id="L80">        return userDataManager.findViewById(userId).orElseThrow(UserNotFoundException::new);</span>
+    }
+
+    @Override
+    public UserSummary getUserSummary(UserId userId) {
+<span class="fc" id="L85">        User user = userDataManager.findMinimalById(userId).orElseThrow(UserNotFoundException::new);</span>
+
+<span class="fc" id="L87">        List&lt;JobState&gt; jobStatuses = userDataManager.getJobsState(user);</span>
+
+<span class="fc" id="L89">        return jobStatuses.stream().collect(new UserSummaryCollector(user));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

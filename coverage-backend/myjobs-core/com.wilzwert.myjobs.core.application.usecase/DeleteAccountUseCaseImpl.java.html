@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>DeleteAccountUseCaseImpl.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">MyJobsAggregateReport</a> &gt; <a href="../index.html" class="el_bundle">myjobs-core</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.core.application.usecase</a> &gt; <span class="el_source">DeleteAccountUseCaseImpl.java</span></div><h1>DeleteAccountUseCaseImpl.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.core.application.usecase;
+
+
+import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
+import com.wilzwert.myjobs.core.domain.model.job.Job;
+import com.wilzwert.myjobs.core.domain.model.user.exception.UserDeleteException;
+import com.wilzwert.myjobs.core.domain.model.user.exception.UserNotFoundException;
+import com.wilzwert.myjobs.core.domain.model.user.User;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.DeleteAccountUseCase;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
+
+/**
+ * @author Wilhelm Zwertvaegher
+ */
+
+public class DeleteAccountUseCaseImpl implements DeleteAccountUseCase {
+    private final UserDataManager userDataManager;
+
+    private final FileStorage fileStorage;
+
+
+<span class="fc" id="L24">    public DeleteAccountUseCaseImpl(UserDataManager userDataManager, FileStorage fileStorage) {</span>
+<span class="fc" id="L25">        this.userDataManager = userDataManager;</span>
+<span class="fc" id="L26">        this.fileStorage = fileStorage;</span>
+<span class="fc" id="L27">    }</span>
+
+    @Override
+    public void deleteAccount(UserId userId) {
+<span class="fc" id="L31">        User user = userDataManager.findById(userId).orElseThrow(UserNotFoundException::new);</span>
+
+        // delete attachment's files
+        // FIXME : this could (should) maybe be done in a cleaner way
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        for (Job job : user.getJobs()) {</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">            for(Attachment attachment : job.getAttachments()) {</span>
+                try {
+<span class="fc" id="L38">                    fileStorage.delete(attachment.getFileId());</span>
+<span class="fc" id="L39">                } catch (Exception e) {</span>
+                    // TODO log incoherence
+<span class="fc" id="L41">                    throw new UserDeleteException();</span>
+<span class="fc" id="L42">                }</span>
+<span class="fc" id="L43">            }</span>
+<span class="fc" id="L44">        }</span>
+
+<span class="fc" id="L46">        userDataManager.deleteUser(user);</span>
+
+        // TODO : send a deletion confirmation email
+<span class="fc" id="L49">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

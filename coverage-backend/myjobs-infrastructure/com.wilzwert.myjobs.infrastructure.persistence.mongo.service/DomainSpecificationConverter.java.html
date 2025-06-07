@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>DomainSpecificationConverter.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">MyJobsAggregateReport</a> &gt; <a href="../index.html" class="el_bundle">myjobs-infrastructure</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.infrastructure.persistence.mongo.service</a> &gt; <span class="el_source">DomainSpecificationConverter.java</span></div><h1>DomainSpecificationConverter.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
+
+import com.wilzwert.myjobs.core.domain.model.job.JobId;
+import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
+import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.exception.UnsupportedDomainCriterionException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.aggregation.*;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+import java.util.function.Function;
+
+/**
+ * @author Wilhelm Zwertvaegher
+ * This converter should convert DomainSpecification types to Aggregation.Operation types
+ */
+
+@Service
+<span class="fc" id="L23">@Slf4j</span>
+<span class="fc" id="L24">public class DomainSpecificationConverter {</span>
+
+<span class="fc" id="L26">    private static final Map&lt;Class&lt;?&gt;, Function&lt;DomainSpecification.FieldSpecificationWithValuesList&lt;?&gt;, List&lt;?&gt;&gt;&gt; valuesClassMap = Map.of(</span>
+<span class="fc" id="L27">        UserId.class, spec -&gt; spec.getValues().stream().map(u -&gt; ((UserId) u).value()).toList(),</span>
+<span class="fc" id="L28">        JobId.class, spec -&gt; spec.getValues().stream().map(u -&gt; ((JobId) u).value()).toList()</span>
+    );
+
+<span class="fc" id="L31">    private static final Map&lt;Class&lt;?&gt;, Function&lt;DomainSpecification.FieldSpecificationWithSingleValue&lt;?&gt;, ?&gt;&gt; valueClassMap = Map.of(</span>
+<span class="fc" id="L32">            UserId.class, spec -&gt; ((UserId) spec.getValue()).value(),</span>
+<span class="nc" id="L33">            JobId.class, spec -&gt; ((JobId) spec.getValue()).value()</span>
+    );
+
+    public List&lt;AggregationOperation&gt; convert(DomainSpecification specifications) {
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">        if (specifications == null) {</span>
+<span class="nc" id="L38">            return Collections.emptyList();</span>
+        }
+<span class="fc" id="L40">        return domainSpecificationToAggregationOperation(specifications);</span>
+    }
+
+    public String convertField(String field) {
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        if(&quot;id&quot;.equals(field)) {</span>
+<span class="fc" id="L45">            return &quot;_id&quot;;</span>
+        }
+<span class="fc" id="L47">        return field.replaceAll(&quot;([a-z])([A-Z]+)&quot;, &quot;$1_$2&quot;).toLowerCase();</span>
+    }
+
+    private &lt;S extends DomainSpecification.FieldSpecificationWithSingleValue&lt;V&gt;, V&gt; Object convertValue(S spec) {
+<span class="fc" id="L51">        Function&lt;DomainSpecification.FieldSpecificationWithSingleValue&lt;?&gt;, ?&gt; function = valueClassMap.get(spec.getValueClass());</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        if(function == null) {</span>
+<span class="fc" id="L53">            return spec.getValue();</span>
+        }
+<span class="fc" id="L55">        return function.apply(spec);</span>
+
+    }
+
+    private &lt;S extends DomainSpecification.FieldSpecificationWithValuesList&lt;V&gt;, V&gt; List&lt;?&gt; convertValues(S spec) {
+<span class="fc" id="L60">        Function&lt;DomainSpecification.FieldSpecificationWithValuesList&lt;?&gt;, List&lt;?&gt;&gt; function = valuesClassMap.get(spec.getValueClass());</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        if(function == null) {</span>
+<span class="fc" id="L62">            return spec.getValues();</span>
+        }
+<span class="fc" id="L64">        return function.apply(spec);</span>
+    }
+
+    /**
+     *
+     * @param domainSpecification a query criterion received from the domain
+     * @return a MongoDb Criteria
+     */
+    public Criteria domainCriterionToCriteria(DomainSpecification domainSpecification) {
+<span class="pc bpc" id="L73" title="2 of 7 branches missed.">        switch (domainSpecification) {</span>
+            case null -&gt; {
+<span class="nc" id="L75">                log.debug(&quot;criteria is null because domainSpecification is null&quot;);</span>
+<span class="nc" id="L76">                return null;</span>
+            }
+<span class="fc" id="L78">            case DomainSpecification.Eq&lt;?&gt; c -&gt; {</span>
+<span class="fc" id="L79">                log.debug(&quot;criteria is EQ for &quot; + c.getField());</span>
+<span class="fc" id="L80">                return Criteria.where(convertField(c.getField())).is(convertValue(c));</span>
+            }
+<span class="fc" id="L82">            case DomainSpecification.In&lt;?&gt; c -&gt; {</span>
+<span class="fc" id="L83">                log.debug(&quot;criteria is In for {}&quot;, c.getField());</span>
+<span class="fc" id="L84">                log.debug(&quot;values {}&quot;, c.getValues());</span>
+<span class="fc" id="L85">                return Criteria.where(convertField(c.getField())).in(convertValues(c));</span>
+            }
+<span class="fc" id="L87">            case DomainSpecification.Lt&lt;?&gt; c -&gt; {</span>
+<span class="fc" id="L88">                log.debug(&quot;criteria is Lt for {}&quot;, c.getField());</span>
+<span class="fc" id="L89">                return Criteria.where(convertField(c.getField())).lt(convertValue(c));</span>
+            }
+<span class="nc" id="L91">            case DomainSpecification.Or c -&gt; {</span>
+<span class="nc" id="L92">                log.debug(&quot;criteria is Or&quot;);</span>
+<span class="nc" id="L93">                return new Criteria().orOperator(c.getSpecifications().stream().map(this::domainCriterionToCriteria).toList());</span>
+            }
+<span class="fc" id="L95">            case DomainSpecification.And c -&gt; {</span>
+<span class="fc" id="L96">                log.debug(&quot;criteria is And&quot;);</span>
+<span class="fc" id="L97">                return new Criteria().andOperator(c.getSpecifications().stream().map(this::domainCriterionToCriteria).toList());</span>
+            }
+<span class="fc" id="L99">            default -&gt; throw new UnsupportedDomainCriterionException(domainSpecification.getClass().getName());</span>
+        }
+    }
+
+    private AggregationOperation domainSpecificationSortToAggregationOperation(DomainSpecification.Sort sort) {
+<span class="fc bfc" id="L104" title="All 2 branches covered.">        return Aggregation.sort(sort.getSortDirection().equals(DomainSpecification.SortDirection.ASC) ? Sort.Direction.ASC : Sort.Direction.DESC, convertField(sort.getFieldName()));</span>
+    }
+
+    /**
+     *
+     * @param domainSpecification a spec received from the domain
+     * @return a List or AggregationOperation (match, lookup, sort...) to be used in an Aggregation pipeline
+     */
+    public  List&lt;AggregationOperation&gt; domainSpecificationToAggregationOperation(DomainSpecification domainSpecification) {
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">        if(domainSpecification instanceof DomainSpecification.Sort sort) {</span>
+<span class="nc" id="L114">            return List.of(domainSpecificationSortToAggregationOperation(sort));</span>
+        }
+
+        List&lt;AggregationOperation&gt; result;
+<span class="fc bfc" id="L118" title="All 2 branches covered.">        if(domainSpecification instanceof DomainSpecification.FullSpecification fullSpecification) {</span>
+<span class="fc" id="L119">            result = domainSpecificationToAggregationOperation(fullSpecification);</span>
+        }
+        else {
+<span class="fc" id="L122">            result = new ArrayList&lt;&gt;(List.of(Aggregation.match(domainCriterionToCriteria(domainSpecification))));</span>
+        }
+
+<span class="fc" id="L125">        result.addAll(domainSpecification.getSort().stream().map(this::domainSpecificationSortToAggregationOperation).toList());</span>
+<span class="fc" id="L126">        return result;</span>
+    }
+
+    private List&lt;AggregationOperation&gt; domainSpecificationToAggregationOperation(DomainSpecification.FullSpecification fullDomainSpecification) {
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">        if(fullDomainSpecification instanceof DomainSpecification.UserJobFollowUpReminderThreshold userJobFollowUpReminderThreshold) {</span>
+<span class="nc" id="L131">            return domainSpecificationToAggregationOperation(userJobFollowUpReminderThreshold);</span>
+        }
+
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">        if(fullDomainSpecification instanceof DomainSpecification.JobFollowUpToRemind jobFollowUpToRemind ) {</span>
+<span class="fc" id="L135">            return domainSpecificationToAggregationOperation(jobFollowUpToRemind);</span>
+        }
+
+<span class="nc" id="L138">        throw new UnsupportedDomainCriterionException(fullDomainSpecification.getClass().getName());</span>
+
+    }
+
+    /**
+     *  This converts a specific Criterion  : users who have not received any job follow-up reminders after
+     *  a threshold instant calculated by Mongo, based on provided Instant and user's jobFollowUpReminderDelay
+     * @param domainSpecification the Specification received from the domain
+     * @return a List or AggregationOperation to be used in an Aggregation pipeline
+     */
+    public List&lt;AggregationOperation&gt; domainSpecificationToAggregationOperation(DomainSpecification.UserJobFollowUpReminderThreshold domainSpecification) {
+<span class="nc" id="L149">    return new ArrayList&lt;&gt;(List.of(</span>
+<span class="nc" id="L150">                Aggregation.addFields()</span>
+<span class="nc" id="L151">                    .addFieldWithValue(</span>
+                            &quot;jobFollowUpReminderThreshold&quot;,
+<span class="nc" id="L153">                            ArithmeticOperators.Subtract.valueOf(domainSpecification.getReferenceInstant().toEpochMilli()).subtract(</span>
+<span class="nc" id="L154">                                    ArithmeticOperators.Multiply.valueOf(</span>
+<span class="nc" id="L155">                                            ConditionalOperators.ifNull(&quot;user.jobFollowUpReminderDays&quot;).then(0)</span>
+                                    )
+<span class="nc" id="L157">                                    .multiplyBy(86400000)</span>
+                            )
+<span class="nc" id="L159">                    ).build(),</span>
+<span class="nc" id="L160">                Aggregation.match(Criteria.where(&quot;jobFollowUpReminderSentAt&quot;).lt(&quot;jobFollowUpReminderThreshold&quot;))</span>
+        ));
+    }
+
+    /**
+     *  This converts a specific Criterion  : active jobs who have not been reminded after
+     *  a threshold instant calculated by Mongo, based on provided Instant and user's jobFollowUpReminderDelay
+     * @param domainSpecification the Specification received from the domain
+     * @return a List or AggregationOperation to be used in an Aggregation pipeline
+     */
+    public List&lt;AggregationOperation&gt; domainSpecificationToAggregationOperation(DomainSpecification.JobFollowUpToRemind domainSpecification) {
+<span class="fc" id="L171">        List&lt;AggregationOperation&gt; aggregationOperations = new ArrayList&lt;&gt;();</span>
+        // filter by status
+<span class="fc" id="L173">        aggregationOperations.add(Aggregation.match(Criteria.where(&quot;status&quot;).in(JobStatus.activeStatuses())));</span>
+
+        // lookup users collection
+<span class="fc" id="L176">        aggregationOperations.add(Aggregation.lookup().from(&quot;users&quot;).localField(&quot;user_id&quot;).foreignField(&quot;_id&quot;).as(&quot;user&quot;));</span>
+        // unwind users
+<span class="fc" id="L178">        aggregationOperations.add(Aggregation.unwind(&quot;user&quot;));</span>
+        // filter users with no job_follow_up_reminder_days
+<span class="fc" id="L180">        aggregationOperations.add(Aggregation.match(Criteria.where(&quot;user.job_follow_up_reminder_days&quot;).exists(true).ne(null)));</span>
+
+        // compute 'thresholdDate' based on provided instant and user.jobFollowUpReminderDelay
+<span class="fc" id="L183">        String thresholdField = &quot;job_follow_up_reminder_threshold&quot;;</span>
+<span class="fc" id="L184">        aggregationOperations.add( Aggregation.addFields()</span>
+<span class="fc" id="L185">                .addFieldWithValue(</span>
+                        thresholdField,
+<span class="fc" id="L187">                        ArithmeticOperators.Subtract.valueOf(domainSpecification.getReferenceInstant().toEpochMilli()).subtract(</span>
+<span class="fc" id="L188">                                ArithmeticOperators.Multiply.valueOf(&quot;user.job_follow_up_reminder_days&quot;)</span>
+<span class="fc" id="L189">                                        .multiplyBy(86400000)</span>
+                        )
+<span class="fc" id="L191">                ).build());</span>
+
+        // convert job's updatedAt Instant to a long (in millis)
+<span class="fc" id="L194">        aggregationOperations.add(Aggregation.addFields()</span>
+<span class="fc" id="L195">                .addFieldWithValue(&quot;updated_at_millis&quot;, ConvertOperators.ToLong.toLong(&quot;$updated_at&quot;)).build());</span>
+
+        // filter by updatedAt (or statusUpdatedAt ?) &lt; threshold
+<span class="fc" id="L198">        aggregationOperations.add(Aggregation.match(</span>
+<span class="fc" id="L199">                Criteria.expr(</span>
+<span class="fc" id="L200">                    ComparisonOperators.Lte.valueOf(&quot;updated_at_millis&quot;).lessThanEqualTo(thresholdField))</span>
+        ));
+
+        // convert job's followUpReminderSentAt Instant to a long (in millis)
+<span class="fc" id="L204">        aggregationOperations.add(</span>
+<span class="fc" id="L205">            Aggregation.addFields()</span>
+<span class="fc" id="L206">                .addFieldWithValue(</span>
+                    &quot;job_follow_up_reminder_sent_at_millis&quot;,
+<span class="fc" id="L208">                        ConvertOperators.ToLong.toLong(</span>
+<span class="fc" id="L209">                            ConditionalOperators.ifNull(&quot;follow_up_reminder_sent_at&quot;).then(0)</span>
+                        )
+<span class="fc" id="L211">            ).build()</span>
+        );
+
+        // filter lastReminderSentAt &lt; threshold to avoid multiple reminders
+<span class="fc" id="L215">        aggregationOperations.add(Aggregation.match(</span>
+<span class="fc" id="L216">                Criteria.expr(</span>
+<span class="fc" id="L217">                        ComparisonOperators.Lte.valueOf(&quot;job_follow_up_reminder_sent_at_millis&quot;).lessThanEqualTo(thresholdField))</span>
+        ));
+
+<span class="fc" id="L220">        return aggregationOperations;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

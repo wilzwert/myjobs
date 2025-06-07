@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>UpdateJobMapperImpl.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">MyJobsAggregateReport</a> &gt; <a href="../index.html" class="el_bundle">myjobs-infrastructure</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.infrastructure.mapper</a> &gt; <span class="el_source">UpdateJobMapperImpl.java</span></div><h1>UpdateJobMapperImpl.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.infrastructure.mapper;
+
+import com.wilzwert.myjobs.core.domain.model.job.JobId;
+import com.wilzwert.myjobs.core.domain.model.job.JobRating;
+import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
+import com.wilzwert.myjobs.core.domain.model.job.command.UpdateJobFullCommand;
+import com.wilzwert.myjobs.core.domain.model.job.command.UpdateJobRatingCommand;
+import com.wilzwert.myjobs.core.domain.model.job.command.UpdateJobStatusCommand;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.job.UpdateJobRatingRequest;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.job.UpdateJobRequest;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.job.UpdateJobStatusRequest;
+import javax.annotation.processing.Generated;
+import org.springframework.stereotype.Component;
+
+@Generated(
+    value = &quot;org.mapstruct.ap.MappingProcessor&quot;,
+    date = &quot;2025-06-07T20:59:18+0000&quot;,
+    comments = &quot;version: 1.6.2, compiler: javac, environment: Java 21.0.7 (Eclipse Adoptium)&quot;
+)
+@Component
+<span class="nc" id="L22">public class UpdateJobMapperImpl implements UpdateJobMapper {</span>
+
+    @Override
+    public UpdateJobFullCommand toCommand(UpdateJobRequest updateJobRequest, JobId jobId, UserId userId) {
+<span class="nc bnc" id="L26" title="All 6 branches missed.">        if ( updateJobRequest == null &amp;&amp; jobId == null &amp;&amp; userId == null ) {</span>
+<span class="nc" id="L27">            return null;</span>
+        }
+
+<span class="nc" id="L30">        String title = null;</span>
+<span class="nc" id="L31">        String company = null;</span>
+<span class="nc" id="L32">        String url = null;</span>
+<span class="nc" id="L33">        String description = null;</span>
+<span class="nc" id="L34">        String profile = null;</span>
+<span class="nc" id="L35">        String comment = null;</span>
+<span class="nc" id="L36">        String salary = null;</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">        if ( updateJobRequest != null ) {</span>
+<span class="nc" id="L38">            title = updateJobRequest.getTitle();</span>
+<span class="nc" id="L39">            company = updateJobRequest.getCompany();</span>
+<span class="nc" id="L40">            url = updateJobRequest.getUrl();</span>
+<span class="nc" id="L41">            description = updateJobRequest.getDescription();</span>
+<span class="nc" id="L42">            profile = updateJobRequest.getProfile();</span>
+<span class="nc" id="L43">            comment = updateJobRequest.getComment();</span>
+<span class="nc" id="L44">            salary = updateJobRequest.getSalary();</span>
+        }
+<span class="nc" id="L46">        JobId jobId1 = null;</span>
+<span class="nc" id="L47">        jobId1 = jobId;</span>
+<span class="nc" id="L48">        UserId userId1 = null;</span>
+<span class="nc" id="L49">        userId1 = userId;</span>
+
+<span class="nc" id="L51">        UpdateJobFullCommand updateJobFullCommand = new UpdateJobFullCommand( jobId1, userId1, title, company, url, description, profile, comment, salary );</span>
+
+<span class="nc" id="L53">        return updateJobFullCommand;</span>
+    }
+
+    @Override
+    public UpdateJobStatusCommand toCommand(UpdateJobStatusRequest updateJobStatusRequest, JobId jobId, UserId userId) {
+<span class="nc bnc" id="L58" title="All 6 branches missed.">        if ( updateJobStatusRequest == null &amp;&amp; jobId == null &amp;&amp; userId == null ) {</span>
+<span class="nc" id="L59">            return null;</span>
+        }
+
+<span class="nc" id="L62">        JobStatus status = null;</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">        if ( updateJobStatusRequest != null ) {</span>
+<span class="nc" id="L64">            status = updateJobStatusRequest.getStatus();</span>
+        }
+<span class="nc" id="L66">        JobId jobId1 = null;</span>
+<span class="nc" id="L67">        jobId1 = jobId;</span>
+<span class="nc" id="L68">        UserId userId1 = null;</span>
+<span class="nc" id="L69">        userId1 = userId;</span>
+
+<span class="nc" id="L71">        UpdateJobStatusCommand updateJobStatusCommand = new UpdateJobStatusCommand( jobId1, userId1, status );</span>
+
+<span class="nc" id="L73">        return updateJobStatusCommand;</span>
+    }
+
+    @Override
+    public UpdateJobRatingCommand toCommand(UpdateJobRatingRequest updateJobRatingRequest, JobId jobId, UserId userId) {
+<span class="nc bnc" id="L78" title="All 6 branches missed.">        if ( updateJobRatingRequest == null &amp;&amp; jobId == null &amp;&amp; userId == null ) {</span>
+<span class="nc" id="L79">            return null;</span>
+        }
+
+<span class="nc" id="L82">        JobRating rating = null;</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">        if ( updateJobRatingRequest != null ) {</span>
+<span class="nc" id="L84">            rating = updateJobRatingRequest.getRating();</span>
+        }
+<span class="nc" id="L86">        JobId jobId1 = null;</span>
+<span class="nc" id="L87">        jobId1 = jobId;</span>
+<span class="nc" id="L88">        UserId userId1 = null;</span>
+<span class="nc" id="L89">        userId1 = userId;</span>
+
+<span class="nc" id="L91">        UpdateJobRatingCommand updateJobRatingCommand = new UpdateJobRatingCommand( jobId1, userId1, rating );</span>
+
+<span class="nc" id="L93">        return updateJobRatingCommand;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

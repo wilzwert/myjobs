@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>JobUseCaseImpl.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">MyJobsAggregateReport</a> &gt; <a href="../index.html" class="el_bundle">myjobs-core</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.core.application.usecase</a> &gt; <span class="el_source">JobUseCaseImpl.java</span></div><h1>JobUseCaseImpl.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.core.application.usecase;
+
+
+import com.wilzwert.myjobs.core.domain.model.*;
+import com.wilzwert.myjobs.core.domain.model.activity.Activity;
+import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
+import com.wilzwert.myjobs.core.domain.model.activity.command.CreateActivityCommand;
+import com.wilzwert.myjobs.core.domain.model.activity.command.UpdateActivityCommand;
+import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
+import com.wilzwert.myjobs.core.domain.model.attachment.AttachmentId;
+import com.wilzwert.myjobs.core.domain.model.attachment.command.CreateAttachmentCommand;
+import com.wilzwert.myjobs.core.domain.model.attachment.command.DeleteAttachmentCommand;
+import com.wilzwert.myjobs.core.domain.model.attachment.command.DownloadAttachmentCommand;
+import com.wilzwert.myjobs.core.domain.model.attachment.exception.AttachmentNotFoundException;
+import com.wilzwert.myjobs.core.domain.model.attachment.ports.driving.DownloadAttachmentUseCase;
+import com.wilzwert.myjobs.core.domain.model.attachment.ports.driving.GetAttachmentFileInfoUseCase;
+import com.wilzwert.myjobs.core.domain.model.job.*;
+import com.wilzwert.myjobs.core.domain.model.job.command.*;
+import com.wilzwert.myjobs.core.domain.model.job.exception.JobNotFoundException;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobDataManager;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driving.*;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
+import com.wilzwert.myjobs.core.domain.shared.exception.DomainException;
+import com.wilzwert.myjobs.core.domain.shared.pagination.DomainPage;
+import com.wilzwert.myjobs.core.domain.model.user.User;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
+import com.wilzwert.myjobs.core.domain.model.user.exception.UserNotFoundException;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.GetUserJobUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.GetUserJobsUseCase;
+import com.wilzwert.myjobs.core.domain.model.job.service.JobEnricher;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.HtmlSanitizer;
+import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
+import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
+
+import java.lang.reflect.Method;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+
+/**
+ * @author Wilhelm Zwertvaegher
+ */
+
+public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, UpdateJobUseCase, UpdateJobStatusUseCase, UpdateJobRatingUseCase, DeleteJobUseCase, GetUserJobsUseCase, AddActivityToJobUseCase, UpdateActivityUseCase, AddAttachmentToJobUseCase, DownloadAttachmentUseCase, DeleteAttachmentUseCase, GetAttachmentFileInfoUseCase {
+
+    private final JobDataManager jobDataManager;
+
+    private final UserDataManager userDataManager;
+
+    private final FileStorage fileStorage;
+
+    private final HtmlSanitizer htmlSanitizer;
+
+<span class="fc" id="L55">    private final JobEnricher jobEnricher = new JobEnricher();</span>
+
+<span class="fc" id="L57">    public JobUseCaseImpl(JobDataManager jobDataManager, UserDataManager userDataManager, FileStorage fileStorage, HtmlSanitizer htmlSanitizer) {</span>
+<span class="fc" id="L58">        this.jobDataManager = jobDataManager;</span>
+<span class="fc" id="L59">        this.userDataManager = userDataManager;</span>
+<span class="fc" id="L60">        this.fileStorage = fileStorage;</span>
+<span class="fc" id="L61">        this.htmlSanitizer = htmlSanitizer;</span>
+<span class="fc" id="L62">    }</span>
+
+    @Override
+    public Job createJob(CreateJobCommand command) {
+<span class="fc" id="L66">        Optional&lt;User&gt; user = userDataManager.findById(command.userId());</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        if(user.isEmpty()) {</span>
+<span class="fc" id="L68">            throw new UserNotFoundException();</span>
+        }
+
+<span class="fc" id="L71">        command = sanitizeCommandFields(command, List.of(&quot;title&quot;, &quot;company&quot;, &quot;description&quot;, &quot;profile&quot;, &quot;comment&quot;, &quot;salary&quot;));</span>
+
+<span class="fc" id="L73">        Job jobToCreate = Job.create(</span>
+<span class="fc" id="L74">                Job.builder()</span>
+<span class="fc" id="L75">                .url(command.url())</span>
+<span class="fc" id="L76">                .title(command.title())</span>
+<span class="fc" id="L77">                .company(command.company())</span>
+<span class="fc" id="L78">                .description(command.description())</span>
+<span class="fc" id="L79">                .profile(command.profile())</span>
+<span class="fc" id="L80">                .comment(command.comment())</span>
+<span class="fc" id="L81">                .salary(command.salary())</span>
+<span class="fc" id="L82">                .userId(user.get().getId())</span>
+        );
+
+<span class="fc" id="L85">        User updatedUser = user.get().addJob(jobToCreate);</span>
+<span class="pc" id="L86">        Job job = updatedUser.getJobByUrl(jobToCreate.getUrl()).orElseThrow(() -&gt; new DomainException(ErrorCode.UNEXPECTED_ERROR));</span>
+<span class="fc" id="L87">        userDataManager.saveUserAndJob(updatedUser, job);</span>
+<span class="fc" id="L88">        return job;</span>
+    }
+
+    @Override
+    public void deleteJob(DeleteJobCommand command) {
+<span class="fc" id="L93">        Optional&lt;User&gt; foundUser = userDataManager.findById(command.userId());</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">        if(foundUser.isEmpty()) {</span>
+<span class="fc" id="L95">            throw new UserNotFoundException();</span>
+        }
+
+<span class="fc" id="L98">        User user = foundUser.get();</span>
+
+<span class="fc" id="L100">        Optional&lt;Job&gt; foundJob = jobDataManager.findByIdAndUserId(command.jobId(), user.getId());</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        if(foundJob.isEmpty()) {</span>
+<span class="fc" id="L102">            throw new JobNotFoundException();</span>
+        }
+<span class="fc" id="L104">        Job job = foundJob.get();</span>
+
+        // delete attachments' files
+<span class="fc" id="L107">        job.getAttachments().forEach(attachment -&gt; {</span>
+            try {
+<span class="fc" id="L109">                fileStorage.delete(attachment.getFileId());</span>
+            }
+<span class="nc" id="L111">            catch (Exception e) {</span>
+                // TODO log incoherence
+<span class="fc" id="L113">            }</span>
+<span class="fc" id="L114">        });</span>
+
+<span class="fc" id="L116">        User updatedUser = user.removeJob(job);</span>
+<span class="fc" id="L117">        userDataManager.deleteJobAndSaveUser(updatedUser, job);</span>
+<span class="fc" id="L118">    }</span>
+
+    @Override
+    public DomainPage&lt;EnrichedJob&gt; getUserJobs(UserId userId, int page, int size, JobStatus status, JobStatusMeta statusMeta, String sort) {
+<span class="fc" id="L122">        Optional&lt;User&gt; foundUser = userDataManager.findById(userId);</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">        if(foundUser.isEmpty()) {</span>
+<span class="fc" id="L124">            throw new UserNotFoundException();</span>
+        }
+
+<span class="fc" id="L127">        User user = foundUser.get();</span>
+
+<span class="fc" id="L129">        List&lt;DomainSpecification&gt; specs = new ArrayList&lt;&gt;(List.of(DomainSpecification.eq(&quot;userId&quot;, user.getId(), UserId.class)));</span>
+
+        DomainPage&lt;Job&gt; jobs;
+
+<span class="fc" id="L133">        String statusField = &quot;status&quot;;</span>
+
+<span class="fc bfc" id="L135" title="All 2 branches covered.">        if(statusMeta != null) {</span>
+            // threshold instant : jobs not updated since that instant are considered late
+<span class="pc bpc" id="L137" title="2 of 4 branches missed.">            switch (statusMeta) {</span>
+<span class="fc" id="L138">                case ACTIVE: specs.add(DomainSpecification.in(statusField, JobStatus.activeStatuses())); break;</span>
+<span class="nc" id="L139">                case INACTIVE: specs.add(DomainSpecification.in(statusField, JobStatus.inactiveStatuses())); break;</span>
+                case LATE:
+<span class="fc" id="L141">                    Instant nowMinusReminderDays = Instant.now().minus(user.getJobFollowUpReminderDays(), ChronoUnit.DAYS);</span>
+<span class="fc" id="L142">                    specs.add(DomainSpecification.in(statusField, JobStatus.activeStatuses()));</span>
+<span class="fc" id="L143">                    specs.add(DomainSpecification.lt(&quot;statusUpdatedAt&quot;, nowMinusReminderDays));</span>
+                    break;
+            }
+        }
+
+<span class="fc bfc" id="L148" title="All 2 branches covered.">        if( status != null) {</span>
+<span class="fc" id="L149">            specs.add(DomainSpecification.eq(statusField, status, JobStatus.class));</span>
+        }
+
+<span class="fc" id="L152">        var finalSpecs = DomainSpecification.and(specs);</span>
+<span class="pc bpc" id="L153" title="1 of 4 branches missed.">        if(sort != null &amp;&amp; !sort.isEmpty()) {</span>
+<span class="fc" id="L154">            DomainSpecification.applySort(finalSpecs, DomainSpecification.sort(sort));</span>
+        }
+
+<span class="fc" id="L157">        jobs = jobDataManager.findPaginated(finalSpecs, page, size);</span>
+<span class="fc" id="L158">        return jobEnricher.enrich(jobs, user);</span>
+    }
+
+    @Override
+    public Job updateJobField(UpdateJobFieldCommand command) {
+<span class="fc" id="L163">        User user = userDataManager.findById(command.userId()).orElseThrow(UserNotFoundException::new);</span>
+<span class="fc" id="L164">        Job job = jobDataManager.findByIdAndUserId(command.jobId(), user.getId()).orElseThrow(JobNotFoundException::new);</span>
+<span class="fc" id="L165">        command = sanitizeCommandFields(command, List.of(&quot;value&quot;));</span>
+<span class="fc" id="L166">        User updatedUser = user.updateJobField(job, command.field(), command.value());</span>
+        // soft reload the updatedJob in the loaded collection
+<span class="pc" id="L168">        Job updatedJob = updatedUser.getJobById(job.getId()).orElseThrow(() -&gt; new DomainException(ErrorCode.UNEXPECTED_ERROR));</span>
+
+        // FIXME
+        // this is an ugly workaround to force the infra (persistence in particular) to save all data
+        // as I understand DDD, only the root aggregate should be explicitly persisted
+        // but I just don't how to do it cleanly for now
+<span class="fc" id="L174">        userDataManager.saveUserAndJob(updatedUser, updatedJob);</span>
+<span class="fc" id="L175">        return updatedJob;</span>
+    }
+
+    @Override
+    public Job updateJob(UpdateJobFullCommand command) {
+<span class="fc" id="L180">        User user = userDataManager.findById(command.userId()).orElseThrow(UserNotFoundException::new);</span>
+<span class="fc" id="L181">        Job job = jobDataManager.findByIdAndUserId(command.jobId(), user.getId()).orElseThrow(JobNotFoundException::new);</span>
+
+<span class="fc" id="L183">        command = sanitizeCommandFields(command, List.of(&quot;title&quot;, &quot;company&quot;, &quot;description&quot;, &quot;profile&quot;, &quot;comment&quot;, &quot;salary&quot;));</span>
+
+<span class="fc" id="L185">        User updatedUser = user.updateJob(job, command.url(), command.title(), command.company(), command.description(), command.profile(), command.comment(), command.salary());</span>
+        // soft reload the updatedJob in the loaded collection
+<span class="pc" id="L187">        Job updatedJob = updatedUser.getJobById(job.getId()).orElseThrow(() -&gt; new DomainException(ErrorCode.UNEXPECTED_ERROR));</span>
+
+        // FIXME
+        // this is an ugly workaround to force the infra (persistence in particular) to save all data
+        // as I understand DDD, only the root aggregate should be explicitly persisted
+        // but I just don't how to do it cleanly for now
+<span class="fc" id="L193">        userDataManager.saveUserAndJob(updatedUser, updatedJob);</span>
+<span class="fc" id="L194">        return updatedJob;</span>
+    }
+
+    @Override
+    public Activity addActivityToJob(CreateActivityCommand command) {
+<span class="fc" id="L199">        Optional&lt;Job&gt; foundJob = jobDataManager.findByIdAndUserId(command.jobId(), command.userId());</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">        if(foundJob.isEmpty()) {</span>
+<span class="fc" id="L201">            throw new JobNotFoundException();</span>
+        }
+
+<span class="fc" id="L204">        Job job = foundJob.get();</span>
+<span class="fc" id="L205">        Activity activity = Activity.builder()</span>
+<span class="fc" id="L206">                .type(command.activityType())</span>
+<span class="fc" id="L207">                .comment(command.comment())</span>
+<span class="fc" id="L208">                .build();</span>
+
+<span class="fc" id="L210">        job = job.addActivity(activity);</span>
+
+        // FIXME
+        // this is an ugly workaround to force the infra (persistence in particular) to save all data
+        // as I understand DDD, only the aggregate should be explicitly persisted
+        // but I just don't how to do it cleanly for now
+<span class="fc" id="L216">        this.jobDataManager.saveJobAndActivity(job, activity);</span>
+<span class="fc" id="L217">        return activity;</span>
+    }
+
+    @Override
+    public Activity updateActivity(UpdateActivityCommand command) {
+<span class="fc" id="L222">        Job job = jobDataManager.findByIdAndUserId(command.jobId(), command.userId()).orElseThrow(JobNotFoundException::new);</span>
+
+<span class="fc" id="L224">        Activity activity = Activity.builder()</span>
+<span class="fc" id="L225">                .id(command.activityId())</span>
+<span class="fc" id="L226">                .type(command.activityType())</span>
+<span class="fc" id="L227">                .comment(command.comment())</span>
+<span class="fc" id="L228">                .build();</span>
+
+<span class="fc" id="L230">        job = job.updateActivity(activity);</span>
+
+        // FIXME
+        // this is an ugly workaround to force the infra (persistence in particular) to save all data
+        // as I understand DDD, only the aggregate should be explicitly persisted
+        // but I just don't how to do it cleanly for now
+<span class="fc" id="L236">        this.jobDataManager.saveJobAndActivity(job, activity);</span>
+<span class="fc" id="L237">        return activity;</span>
+    }
+
+    @Override
+    public Job getUserJob(UserId userId, JobId jobId) {
+<span class="fc" id="L242">        return jobDataManager.findByIdAndUserId(jobId, userId).orElseThrow(JobNotFoundException::new);</span>
+    }
+
+    /**
+     * FIXME : this should be improved to avoir reflection and ugly casts
+     * @param command the command to sanitize
+     * @param fieldsToSanitize the command fields to sanitize
+     * @return a new comment of the same class
+     * @param &lt;T&gt; the command class
+     */
+    private &lt;T&gt; T sanitizeCommandFields(T command, List&lt;String&gt; fieldsToSanitize) {
+<span class="fc" id="L253">        Class&lt;?&gt; clazz = command.getClass();</span>
+
+        Object builder;
+        try {
+            // get a builder
+<span class="fc" id="L258">            Class&lt;?&gt; builderClass = Class.forName(clazz.getName()+&quot;$Builder&quot;);</span>
+<span class="fc" id="L259">            builder = builderClass.getConstructor(clazz).newInstance(command);</span>
+
+<span class="fc bfc" id="L261" title="All 2 branches covered.">            for (String field : fieldsToSanitize) {</span>
+<span class="fc" id="L262">                Method getterMethod = clazz.getMethod(field);</span>
+<span class="fc" id="L263">                String fieldValue = (String) getterMethod.invoke(command);</span>
+
+<span class="fc bfc" id="L265" title="All 2 branches covered.">                if (fieldValue != null) {</span>
+<span class="fc" id="L266">                    String sanitizedValue = htmlSanitizer.sanitize(fieldValue);</span>
+<span class="fc" id="L267">                    Method setterMethod = builder.getClass().getMethod(field, String.class);</span>
+<span class="fc" id="L268">                    setterMethod.invoke(builder, sanitizedValue);</span>
+                }
+<span class="fc" id="L270">            }</span>
+<span class="fc" id="L271">            return (T) builder.getClass().getMethod(&quot;build&quot;).invoke(builder);</span>
+<span class="nc" id="L272">        } catch (Exception e) {</span>
+<span class="nc" id="L273">            e.printStackTrace();</span>
+        }
+<span class="nc" id="L275">        return command;</span>
+    }
+
+    @Override
+    public Attachment addAttachmentToJob(CreateAttachmentCommand command) {
+<span class="fc" id="L280">        Optional&lt;Job&gt; foundJob = jobDataManager.findByIdAndUserId(command.jobId(), command.userId());</span>
+<span class="pc bpc" id="L281" title="1 of 2 branches missed.">        if(foundJob.isEmpty()) {</span>
+<span class="nc" id="L282">            throw new JobNotFoundException();</span>
+        }
+
+<span class="fc" id="L285">        Job job = foundJob.get();</span>
+
+<span class="fc" id="L287">        AttachmentId attachmentId = AttachmentId.generate();</span>
+
+        // FIXME : it seems very un-DDD to handle activity creation here
+        // the Job aggregate should be the one to do it, although it would be too complicated for us for the time being
+
+<span class="fc" id="L292">        DownloadableFile file = fileStorage.store(command.file(), command.userId().value().toString()+&quot;/&quot;+attachmentId.value().toString(), command.filename());</span>
+<span class="fc" id="L293">        Attachment attachment = Attachment.builder()</span>
+<span class="fc" id="L294">                .id(attachmentId)</span>
+<span class="fc" id="L295">                .name(command.name())</span>
+<span class="fc" id="L296">                .fileId(file.fileId())</span>
+<span class="fc" id="L297">                .filename(command.filename())</span>
+<span class="fc" id="L298">                .contentType(file.contentType()).build();</span>
+<span class="fc" id="L299">        job = job.addAttachment(attachment);</span>
+
+<span class="fc" id="L301">        Activity activity = Activity.builder().type(ActivityType.ATTACHMENT_CREATION).comment(attachment.getName()).build();</span>
+<span class="fc" id="L302">        job = job.addActivity(activity);</span>
+
+        // FIXME
+        // this is an ugly workaround to force the infra (persistence in particular) to save all data
+        // as I understant DDD, only the aggregate should be explicitely persisted
+        // but I just don't how to do it cleanly for now
+<span class="fc" id="L308">        jobDataManager.saveJobAndAttachment(job, attachment, activity);</span>
+<span class="fc" id="L309">        return attachment;</span>
+    }
+
+
+    @Override
+    public DownloadableFile downloadAttachment(DownloadAttachmentCommand command) {
+<span class="fc" id="L315">        Job job = jobDataManager.findByIdAndUserId(command.jobId(), command.userId()).orElseThrow(JobNotFoundException::new);</span>
+
+<span class="fc" id="L317">        Attachment attachment = job.getAttachments().stream().filter(a -&gt; a.getId().value().toString().equals(command.id())).findAny().orElse(null);</span>
+<span class="fc bfc" id="L318" title="All 2 branches covered.">        if(attachment == null) {</span>
+<span class="fc" id="L319">            throw new AttachmentNotFoundException();</span>
+        }
+
+<span class="fc" id="L322">        return fileStorage.retrieve(attachment.getFileId(), attachment.getFilename());</span>
+    }
+
+    @Override
+    public AttachmentFileInfo getAttachmentFileInfo(DownloadAttachmentCommand command) {
+<span class="fc" id="L327">        Job job = jobDataManager.findByIdAndUserId(command.jobId(), command.userId()).orElseThrow(JobNotFoundException::new);</span>
+
+<span class="fc" id="L329">        Attachment attachment = job.getAttachments().stream().filter(a -&gt; a.getId().value().toString().equals(command.id())).findAny().orElse(null);</span>
+<span class="pc bpc" id="L330" title="1 of 2 branches missed.">        if(attachment == null) {</span>
+<span class="nc" id="L331">            throw new AttachmentNotFoundException();</span>
+        }
+
+<span class="fc" id="L334">        return new AttachmentFileInfo(attachment.getFileId(), fileStorage.generateProtectedUrl(job.getId(), attachment.getId(), attachment.getFileId()));</span>
+    }
+
+    @Override
+    public void deleteAttachment(DeleteAttachmentCommand command) {
+<span class="fc" id="L339">        Optional&lt;Job&gt; foundJob = jobDataManager.findByIdAndUserId(command.jobId(), command.userId());</span>
+<span class="fc bfc" id="L340" title="All 2 branches covered.">        if(foundJob.isEmpty()) {</span>
+<span class="fc" id="L341">            throw new JobNotFoundException();</span>
+        }
+
+<span class="fc" id="L344">        Attachment attachment = foundJob.get().getAttachments().stream().filter(a -&gt; a.getId().equals(command.id())).findAny().orElse(null);</span>
+<span class="fc bfc" id="L345" title="All 2 branches covered.">        if(attachment == null) {</span>
+<span class="fc" id="L346">            throw new AttachmentNotFoundException();</span>
+        }
+
+        // FIXME : the activity should be created by the Job aggregate
+        // however for now we do it here,
+        // to be able to explicitly ask the JobDataManager to delete the attachment and store both the job and the new activity
+<span class="fc" id="L352">        Job job = foundJob.get().removeAttachment(attachment);</span>
+<span class="fc" id="L353">        Activity activity = Activity.builder().type(ActivityType.ATTACHMENT_DELETION).comment(attachment.getName()).build();</span>
+<span class="fc" id="L354">        job = job.addActivity(activity);</span>
+
+        // FIXME
+        // this is an ugly workaround to force the infra (persistence in particular) to save all data
+        // as I understand DDD, only the root aggregate should be explicitly persisted
+        // but I just don't how to do it cleanly for now
+<span class="fc" id="L360">        jobDataManager.deleteAttachmentAndSaveJob(job, attachment, activity);</span>
+        try {
+<span class="fc" id="L362">            fileStorage.delete(attachment.getFileId());</span>
+        }
+<span class="nc" id="L364">        catch (Exception e) {</span>
+            // TODO do something
+<span class="fc" id="L366">        }</span>
+<span class="fc" id="L367">    }</span>
+
+    @Override
+    public Job updateJobStatus(UpdateJobStatusCommand command) {
+<span class="fc" id="L371">        Optional&lt;Job&gt; foundJob = jobDataManager.findByIdAndUserId(command.jobId(), command.userId());</span>
+<span class="pc bpc" id="L372" title="1 of 2 branches missed.">        if(foundJob.isEmpty()) {</span>
+<span class="nc" id="L373">            throw new JobNotFoundException();</span>
+        }
+
+<span class="fc" id="L376">        Job job = foundJob.get().updateStatus(command.status());</span>
+<span class="fc" id="L377">        jobDataManager.saveJobAndActivity(job, job.getActivities().getFirst());</span>
+<span class="fc" id="L378">        return job;</span>
+    }
+
+    @Override
+    public Job updateJobRating(UpdateJobRatingCommand command) {
+<span class="fc" id="L383">        Optional&lt;Job&gt; foundJob = jobDataManager.findByIdAndUserId(command.jobId(), command.userId());</span>
+<span class="pc bpc" id="L384" title="1 of 2 branches missed.">        if(foundJob.isEmpty()) {</span>
+<span class="nc" id="L385">            throw new JobNotFoundException();</span>
+        }
+
+<span class="fc" id="L388">        Job job = foundJob.get().updateRating(command.rating());</span>
+<span class="fc" id="L389">        jobDataManager.saveJobAndActivity(job, job.getActivities().getFirst());</span>
+<span class="fc" id="L390">        return job;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
