@@ -420,7 +420,7 @@ class JobUseCaseImplTest {
             when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
             when(jobDataManager.findByIdAndUserId(testJob.getId(), testUser.getId())).thenReturn(Optional.of(testJob));
             when(htmlSanitizer.sanitize(any(String.class))).thenAnswer(i -> i.getArgument(0));
-
+            when(transactionProvider.executeInTransaction(any(Supplier.class))).thenAnswer(i -> ((Supplier<?>)i.getArgument(0)).get());
             var command = new UpdateJobFieldCommand.Builder()
                     .jobId(testJob.getId())
                     .userId(UserId.generate())
@@ -441,6 +441,7 @@ class JobUseCaseImplTest {
             when(jobDataManager.findByIdAndUserId(testJob.getId(), testUser.getId())).thenReturn(Optional.of(testJob));
             when(htmlSanitizer.sanitize(any(String.class))).thenAnswer(i -> i.getArgument(0));
             when(userDataManager.saveUserAndJob(userArgumentCaptor.capture(), jobArgumentCaptor.capture())).thenAnswer(i -> i.getArgument(0));
+            when(transactionProvider.executeInTransaction(any(Supplier.class))).thenAnswer(i -> ((Supplier<?>)i.getArgument(0)).get());
 
             var command = new UpdateJobFieldCommand.Builder()
                     .jobId(testJob.getId())

@@ -18,7 +18,7 @@ public abstract class IntegrationEvent {
 
     protected IntegrationEvent(IntegrationEventId id, Instant occurredAt) {
         this.id = id;
-        this.occurredAt = Instant.now();
+        this.occurredAt = occurredAt;
     }
 
     protected IntegrationEvent(IntegrationEventId id) {

@@ -1,9 +1,11 @@
 package com.wilzwert.myjobs.infrastructure.staging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoIntegrationEvent;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoJob;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoRefreshToken;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoUser;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoIntegrationEventRepository;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoJobRepository;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoRefreshTokenRepository;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoUserRepository;
@@ -26,12 +28,14 @@ public class TestDataLoader {
     private final MongoUserRepository userRepository;
     private final MongoJobRepository jobRepository;
     private final MongoRefreshTokenRepository refreshTokenRepository;
+    private final MongoIntegrationEventRepository integrationEventRepository;
     private final ObjectMapper objectMapper;
 
-    public TestDataLoader(MongoUserRepository userRepository, MongoJobRepository jobRepository, MongoRefreshTokenRepository refreshTokenRepository, ObjectMapper objectMapper) {
+    public TestDataLoader(MongoUserRepository userRepository, MongoJobRepository jobRepository, MongoRefreshTokenRepository refreshTokenRepository, MongoIntegrationEventRepository integrationEventRepository, ObjectMapper objectMapper) {
         this.userRepository = userRepository;
         this.jobRepository = jobRepository;
         this.refreshTokenRepository = refreshTokenRepository;
+        this.integrationEventRepository = integrationEventRepository;
         this.objectMapper = objectMapper;
     }
 
@@ -53,10 +57,12 @@ public class TestDataLoader {
         userRepository.deleteAll();
         jobRepository.deleteAll();
         refreshTokenRepository.deleteAll();
+        integrationEventRepository.deleteAll();
 
         loadData("users.json", MongoUser.class, userRepository);
         loadData("jobs.json", MongoJob.class, jobRepository);
         loadData("refresh_token.json", MongoRefreshToken.class, refreshTokenRepository);
+        loadData("integration_events.json", MongoIntegrationEvent.class, integrationEventRepository);
     }
 
     @Bean

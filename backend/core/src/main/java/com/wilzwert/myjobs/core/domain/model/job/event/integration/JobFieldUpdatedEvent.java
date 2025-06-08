@@ -5,6 +5,8 @@ import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.command.UpdateJobFieldCommand;
 import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEvent;
 
+import java.time.Instant;
+
 /**
  * @author Wilhelm Zwertvaegher
  * Date:06/06/2025
@@ -19,6 +21,12 @@ public class JobFieldUpdatedEvent extends IntegrationEvent {
 
     public JobFieldUpdatedEvent(IntegrationEventId id, JobId jobId, UpdateJobFieldCommand.Field field) {
         super(id);
+        this.jobId = jobId;
+        this.field = field;
+    }
+
+    public JobFieldUpdatedEvent(IntegrationEventId id, Instant occurredAt, JobId jobId, UpdateJobFieldCommand.Field field) {
+        super(id, occurredAt);
         this.jobId = jobId;
         this.field = field;
     }

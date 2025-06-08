@@ -52,30 +52,4 @@ public class IntegrationEventDispatchBatchConfiguration {
                 .writer(integrationEventWriter)
                 .build();
     }
-    /*
-    @Bean
-    public Step integrationEventDispatchStepOLD(Tasklet integrationEventDispatchTasklet, JobRepository jobRepository, MongoTransactionManager transactionManager) {
-        return new StepBuilder("jobReminderStep", jobRepository)
-                .chunk(10, transactionManager)
-                .reader(integrationEventReader)
-                .processor(integrationEventProcessor)
-                .writer(integrationEventWriter)
-                .build();
-    }
-
-    @Bean
-    public Tasklet integrationEventDispatchTasklet(SendJobsRemindersBatchRunner runner) {
-        return (contribution, chunkContext) -> {
-            UsersJobsBatchExecutionResult result = runner.run();
-            // store result in context in case access is needed later
-            chunkContext.getStepContext()
-                    .getStepExecution()
-                    .getJobExecution()
-                    .getExecutionContext()
-                    .put("usersJobsBatchExecutionResult", result);
-            contribution.setExitStatus(ExitStatus.COMPLETED);
-            return RepeatStatus.FINISHED;
-        };
-    }*/
 }
-

@@ -16,9 +16,7 @@ import com.wilzwert.myjobs.core.domain.model.attachment.ports.driving.DownloadAt
 import com.wilzwert.myjobs.core.domain.model.attachment.ports.driving.GetAttachmentFileInfoUseCase;
 import com.wilzwert.myjobs.core.domain.model.job.*;
 import com.wilzwert.myjobs.core.domain.model.job.command.*;
-import com.wilzwert.myjobs.core.domain.model.job.event.integration.IntegrationEventId;
-import com.wilzwert.myjobs.core.domain.model.job.event.integration.JobCreatedEvent;
-import com.wilzwert.myjobs.core.domain.model.job.event.integration.JobStatusUpdatedEvent;
+import com.wilzwert.myjobs.core.domain.model.job.event.integration.*;
 import com.wilzwert.myjobs.core.domain.model.job.exception.JobNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobDataManager;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driving.*;
@@ -182,17 +180,22 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
     public Job updateJobField(UpdateJobFieldCommand command) {
         User user = userDataManager.findById(command.userId()).orElseThrow(UserNotFoundException::new);
         Job job = jobDataManager.findByIdAndUserId(command.jobId(), user.getId()).orElseThrow(JobNotFoundException::new);
-        command = sanitizeCommandFields(command, List.of("value"));
-        User updatedUser = user.updateJobField(job, command.field(), command.value());
-        // soft reload the updatedJob in the loaded collection
-        Job updatedJob = updatedUser.getJobById(job.getId()).orElseThrow(() -> new DomainException(ErrorCode.UNEXPECTED_ERROR));
+        UpdateJobFieldCommand actualCommand = sanitizeCommandFields(command, List.of("value"));
 
-        // FIXME
-        // this is an ugly workaround to force the infra (persistence in particular) to save all data
-        // as I understand DDD, only the root aggregate should be explicitly persisted
-        // but I just don't how to do it cleanly for now
-        userDataManager.saveUserAndJob(updatedUser, updatedJob);
-        return updatedJob;
+        return transactionProvider.executeInTransaction(() -> {
+            User updatedUser = user.updateJobField(job, actualCommand.field(), actualCommand.value());
+            // soft reload the updatedJob in the loaded collection
+            Job updatedJob = updatedUser.getJobById(job.getId()).orElseThrow(() -> new DomainException(ErrorCode.UNEXPECTED_ERROR));
+
+            // FIXME
+            // this is an ugly workaround to force the infra (persistence in particular) to save all data
+            // as I understand DDD, only the root aggregate should be explicitly persisted
+            // but I just don't how to do it cleanly for now
+            userDataManager.saveUserAndJob(updatedUser, updatedJob);
+
+            integrationEventPublisher.publish(new JobFieldUpdatedEvent(IntegrationEventId.generate(), job.getId(), actualCommand.field()));
+            return updatedJob;
+        });
     }
 
     @Override
@@ -408,8 +411,11 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
             throw new JobNotFoundException();
         }
 
-        Job job = foundJob.get().updateRating(command.rating());
-        jobDataManager.saveJobAndActivity(job, job.getActivities().getFirst());
-        return job;
+        return transactionProvider.executeInTransaction(() -> {
+            Job job = foundJob.get().updateRating(command.rating());
+            jobDataManager.saveJobAndActivity(job, job.getActivities().getFirst());
+            integrationEventPublisher.publish(new JobRatingUpdatedEvent(IntegrationEventId.generate(), job.getId(), job.getRating()));
+            return job;
+        });
     }
 }

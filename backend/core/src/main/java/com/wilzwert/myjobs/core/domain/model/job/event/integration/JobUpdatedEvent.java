@@ -4,6 +4,8 @@ package com.wilzwert.myjobs.core.domain.model.job.event.integration;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEvent;
 
+import java.time.Instant;
+
 /**
  * @author Wilhelm Zwertvaegher
  * Date:06/06/2025
@@ -15,6 +17,11 @@ public class JobUpdatedEvent extends IntegrationEvent {
 
     public JobUpdatedEvent(IntegrationEventId id, JobId jobId) {
         super(id);
+        this.jobId = jobId;
+    }
+
+    public JobUpdatedEvent(IntegrationEventId id, Instant occurredAt, JobId jobId) {
+        super(id, occurredAt);
         this.jobId = jobId;
     }
 

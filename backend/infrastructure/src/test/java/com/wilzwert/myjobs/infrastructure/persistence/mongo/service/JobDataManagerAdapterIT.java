@@ -57,9 +57,9 @@ public class JobDataManagerAdapterIT extends AbstractBaseIntegrationTest {
 
         underTest.findById(jobId)
         .ifPresentOrElse((job) -> {
-            assertEquals(jobId, result.getId());
-            assertEquals("title", result.getTitle());
-            assertEquals("https://www.example.com", result.getUrl());
+            assertEquals(jobId, job.getId());
+            assertEquals("title", job.getTitle());
+            assertEquals("https://www.example.com", job.getUrl());
         },
         () -> fail("Job should be retrievable after saving"));
     }

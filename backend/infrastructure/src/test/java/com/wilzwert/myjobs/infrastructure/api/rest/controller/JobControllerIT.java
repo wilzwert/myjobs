@@ -373,10 +373,10 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             // let's check an event has been created
             // Assert
             List<MongoIntegrationEvent> events = integrationEventRepository.findByType("JobCreatedEvent");
-            assertThat(events).hasSize(1);
+            List<MongoIntegrationEvent> filteredEvents = events.stream().filter(e -> e.getPayload().contains(jobResponse.getId().toString())).toList();
+            assertThat(filteredEvents).hasSize(1);
 
-            MongoIntegrationEvent event = events.getFirst();
-            System.out.println(event);
+            MongoIntegrationEvent event = filteredEvents.getFirst();
             assertThat(event.getStatus()).isEqualTo(EventStatus.PENDING);
             assertThat(event.getPayload()).contains(createdJob.getId().toString());
         }

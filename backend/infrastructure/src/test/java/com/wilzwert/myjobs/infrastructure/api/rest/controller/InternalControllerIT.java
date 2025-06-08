@@ -4,6 +4,7 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.UsersJobsBatchExecutionResultResponse;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
+import com.wilzwert.myjobs.infrastructure.event.IntegrationEventDataManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -30,6 +31,9 @@ public class InternalControllerIT extends AbstractBaseIntegrationTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private IntegrationEventDataManager integrationEventDataManager;
 
     private static final String JOBS_REMINDERS_BATCH_URL = "/internal/jobs-reminders-batch";
     private static final String INTEGRATION_EVENTS_DISPATCH_BATCH_URL = "/internal/integration-events-batch";
@@ -73,5 +77,8 @@ public class InternalControllerIT extends AbstractBaseIntegrationTest {
     void shouldRunIntegrationEventsDispatch() throws Exception {
         mockMvc.perform(post(INTEGRATION_EVENTS_DISPATCH_BATCH_URL).header("X-Internal-Secret", "secret"))
                 .andExpect(status().isOk());
+
+        // check that there are no remaining pending events
+        assertThat(integrationEventDataManager.findPending()).size().isEqualTo(0);
     }
 }
