@@ -15,30 +15,31 @@ import java.util.Map;
 @Slf4j
 public class KafkaIntegrationEventProcessor implements IntegrationEventProcessor {
 
-    private static final String JOBS_TOPIC = "myjobs-jobs";
-
-    private final static Map<Class<? extends IntegrationEvent>, String> TYPES_TOPICS = Map.of(
-            JobCreatedEvent.class, JOBS_TOPIC,
-            JobUpdatedEvent.class, JOBS_TOPIC,
-            JobStatusUpdatedEvent.class, JOBS_TOPIC,
-            JobRatingUpdatedEvent.class, JOBS_TOPIC,
-            JobFieldUpdatedEvent.class, JOBS_TOPIC
-    );
+    private final Map<Class<? extends IntegrationEvent>, String> typesTopics;
 
     private final KafkaTemplate<String, KafkaIntegrationEvent> kafkaTemplate;
 
     private final ObjectMapper objectMapper;
 
-    KafkaIntegrationEventProcessor(KafkaTemplate<String, KafkaIntegrationEvent> kafkaTemplate, ObjectMapper objectMapper) {
+    KafkaIntegrationEventProcessor(KafkaTemplate<String, KafkaIntegrationEvent> kafkaTemplate, KafkaProperties kafkaProperties, ObjectMapper objectMapper) {
         this.kafkaTemplate = kafkaTemplate;
         this.objectMapper = objectMapper;
+
+        String jobsTopic = kafkaProperties.getTopicPrefix()+"jobs";
+        typesTopics = Map.of(
+                JobCreatedEvent.class, jobsTopic,
+                JobUpdatedEvent.class, jobsTopic,
+                JobStatusUpdatedEvent.class, jobsTopic,
+                JobRatingUpdatedEvent.class, jobsTopic,
+                JobFieldUpdatedEvent.class, jobsTopic
+        );
     }
 
     @Override
     public IntegrationEvent process(@NonNull IntegrationEvent event) throws Exception {
         log.info("Sending event {}", event.getId().value().toString());
         KafkaIntegrationEvent kafkaEvent = new KafkaIntegrationEvent(event.getClass().getSimpleName(), objectMapper.writeValueAsString(event));
-        kafkaTemplate.send(TYPES_TOPICS.get(event.getClass()), event.getId().value().toString(), kafkaEvent).get();
+        kafkaTemplate.send(typesTopics.get(event.getClass()), event.getId().value().toString(), kafkaEvent).get();
         return event;
     }
 }

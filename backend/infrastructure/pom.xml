@@ -151,6 +151,7 @@
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
+            <version>4.0.0-M2</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy-agent -->
@@ -310,7 +311,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.2</version>
                 <configuration>
-                    <argLine>@{argLine} -javaagent:${net.bytebuddy:byte-buddy-agent:jar}</argLine>
+                    <argLine>@{argLine} -javaagent:${net.bytebuddy:byte-buddy-agent:jar} -Djava.security.manager=allow</argLine>
                     <systemPropertyVariables>
                         <spring.profiles.active>test</spring.profiles.active>
                     </systemPropertyVariables>
@@ -326,7 +327,7 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>3.2.5</version>
                 <configuration>
-                    <argLine>@{argLine} -javaagent:${net.bytebuddy:byte-buddy-agent:jar}</argLine>
+                    <argLine>@{argLine} -javaagent:${net.bytebuddy:byte-buddy-agent:jar} -Djava.security.manager=allow</argLine>
                     <systemPropertyVariables>
                         <spring.profiles.active>integration</spring.profiles.active>
                     </systemPropertyVariables>

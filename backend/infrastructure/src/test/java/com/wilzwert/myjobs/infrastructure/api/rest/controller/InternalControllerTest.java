@@ -60,8 +60,7 @@ class InternalControllerTest {
 
         var resultResponse = underTest.runJobsReminders();
 
-        assertThat(resultResponse).isNotNull();
-        assertThat(resultResponse).isSameAs(response);
+        assertThat(resultResponse).isNotNull().isSameAs(response);
         verify(jobLauncher).run(eq(remindersJob), any(JobParameters.class));
         verify(mapper).toResponse(batchExecutionResult);
     }

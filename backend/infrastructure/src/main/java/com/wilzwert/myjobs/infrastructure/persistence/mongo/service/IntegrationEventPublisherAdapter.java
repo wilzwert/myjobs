@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -29,7 +28,7 @@ public class IntegrationEventPublisherAdapter implements IntegrationEventPublish
     // map used to retrieve actual event classes based on the simple name string stored in mongodb
     // this could (should) be improved by providing some kind of factory and externalizing the map generation to a bean
     // (maybe with componentscan ?)
-    private final static Map<String, Class<? extends IntegrationEvent>> EVENT_TYPE_MAP = Map.of(
+    private static final Map<String, Class<? extends IntegrationEvent>> EVENT_TYPE_MAP = Map.of(
             JobCreatedEvent.class.getSimpleName(), JobCreatedEvent.class,
             JobUpdatedEvent.class.getSimpleName(), JobUpdatedEvent.class,
             JobStatusUpdatedEvent.class.getSimpleName(), JobStatusUpdatedEvent.class,
@@ -89,8 +88,7 @@ public class IntegrationEventPublisherAdapter implements IntegrationEventPublish
         // when an IntegrationEvent is passed to this publisher for handling,
         // we set  the MongoIntegrationEvent.type with event.getClass().getSimpleName()
         // so we just have a EVENT_TYPE_MAP Map to match this name to the actual class
-        return eventRepository.findByStatus(EventStatus.PENDING).stream().map(this::readFromPayload)
-                    .collect(Collectors.toList());
+        return eventRepository.findByStatus(EventStatus.PENDING).stream().map(this::readFromPayload).toList();
     }
 
     @Override
@@ -98,9 +96,9 @@ public class IntegrationEventPublisherAdapter implements IntegrationEventPublish
         log.info("Marking {} events as {}", events.size(), status);
         eventRepository.saveAll(
                 eventRepository.findAllById(
-                    events.stream().map(e -> e.getId().value()).collect(Collectors.toList())
+                    events.stream().map(e -> e.getId().value()).toList()
                 )
-                .stream().peek(e -> e.setStatus(status))
+                .stream().map(e -> {e.setStatus(status); return e;})
                 .toList()
         );
         return events;

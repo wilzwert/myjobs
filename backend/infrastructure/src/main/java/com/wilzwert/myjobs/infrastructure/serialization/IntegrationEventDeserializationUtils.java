@@ -8,6 +8,8 @@ import java.util.UUID;
 
 public class IntegrationEventDeserializationUtils {
 
+    private IntegrationEventDeserializationUtils() {}
+
     public static IntegrationEventId extractId(JsonNode node) {
         JsonNode idNode = node.get("id");
         return new IntegrationEventId(UUID.fromString(idNode.get("value").asText()));

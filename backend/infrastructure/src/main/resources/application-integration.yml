@@ -1,3 +1,15 @@
+spring:
+  kafka:
+    bootstrap-servers: ${INTEGRATION_KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
+    properties:
+      security.protocol: ${INTEGRATION_KAFKA_SECURITY_PROTOCOL:PLAINTEXT}
+      ssl.endpoint.identification.algorithm: ${INTEGRATION_KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM:""}
+      sasl.mechanism: ${INTEGRATION_KAFKA_SASL_MECHANISM:}
+      sasl.jaas.config: >
+        ${INTEGRATION_KAFKA_SASL_JAAS_CONFIG:}
+
 google:
   recaptcha:
     always-valid: true
+
+application.kafka.topic-prefix: myjobs-integration-

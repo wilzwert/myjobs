@@ -9,15 +9,12 @@ import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationT
 import com.wilzwert.myjobs.infrastructure.configuration.SyncTestExecutorConfiguration;
 import com.wilzwert.myjobs.infrastructure.utility.EmailUtility;
 import jakarta.mail.internet.MimeMessage;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,9 +29,6 @@ import static org.mockito.Mockito.*;
  * @see SyncTestExecutorConfiguration
  *
  */
-@SpringBootTest
-@ActiveProfiles("integration")
-@Tag("Integration")
 @Import(SyncTestExecutorConfiguration.class)
 public class AccountCreationMessageProviderAdapterIT extends AbstractBaseIntegrationTest {
     @MockitoSpyBean

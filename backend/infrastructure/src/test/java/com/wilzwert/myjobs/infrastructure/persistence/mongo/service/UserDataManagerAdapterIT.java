@@ -11,9 +11,7 @@ import com.wilzwert.myjobs.core.domain.shared.exception.IncompleteAggregateExcep
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -28,8 +26,6 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * @author Wilhelm Zwertvaegher
  */
-@SpringBootTest
-@EnabledIfSystemProperty(named = "spring.profiles.active", matches = "integration")
 public class UserDataManagerAdapterIT extends AbstractBaseIntegrationTest {
 
     @Autowired

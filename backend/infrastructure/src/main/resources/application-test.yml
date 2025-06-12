@@ -5,3 +5,5 @@ logging:
         security: WARN
         data:
           mongodb: WARN
+
+application.kafka.topic.prefix: myjobs-test
