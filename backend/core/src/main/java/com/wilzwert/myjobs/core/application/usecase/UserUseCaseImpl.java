@@ -7,6 +7,7 @@ import com.wilzwert.myjobs.core.domain.model.user.UserView;
 import com.wilzwert.myjobs.core.domain.model.user.collector.UserSummaryCollector;
 import com.wilzwert.myjobs.core.domain.model.user.command.UpdateUserCommand;
 import com.wilzwert.myjobs.core.domain.model.user.command.UpdateUserLangCommand;
+import com.wilzwert.myjobs.core.domain.model.user.event.integration.UserUpdatedEvent;
 import com.wilzwert.myjobs.core.domain.model.user.exception.UserAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.model.user.exception.UserNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.user.User;
@@ -14,6 +15,9 @@ import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.EmailVerificationMessageProvider;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.*;
+import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEventId;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.event.IntegrationEventPublisher;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.transaction.TransactionProvider;
 
 import java.util.List;
 
@@ -23,11 +27,21 @@ import java.util.List;
 
 public class UserUseCaseImpl implements SendVerificationEmailUseCase, GetUserViewUseCase, UpdateUserUseCase, UpdateUserLangUseCase, GetUserSummaryUseCase {
 
+    private final TransactionProvider transactionProvider;
+
+    private final IntegrationEventPublisher integrationEventPublisher;
+
     private final UserDataManager userDataManager;
 
     private final EmailVerificationMessageProvider emailVerificationMessageProvider;
 
-    public UserUseCaseImpl(UserDataManager userDataManager, EmailVerificationMessageProvider emailVerificationMessageProvider) {
+    public UserUseCaseImpl(
+            TransactionProvider transactionProvider,
+            IntegrationEventPublisher integrationEventPublisher,
+            UserDataManager userDataManager,
+            EmailVerificationMessageProvider emailVerificationMessageProvider) {
+        this.transactionProvider = transactionProvider;
+        this.integrationEventPublisher = integrationEventPublisher;
         this.userDataManager = userDataManager;
         this.emailVerificationMessageProvider = emailVerificationMessageProvider;
     }
@@ -58,12 +72,17 @@ public class UserUseCaseImpl implements SendVerificationEmailUseCase, GetUserVie
 
         boolean shouldResendVerificationEmail = !user.getEmail().equals(command.email());
 
-        user = userDataManager.save(user.update(command.email(), command.username(), command.firstName(), command.lastName(), command.jobFollowUpReminderDays()));
+        return transactionProvider.executeInTransaction(() -> {
+            User updatedUser = user.update(command.email(), command.username(), command.firstName(), command.lastName(), command.jobFollowUpReminderDays());
+            updatedUser = userDataManager.save(updatedUser);
 
-        if(shouldResendVerificationEmail) {
-            emailVerificationMessageProvider.send(user);
-        }
-        return user;
+            if (shouldResendVerificationEmail) {
+                emailVerificationMessageProvider.send(updatedUser);
+            }
+
+            integrationEventPublisher.publish(new UserUpdatedEvent(IntegrationEventId.generate(), updatedUser.getId()));
+            return updatedUser;
+        });
     }
 
     @Override
@@ -72,7 +91,12 @@ public class UserUseCaseImpl implements SendVerificationEmailUseCase, GetUserVie
         if(user.getLang().equals(command.lang())) {
             return user;
         }
-        return userDataManager.save(user.updateLang(command.lang()));
+
+        return transactionProvider.executeInTransaction(() -> {
+            User updatedUser = userDataManager.save(user.updateLang(command.lang()));
+            integrationEventPublisher.publish(new UserUpdatedEvent(IntegrationEventId.generate(), updatedUser.getId()));
+            return updatedUser;
+        });
     }
 
     @Override

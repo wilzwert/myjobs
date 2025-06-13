@@ -33,8 +33,8 @@ import org.springframework.context.annotation.Configuration;
 public class BeanConfiguration {
 
     @Bean
-    RegisterUseCase registerUseCase(UserDataManager userDataManager, PasswordHasher passwordHasher, AccountCreationMessageProvider messageProvider) {
-        return new RegisterUseCaseImpl(userDataManager, passwordHasher, messageProvider);
+    RegisterUseCase registerUseCase(TransactionProvider transactionProvider, IntegrationEventPublisher integrationEventPublisher,UserDataManager userDataManager, PasswordHasher passwordHasher, AccountCreationMessageProvider messageProvider) {
+        return new RegisterUseCaseImpl(transactionProvider, integrationEventPublisher, userDataManager, passwordHasher, messageProvider);
     }
 
     @Bean
@@ -43,8 +43,8 @@ public class BeanConfiguration {
     }
 
     @Bean
-    DeleteAccountUseCase deleteAccountUseCase(UserDataManager userDataManager, FileStorage fileStorage) {
-        return new DeleteAccountUseCaseImpl(userDataManager, fileStorage);
+    DeleteAccountUseCase deleteAccountUseCase(TransactionProvider transactionProvider, IntegrationEventPublisher integrationEventPublisher, UserDataManager userDataManager, FileStorage fileStorage) {
+        return new DeleteAccountUseCaseImpl(transactionProvider, integrationEventPublisher, userDataManager, fileStorage);
     }
 
     @Bean
@@ -58,8 +58,8 @@ public class BeanConfiguration {
     }
 
     @Bean
-    UserUseCaseImpl userUseCase(UserDataManager userDataManager, EmailVerificationMessageProvider emailVerificationMessageProvider) {
-        return new UserUseCaseImpl(userDataManager, emailVerificationMessageProvider);
+    UserUseCaseImpl userUseCase(TransactionProvider transactionProvider, IntegrationEventPublisher integrationEventPublisher, UserDataManager userDataManager, EmailVerificationMessageProvider emailVerificationMessageProvider) {
+        return new UserUseCaseImpl(transactionProvider, integrationEventPublisher, userDataManager, emailVerificationMessageProvider);
     }
 
     @Bean
