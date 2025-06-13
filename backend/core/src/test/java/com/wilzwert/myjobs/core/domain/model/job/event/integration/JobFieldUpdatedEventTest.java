@@ -3,6 +3,7 @@ package com.wilzwert.myjobs.core.domain.model.job.event.integration;
 
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.command.UpdateJobFieldCommand;
+import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEventId;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;

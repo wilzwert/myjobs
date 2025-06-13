@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.event.kafka;
 
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
-import com.wilzwert.myjobs.core.domain.model.job.event.integration.IntegrationEventId;
+import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEventId;
 import com.wilzwert.myjobs.core.domain.model.job.event.integration.JobUpdatedEvent;
 import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEvent;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

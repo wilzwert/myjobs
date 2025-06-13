@@ -4,6 +4,7 @@ package com.wilzwert.myjobs.core.domain.model.job.event.integration;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEvent;
+import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEventId;
 
 import java.time.Instant;
 

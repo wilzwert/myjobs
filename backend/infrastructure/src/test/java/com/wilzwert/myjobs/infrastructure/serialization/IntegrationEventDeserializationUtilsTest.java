@@ -2,7 +2,7 @@ package com.wilzwert.myjobs.infrastructure.serialization;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wilzwert.myjobs.core.domain.model.job.event.integration.IntegrationEventId;
+import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEventId;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;

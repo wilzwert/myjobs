@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.serialization;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.wilzwert.myjobs.core.domain.model.job.event.integration.IntegrationEventId;
+import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEventId;
 
 import java.time.Instant;
 import java.util.UUID;

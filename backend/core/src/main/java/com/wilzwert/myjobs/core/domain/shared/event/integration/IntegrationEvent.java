@@ -1,8 +1,6 @@
 package com.wilzwert.myjobs.core.domain.shared.event.integration;
 
 
-import com.wilzwert.myjobs.core.domain.model.job.event.integration.IntegrationEventId;
-
 import java.time.Instant;
 
 /**

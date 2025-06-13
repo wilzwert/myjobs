@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wilzwert.myjobs.core.domain.model.job.event.integration.*;
 import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEvent;
+import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEventId;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.event.IntegrationEventPublisher;
 import com.wilzwert.myjobs.infrastructure.event.IntegrationEventDataManager;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.EventStatus;

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.command.UpdateJobFieldCommand;
-import com.wilzwert.myjobs.core.domain.model.job.event.integration.IntegrationEventId;
+import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEventId;
 import com.wilzwert.myjobs.core.domain.model.job.event.integration.JobFieldUpdatedEvent;
 
 import java.io.IOException;

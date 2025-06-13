@@ -6,12 +6,16 @@ import com.wilzwert.myjobs.core.domain.model.activity.ActivityId;
 import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
 import com.wilzwert.myjobs.core.domain.model.activity.command.CreateActivityCommand;
 import com.wilzwert.myjobs.core.domain.model.activity.command.UpdateActivityCommand;
+import com.wilzwert.myjobs.core.domain.model.activity.event.integration.ActivityAutomaticallyCreatedEvent;
+import com.wilzwert.myjobs.core.domain.model.activity.event.integration.ActivityCreatedEvent;
 import com.wilzwert.myjobs.core.domain.model.activity.exception.ActivityNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.attachment.AttachmentId;
 import com.wilzwert.myjobs.core.domain.model.attachment.command.CreateAttachmentCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.command.DeleteAttachmentCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.command.DownloadAttachmentCommand;
+import com.wilzwert.myjobs.core.domain.model.attachment.event.integration.AttachmentCreatedEvent;
+import com.wilzwert.myjobs.core.domain.model.attachment.event.integration.AttachmentDeletedEvent;
 import com.wilzwert.myjobs.core.domain.model.attachment.exception.AttachmentFileNotReadableException;
 import com.wilzwert.myjobs.core.domain.model.attachment.exception.AttachmentNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.job.*;
@@ -19,6 +23,10 @@ import com.wilzwert.myjobs.core.domain.model.job.command.CreateJobCommand;
 import com.wilzwert.myjobs.core.domain.model.job.command.DeleteJobCommand;
 import com.wilzwert.myjobs.core.domain.model.job.command.UpdateJobFullCommand;
 import com.wilzwert.myjobs.core.domain.model.job.command.UpdateJobFieldCommand;
+import com.wilzwert.myjobs.core.domain.model.job.event.integration.JobCreatedEvent;
+import com.wilzwert.myjobs.core.domain.model.job.event.integration.JobDeletedEvent;
+import com.wilzwert.myjobs.core.domain.model.job.event.integration.JobFieldUpdatedEvent;
+import com.wilzwert.myjobs.core.domain.model.job.event.integration.JobUpdatedEvent;
 import com.wilzwert.myjobs.core.domain.model.job.exception.JobAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.model.job.exception.JobNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.user.exception.UserNotFoundException;
@@ -242,7 +250,7 @@ class JobUseCaseImplTest {
 
             assertThrows(JobAlreadyExistsException.class, () -> underTest.createJob(command));
             verify(userDataManager).findById(any(UserId.class));
-            // sanitizer should have been called rot title, company, description
+            // sanitizer should have been called for title, company, description
             verify(htmlSanitizer, times(3)).sanitize(any(String.class));
         }
 
@@ -250,6 +258,7 @@ class JobUseCaseImplTest {
         void shouldCreateJob() {
             ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
             ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
+            ArgumentCaptor<JobCreatedEvent> jobCreatedEventArgumentCaptor = ArgumentCaptor.forClass(JobCreatedEvent.class);
             reset(userDataManager);
             when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
             when(transactionProvider.executeInTransaction(any(Supplier.class))).thenAnswer(i -> ((Supplier<?>)i.getArgument(0)).get());
@@ -259,6 +268,7 @@ class JobUseCaseImplTest {
             // we cannot just check that the current testUSer had been updated, as the domain always makes copies of entities
             // to ensure their immutability
             when(userDataManager.saveUserAndJob(userArgumentCaptor.capture(), jobArgumentCaptor.capture())).thenAnswer(i -> i.getArgument(0));
+            when(integrationEventPublisher.publish(jobCreatedEventArgumentCaptor.capture())).thenAnswer(i -> i.getArgument(0));
 
             var command = new CreateJobCommand.Builder()
                     .userId(testUser.getId())
@@ -275,6 +285,7 @@ class JobUseCaseImplTest {
             verify(userDataManager).saveUserAndJob(userArgumentCaptor.capture(), jobArgumentCaptor.capture());
             // sanitizer should have been called rot title, company, description
             verify(htmlSanitizer, times(5)).sanitize(any(String.class));
+            verify(integrationEventPublisher).publish(jobCreatedEventArgumentCaptor.capture());
 
             User user = userArgumentCaptor.getValue();
             assertNotNull(user);
@@ -288,6 +299,10 @@ class JobUseCaseImplTest {
             assertEquals("New job comment", job.getComment());
             assertEquals("https://www.example.com/new-job", job.getUrl());
             assertEquals("Company 3", job.getCompany());
+
+            JobCreatedEvent jobCreatedEvent = jobCreatedEventArgumentCaptor.getValue();
+            assertNotNull(jobCreatedEvent);
+            assertEquals(job.getId(), jobCreatedEvent.getJobId());
         }
     }
 
@@ -326,7 +341,7 @@ class JobUseCaseImplTest {
             when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
             when(jobDataManager.findByIdAndUserId(testJob.getId(), testUser.getId())).thenReturn(Optional.of(testJob));
             when(htmlSanitizer.sanitize(any(String.class))).thenAnswer(i -> i.getArgument(0));
-
+            when(transactionProvider.executeInTransaction(any(Supplier.class))).thenAnswer(i -> ((Supplier<?>)i.getArgument(0)).get());
 
             var command = new UpdateJobFullCommand.Builder()
                     .jobId(testJob.getId())
@@ -342,12 +357,15 @@ class JobUseCaseImplTest {
         void shouldUpdateJob() {
             ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
             ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
+            ArgumentCaptor<JobUpdatedEvent> jobUpdatedEventArgumentCaptor = ArgumentCaptor.forClass(JobUpdatedEvent.class);
 
             reset(userDataManager);
             when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
             when(jobDataManager.findByIdAndUserId(testJob.getId(), testUser.getId())).thenReturn(Optional.of(testJob));
             when(htmlSanitizer.sanitize(any(String.class))).thenAnswer(i -> i.getArgument(0));
+            when(transactionProvider.executeInTransaction(any(Supplier.class))).thenAnswer(i -> ((Supplier<?>)i.getArgument(0)).get());
             when(userDataManager.saveUserAndJob(userArgumentCaptor.capture(), jobArgumentCaptor.capture())).thenAnswer(i -> i.getArgument(0));
+            when(integrationEventPublisher.publish(jobUpdatedEventArgumentCaptor.capture())).thenAnswer(i -> i.getArgument(0));
 
             var command = new UpdateJobFullCommand.Builder()
                     .jobId(testJob.getId())
@@ -364,6 +382,7 @@ class JobUseCaseImplTest {
             var updatedJob = assertDoesNotThrow(() -> underTest.updateJob(command));
             verify(jobDataManager).findByIdAndUserId(testJob.getId(), testUser.getId());
             verify(userDataManager).saveUserAndJob(userArgumentCaptor.capture(), jobArgumentCaptor.capture());
+            verify(integrationEventPublisher).publish(jobUpdatedEventArgumentCaptor.capture());
 
             User user = userArgumentCaptor.getValue();
             assertNotNull(user);
@@ -380,6 +399,10 @@ class JobUseCaseImplTest {
             assertEquals("Updated job comment", updatedJob.getComment());
             assertEquals("Updated job salary", updatedJob.getSalary());
             assertTrue(updatedJob.getUpdatedAt().getEpochSecond() - Instant.now().getEpochSecond() < 1);
+
+            JobUpdatedEvent jobUpdatedEvent = jobUpdatedEventArgumentCaptor.getValue();
+            assertNotNull(jobUpdatedEvent);
+            assertEquals(job.getId(), jobUpdatedEvent.getJobId());
         }
     }
 
@@ -435,13 +458,15 @@ class JobUseCaseImplTest {
         void shouldUpdateJobField() {
             ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
             ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
+            ArgumentCaptor<JobFieldUpdatedEvent> jobFieldUpdatedEventArgumentCaptor = ArgumentCaptor.forClass(JobFieldUpdatedEvent.class);
 
             reset(userDataManager);
             when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
             when(jobDataManager.findByIdAndUserId(testJob.getId(), testUser.getId())).thenReturn(Optional.of(testJob));
             when(htmlSanitizer.sanitize(any(String.class))).thenAnswer(i -> i.getArgument(0));
-            when(userDataManager.saveUserAndJob(userArgumentCaptor.capture(), jobArgumentCaptor.capture())).thenAnswer(i -> i.getArgument(0));
             when(transactionProvider.executeInTransaction(any(Supplier.class))).thenAnswer(i -> ((Supplier<?>)i.getArgument(0)).get());
+            when(userDataManager.saveUserAndJob(userArgumentCaptor.capture(), jobArgumentCaptor.capture())).thenAnswer(i -> i.getArgument(0));
+            when(integrationEventPublisher.publish(jobFieldUpdatedEventArgumentCaptor.capture())).thenAnswer(i -> i.getArgument(0));
 
             var command = new UpdateJobFieldCommand.Builder()
                     .jobId(testJob.getId())
@@ -453,6 +478,7 @@ class JobUseCaseImplTest {
             var updatedJob = assertDoesNotThrow(() -> underTest.updateJobField(command));
             verify(jobDataManager).findByIdAndUserId(testJob.getId(), testUser.getId());
             verify(userDataManager).saveUserAndJob(userArgumentCaptor.capture(), jobArgumentCaptor.capture());
+            verify(integrationEventPublisher).publish(jobFieldUpdatedEventArgumentCaptor.capture());
 
             User user = userArgumentCaptor.getValue();
             assertNotNull(user);
@@ -469,6 +495,10 @@ class JobUseCaseImplTest {
             assertEquals(testJob.getComment(), updatedJob.getComment());
             assertEquals(testJob.getSalary(), updatedJob.getSalary());
             assertTrue(updatedJob.getUpdatedAt().getEpochSecond() - Instant.now().getEpochSecond() < 1);
+
+            JobFieldUpdatedEvent jobFieldUpdatedEvent = jobFieldUpdatedEventArgumentCaptor.getValue();
+            assertNotNull(jobFieldUpdatedEvent);
+            assertEquals(job.getId(), jobFieldUpdatedEvent.getJobId());
         }
     }
 
@@ -503,19 +533,24 @@ class JobUseCaseImplTest {
         void shouldDeleteJob() {
             ArgumentCaptor<Job> jobArgumentCaptor = ArgumentCaptor.forClass(Job.class);
             ArgumentCaptor<User> userArgumentCaptor = ArgumentCaptor.forClass(User.class);
+            ArgumentCaptor<JobDeletedEvent> jobDeletedEventArgumentCaptor = ArgumentCaptor.forClass(JobDeletedEvent.class);
 
             reset(userDataManager);
             when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
             when(jobDataManager.findByIdAndUserId(testJob.getId(), testUser.getId())).thenReturn(Optional.of(testJob));
+            when(transactionProvider.executeInTransaction(any(Supplier.class))).thenAnswer(i -> ((Supplier<?>)i.getArgument(0)).get());
             when(userDataManager.deleteJobAndSaveUser(userArgumentCaptor.capture(), jobArgumentCaptor.capture())).thenAnswer(i -> i.getArgument(0));
             doNothing().when(fileStorage).delete("fileId");
+            when(integrationEventPublisher.publish(jobDeletedEventArgumentCaptor.capture())).thenAnswer(i -> i.getArgument(0));
 
             var command = new DeleteJobCommand(testJob.getId(), testUser.getId());
 
             assertDoesNotThrow(() -> underTest.deleteJob(command));
             verify(jobDataManager).findByIdAndUserId(testJob.getId(), testUser.getId());
+            verify(transactionProvider).executeInTransaction(any(Supplier.class));
             verify(fileStorage).delete("fileId");
             verify(userDataManager).deleteJobAndSaveUser(userArgumentCaptor.capture(), jobArgumentCaptor.capture());
+            verify(integrationEventPublisher).publish(jobDeletedEventArgumentCaptor.capture());
 
             User user = userArgumentCaptor.getValue();
             assertNotNull(user);
@@ -524,6 +559,10 @@ class JobUseCaseImplTest {
             Job job = jobArgumentCaptor.getValue();
             assertNotNull(job);
             assertEquals(testJob.getId(), job.getId());
+
+            JobDeletedEvent jobDeletedEvent = jobDeletedEventArgumentCaptor.getValue();
+            assertNotNull(jobDeletedEvent);
+            assertEquals(job.getId(), jobDeletedEvent.getJobId());
         }
     }
 
@@ -562,22 +601,30 @@ class JobUseCaseImplTest {
             ArgumentCaptor<Attachment> attachmentArg = ArgumentCaptor.forClass(Attachment.class);
             ArgumentCaptor<Activity> activityArg = ArgumentCaptor.forClass(Activity.class);
             ArgumentCaptor<Job> jobArg = ArgumentCaptor.forClass(Job.class);
+            ArgumentCaptor<AttachmentCreatedEvent> attachmentCreatedEventArgumentCaptor = ArgumentCaptor.forClass(AttachmentCreatedEvent.class);
+            ArgumentCaptor<ActivityAutomaticallyCreatedEvent> activityAutomaticallyCreatedEventArgumentCaptor = ArgumentCaptor.forClass(ActivityAutomaticallyCreatedEvent.class);
             File file = mock(File.class);
             Instant before = Instant.now();
 
             reset(userDataManager);
             when(jobDataManager.findByIdAndUserId(any(), any())).thenReturn(Optional.of(testJob));
+            when(transactionProvider.executeInTransaction(any(Supplier.class))).thenAnswer(i -> ((Supplier<?>)i.getArgument(0)).get());
             when(fileStorage.store(eq(file), any(String.class), eq("test.pdf"))).thenReturn(
                     new DownloadableFile("newFileId", "stored/newFileId.pdf", "application/pdf", "test.pdf")
             );
             when(jobDataManager.saveJobAndAttachment(jobArg.capture(), attachmentArg.capture(), activityArg.capture())).thenAnswer(i -> i.getArgument(0));
+            when(integrationEventPublisher.publish(attachmentCreatedEventArgumentCaptor.capture())).thenAnswer(i -> i.getArgument(0));
+            when(integrationEventPublisher.publish(activityAutomaticallyCreatedEventArgumentCaptor.capture())).thenAnswer(i -> i.getArgument(0));
 
             Attachment result = underTest.addAttachmentToJob(new CreateAttachmentCommand("my file", file, "test.pdf", testJob.getUserId(), testJob.getId()));
 
             assertNotNull(result);
             verify(jobDataManager).findByIdAndUserId(any(), any());
+            verify(transactionProvider).executeInTransaction(any(Supplier.class));
             verify(fileStorage).store(eq(file), any(String.class), eq("test.pdf"));
             verify(jobDataManager).saveJobAndAttachment(jobArg.capture(), attachmentArg.capture(), activityArg.capture());
+            verify(integrationEventPublisher).publish(attachmentCreatedEventArgumentCaptor.capture());
+            verify(integrationEventPublisher).publish(activityAutomaticallyCreatedEventArgumentCaptor.capture());
 
             // check created/updated entities
 
@@ -595,6 +642,16 @@ class JobUseCaseImplTest {
             assertNotNull(activity);
             assertEquals(activity, job.getActivities().getFirst());
             assertEquals(ActivityType.ATTACHMENT_CREATION, activity.getType());
+
+            AttachmentCreatedEvent attachmentCreatedEvent = attachmentCreatedEventArgumentCaptor.getValue();
+            assertNotNull(attachmentCreatedEvent);
+            assertEquals(job.getId(), attachmentCreatedEvent.getJobId());
+            assertEquals(result.getId(), attachmentCreatedEvent.getAttachmentId());
+
+            ActivityAutomaticallyCreatedEvent activityAutomaticallyCreatedEvent = activityAutomaticallyCreatedEventArgumentCaptor.getValue();
+            assertNotNull(activityAutomaticallyCreatedEvent);
+            assertEquals(job.getId(), activityAutomaticallyCreatedEvent.getJobId());
+            assertEquals(activity.getType(), activityAutomaticallyCreatedEvent.getActivityType());
         }
 
         @Test
@@ -623,22 +680,41 @@ class JobUseCaseImplTest {
         void whenAttachmentExists_thenShouldDelete() {
             ArgumentCaptor<Activity> activityArg = ArgumentCaptor.forClass(Activity.class);
             ArgumentCaptor<Job> jobArg = ArgumentCaptor.forClass(Job.class);
+            ArgumentCaptor<AttachmentDeletedEvent> attachmentDeletedEventArgumentCaptor = ArgumentCaptor.forClass(AttachmentDeletedEvent.class);
+            ArgumentCaptor<ActivityAutomaticallyCreatedEvent> activityAutomaticallyCreatedEventArgumentCaptor = ArgumentCaptor.forClass(ActivityAutomaticallyCreatedEvent.class);
 
             reset(userDataManager);
             when(jobDataManager.findByIdAndUserId(any(), any())).thenReturn(Optional.of(testJobWithAttachment));
+            when(transactionProvider.executeInTransaction(any(Supplier.class))).thenAnswer(i -> ((Supplier<?>)i.getArgument(0)).get());
             doNothing().when(fileStorage).delete(attachment.getFileId());
+            when(integrationEventPublisher.publish(attachmentDeletedEventArgumentCaptor.capture())).thenAnswer(i -> i.getArgument(0));
+            when(integrationEventPublisher.publish(activityAutomaticallyCreatedEventArgumentCaptor.capture())).thenAnswer(i -> i.getArgument(0));
             when(jobDataManager.deleteAttachmentAndSaveJob(jobArg.capture(), eq(attachment), activityArg.capture())).thenAnswer(i -> i.getArgument(0));
 
             underTest.deleteAttachment(new DeleteAttachmentCommand(attachment.getId(), testJobWithAttachment.getUserId(), testJobWithAttachment.getId()));
 
             verify(jobDataManager).deleteAttachmentAndSaveJob(jobArg.capture(), eq(attachment), activityArg.capture());
             verify(fileStorage).delete(attachment.getFileId());
+            verify(transactionProvider).executeInTransaction(any(Supplier.class));
+            verify(integrationEventPublisher).publish(attachmentDeletedEventArgumentCaptor.capture());
+            verify(integrationEventPublisher).publish(activityAutomaticallyCreatedEventArgumentCaptor.capture());
 
             // check that an activity has been created, and has been passed to the jobservice
             Job job = jobArg.getValue();
+            Activity activity = activityArg.getValue();
             assertEquals(1, job.getActivities().size());
-            assertEquals(activityArg.getValue(), job.getActivities().getFirst());
+            assertEquals(activity, job.getActivities().getFirst());
             assertEquals(ActivityType.ATTACHMENT_DELETION, job.getActivities().getFirst().getType());
+
+            AttachmentDeletedEvent attachmentDeletedEvent = attachmentDeletedEventArgumentCaptor.getValue();
+            assertNotNull(attachmentDeletedEvent);
+            assertEquals(job.getId(), attachmentDeletedEvent.getJobId());
+            assertEquals(attachment.getId(), attachmentDeletedEvent.getAttachmentId());
+
+            ActivityAutomaticallyCreatedEvent activityAutomaticallyCreatedEvent = activityAutomaticallyCreatedEventArgumentCaptor.getValue();
+            assertNotNull(activityAutomaticallyCreatedEvent);
+            assertEquals(job.getId(), activityAutomaticallyCreatedEvent.getJobId());
+            assertEquals(activity.getType(), activityAutomaticallyCreatedEvent.getActivityType());
         }
     }
 
@@ -685,11 +761,15 @@ class JobUseCaseImplTest {
         void shouldCreateActivity() {
             ArgumentCaptor<Activity> activityArg = ArgumentCaptor.forClass(Activity.class);
             ArgumentCaptor<Job> jobArg = ArgumentCaptor.forClass(Job.class);
+            ArgumentCaptor<ActivityCreatedEvent> activityCreatedEventArg = ArgumentCaptor.forClass(ActivityCreatedEvent.class);
             Instant before = Instant.now();
 
             reset(userDataManager);
             when(jobDataManager.findByIdAndUserId(testJobWithActivity.getId(), testJobWithActivity.getUserId())).thenReturn(Optional.of(this.testJobWithActivity));
+            when(htmlSanitizer.sanitize(any(String.class))).thenAnswer(i -> i.getArgument(0));
+            when(transactionProvider.executeInTransaction(any(Supplier.class))).thenAnswer(i -> ((Supplier<?>)i.getArgument(0)).get());
             when(jobDataManager.saveJobAndActivity(jobArg.capture(), activityArg.capture())).thenAnswer(i -> i.getArgument(0));
+            when(integrationEventPublisher.publish(activityCreatedEventArg.capture())).thenAnswer(i -> i.getArgument(0));
 
             Activity result = underTest.addActivityToJob(new CreateActivityCommand(ActivityType.EMAIL, "new activity comment", testJobWithActivity.getUserId(), testJobWithActivity.getId()));
 
@@ -707,6 +787,13 @@ class JobUseCaseImplTest {
             // check activities order (most recent first)
             assertEquals(result, updatedJob.getActivities().getFirst());
             assertEquals(activity, updatedJob.getActivities().get(1));
+
+            ActivityCreatedEvent activityCreatedEvent = activityCreatedEventArg.getValue();
+            assertNotNull(activityCreatedEvent);
+            assertEquals(result.getId(), activityCreatedEvent.getActivityId());
+            assertEquals(result.getType(), activityCreatedEvent.getActivityType());
+            assertEquals(updatedJob.getId(), activityCreatedEvent.getJobId());
+
         }
 
         @Test

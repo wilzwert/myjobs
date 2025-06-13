@@ -1,6 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.event;
 
-import com.wilzwert.myjobs.core.domain.model.job.event.integration.IntegrationEventId;
+import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEventId;
 import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEvent;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.EventStatus;
 
