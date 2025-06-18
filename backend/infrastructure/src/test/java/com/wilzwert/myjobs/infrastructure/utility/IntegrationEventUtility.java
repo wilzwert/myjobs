@@ -4,8 +4,6 @@ package com.wilzwert.myjobs.infrastructure.utility;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.EventStatus;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoIntegrationEvent;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoIntegrationEventRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.List;
@@ -17,11 +15,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Date:18/06/2025
  * Time:08:41
  */
-@Component
 public class IntegrationEventUtility {
 
-    @Autowired
-    private MongoIntegrationEventRepository integrationEventRepository;
+    private final MongoIntegrationEventRepository integrationEventRepository;
+
+    public IntegrationEventUtility(MongoIntegrationEventRepository integrationEventRepository) {
+        this.integrationEventRepository = integrationEventRepository;
+    }
 
     public void assertEventCreated(String eventType, Object findInPayload, Instant minInstant) {
         if(null == minInstant) {

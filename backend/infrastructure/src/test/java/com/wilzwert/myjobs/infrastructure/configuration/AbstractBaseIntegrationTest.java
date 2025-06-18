@@ -23,9 +23,8 @@ import org.bson.Document;
 @ActiveProfiles("integration")
 @Tag("Integration")
 @Slf4j
-@Import({TestBatchConfig.class})
+@Import({TestBatchConfig.class, IntegrationTestConfig.class})
 public abstract class AbstractBaseIntegrationTest {
-
 
     /**
      * testDataLoader is used to reset test data after each test

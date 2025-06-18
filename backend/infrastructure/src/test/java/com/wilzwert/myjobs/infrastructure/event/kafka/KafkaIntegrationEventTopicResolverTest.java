@@ -37,7 +37,7 @@ import static org.mockito.Mockito.when;
  * Date:17/06/2025
  * Time:10:57
  */
-public class KafkaKafkaIntegrationEventTopicResolverTest {
+public class KafkaIntegrationEventTopicResolverTest {
 
     private KafkaIntegrationEventTopicResolver resolver;
 

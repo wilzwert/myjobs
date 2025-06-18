@@ -20,6 +20,7 @@ import com.wilzwert.myjobs.core.domain.model.user.event.integration.UserDeletedE
 import com.wilzwert.myjobs.core.domain.model.user.event.integration.UserUpdatedEvent;
 import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEvent;
 import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEventId;
+import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.EventStatus;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoIntegrationEvent;
 import com.wilzwert.myjobs.infrastructure.serialization.IntegrationEventSerializationHandler;
@@ -29,7 +30,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -38,11 +38,8 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-@SpringBootTest
-class IntegrationEventSerializationHandlerIT {
+class IntegrationEventSerializationHandlerIT extends AbstractBaseIntegrationTest {
 
     @Autowired
     private ObjectMapper objectMapper;
