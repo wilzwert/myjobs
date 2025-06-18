@@ -13,7 +13,7 @@ import java.time.Instant;
  * Time:15:56
  */
 
-public class JobCreatedEvent extends IntegrationEvent {
+public final class JobCreatedEvent extends IntegrationEvent {
     private final JobId jobId;
 
     public JobCreatedEvent(IntegrationEventId id, JobId jobId) {

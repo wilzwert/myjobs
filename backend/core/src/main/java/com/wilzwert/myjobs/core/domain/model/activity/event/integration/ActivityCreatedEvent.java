@@ -15,7 +15,7 @@ import java.time.Instant;
  * Time:15:56
  */
 
-public class ActivityCreatedEvent extends IntegrationEvent {
+public final class ActivityCreatedEvent extends IntegrationEvent {
     private final JobId jobId;
     private final ActivityId activityId;
     private final ActivityType activityType;

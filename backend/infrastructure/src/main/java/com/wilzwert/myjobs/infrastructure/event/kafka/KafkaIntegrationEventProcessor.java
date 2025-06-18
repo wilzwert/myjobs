@@ -1,45 +1,34 @@
 package com.wilzwert.myjobs.infrastructure.event.kafka;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wilzwert.myjobs.core.domain.model.job.event.integration.*;
 import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEvent;
-import com.wilzwert.myjobs.infrastructure.event.IntegrationEventProcessor;
+import com.wilzwert.myjobs.infrastructure.serialization.IntegrationEventSerializationHandler;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
-
 @Component
 @Slf4j
-public class KafkaIntegrationEventProcessor implements IntegrationEventProcessor {
-
-    private final Map<Class<? extends IntegrationEvent>, String> typesTopics;
+public class KafkaIntegrationEventProcessor implements com.wilzwert.myjobs.infrastructure.event.IntegrationEventProcessor {
 
     private final KafkaTemplate<String, KafkaIntegrationEvent> kafkaTemplate;
 
-    private final ObjectMapper objectMapper;
+    private final KafkaIntegrationEventTopicResolver topicResolver;
 
-    KafkaIntegrationEventProcessor(KafkaTemplate<String, KafkaIntegrationEvent> kafkaTemplate, KafkaProperties kafkaProperties, ObjectMapper objectMapper) {
+    private final IntegrationEventSerializationHandler serializationHandler;
+
+
+    KafkaIntegrationEventProcessor(KafkaTemplate<String, KafkaIntegrationEvent> kafkaTemplate, KafkaIntegrationEventTopicResolver topicResolver, IntegrationEventSerializationHandler serializationHandler) {
         this.kafkaTemplate = kafkaTemplate;
-        this.objectMapper = objectMapper;
-
-        String jobsTopic = kafkaProperties.getTopicPrefix()+"jobs";
-        typesTopics = Map.of(
-                JobCreatedEvent.class, jobsTopic,
-                JobUpdatedEvent.class, jobsTopic,
-                JobStatusUpdatedEvent.class, jobsTopic,
-                JobRatingUpdatedEvent.class, jobsTopic,
-                JobFieldUpdatedEvent.class, jobsTopic
-        );
+        this.topicResolver = topicResolver;
+        this.serializationHandler = serializationHandler;
     }
 
     @Override
     public IntegrationEvent process(@NonNull IntegrationEvent event) throws Exception {
         log.info("Sending event {}", event.getId().value().toString());
-        KafkaIntegrationEvent kafkaEvent = new KafkaIntegrationEvent(event.getClass().getSimpleName(), objectMapper.writeValueAsString(event));
-        kafkaTemplate.send(typesTopics.get(event.getClass()), event.getId().value().toString(), kafkaEvent).get();
+        KafkaIntegrationEvent kafkaEvent = new KafkaIntegrationEvent(event.getClass().getSimpleName(), serializationHandler.serialize(event));
+        kafkaTemplate.send(topicResolver.resolve(event), event.getId().value().toString(), kafkaEvent).get();
         return event;
     }
 }

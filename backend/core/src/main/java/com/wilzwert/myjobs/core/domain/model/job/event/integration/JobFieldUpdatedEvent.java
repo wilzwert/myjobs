@@ -14,7 +14,7 @@ import java.time.Instant;
  * Time:15:56
  */
 
-public class JobFieldUpdatedEvent extends IntegrationEvent {
+public final class JobFieldUpdatedEvent extends IntegrationEvent {
 
     private final JobId jobId;
 

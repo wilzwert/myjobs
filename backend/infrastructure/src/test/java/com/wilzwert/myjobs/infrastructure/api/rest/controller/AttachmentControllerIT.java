@@ -11,6 +11,7 @@ import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
 import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
+import com.wilzwert.myjobs.infrastructure.utility.IntegrationEventUtility;
 import jakarta.servlet.http.Cookie;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
@@ -46,6 +47,9 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
 
     // id for the User to use for tests
     private static final String USER_FOR_JOBS_TEST_ID = "abcd1234-1234-1234-1234-123456789012";
+
+    @Autowired
+    private IntegrationEventUtility integrationEventUtility;
 
     @Autowired
     private MockMvc mockMvc;
@@ -177,6 +181,9 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
             // file should be downloadable
             // we should also delete the attachment so that our disk or S3 space / quota is not reached
             // we can do that manually in S3, but how can we check and then delete  programmatically ?
+
+            integrationEventUtility.assertEventCreated("AttachmentCreatedEvent", attachment.getId());
+            integrationEventUtility.assertEventCreated("ActivityAutomaticallyCreatedEvent", job.getId());
         }
     }
 
@@ -226,6 +233,10 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(foundJob).isNotNull();
             Attachment attachment = foundJob.getAttachments().stream().filter(a -> a.getId().value().equals(UUID.fromString(ATTACHMENT_TEST_ID))).findFirst().orElse(null);
             assertThat(attachment).isNull();
+
+            integrationEventUtility.assertEventCreated("AttachmentDeletedEvent", ATTACHMENT_TEST_ID);
+            integrationEventUtility.assertEventCreated("ActivityAutomaticallyCreatedEvent", foundJob.getId());
+
         }
     }
 

@@ -14,7 +14,7 @@ import java.time.Instant;
  * Time:15:56
  */
 
-public class AttachmentCreatedEvent extends IntegrationEvent {
+public final class AttachmentCreatedEvent extends IntegrationEvent {
     private final JobId jobId;
     private final AttachmentId attachmentId;
 

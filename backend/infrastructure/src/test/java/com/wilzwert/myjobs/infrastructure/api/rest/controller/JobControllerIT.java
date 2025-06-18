@@ -10,10 +10,9 @@ import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.job.*;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
-import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.EventStatus;
-import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoIntegrationEvent;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoIntegrationEventRepository;
 import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
+import com.wilzwert.myjobs.infrastructure.utility.IntegrationEventUtility;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -45,6 +44,9 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
 
     // id for the User to use for get /api/jobs tests
     private static final String USER_FOR_JOBS_TEST_ID = "abcd1234-1234-1234-1234-123456789012";
+
+    @Autowired
+    private IntegrationEventUtility integrationEventUtility;
 
     @Autowired
     private MockMvc mockMvc;
@@ -370,15 +372,7 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(createdJob.getComment()).isEqualTo("My new job comment");
             assertThat(createdJob.getSalary()).isEqualTo("My new job salary");
 
-            // let's check an event has been created
-            // Assert
-            List<MongoIntegrationEvent> events = integrationEventRepository.findByType("UserCreatedEvent");
-            List<MongoIntegrationEvent> filteredEvents = events.stream().filter(e -> e.getPayload().contains(jobResponse.getId().toString())).toList();
-            assertThat(filteredEvents).hasSize(1);
-
-            MongoIntegrationEvent event = filteredEvents.getFirst();
-            assertThat(event.getStatus()).isEqualTo(EventStatus.PENDING);
-            assertThat(event.getPayload()).contains(createdJob.getId().toString());
+            integrationEventUtility.assertEventCreated("JobCreatedEvent", jobResponse.getId());
         }
     }
 
@@ -411,7 +405,9 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             // Job was deleted and should not be retrievable
             Job foundJob = jobDataManager.findById(new JobId(UUID.fromString(JOB_FOR_TEST_ID))).orElse(null);
             assertThat(foundJob).isNull();
+
+            // an integration event should have been created
+            integrationEventUtility.assertEventCreated("JobDeletedEvent", JOB_FOR_TEST_ID);
         }
     }
-
 }

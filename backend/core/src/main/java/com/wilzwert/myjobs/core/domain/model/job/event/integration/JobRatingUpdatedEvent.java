@@ -14,7 +14,7 @@ import java.time.Instant;
  * Time:15:56
  */
 
-public class JobRatingUpdatedEvent extends IntegrationEvent {
+public final class JobRatingUpdatedEvent extends IntegrationEvent {
     private final JobId jobId;
 
     private final JobRating jobRating;

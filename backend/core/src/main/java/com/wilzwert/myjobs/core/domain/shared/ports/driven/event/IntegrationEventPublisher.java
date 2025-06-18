@@ -9,6 +9,4 @@ import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEvent
  */
 public interface IntegrationEventPublisher {
     IntegrationEvent publish(IntegrationEvent event);
-
-
 }

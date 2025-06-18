@@ -18,4 +18,9 @@ public class KafkaTopicConfiguration {
     public NewTopic topicJob() {
         return new NewTopic(topicPrefix+"jobs", 1, (short) 1);
     }
+
+    @Bean
+    public NewTopic topicUser() {
+        return new NewTopic(topicPrefix+"users", 1, (short) 1);
+    }
 }

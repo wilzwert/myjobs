@@ -286,7 +286,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
     }
 
     /**
-     * FIXME : this should be improved to avoir reflection and ugly casts
+     * FIXME : this should be improved to avoid reflection and ugly casts, and externalized
      * @param command the command to sanitize
      * @param fieldsToSanitize the command fields to sanitize
      * @return a new comment of the same class
@@ -307,7 +307,6 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
                 if (fieldValue != null) {
                     String sanitizedValue = htmlSanitizer.sanitize(fieldValue);
-                    System.out.println("sanitized value for "+field+" is ["+sanitizedValue+"]");
                     Method setterMethod = builder.getClass().getMethod(field, String.class);
                     setterMethod.invoke(builder, sanitizedValue);
                 }

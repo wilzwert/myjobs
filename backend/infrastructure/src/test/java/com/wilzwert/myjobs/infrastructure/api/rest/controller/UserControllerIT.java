@@ -14,6 +14,7 @@ import com.wilzwert.myjobs.infrastructure.api.rest.dto.UserResponse;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.UserSummaryResponse;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
 import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
+import com.wilzwert.myjobs.infrastructure.utility.IntegrationEventUtility;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -43,6 +44,9 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
 
     // id of the User to user for deletion tests
     private static final String USER_FOR_DELETE_TEST_ID = "abcd9876-9876-9876-9876-123456789012";
+
+    @Autowired
+    private IntegrationEventUtility integrationEventUtility;
 
     @Autowired
     private MockMvc mockMvc;
@@ -105,6 +109,9 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
 
             // since we have UserDataManager at our disposal, we can check that the deleted user cannot be retrieved
             assertThat(userDataManager.findById(new UserId(UUID.fromString(USER_FOR_DELETE_TEST_ID)))).isEmpty();
+
+            // an integration event should have been created
+            integrationEventUtility.assertEventCreated("UserDeletedEvent", USER_FOR_DELETE_TEST_ID);
         }
     }
 
@@ -222,6 +229,9 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
 
             User foundUser = userDataManager.findByEmail("otherexisting-updated@example.com").orElse(null);
             assertThat(foundUser).isNotNull();
+
+            // an integration event should have been created
+            integrationEventUtility.assertEventCreated("UserUpdatedEvent", foundUser.getId());
         }
     }
 
@@ -249,6 +259,9 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
             User foundUser = userDataManager.findById(new UserId(UUID.fromString(USER_FOR_GET_TEST_ID))).orElse(null);
             assertThat(foundUser).isNotNull();
             assertThat(foundUser.getLang()).isEqualTo(Lang.FR);
+            // an integration event should have been created
+            integrationEventUtility.assertEventCreated("UserUpdatedEvent", USER_FOR_GET_TEST_ID);
+
         }
     }
 

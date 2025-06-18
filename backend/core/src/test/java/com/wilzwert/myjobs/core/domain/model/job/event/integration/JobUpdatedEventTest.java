@@ -27,4 +27,15 @@ public class JobUpdatedEventTest {
         assertEquals(jobId, event.getJobId());
         assertTrue(event.getOccurredAt().equals(now) || event.getOccurredAt().isAfter(now));
     }
+
+    @Test
+    void testJobUpdatedEvent2() {
+        IntegrationEventId id = IntegrationEventId.generate();
+        JobId jobId = JobId.generate();
+        Instant now = Instant.now();
+        JobUpdatedEvent event = new JobUpdatedEvent(id, now, jobId);
+        assertEquals(id, event.getId());
+        assertEquals(jobId, event.getJobId());
+        assertEquals(now, event.getOccurredAt());
+    }
 }

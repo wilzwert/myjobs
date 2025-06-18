@@ -10,6 +10,7 @@ import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
 import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
+import com.wilzwert.myjobs.infrastructure.utility.IntegrationEventUtility;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,9 @@ public class ActivityControllerIT extends AbstractBaseIntegrationTest  {
 
     // id for the User to use for get tests
     private static final String USER_FOR_JOBS_TEST_ID = "abcd1234-1234-1234-1234-123456789012";
+
+    @Autowired
+    private IntegrationEventUtility integrationEventUtility;
 
     @Autowired
     private MockMvc mockMvc;
@@ -139,5 +143,8 @@ public class ActivityControllerIT extends AbstractBaseIntegrationTest  {
         assertThat(activity).isNotNull();
         assertThat(activity.getComment()).isEqualTo("Created in person interview activity");
         assertThat(activity.getType()).isEqualTo(ActivityType.IN_PERSON_INTERVIEW);
+
+        // an integration event should have been created
+        integrationEventUtility.assertEventCreated("ActivityCreatedEvent", activity.getId());
     }
 }
