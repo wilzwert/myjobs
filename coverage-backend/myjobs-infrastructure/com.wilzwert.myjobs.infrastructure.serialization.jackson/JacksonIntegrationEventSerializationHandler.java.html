@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>JacksonIntegrationEventSerializationHandler.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">MyJobsAggregateReport</a> &gt; <a href="../index.html" class="el_bundle">myjobs-infrastructure</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.infrastructure.serialization.jackson</a> &gt; <span class="el_source">JacksonIntegrationEventSerializationHandler.java</span></div><h1>JacksonIntegrationEventSerializationHandler.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.infrastructure.serialization.jackson;
+
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEvent;
+import com.wilzwert.myjobs.infrastructure.serialization.IntegrationEventSerializationHandler;
+import com.wilzwert.myjobs.infrastructure.serialization.exception.DeserializationException;
+import com.wilzwert.myjobs.infrastructure.serialization.exception.SerializationException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * @author Wilhelm Zwertvaegher
+ * Date:17/06/2025
+ * Time:11:56
+ */
+
+@Component
+<span class="fc" id="L23">@Slf4j</span>
+public class JacksonIntegrationEventSerializationHandler implements IntegrationEventSerializationHandler {
+
+    // map used to retrieve actual event classes based on their resolvable type, which in our case will be a simple class name
+<span class="fc" id="L27">    private final Map&lt;String, Class&lt;? extends IntegrationEvent&gt;&gt; eventTypeMap = new HashMap&lt;&gt;();</span>
+
+    /**
+     * jackson's object mapper with custom configuration
+     * @see JacksonConfig
+     */
+    private final ObjectMapper objectMapper;
+
+<span class="fc" id="L35">    JacksonIntegrationEventSerializationHandler(ObjectMapper objectMapper) {</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">        for(Class&lt;?&gt; clazz : IntegrationEvent.class.getPermittedSubclasses()) {</span>
+<span class="fc" id="L37">            eventTypeMap.put(clazz.getSimpleName(), clazz.asSubclass(IntegrationEvent.class));</span>
+        }
+<span class="fc" id="L39">        this.objectMapper = objectMapper;</span>
+<span class="fc" id="L40">    }</span>
+
+    @Override
+    public IntegrationEvent readFromPayload(String type, String payload) throws DeserializationException {
+<span class="fc" id="L44">        Class&lt;? extends IntegrationEvent&gt; clazz = eventTypeMap.get(type);</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        if (clazz == null) {</span>
+<span class="fc" id="L46">            throw new DeserializationException(&quot;Unknown event type: &quot; + type);</span>
+        }
+        try {
+<span class="fc" id="L49">            log.info(&quot;Reading payload into {}&quot;, clazz.getSimpleName());</span>
+<span class="fc" id="L50">            return objectMapper.readValue(payload, clazz);</span>
+        }
+<span class="fc" id="L52">        catch (JsonProcessingException ex) {</span>
+<span class="fc" id="L53">            throw new DeserializationException(&quot;Cannot process JSON&quot;, ex);</span>
+        }
+    }
+
+    @Override
+    public &lt;T extends IntegrationEvent&gt; String serialize(T event)  throws SerializationException {
+        try {
+<span class="fc" id="L60">            return objectMapper.writeValueAsString(event);</span>
+        }
+<span class="fc" id="L62">        catch(JsonProcessingException e) {</span>
+<span class="fc" id="L63">            throw new SerializationException(&quot;Serialization failed&quot;, e);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

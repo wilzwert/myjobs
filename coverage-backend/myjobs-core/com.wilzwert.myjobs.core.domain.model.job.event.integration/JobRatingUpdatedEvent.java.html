@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>JobRatingUpdatedEvent.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">MyJobsAggregateReport</a> &gt; <a href="../index.html" class="el_bundle">myjobs-core</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.core.domain.model.job.event.integration</a> &gt; <span class="el_source">JobRatingUpdatedEvent.java</span></div><h1>JobRatingUpdatedEvent.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.core.domain.model.job.event.integration;
+
+
+import com.wilzwert.myjobs.core.domain.model.job.JobId;
+import com.wilzwert.myjobs.core.domain.model.job.JobRating;
+import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEvent;
+import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEventId;
+
+import java.time.Instant;
+
+/**
+ * @author Wilhelm Zwertvaegher
+ * Date:06/06/2025
+ * Time:15:56
+ */
+
+public final class JobRatingUpdatedEvent extends IntegrationEvent {
+    private final JobId jobId;
+
+    private final JobRating jobRating;
+
+    public JobRatingUpdatedEvent(IntegrationEventId id, JobId jobId, JobRating jobRating) {
+<span class="fc" id="L23">        super(id);</span>
+<span class="fc" id="L24">        this.jobId = jobId;</span>
+<span class="fc" id="L25">        this.jobRating = jobRating;</span>
+<span class="fc" id="L26">    }</span>
+
+    public JobRatingUpdatedEvent(IntegrationEventId id, Instant occurredAt, JobId jobId, JobRating jobRating) {
+<span class="fc" id="L29">        super(id, occurredAt);</span>
+<span class="fc" id="L30">        this.jobId = jobId;</span>
+<span class="fc" id="L31">        this.jobRating = jobRating;</span>
+<span class="fc" id="L32">    }</span>
+
+    public JobId getJobId() {
+<span class="fc" id="L35">        return jobId;</span>
+    }
+
+    public JobRating getJobRating() {
+<span class="fc" id="L39">        return jobRating;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

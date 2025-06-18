@@ -11,7 +11,6 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.MongoTransactionManager;
@@ -25,30 +24,35 @@ import org.springframework.data.mongodb.MongoTransactionManager;
  */
 
 @Configuration
-<span class="fc" id="L28">@Slf4j</span>
-@ConditionalOnProperty(name = &quot;application.batch.enabled&quot;, havingValue = &quot;true&quot;)
-<span class="fc" id="L30">public class JobsRemindersBatchConfiguration {</span>
+<span class="fc" id="L27">@Slf4j</span>
+<span class="fc" id="L28">public class JobsRemindersBatchConfiguration {</span>
     @Bean
     public Job jobReminderJob(Step jobReminderStep, JobRepository jobRepository) {
-<span class="fc" id="L33">        return new JobBuilder(&quot;jobReminderJob&quot;, jobRepository)</span>
-<span class="fc" id="L34">                .start(jobReminderStep)</span>
-<span class="fc" id="L35">                .preventRestart()</span>
-<span class="fc" id="L36">                .build();</span>
+<span class="fc" id="L31">        return new JobBuilder(&quot;jobReminderJob&quot;, jobRepository)</span>
+<span class="fc" id="L32">                .start(jobReminderStep)</span>
+<span class="fc" id="L33">                .preventRestart()</span>
+<span class="fc" id="L34">                .build();</span>
     }
 
     @Bean
     public Step jobReminderStep(Tasklet jobReminderTasklet, JobRepository jobRepository, MongoTransactionManager transactionManager) {
-<span class="fc" id="L41">        return new StepBuilder(&quot;jobReminderStep&quot;, jobRepository)</span>
-<span class="fc" id="L42">                .tasklet(jobReminderTasklet, transactionManager)</span>
-<span class="fc" id="L43">                .build();</span>
+<span class="fc" id="L39">        return new StepBuilder(&quot;jobReminderStep&quot;, jobRepository)</span>
+<span class="fc" id="L40">                .tasklet(jobReminderTasklet, transactionManager)</span>
+<span class="fc" id="L41">                .build();</span>
     }
 
     @Bean
     public Tasklet jobReminderTasklet(SendJobsRemindersBatchRunner runner) {
-<span class="fc" id="L48">        return (contribution, chunkContext) -&gt; {</span>
-<span class="nc" id="L49">            runner.run();</span>
-<span class="nc" id="L50">            contribution.setExitStatus(ExitStatus.COMPLETED);</span>
-<span class="nc" id="L51">            return RepeatStatus.FINISHED;</span>
+<span class="fc" id="L46">        return (contribution, chunkContext) -&gt; {</span>
+<span class="fc" id="L47">            UsersJobsBatchExecutionResult result = runner.run();</span>
+            // store result in context in case access is needed later
+<span class="fc" id="L49">            chunkContext.getStepContext()</span>
+<span class="fc" id="L50">                    .getStepExecution()</span>
+<span class="fc" id="L51">                    .getJobExecution()</span>
+<span class="fc" id="L52">                    .getExecutionContext()</span>
+<span class="fc" id="L53">                    .put(&quot;usersJobsBatchExecutionResult&quot;, result);</span>
+<span class="fc" id="L54">            contribution.setExitStatus(ExitStatus.COMPLETED);</span>
+<span class="fc" id="L55">            return RepeatStatus.FINISHED;</span>
         };
     }
 }

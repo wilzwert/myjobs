@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>TestDataLoader.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">MyJobsAggregateReport</a> &gt; <a href="../index.html" class="el_bundle">myjobs-infrastructure</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.infrastructure.staging</a> &gt; <span class="el_source">TestDataLoader.java</span></div><h1>TestDataLoader.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.infrastructure.staging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoIntegrationEvent;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoJob;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoRefreshToken;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoUser;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoIntegrationEventRepository;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoJobRepository;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoRefreshTokenRepository;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoUserRepository;
@@ -20,48 +22,52 @@ import java.util.List;
 
 @Configuration
 @Profile({&quot;integration&quot;,&quot;staging&quot;})
-<span class="fc" id="L23">@Slf4j</span>
+<span class="fc" id="L25">@Slf4j</span>
 public class TestDataLoader {
 
     private final MongoUserRepository userRepository;
     private final MongoJobRepository jobRepository;
     private final MongoRefreshTokenRepository refreshTokenRepository;
+    private final MongoIntegrationEventRepository integrationEventRepository;
     private final ObjectMapper objectMapper;
 
-<span class="fc" id="L31">    public TestDataLoader(MongoUserRepository userRepository, MongoJobRepository jobRepository, MongoRefreshTokenRepository refreshTokenRepository, ObjectMapper objectMapper) {</span>
-<span class="fc" id="L32">        this.userRepository = userRepository;</span>
-<span class="fc" id="L33">        this.jobRepository = jobRepository;</span>
-<span class="fc" id="L34">        this.refreshTokenRepository = refreshTokenRepository;</span>
-<span class="fc" id="L35">        this.objectMapper = objectMapper;</span>
-<span class="fc" id="L36">    }</span>
+<span class="fc" id="L34">    public TestDataLoader(MongoUserRepository userRepository, MongoJobRepository jobRepository, MongoRefreshTokenRepository refreshTokenRepository, MongoIntegrationEventRepository integrationEventRepository, ObjectMapper objectMapper) {</span>
+<span class="fc" id="L35">        this.userRepository = userRepository;</span>
+<span class="fc" id="L36">        this.jobRepository = jobRepository;</span>
+<span class="fc" id="L37">        this.refreshTokenRepository = refreshTokenRepository;</span>
+<span class="fc" id="L38">        this.integrationEventRepository = integrationEventRepository;</span>
+<span class="fc" id="L39">        this.objectMapper = objectMapper;</span>
+<span class="fc" id="L40">    }</span>
 
     private &lt;T&gt; void loadData(String fileName, Class&lt;T&gt; clazz, MongoRepository&lt;T, ?&gt; repository) {
-<span class="fc" id="L39">        try (InputStream is = getClass().getResourceAsStream(&quot;/test-data/&quot; +fileName)) {</span>
-<span class="pc bpc" id="L40" title="1 of 2 branches missed.">            if (is != null) {</span>
-<span class="fc" id="L41">                List&lt;T&gt; elements = objectMapper.readValue(is, objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));</span>
-<span class="fc" id="L42">                repository.saveAll(elements);</span>
-<span class="fc" id="L43">                log.info(&quot;✅ Test data loaded from {} (found {}&quot;, fileName, elements.size());</span>
-<span class="fc" id="L44">            } else {</span>
-<span class="nc" id="L45">                log.error(&quot;❌ Cannot find file {} !&quot;, fileName);</span>
+<span class="fc" id="L43">        try (InputStream is = getClass().getResourceAsStream(&quot;/test-data/&quot; +fileName)) {</span>
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">            if (is != null) {</span>
+<span class="fc" id="L45">                List&lt;T&gt; elements = objectMapper.readValue(is, objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));</span>
+<span class="fc" id="L46">                repository.saveAll(elements);</span>
+<span class="fc" id="L47">                log.info(&quot;✅ Test data loaded from {} (found {}&quot;, fileName, elements.size());</span>
+<span class="fc" id="L48">            } else {</span>
+<span class="nc" id="L49">                log.error(&quot;❌ Cannot find file {} !&quot;, fileName);</span>
             }
-<span class="nc" id="L47">        } catch (IOException e) {</span>
-<span class="nc" id="L48">            log.info(&quot;❌ Error while loading test data from {} : {}&quot;, fileName, e.getMessage());</span>
-<span class="fc" id="L49">        }</span>
-<span class="fc" id="L50">    }</span>
+<span class="nc" id="L51">        } catch (IOException e) {</span>
+<span class="nc" id="L52">            log.info(&quot;❌ Error while loading test data from {} : {}&quot;, fileName, e.getMessage());</span>
+<span class="fc" id="L53">        }</span>
+<span class="fc" id="L54">    }</span>
 
     public void resetAndReload() {
-<span class="fc" id="L53">        userRepository.deleteAll();</span>
-<span class="fc" id="L54">        jobRepository.deleteAll();</span>
-<span class="fc" id="L55">        refreshTokenRepository.deleteAll();</span>
+<span class="fc" id="L57">        userRepository.deleteAll();</span>
+<span class="fc" id="L58">        jobRepository.deleteAll();</span>
+<span class="fc" id="L59">        refreshTokenRepository.deleteAll();</span>
+<span class="fc" id="L60">        integrationEventRepository.deleteAll();</span>
 
-<span class="fc" id="L57">        loadData(&quot;users.json&quot;, MongoUser.class, userRepository);</span>
-<span class="fc" id="L58">        loadData(&quot;jobs.json&quot;, MongoJob.class, jobRepository);</span>
-<span class="fc" id="L59">        loadData(&quot;refresh_token.json&quot;, MongoRefreshToken.class, refreshTokenRepository);</span>
-<span class="fc" id="L60">    }</span>
+<span class="fc" id="L62">        loadData(&quot;users.json&quot;, MongoUser.class, userRepository);</span>
+<span class="fc" id="L63">        loadData(&quot;jobs.json&quot;, MongoJob.class, jobRepository);</span>
+<span class="fc" id="L64">        loadData(&quot;refresh_token.json&quot;, MongoRefreshToken.class, refreshTokenRepository);</span>
+<span class="fc" id="L65">        loadData(&quot;integration_events.json&quot;, MongoIntegrationEvent.class, integrationEventRepository);</span>
+<span class="fc" id="L66">    }</span>
 
     @Bean
     public CommandLineRunner loadTestData() {
-<span class="fc" id="L64">        return args -&gt; resetAndReload();</span>
+<span class="fc" id="L70">        return args -&gt; resetAndReload();</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
