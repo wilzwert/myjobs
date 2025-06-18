@@ -10,7 +10,9 @@ import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.job.*;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoIntegrationEventRepository;
 import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
+import com.wilzwert.myjobs.infrastructure.utility.IntegrationEventUtility;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -44,6 +46,9 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
     private static final String USER_FOR_JOBS_TEST_ID = "abcd1234-1234-1234-1234-123456789012";
 
     @Autowired
+    private IntegrationEventUtility integrationEventUtility;
+
+    @Autowired
     private MockMvc mockMvc;
 
     @Autowired
@@ -54,6 +59,9 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
 
     @Autowired
     private JobDataManager jobDataManager;
+
+    @Autowired
+    private MongoIntegrationEventRepository integrationEventRepository;
 
     Cookie accessTokenCookie;
 
@@ -363,6 +371,8 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(createdJob.getProfile()).isEqualTo("My new job profile");
             assertThat(createdJob.getComment()).isEqualTo("My new job comment");
             assertThat(createdJob.getSalary()).isEqualTo("My new job salary");
+
+            integrationEventUtility.assertEventCreated("JobCreatedEvent", jobResponse.getId());
         }
     }
 
@@ -395,7 +405,9 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
             // Job was deleted and should not be retrievable
             Job foundJob = jobDataManager.findById(new JobId(UUID.fromString(JOB_FOR_TEST_ID))).orElse(null);
             assertThat(foundJob).isNull();
+
+            // an integration event should have been created
+            integrationEventUtility.assertEventCreated("JobDeletedEvent", JOB_FOR_TEST_ID);
         }
     }
-
 }

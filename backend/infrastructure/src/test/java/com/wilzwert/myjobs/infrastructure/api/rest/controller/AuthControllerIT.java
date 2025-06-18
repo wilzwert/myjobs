@@ -3,15 +3,18 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wilzwert.myjobs.core.domain.model.user.EmailStatus;
+import com.wilzwert.myjobs.core.domain.model.user.Lang;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.AuthResponse;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.LoginRequest;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.RegisterUserRequest;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.UserResponse;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
 import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
 import com.wilzwert.myjobs.infrastructure.security.service.RefreshTokenService;
+import com.wilzwert.myjobs.infrastructure.utility.IntegrationEventUtility;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -28,9 +31,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -42,6 +43,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 public class AuthControllerIT extends AbstractBaseIntegrationTest {
+
+    @Autowired
+    private IntegrationEventUtility integrationEventUtility;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -163,24 +168,26 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
             Instant beforeCall = Instant.now();
             MvcResult result = mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("username").value("username"))
-                    .andExpect(jsonPath("firstName").value("firstName"))
-                    .andExpect(jsonPath("lastName").value("lastName"))
-                    .andExpect(jsonPath("email").value("test@example.com"))
-                    .andExpect(jsonPath("lang").value("FR"))
-                    .andExpect(jsonPath("jobFollowUpReminderDays").value(User.DEFAULT_JOB_FOLLOW_UP_REMINDER_DAYS))
-                    .andExpect(jsonPath("emailStatus").value(EmailStatus.PENDING.name()))
-                    .andExpect(jsonPath("createdAt").isNotEmpty())
                     .andReturn();
 
+
+            UserResponse response = objectMapper.readValue(result.getResponse().getContentAsString(), UserResponse.class);
+            assertThat(response).isNotNull();
+            assertThat(response.getUsername()).isEqualTo("username");
+            assertThat(response.getEmail()).isEqualTo("test@example.com");
+            assertThat(response.getFirstName()).isEqualTo("firstName");
+            assertThat(response.getLastName()).isEqualTo("lastName");
+            assertThat(response.getLang()).isEqualTo(Lang.FR);
+            assertThat(response.getJobFollowUpReminderDays()).isEqualTo(User.DEFAULT_JOB_FOLLOW_UP_REMINDER_DAYS);
+            assertThat(response.getEmailStatus()).isEqualTo(EmailStatus.PENDING.name());
+            assertThat(response.getCreatedAt()).isNotNull();
+
             Instant afterCall = Instant.now();
-            String createdAt = objectMapper.readTree(result.getResponse().getContentAsString()).get("createdAt").asText();
             // FIXME this is quite ugly but we have to make sure createdAt is consistent
-            Instant instant = Instant.parse(createdAt);
+            Instant instant = Instant.parse(response.getCreatedAt().toString());
             assertThat(instant)
                     .isAfterOrEqualTo(beforeCall)
                     .isBeforeOrEqualTo(afterCall);
-
 
             // delete the created user to allow predictable further tests
             Optional<User> newUser = userDataManager.findByEmail("test@example.com");
@@ -188,6 +195,8 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
                 fail("Created user should be retrievable.");
             }
             else {
+                // an integration event should have been created
+                integrationEventUtility.assertEventCreated("UserCreatedEvent", newUser.get().getId());
                 userDataManager.deleteUser(newUser.get());
             }
         }
@@ -220,10 +229,10 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
             AuthResponse authResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), AuthResponse.class);
             assertThat(authResponse).isNotNull();
 
-            assertEquals("existing@example.com", authResponse.getEmail());
-            assertEquals("existinguser", authResponse.getUsername());
-            assertEquals("USER", authResponse.getRole());
-            assertEquals(2, mvcResult.getResponse().getCookies().length);
+            assertThat(authResponse.getEmail()).isEqualTo("existing@example.com");
+            assertThat(authResponse.getUsername()).isEqualTo("existinguser");
+            assertThat(authResponse.getRole()).isEqualTo("USER");
+            assertThat(mvcResult.getResponse().getCookies()).hasSize(2);
 
             Map<String, Cookie> cookies = Stream.of(mvcResult.getResponse().getCookies())
                     .collect(Collectors.toMap(Cookie::getName, c -> c));
@@ -306,16 +315,14 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
 
             AuthResponse authResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), AuthResponse.class);
             assertThat(authResponse).isNotNull();
-
-            assertEquals("existing@example.com", authResponse.getEmail());
-            assertEquals("existinguser", authResponse.getUsername());
-            assertEquals("USER", authResponse.getRole());
-
-            assertEquals(2, mvcResult.getResponse().getCookies().length);
+            assertThat(authResponse.getEmail()).isEqualTo("existing@example.com");
+            assertThat(authResponse.getUsername()).isEqualTo("existinguser");
+            assertThat(authResponse.getRole()).isEqualTo("USER");
+            assertThat(mvcResult.getResponse().getCookies()).hasSize(2);
             Map<String, Cookie> cookies = Stream.of(mvcResult.getResponse().getCookies())
                     .collect(Collectors.toMap(Cookie::getName, c -> c));
             assertThat(cookies).containsKey("access_token");
-            assertNotEquals("validRefreshToken", cookies.get("access_token").getValue());
+            assertThat(cookies.get("access_token").getValue()).isNotEqualTo("validRefreshToken");
             assertThat(cookies).containsKey("refresh_token");
 
             // let's check the initial valid refresh token was deleted
@@ -352,11 +359,11 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
                 .andExpect(status().isNoContent())
                 .andReturn();
 
-            assertEquals(2,mvcResult.getResponse().getCookies().length);
+            assertThat(mvcResult.getResponse().getCookies()).hasSize(2);
             Map<String, Cookie> cookies = Stream.of(mvcResult.getResponse().getCookies())
                     .collect(Collectors.toMap(Cookie::getName, c -> c));
-            assertEquals(0, cookies.get("access_token").getMaxAge());
-            assertEquals(0, cookies.get("refresh_token").getMaxAge());
+            assertThat(cookies.get("access_token").getMaxAge()).isEqualTo(0);
+            assertThat(cookies.get("refresh_token").getMaxAge()).isEqualTo(0);
         }
     }
 }

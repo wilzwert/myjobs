@@ -6,20 +6,26 @@ import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
 import com.wilzwert.myjobs.core.domain.model.activity.command.CreateActivityCommand;
 import com.wilzwert.myjobs.core.domain.model.activity.command.UpdateActivityCommand;
+import com.wilzwert.myjobs.core.domain.model.activity.event.integration.ActivityAutomaticallyCreatedEvent;
+import com.wilzwert.myjobs.core.domain.model.activity.event.integration.ActivityCreatedEvent;
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.attachment.AttachmentId;
 import com.wilzwert.myjobs.core.domain.model.attachment.command.CreateAttachmentCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.command.DeleteAttachmentCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.command.DownloadAttachmentCommand;
+import com.wilzwert.myjobs.core.domain.model.attachment.event.integration.AttachmentCreatedEvent;
+import com.wilzwert.myjobs.core.domain.model.attachment.event.integration.AttachmentDeletedEvent;
 import com.wilzwert.myjobs.core.domain.model.attachment.exception.AttachmentNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.attachment.ports.driving.DownloadAttachmentUseCase;
 import com.wilzwert.myjobs.core.domain.model.attachment.ports.driving.GetAttachmentFileInfoUseCase;
 import com.wilzwert.myjobs.core.domain.model.job.*;
 import com.wilzwert.myjobs.core.domain.model.job.command.*;
+import com.wilzwert.myjobs.core.domain.model.job.event.integration.*;
 import com.wilzwert.myjobs.core.domain.model.job.exception.JobNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobDataManager;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driving.*;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
+import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEventId;
 import com.wilzwert.myjobs.core.domain.shared.exception.DomainException;
 import com.wilzwert.myjobs.core.domain.shared.pagination.DomainPage;
 import com.wilzwert.myjobs.core.domain.model.user.User;
@@ -30,6 +36,8 @@ import com.wilzwert.myjobs.core.domain.model.user.ports.driving.GetUserJobsUseCa
 import com.wilzwert.myjobs.core.domain.model.job.service.JobEnricher;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.HtmlSanitizer;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.event.IntegrationEventPublisher;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.transaction.TransactionProvider;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 
@@ -44,6 +52,10 @@ import java.util.*;
 
 public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, UpdateJobUseCase, UpdateJobStatusUseCase, UpdateJobRatingUseCase, DeleteJobUseCase, GetUserJobsUseCase, AddActivityToJobUseCase, UpdateActivityUseCase, AddAttachmentToJobUseCase, DownloadAttachmentUseCase, DeleteAttachmentUseCase, GetAttachmentFileInfoUseCase {
 
+    private final TransactionProvider transactionProvider;
+
+    private final IntegrationEventPublisher integrationEventPublisher;
+
     private final JobDataManager jobDataManager;
 
     private final UserDataManager userDataManager;
@@ -54,7 +66,15 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
     private final JobEnricher jobEnricher = new JobEnricher();
 
-    public JobUseCaseImpl(JobDataManager jobDataManager, UserDataManager userDataManager, FileStorage fileStorage, HtmlSanitizer htmlSanitizer) {
+    public JobUseCaseImpl(
+            TransactionProvider transactionProvider,
+            IntegrationEventPublisher integrationEventPublisher,
+            JobDataManager jobDataManager,
+            UserDataManager userDataManager,
+            FileStorage fileStorage,
+            HtmlSanitizer htmlSanitizer) {
+        this.transactionProvider = transactionProvider;
+        this.integrationEventPublisher = integrationEventPublisher;
         this.jobDataManager = jobDataManager;
         this.userDataManager = userDataManager;
         this.fileStorage = fileStorage;
@@ -68,24 +88,27 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
             throw new UserNotFoundException();
         }
 
-        command = sanitizeCommandFields(command, List.of("title", "company", "description", "profile", "comment", "salary"));
+        CreateJobCommand actualCommand = sanitizeCommandFields(command, List.of("title", "company", "description", "profile", "comment", "salary"));
 
-        Job jobToCreate = Job.create(
-                Job.builder()
-                .url(command.url())
-                .title(command.title())
-                .company(command.company())
-                .description(command.description())
-                .profile(command.profile())
-                .comment(command.comment())
-                .salary(command.salary())
-                .userId(user.get().getId())
-        );
+        return transactionProvider.executeInTransaction(() -> {
+            Job jobToCreate = Job.create(
+                    Job.builder()
+                            .url(actualCommand.url())
+                            .title(actualCommand.title())
+                            .company(actualCommand.company())
+                            .description(actualCommand.description())
+                            .profile(actualCommand.profile())
+                            .comment(actualCommand.comment())
+                            .salary(actualCommand.salary())
+                            .userId(user.get().getId())
+            );
+            User updatedUser = user.get().addJob(jobToCreate);
 
-        User updatedUser = user.get().addJob(jobToCreate);
-        Job job = updatedUser.getJobByUrl(jobToCreate.getUrl()).orElseThrow(() -> new DomainException(ErrorCode.UNEXPECTED_ERROR));
-        userDataManager.saveUserAndJob(updatedUser, job);
-        return job;
+            Job job = updatedUser.getJobByUrl(jobToCreate.getUrl()).orElseThrow(() -> new DomainException(ErrorCode.UNEXPECTED_ERROR));
+            userDataManager.saveUserAndJob(updatedUser, job);
+            integrationEventPublisher.publish(new JobCreatedEvent(IntegrationEventId.generate(), job.getId()));
+            return job;
+        });
     }
 
     @Override
@@ -103,18 +126,23 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         }
         Job job = foundJob.get();
 
-        // delete attachments' files
-        job.getAttachments().forEach(attachment -> {
-            try {
-                fileStorage.delete(attachment.getFileId());
-            }
-            catch (Exception e) {
-                // TODO log incoherence
-            }
+        transactionProvider.executeInTransaction(() -> {
+            // delete attachments' files
+            job.getAttachments().forEach(attachment -> {
+                try {
+                    fileStorage.delete(attachment.getFileId());
+                }
+                catch (Exception e) {
+                    // TODO log incoherence
+                }
+            });
+            User updatedUser = user.removeJob(job);
+            userDataManager.deleteJobAndSaveUser(updatedUser, job);
+            integrationEventPublisher.publish(new JobDeletedEvent(IntegrationEventId.generate(), job.getId()));
+            return null;
         });
 
-        User updatedUser = user.removeJob(job);
-        userDataManager.deleteJobAndSaveUser(updatedUser, job);
+
     }
 
     @Override
@@ -162,17 +190,22 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
     public Job updateJobField(UpdateJobFieldCommand command) {
         User user = userDataManager.findById(command.userId()).orElseThrow(UserNotFoundException::new);
         Job job = jobDataManager.findByIdAndUserId(command.jobId(), user.getId()).orElseThrow(JobNotFoundException::new);
-        command = sanitizeCommandFields(command, List.of("value"));
-        User updatedUser = user.updateJobField(job, command.field(), command.value());
-        // soft reload the updatedJob in the loaded collection
-        Job updatedJob = updatedUser.getJobById(job.getId()).orElseThrow(() -> new DomainException(ErrorCode.UNEXPECTED_ERROR));
+        UpdateJobFieldCommand actualCommand = sanitizeCommandFields(command, List.of("value"));
 
-        // FIXME
-        // this is an ugly workaround to force the infra (persistence in particular) to save all data
-        // as I understand DDD, only the root aggregate should be explicitly persisted
-        // but I just don't how to do it cleanly for now
-        userDataManager.saveUserAndJob(updatedUser, updatedJob);
-        return updatedJob;
+        return transactionProvider.executeInTransaction(() -> {
+            User updatedUser = user.updateJobField(job, actualCommand.field(), actualCommand.value());
+            // soft reload the updatedJob in the loaded collection
+            Job updatedJob = updatedUser.getJobById(job.getId()).orElseThrow(() -> new DomainException(ErrorCode.UNEXPECTED_ERROR));
+
+            // FIXME
+            // this is an ugly workaround to force the infra (persistence in particular) to save all data
+            // as I understand DDD, only the root aggregate should be explicitly persisted
+            // but I just don't how to do it cleanly for now
+            userDataManager.saveUserAndJob(updatedUser, updatedJob);
+
+            integrationEventPublisher.publish(new JobFieldUpdatedEvent(IntegrationEventId.generate(), job.getId(), actualCommand.field()));
+            return updatedJob;
+        });
     }
 
     @Override
@@ -180,18 +213,22 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         User user = userDataManager.findById(command.userId()).orElseThrow(UserNotFoundException::new);
         Job job = jobDataManager.findByIdAndUserId(command.jobId(), user.getId()).orElseThrow(JobNotFoundException::new);
 
-        command = sanitizeCommandFields(command, List.of("title", "company", "description", "profile", "comment", "salary"));
+        UpdateJobFullCommand actualCommand = sanitizeCommandFields(command, List.of("title", "company", "description", "profile", "comment", "salary"));
 
-        User updatedUser = user.updateJob(job, command.url(), command.title(), command.company(), command.description(), command.profile(), command.comment(), command.salary());
-        // soft reload the updatedJob in the loaded collection
-        Job updatedJob = updatedUser.getJobById(job.getId()).orElseThrow(() -> new DomainException(ErrorCode.UNEXPECTED_ERROR));
+        return transactionProvider.executeInTransaction(() -> {
 
-        // FIXME
-        // this is an ugly workaround to force the infra (persistence in particular) to save all data
-        // as I understand DDD, only the root aggregate should be explicitly persisted
-        // but I just don't how to do it cleanly for now
-        userDataManager.saveUserAndJob(updatedUser, updatedJob);
-        return updatedJob;
+            User updatedUser = user.updateJob(job, actualCommand.url(), actualCommand.title(), actualCommand.company(), actualCommand.description(), actualCommand.profile(), actualCommand.comment(), actualCommand.salary());
+            // soft reload the updatedJob in the loaded collection
+            Job updatedJob = updatedUser.getJobById(job.getId()).orElseThrow(() -> new DomainException(ErrorCode.UNEXPECTED_ERROR));
+
+            // FIXME
+            // this is an ugly workaround to force the infra (persistence in particular) to save all data
+            // as I understand DDD, only the root aggregate should be explicitly persisted
+            // but I just don't how to do it cleanly for now
+            userDataManager.saveUserAndJob(updatedUser, updatedJob);
+            integrationEventPublisher.publish(new JobUpdatedEvent(IntegrationEventId.generate(), job.getId()));
+            return updatedJob;
+        });
     }
 
     @Override
@@ -202,19 +239,25 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         }
 
         Job job = foundJob.get();
-        Activity activity = Activity.builder()
-                .type(command.activityType())
-                .comment(command.comment())
-                .build();
 
-        job = job.addActivity(activity);
+        CreateActivityCommand actualCommand = sanitizeCommandFields(command, List.of("comment"));
 
-        // FIXME
-        // this is an ugly workaround to force the infra (persistence in particular) to save all data
-        // as I understand DDD, only the aggregate should be explicitly persisted
-        // but I just don't how to do it cleanly for now
-        this.jobDataManager.saveJobAndActivity(job, activity);
-        return activity;
+        return transactionProvider.executeInTransaction(() -> {
+            Activity activity = Activity.builder()
+                    .type(actualCommand.activityType())
+                    .comment(actualCommand.comment())
+                    .build();
+            Job updatedJob = job.addActivity(activity);
+
+            // FIXME
+            // this is an ugly workaround to force the infra (persistence in particular) to save all data
+            // as I understand DDD, only the aggregate should be explicitly persisted
+            // but I just don't how to do it cleanly for now
+            this.jobDataManager.saveJobAndActivity(updatedJob, activity);
+
+            this.integrationEventPublisher.publish(new ActivityCreatedEvent(IntegrationEventId.generate(), job.getId(), activity.getId(), activity.getType()));
+            return activity;
+        });
     }
 
     @Override
@@ -243,7 +286,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
     }
 
     /**
-     * FIXME : this should be improved to avoir reflection and ugly casts
+     * FIXME : this should be improved to avoid reflection and ugly casts, and externalized
      * @param command the command to sanitize
      * @param fieldsToSanitize the command fields to sanitize
      * @return a new comment of the same class
@@ -283,30 +326,30 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         }
 
         Job job = foundJob.get();
-
         AttachmentId attachmentId = AttachmentId.generate();
 
-        // FIXME : it seems very un-DDD to handle activity creation here
-        // the Job aggregate should be the one to do it, although it would be too complicated for us for the time being
+        return transactionProvider.executeInTransaction(() -> {
+            DownloadableFile file = fileStorage.store(command.file(), command.userId().value().toString() + "/" + attachmentId.value().toString(), command.filename());
+            Attachment attachment = Attachment.builder()
+                    .id(attachmentId)
+                    .name(command.name())
+                    .fileId(file.fileId())
+                    .filename(command.filename())
+                    .contentType(file.contentType()).build();
+            Job updatedJob = job.addAttachment(attachment);
 
-        DownloadableFile file = fileStorage.store(command.file(), command.userId().value().toString()+"/"+attachmentId.value().toString(), command.filename());
-        Attachment attachment = Attachment.builder()
-                .id(attachmentId)
-                .name(command.name())
-                .fileId(file.fileId())
-                .filename(command.filename())
-                .contentType(file.contentType()).build();
-        job = job.addAttachment(attachment);
+            Activity activity = Activity.builder().type(ActivityType.ATTACHMENT_CREATION).comment(attachment.getName()).build();
+            updatedJob = updatedJob.addActivity(activity);
 
-        Activity activity = Activity.builder().type(ActivityType.ATTACHMENT_CREATION).comment(attachment.getName()).build();
-        job = job.addActivity(activity);
-
-        // FIXME
-        // this is an ugly workaround to force the infra (persistence in particular) to save all data
-        // as I understant DDD, only the aggregate should be explicitely persisted
-        // but I just don't how to do it cleanly for now
-        jobDataManager.saveJobAndAttachment(job, attachment, activity);
-        return attachment;
+            // FIXME
+            // this is an ugly workaround to force the infra (persistence in particular) to save all data
+            // as I understand DDD, only the aggregate should be explicitly persisted
+            // but I just don't how to do it cleanly for now
+            jobDataManager.saveJobAndAttachment(updatedJob, attachment, activity);
+            integrationEventPublisher.publish(new AttachmentCreatedEvent(IntegrationEventId.generate(), job.getId(), attachment.getId()));
+            integrationEventPublisher.publish(new ActivityAutomaticallyCreatedEvent(IntegrationEventId.generate(), job.getId(), activity.getId(), activity.getType()));
+            return attachment;
+        });
     }
 
 
@@ -345,25 +388,29 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
         if(attachment == null) {
             throw new AttachmentNotFoundException();
         }
-
-        // FIXME : the activity should be created by the Job aggregate
-        // however for now we do it here,
-        // to be able to explicitly ask the JobDataManager to delete the attachment and store both the job and the new activity
-        Job job = foundJob.get().removeAttachment(attachment);
-        Activity activity = Activity.builder().type(ActivityType.ATTACHMENT_DELETION).comment(attachment.getName()).build();
-        job = job.addActivity(activity);
-
-        // FIXME
-        // this is an ugly workaround to force the infra (persistence in particular) to save all data
-        // as I understand DDD, only the root aggregate should be explicitly persisted
-        // but I just don't how to do it cleanly for now
-        jobDataManager.deleteAttachmentAndSaveJob(job, attachment, activity);
-        try {
-            fileStorage.delete(attachment.getFileId());
-        }
-        catch (Exception e) {
-            // TODO do something
-        }
+        transactionProvider.executeInTransaction(() -> {
+            // FIXME : maybe the activity should be created by the Job aggregate
+            // however for now we do it here,
+            // to be able to explicitly ask the JobDataManager to delete the attachment and store both the job and the new activity
+            Job job = foundJob.get().removeAttachment(attachment);
+            Activity activity = Activity.builder().type(ActivityType.ATTACHMENT_DELETION).comment(attachment.getName()).build();
+            job = job.addActivity(activity);
+            // FIXME
+            // this is an ugly workaround to force the infra (persistence in particular) to save all data
+            // as I understand DDD, only the root aggregate should be explicitly persisted
+            // but I just don't how to do it cleanly for now
+            jobDataManager.deleteAttachmentAndSaveJob(job, attachment, activity);
+            try {
+                fileStorage.delete(attachment.getFileId());
+            } catch (Exception e) {
+                // TODO do something about it
+            }
+            finally {
+                integrationEventPublisher.publish(new AttachmentDeletedEvent(IntegrationEventId.generate(), job.getId(), attachment.getId()));
+                integrationEventPublisher.publish(new ActivityAutomaticallyCreatedEvent(IntegrationEventId.generate(), job.getId(), activity.getId(), activity.getType()));
+            }
+            return null;
+        });
     }
 
     @Override
@@ -373,9 +420,12 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
             throw new JobNotFoundException();
         }
 
-        Job job = foundJob.get().updateStatus(command.status());
-        jobDataManager.saveJobAndActivity(job, job.getActivities().getFirst());
-        return job;
+        return transactionProvider.executeInTransaction(() -> {
+            Job job = foundJob.get().updateStatus(command.status());
+            jobDataManager.saveJobAndActivity(job, job.getActivities().getFirst());
+            integrationEventPublisher.publish(new JobStatusUpdatedEvent(IntegrationEventId.generate(), job.getId(), job.getStatus()));
+            return job;
+        });
     }
 
     @Override
@@ -385,8 +435,11 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
             throw new JobNotFoundException();
         }
 
-        Job job = foundJob.get().updateRating(command.rating());
-        jobDataManager.saveJobAndActivity(job, job.getActivities().getFirst());
-        return job;
+        return transactionProvider.executeInTransaction(() -> {
+            Job job = foundJob.get().updateRating(command.rating());
+            jobDataManager.saveJobAndActivity(job, job.getActivities().getFirst());
+            integrationEventPublisher.publish(new JobRatingUpdatedEvent(IntegrationEventId.generate(), job.getId(), job.getRating()));
+            return job;
+        });
     }
 }

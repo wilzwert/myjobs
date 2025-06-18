@@ -9,10 +9,14 @@ import com.wilzwert.myjobs.core.domain.model.user.command.UpdateUserCommand;
 import com.wilzwert.myjobs.core.domain.model.user.EmailStatus;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
+import com.wilzwert.myjobs.core.domain.model.user.event.integration.UserUpdatedEvent;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.EmailVerificationMessageProvider;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.event.IntegrationEventPublisher;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.transaction.TransactionProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -21,6 +25,7 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -30,6 +35,12 @@ import static org.mockito.Mockito.*;
  */
 @ExtendWith(MockitoExtension.class)
 class UserUseCaseImplTest {
+
+    @Mock
+    private TransactionProvider transactionProvider;
+
+    @Mock
+    private IntegrationEventPublisher integrationEventPublisher;
 
     @Mock
     private UserDataManager userDataManager;
@@ -68,11 +79,14 @@ class UserUseCaseImplTest {
 
     @Test
     void whenEmailDoesntChange_thenShouldUpdateUserAndNotSendVerificationEmail() {
+        ArgumentCaptor<UserUpdatedEvent> userUpdatedEventArgumentCaptor = ArgumentCaptor.forClass(UserUpdatedEvent.class);
         UserId userId = UserId.generate();
         User user = getValidTestUser(userId);
 
         when(userDataManager.findMinimalById(userId)).thenReturn(Optional.of(user));
+        when(transactionProvider.executeInTransaction(any(Supplier.class))).thenAnswer(i -> ((Supplier<?>)i.getArgument(0)).get());
         when(userDataManager.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
+        when(integrationEventPublisher.publish(userUpdatedEventArgumentCaptor.capture())).thenAnswer(i -> i.getArgument(0));
 
         User updatedUser = underTest.updateUser(new UpdateUserCommand(user.getEmail(), "updatedusername", "updatedfirstName", "updatedlastName", 12, userId));
         assertEquals(user.getId(), updatedUser.getId());
@@ -81,18 +95,28 @@ class UserUseCaseImplTest {
         assertEquals("updatedfirstName", updatedUser.getFirstName());
         assertEquals("updatedlastName", updatedUser.getLastName());
         assertEquals(12, updatedUser.getJobFollowUpReminderDays());
+        verify(userDataManager, times(1)).findMinimalById(userId);
+        verify(transactionProvider).executeInTransaction(any(Supplier.class));
         verify(userDataManager, times(1)).save(user);
         verify(emailVerificationMessageProvider, times(0)).send(user);
+        verify(integrationEventPublisher, times(1)).publish(userUpdatedEventArgumentCaptor.capture());
+
+        UserUpdatedEvent userUpdatedEvent = userUpdatedEventArgumentCaptor.getValue();
+        assertNotNull(userUpdatedEvent);
+        assertEquals(updatedUser.getId(), userUpdatedEvent.getUserId());
     }
 
     @Test
     void whenEmailChanges_thenShouldUpdateUserAndSendVerificationEmail() {
+        ArgumentCaptor<UserUpdatedEvent> userUpdatedEventArgumentCaptor = ArgumentCaptor.forClass(UserUpdatedEvent.class);
         UserId userId = UserId.generate();
         User user = getValidTestUser(userId);
 
         when(userDataManager.findMinimalById(userId)).thenReturn(Optional.of(user));
+        when(transactionProvider.executeInTransaction(any(Supplier.class))).thenAnswer(i -> ((Supplier<?>)i.getArgument(0)).get());
         when(userDataManager.save(any(User.class))).thenAnswer(i -> i.getArgument(0));
         doNothing().when(emailVerificationMessageProvider).send(user);
+        when(integrationEventPublisher.publish(userUpdatedEventArgumentCaptor.capture())).thenAnswer(i -> i.getArgument(0));
 
         User updatedUser = underTest.updateUser(new UpdateUserCommand("other@example.com", "username", "firstName", "lastName", 12, userId));
         assertEquals(userId, updatedUser.getId());
@@ -102,8 +126,14 @@ class UserUseCaseImplTest {
         assertEquals("firstName", updatedUser.getFirstName());
         assertEquals("lastName", updatedUser.getLastName());
         assertEquals(12, updatedUser.getJobFollowUpReminderDays());
+        verify(transactionProvider).executeInTransaction(any(Supplier.class));
         verify(userDataManager, times(1)).save(user);
         verify(emailVerificationMessageProvider, times(1)).send(user);
+        verify(integrationEventPublisher, times(1)).publish(userUpdatedEventArgumentCaptor.capture());
+
+        UserUpdatedEvent userUpdatedEvent = userUpdatedEventArgumentCaptor.getValue();
+        assertNotNull(userUpdatedEvent);
+        assertEquals(updatedUser.getId(), userUpdatedEvent.getUserId());
     }
 
     @Test

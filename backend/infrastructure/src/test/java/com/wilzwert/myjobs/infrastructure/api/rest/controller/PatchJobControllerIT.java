@@ -12,6 +12,7 @@ import com.wilzwert.myjobs.infrastructure.api.rest.dto.ValidationErrorResponse;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.job.*;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
 import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
+import com.wilzwert.myjobs.infrastructure.utility.IntegrationEventUtility;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -40,6 +41,9 @@ class PatchJobControllerIT extends AbstractBaseIntegrationTest  {
 
     // id for the User to use for get /api/jobs tests
     private static final String USER_FOR_JOBS_TEST_ID = "abcd1234-1234-1234-1234-123456789012";
+
+    @Autowired
+    private IntegrationEventUtility integrationEventUtility;
 
     @Autowired
     private MockMvc mockMvc;
@@ -177,6 +181,8 @@ class PatchJobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(updatedJob.getProfile()).isEqualTo("My job profile [updated]");
             assertThat(updatedJob.getComment()).isEqualTo("My comment [updated]");
             assertThat(updatedJob.getSalary()).isEqualTo("My job salary [updated]");
+
+            integrationEventUtility.assertEventCreated("JobUpdatedEvent", JOB_FOR_TEST_ID);
         }
     }
 
@@ -229,6 +235,8 @@ class PatchJobControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(updatedJob).isNotNull();
             assertThat(updatedJob.getTitle()).isEqualTo("My job [updated]");
             assertThat(updatedJob.getCompany()).isEqualTo("Some company");
+
+            integrationEventUtility.assertEventCreated("JobFieldUpdatedEvent", JOB_FOR_TEST_ID, beforeCall);
         }
     }
 
@@ -283,6 +291,8 @@ class PatchJobControllerIT extends AbstractBaseIntegrationTest  {
             Job updatedJob = jobDataManager.findById(new JobId(UUID.fromString(JOB_FOR_TEST_ID))).orElse(null);
             assertThat(updatedJob).isNotNull();
             assertThat(updatedJob.getStatus()).isEqualTo(JobStatus.RELAUNCHED);
+
+            integrationEventUtility.assertEventCreated("JobStatusUpdatedEvent", JOB_FOR_TEST_ID, beforeCall);
         }
     }
 
@@ -339,6 +349,8 @@ class PatchJobControllerIT extends AbstractBaseIntegrationTest  {
 
             assertThat(updatedJob).isNotNull();
             assertThat(updatedJob.getRating()).isEqualTo(JobRating.of(5));
+
+            integrationEventUtility.assertEventCreated("JobRatingUpdatedEvent", JOB_FOR_TEST_ID, beforeCall);
         }
     }
 }

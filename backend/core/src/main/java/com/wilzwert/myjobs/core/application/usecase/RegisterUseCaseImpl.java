@@ -3,6 +3,7 @@ package com.wilzwert.myjobs.core.application.usecase;
 
 import com.wilzwert.myjobs.core.domain.model.user.command.RegisterUserCommand;
 import com.wilzwert.myjobs.core.domain.model.user.command.ValidateEmailCommand;
+import com.wilzwert.myjobs.core.domain.model.user.event.integration.UserCreatedEvent;
 import com.wilzwert.myjobs.core.domain.model.user.exception.UserAlreadyExistsException;
 import com.wilzwert.myjobs.core.domain.model.user.exception.UserNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.user.User;
@@ -12,6 +13,9 @@ import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.CheckUserAvailabilityUseCase;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.RegisterUseCase;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driving.ValidateEmailUseCase;
+import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEventId;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.event.IntegrationEventPublisher;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.transaction.TransactionProvider;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -21,11 +25,21 @@ import java.util.Optional;
  */
 
 public class RegisterUseCaseImpl implements RegisterUseCase, CheckUserAvailabilityUseCase, ValidateEmailUseCase {
+
+    private final TransactionProvider transactionProvider;
+    private final IntegrationEventPublisher integrationEventPublisher;
     private final UserDataManager userDataManager;
     private final PasswordHasher passwordHasher;
     private final AccountCreationMessageProvider accountCreationMessageProvider;
 
-    public RegisterUseCaseImpl(UserDataManager userDataManager, PasswordHasher passwordHasher, AccountCreationMessageProvider accountCreationMessageProvider) {
+    public RegisterUseCaseImpl(
+            TransactionProvider transactionProvider,
+            IntegrationEventPublisher integrationEventPublisher,
+            UserDataManager userDataManager,
+            PasswordHasher passwordHasher,
+            AccountCreationMessageProvider accountCreationMessageProvider) {
+        this.transactionProvider = transactionProvider;
+        this.integrationEventPublisher = integrationEventPublisher;
         this.userDataManager = userDataManager;
         this.passwordHasher = passwordHasher;
         this.accountCreationMessageProvider = accountCreationMessageProvider;
@@ -43,22 +57,26 @@ public class RegisterUseCaseImpl implements RegisterUseCase, CheckUserAvailabili
             throw new UserAlreadyExistsException();
         }
 
-        User user = userDataManager.save(User.create(
-                User.builder()
-                    .email(registerUserCommand.email())
-                    .password(passwordHasher.hashPassword(registerUserCommand.password()))
-                    .username(registerUserCommand.username())
-                    .firstName(registerUserCommand.firstName())
-                    .lastName(registerUserCommand.lastName())
-                    .jobFollowUpReminderDays(registerUserCommand.jobFollowUpReminderDays())
-                    .lang(registerUserCommand.lang())
-                    .jobs(Collections.emptyList()),
-                registerUserCommand.password()
-        ));
+        return transactionProvider.executeInTransaction(() -> {
+            User user = userDataManager.save(User.create(
+                    User.builder()
+                            .email(registerUserCommand.email())
+                            .password(passwordHasher.hashPassword(registerUserCommand.password()))
+                            .username(registerUserCommand.username())
+                            .firstName(registerUserCommand.firstName())
+                            .lastName(registerUserCommand.lastName())
+                            .jobFollowUpReminderDays(registerUserCommand.jobFollowUpReminderDays())
+                            .lang(registerUserCommand.lang())
+                            .jobs(Collections.emptyList()),
+                    registerUserCommand.password()
+            ));
 
-        // send account creation message
-        accountCreationMessageProvider.send(user);
-        return user;
+            // send account creation message
+            accountCreationMessageProvider.send(user);
+
+            integrationEventPublisher.publish(new UserCreatedEvent(IntegrationEventId.generate(), user.getId()));
+            return user;
+        });
     }
 
     @Override

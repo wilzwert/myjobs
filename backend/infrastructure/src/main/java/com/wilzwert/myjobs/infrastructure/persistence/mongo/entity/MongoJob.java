@@ -1,7 +1,9 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.wilzwert.myjobs.core.domain.model.job.JobRating;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.job.JobRatingDeserializer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -48,6 +50,7 @@ public class MongoJob {
 
     private String salary;
 
+    @JsonDeserialize(using = JobRatingDeserializer.class)
     private JobRating rating;
 
     @Field(name = "created_at")

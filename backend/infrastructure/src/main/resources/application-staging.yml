@@ -5,3 +5,5 @@ google:
 security:
   cors:
     allow-all: true # WARNING : use with caution, in dev / integration / staging environments only !
+
+application.kafka.topic.prefix: myjobs-staging

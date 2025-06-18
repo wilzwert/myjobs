@@ -8,7 +8,6 @@ import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.explore.support.MongoJobExplorerFactoryBean;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.MongoJobRepositoryFactoryBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.MongoTransactionManager;
@@ -19,7 +18,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
  * @author Wilhelm Zwertvaegher
  */
 @Configuration
-@ConditionalOnProperty(name = "application.batch.enabled", havingValue = "true")
 @EnableBatchProcessing
 public class BatchConfiguration {
     @Bean

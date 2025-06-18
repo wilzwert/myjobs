@@ -6,27 +6,46 @@ import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
+import com.wilzwert.myjobs.core.domain.model.user.event.integration.UserDeletedEvent;
 import com.wilzwert.myjobs.core.domain.model.user.exception.UserDeleteException;
 import com.wilzwert.myjobs.core.domain.model.user.exception.UserNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
-import com.wilzwert.myjobs.core.domain.model.user.ports.driving.DeleteAccountUseCase;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
 
-import org.junit.jupiter.api.BeforeEach;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.event.IntegrationEventPublisher;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.transaction.TransactionProvider;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
+@ExtendWith(MockitoExtension.class)
 class DeleteAccountUseCaseImplTest {
 
+    @Mock
+    private TransactionProvider transactionProvider;
+
+    @Mock
+    private IntegrationEventPublisher integrationEventPublisher;
+
+    @Mock
     private UserDataManager userDataManager;
+
+    @Mock
     private FileStorage fileStorage;
-    private DeleteAccountUseCase useCase;
+
+    @InjectMocks
+    private DeleteAccountUseCaseImpl useCase;
 
     private final UserId userId = UserId.generate();
     private final Attachment attachment = Attachment.builder()
@@ -53,17 +72,15 @@ class DeleteAccountUseCaseImplTest {
             .username("john")
             .password("password")
             .jobs(List.of(job)).build();
-    @BeforeEach
-    void setUp() {
-        userDataManager = mock(UserDataManager.class);
-        fileStorage = mock(FileStorage.class);
-        useCase = new DeleteAccountUseCaseImpl(userDataManager, fileStorage);
-    }
 
     @Test
     void shouldDeleteUserAndAllAttachmentsSuccessfully() {
         // given
+        ArgumentCaptor<UserDeletedEvent> userDeletedEventCaptor = ArgumentCaptor.forClass(UserDeletedEvent.class);
         when(userDataManager.findById(userId)).thenReturn(Optional.of(user));
+        when(transactionProvider.executeInTransaction(any(Supplier.class))).thenAnswer(i -> ((Supplier<?>)i.getArgument(0)).get());
+        when(integrationEventPublisher.publish(userDeletedEventCaptor.capture())).thenAnswer(i -> i.getArgument(0));
+
 
         // when
         useCase.deleteAccount(userId);
@@ -71,11 +88,17 @@ class DeleteAccountUseCaseImplTest {
         // then
         verify(fileStorage).delete(attachment.getFileId());
         verify(userDataManager).deleteUser(user);
+        verify(transactionProvider).executeInTransaction(any(Supplier.class));
+
+        UserDeletedEvent userDeletedEvent = userDeletedEventCaptor.getValue();
+        assertNotNull(userDeletedEvent);
+        assertEquals(user.getId(), userDeletedEvent.getUserId());
     }
 
     @Test
     void shouldThrowUserDeleteExceptionWhenFileDeletionFails() {
         when(userDataManager.findById(userId)).thenReturn(Optional.of(user));
+        when(transactionProvider.executeInTransaction(any(Supplier.class))).thenAnswer(i -> ((Supplier<?>)i.getArgument(0)).get());
         doThrow(new RuntimeException("S3 failure")).when(fileStorage).delete("fileId");
 
         // when / then

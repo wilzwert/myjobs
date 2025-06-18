@@ -69,7 +69,7 @@ class SendJobsRemindersBatchRunnerTest {
 
     @Test
     void shouldLogErrorWhenExceptionThrown() {
-        when(sendJobsRemindersUseCase.sendJobsReminders(1)).thenThrow(new RuntimeException("boom"));
+        when(sendJobsRemindersUseCase.sendJobsReminders(1)).thenThrow(new RuntimeException("error"));
 
         assertThrows(BatchRunException.class, runner::run);
 

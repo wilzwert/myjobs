@@ -26,20 +26,31 @@ spring:
     # test-connection: true
   data:
     mongodb:
-
-      # host: ${MONGODB_HOST:localhost}
-      # port: ${MONGODB_PORT:27017}
-      # database: ${MONGODB_DATABASE:myjobs}
-      # username: ${MONGODB_USERNAME:mongouser}
-      # password: ${MONGODB_PASSWORD:mongopwd}
       auto-index-creation: true
       uuid-representation: standard
-      # replica-set-name: ${MONGODB_RS_NAME:rs0}
       ssl:
         enabled: false
       uri: mongodb://${MONGODB_USERNAME:mongouser}:${MONGODB_PASSWORD:mongopwd}@${MONGODB_HOST:localhost}:${MONGODB_PORT:27017}/${MONGODB_DATABASE:myjobs}?retryWrites=true&w=majority
   thymeleaf:
     encoding: UTF-8
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
+    properties:
+      security.protocol: ${KAFKA_SECURITY_PROTOCOL:PLAINTEXT}
+      ssl.endpoint.identification.algorithm: ${KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM:""}
+      sasl.mechanism: ${KAFKA_SASL_MECHANISM:}
+      sasl.jaas.config: >
+        ${KAFKA_SASL_JAAS_CONFIG:}
+    admin.auto-create: true
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 3
+      linger-ms: 5
+      enable-idempotence: true
+    template:
+      default-topic: myjobs
 
 
 # security
@@ -104,6 +115,7 @@ application:
   mail:
     from: ${APPLICATION_MAIL_FROM:noreply@locahost}
     from-name: ${APPLICATION_MAIL_FROM_NAME:MyJobs}
+  kafka.topic-prefix: myjobs-
   default-language: EN
   rate-limiting:
     rules:
