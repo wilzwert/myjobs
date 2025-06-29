@@ -52,7 +52,6 @@ export class JobDetailComponent implements OnInit, OnDestroy {
         this.title.setTitle(`Job - ${job.title}`);
       }),
       catchError((error: ApiError) => {
-        console.log(error);
         this.router.navigate(["/jobs"]);
         return this.errorProcessorService.processError(error);
       })

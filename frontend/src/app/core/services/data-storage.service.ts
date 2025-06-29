@@ -18,7 +18,6 @@ export class DataStorageService {
       return JSON.parse(item) as T;
     }
     catch(e) {
-      console.log(e);
       return null;
     }
   }

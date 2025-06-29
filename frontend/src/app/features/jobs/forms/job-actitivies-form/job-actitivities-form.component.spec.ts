@@ -88,7 +88,6 @@ describe('JobActivitiesFormComponent', () => {
     const emitSpy = jest.spyOn(component.activitiesSaved, 'emit');
 
     component.submit();
-    console.log('expecting loading');
     expect(component.loading).toBe(true);
 
     subject.next(jobResponse);

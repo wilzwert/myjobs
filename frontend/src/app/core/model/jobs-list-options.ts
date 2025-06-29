@@ -79,11 +79,9 @@ export class JobsListOptions {
             // clicking on the current status removes the filter
             if(newStatus === this.jobStatus) {
                 this.jobStatus = null;
-                console.log('removing current status');
             }
             else {
                 this.jobStatus = status as keyof typeof JobStatus;
-                console.log('setting currentstatus ', this.jobStatus);
             }
             this.jobStatusMeta = null;
         }
@@ -92,11 +90,9 @@ export class JobsListOptions {
             // clicking on the current status filter removes the filter
             if(newStatusFilter === this.jobStatusMeta) {
                 this.jobStatusMeta = null;
-                console.log('removing current status filter');
             }
             else {
                 this.jobStatusMeta = statusMeta as keyof typeof JobStatusMeta;
-                console.log('setting currentstatus filter ', this.jobStatusMeta);
             }
             this.jobStatus = null;
         }

@@ -12,7 +12,6 @@ import { BaseInputComponent } from "./baseinput.component";
 })
 export class SalaryInputComponent extends BaseInputComponent {
     override configure(): void {
-        console.log('configure salary with initial', this.initialValue);
         this.form.addControl('salary', this.fb.control(this.initialValue, []));
     }
 

@@ -7,19 +7,19 @@ import { EditorComponent, TINYMCE_SCRIPT_SRC } from "@tinymce/tinymce-angular";
 import { BaseInputComponent } from "./baseinput.component";
 
 @Component({
-  selector: 'app-job-profile-input',
+  selector: 'app-activity-comment-input',
   imports: [ReactiveFormsModule, MatFormField, MatInput, MatLabel, MatHint, EditorComponent, StatusIconComponent],
   providers: [
     { provide: TINYMCE_SCRIPT_SRC, useValue: 'tinymce/tinymce.min.js' }
   ],
-  templateUrl: './profile-input.component.html'
+  templateUrl: './activity-comment-input.component.html',
 })
-export class ProfileInputComponent extends BaseInputComponent {
+export class CommentInputComponent extends BaseInputComponent {
     override configure(): void {
-        this.form.addControl('profile', this.fb.control(this.initialValue, []));
+        this.form.addControl('comment', this.fb.control(this.initialValue, []));
     }
 
     constructor() {
-        super('profile');
+        super('comment');
     }
 }

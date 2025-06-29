@@ -1,0 +1,13 @@
+@if(control) {
+    <mat-form-field>
+        <mat-label i18n="activity comment|activity comment input label@@input.activity.comment.label">Comment</mat-label>
+        <editor [init]="init" (onKeyDown)="updateRichText($event)" (onChange)="updateRichText($event)" [initialValue]="control.value"
+        i18n-placeholder="activity comment placeholder|activity comment input placeholder@@input.activity.comment.placeholder"
+            placeholder="Activity comment"
+        ></editor>
+        <mat-hint class="content-hint" align="end">
+            <app-status-icon [isValid]="!control.invalid"/>
+        </mat-hint>
+        <textarea matInput placeholder="Activity comment" [formControl]="control" class=""></textarea>
+    </mat-form-field>
+}

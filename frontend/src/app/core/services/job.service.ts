@@ -184,12 +184,11 @@ export class JobService {
   }
 
   public createAttachments(jobId: string, request: CreateJobAttachmentsRequest): Observable<Job> {
-    const attachmentRequests = request.attachments.map(attachment => 
-      this.createAttachment(jobId, attachment) // calls createAttachment for each attachment
-    );
-
-    return forkJoin(attachmentRequests).pipe(
-        map((jobs: Job[]) => jobs[jobs.length - 1]) // returns the last updated job
+    return this.dataService.post<Job>(`jobs/${jobId}/attachments`, request.attachments).pipe(
+      map((j: Job) => {
+        this.reloadIfNecessary(j);
+        return j;
+      })
     );
   }
 
@@ -201,22 +200,12 @@ export class JobService {
     return this.dataService.get<ProtectedFile>(`jobs/${jobId}/attachments/${attachmentId}/file/info`);
   }
 
-  public createActivity(jobId: string, request: CreateJobActivityRequest): Observable<Job> {
-    return this.dataService.post<Job>(`jobs/${jobId}/activities`, request).pipe(
+  public createActivities(jobId: string, request: CreateJobActivitiesRequest): Observable<Job> {
+    return this.dataService.post<Job>(`jobs/${jobId}/activities`, request.activities).pipe(
       map((j: Job) => {
         this.reloadIfNecessary(j);
         return j;
       })
-    );
-  }
-
-  public createActivities(jobId: string, request: CreateJobActivitiesRequest): Observable<Job> {
-    const attachmentRequests = request.activities.map(activity => 
-      this.createActivity(jobId, activity) // calls createAttachment for each activity
-    );
-
-    return forkJoin(attachmentRequests).pipe(
-        map((jobs: Job[]) => jobs[jobs.length - 1]) // returns the last updated job
     );
   }
 

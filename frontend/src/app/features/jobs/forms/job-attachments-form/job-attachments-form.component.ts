@@ -74,7 +74,7 @@ export class JobAttachmentsFormComponent implements OnInit {
         alert($localize`:@@alert.file_too_big:File too big`);
       }
       else {
-        // Lire le fichier et le convertir en Base64
+        //read file and convert to Base64
         const reader = new FileReader();
         reader.onload = () => {
           const base64String = reader.result as string;

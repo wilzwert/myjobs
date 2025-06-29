@@ -11,10 +11,9 @@
                 }
                 </mat-select>
             </mat-form-field>
-            <mat-form-field>
-                <mat-label [attr.for]="'comment'+$index">Comment</mat-label>
-                <textarea matInput [id]="'comment'+$index" formControlName="comment" placeholder="Comment"></textarea>
-            </mat-form-field>
+
+            <app-activity-comment-input [initialValue]="" [form]="activityForm"></app-activity-comment-input>
+            
             @if($index >= defaultActivities) {
                 <button mat-icon-button (click)="removeActivity($index)">
                     <mat-icon aria-hidden="false" aria-label="Remove this activity" i18n-aria-label="Remove this activity|label for activity removal action@@action.activity.delete" fontIcon="remove">Remove this activitiy</mat-icon>

@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
-import { MatInput } from '@angular/material/input';
 import { JobService } from '@core/services/job.service';
 import { Job } from '@core/model/job.interface';
 import { catchError, take } from 'rxjs';
@@ -16,11 +15,12 @@ import { MatOption, MatSelect } from '@angular/material/select';
 import { MatIcon } from '@angular/material/icon';
 import { ErrorProcessorService } from '@core/services/error-processor.service';
 import { TranslatorService } from '@app/core/services/translator.service';
+import { CommentInputComponent } from "../inputs/activity-comment-input.component";
 
 
 @Component({
   selector: 'app-job-activities-form',
-  imports: [ActivityLabelPipe, ReactiveFormsModule, MatFormField, MatInput, MatLabel, MatButton, MatSelect, MatOption, MatIcon],
+  imports: [ActivityLabelPipe, ReactiveFormsModule, MatFormField, MatLabel, MatButton, MatSelect, MatOption, MatIcon, CommentInputComponent],
   templateUrl: './job-actitivities-form.component.html',
   styleUrl: './job-actitivities-form.component.scss'
 })
@@ -76,7 +76,7 @@ export class JobActivitiesFormComponent implements OnInit {
       this.activities.controls.forEach((activity, index) => {
         activities[index] = {'type': activity.value.type, 'comment':  activity.value.comment} as CreateJobActivityRequest;
       });
-
+      
       this.jobService.createActivities(this.job.id, {activities: activities} as CreateJobActivitiesRequest).pipe(
             take(1),
             catchError(
@@ -89,7 +89,6 @@ export class JobActivitiesFormComponent implements OnInit {
             )
           )
           .subscribe((job) => {
-            console.log('received job');
             this.loading = false;
             this.notificationService.confirmation(
               activities.length > 1 ?

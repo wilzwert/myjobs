@@ -22,9 +22,6 @@ export abstract class BaseInputComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        console.log('BaseInputComponent ngOnInit ?');
-        console.log('form', this.form);
-        console.log('initial value', this.initialValue);
         this.configure();
     }
 
