@@ -1,5 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
@@ -21,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
@@ -84,12 +86,13 @@ public class ActivityControllerIT extends AbstractBaseIntegrationTest  {
         CreateActivityRequest createActivityRequest = new CreateActivityRequest();
         createActivityRequest.setType(ActivityType.IN_PERSON_INTERVIEW);
         createActivityRequest.setComment("Created in person interview activity");
-        mockMvc.perform(post("/api/jobs/11111111-1111-1111-1111-111111111111/activities").cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(createActivityRequest)))
+        List<CreateActivityRequest> actualRequest = List.of(createActivityRequest);
+        mockMvc.perform(post("/api/jobs/11111111-1111-1111-1111-111111111111/activities").cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(actualRequest)))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    void whenRequestInvalid_thenShouldReturnBadRequestWithErrors() throws Exception {
+    void whenRequestIsNotAList_thenShouldReturnValidationFailed() throws Exception {
         String invalidJson = """
                 {
                     "type": "NOT_A_VALID_ACTIVITY_TYPE"
@@ -104,8 +107,25 @@ public class ActivityControllerIT extends AbstractBaseIntegrationTest  {
         assertThat(errorResponse).isNotNull();
         assertThat(errorResponse.getStatus()).isEqualTo("400");
         assertThat(errorResponse.getMessage()).isEqualTo(ErrorCode.VALIDATION_FAILED.name());
-        assertThat(errorResponse.getErrors()).hasSize(1);
-        assertThat(errorResponse.getErrors().get("type")).containsExactly(new ValidationErrorResponse(ErrorCode.INVALID_VALUE.name()));
+        assertThat(errorResponse.getErrors()).hasSize(0);
+    }
+
+    @Test
+    void whenRequestInvalid_thenShouldReturnBadRequestWithErrors() throws Exception {
+        String invalidJson = """
+                [{
+                    "type": "NOT_A_VALID_ACTIVITY_TYPE"
+                }]
+            """;
+
+        MvcResult mvcResult = mockMvc.perform(post(TEST_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(invalidJson))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        ErrorResponse errorResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ErrorResponse.class);
+        assertThat(errorResponse).isNotNull();
+        assertThat(errorResponse.getStatus()).isEqualTo("400");
+        assertThat(errorResponse.getMessage()).isEqualTo(ErrorCode.VALIDATION_FAILED.name());
     }
 
     @Test
@@ -115,15 +135,21 @@ public class ActivityControllerIT extends AbstractBaseIntegrationTest  {
         createActivityRequest.setType(ActivityType.IN_PERSON_INTERVIEW);
         createActivityRequest.setComment("Created in person interview activity");
 
+        List<CreateActivityRequest> actualRequest = List.of(createActivityRequest);
+
         Instant beforeCall = Instant.now();
-        MvcResult result = mockMvc.perform(post(TEST_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(createActivityRequest)))
+        MvcResult result = mockMvc.perform(post(TEST_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(actualRequest)))
                 .andExpect(status().isCreated())
                 .andReturn();
 
         Instant afterCall = Instant.now();
 
-        ActivityResponse activityResponse = objectMapper.readValue(result.getResponse().getContentAsString(), ActivityResponse.class);
-        assertThat(activityResponse).isNotNull();
+        List<ActivityResponse> activitiesResponse = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<ActivityResponse>>() {});
+        assertThat(activitiesResponse).isNotNull()
+                .hasSize(1);
+
+        ActivityResponse activityResponse = activitiesResponse.getFirst();
+
         assertThat(activityResponse.getId()).isNotNull();
         assertThat(activityResponse.getType()).isEqualTo(ActivityType.IN_PERSON_INTERVIEW);
         assertThat(activityResponse.getComment()).isEqualTo("Created in person interview activity");

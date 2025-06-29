@@ -22,5 +22,5 @@ import java.io.File;
 public interface AttachmentMapper extends EntityMapper<Attachment, MongoAttachment, CreateAttachmentRequest, CreateAttachmentCommand, UpdateActivityRequest, UpdateActivityCommand, AttachmentResponse> {
     @Mapping(source = "createAttachmentRequest.name", target = "name")
     @Mapping(source = "file", target = "file")
-    CreateAttachmentCommand toCommand(CreateAttachmentRequest createAttachmentRequest, UserId userId, JobId jobId, File file);
+    CreateAttachmentCommand toCommand(CreateAttachmentRequest createAttachmentRequest, File file);
 }

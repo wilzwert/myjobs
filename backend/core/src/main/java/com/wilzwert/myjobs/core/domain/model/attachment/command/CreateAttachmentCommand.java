@@ -9,6 +9,6 @@ import java.io.File;
  * @author Wilhelm Zwertvaegher
  */
 
-public record CreateAttachmentCommand(String name, File file, String filename, UserId userId, JobId jobId) {
+public record CreateAttachmentCommand(String name, File file, String filename) {
 }
 

@@ -19,6 +19,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.server.ResponseStatusException;
 
 
@@ -54,6 +55,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatusCode());
     }
 
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<ErrorResponse> generateError(HandlerMethodValidationException ex) {
+        ErrorResponse errorResponse = ErrorResponse.fromException(ex);
+        return new ResponseEntity<>(errorResponse, errorResponse.getHttpStatusCode());
+    }
 
     @ExceptionHandler(LoginException.class)
     public ResponseEntity<ErrorResponse> generateError(LoginException ex) {

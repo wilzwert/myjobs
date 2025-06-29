@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 
-import com.wilzwert.myjobs.core.domain.model.activity.command.CreateActivityCommand;
+import com.wilzwert.myjobs.core.domain.model.activity.command.CreateActivitiesCommand;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driving.AddActivityToJobUseCase;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -34,10 +35,13 @@ public class ActivityController {
 
     @PostMapping("/{id}/activities")
     @ResponseStatus(HttpStatus.CREATED)
-    public ActivityResponse addActivity(@PathVariable("id") String id, @RequestBody @Valid CreateActivityRequest createActivityRequest, Authentication authentication) {
+    public List<ActivityResponse> addActivity(@PathVariable("id") String id, @RequestBody @Valid List<CreateActivityRequest> createActivitiesRequest, Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        CreateActivityCommand createActivityCommand = activityMapper.toCommand(createActivityRequest, userDetails.getId(), new JobId(UUID.fromString(id)));
-        return activityMapper.toResponse(createActivityUseCase.addActivityToJob(createActivityCommand));
+        CreateActivitiesCommand createActivitiesCommand = new CreateActivitiesCommand(
+                createActivitiesRequest.stream().map(activityMapper::toCommand).toList(),
+                userDetails.getId(),
+                new JobId(UUID.fromString(id))
+        );
+        return activityMapper.toResponse(createActivityUseCase.addActivitiesToJob(createActivitiesCommand));
     }
-
 }

@@ -45,4 +45,9 @@ public class ValidationError implements Serializable {
     public Map<String, String> details() {
         return details;
     }
+
+    @Override
+    public String toString() {
+        return "ValidationError[code = "+code+", field = "+field+", details = "+details+"]";
+    }
 }

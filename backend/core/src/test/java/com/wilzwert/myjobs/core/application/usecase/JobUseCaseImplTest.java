@@ -4,6 +4,7 @@ import com.wilzwert.myjobs.core.domain.model.DownloadableFile;
 import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.activity.ActivityId;
 import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
+import com.wilzwert.myjobs.core.domain.model.activity.command.CreateActivitiesCommand;
 import com.wilzwert.myjobs.core.domain.model.activity.command.CreateActivityCommand;
 import com.wilzwert.myjobs.core.domain.model.activity.command.UpdateActivityCommand;
 import com.wilzwert.myjobs.core.domain.model.activity.event.integration.ActivityAutomaticallyCreatedEvent;
@@ -12,6 +13,7 @@ import com.wilzwert.myjobs.core.domain.model.activity.exception.ActivityNotFound
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.attachment.AttachmentId;
 import com.wilzwert.myjobs.core.domain.model.attachment.command.CreateAttachmentCommand;
+import com.wilzwert.myjobs.core.domain.model.attachment.command.CreateAttachmentsCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.command.DeleteAttachmentCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.command.DownloadAttachmentCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.event.integration.AttachmentCreatedEvent;
@@ -597,7 +599,7 @@ class JobUseCaseImplTest {
         }
 
         @Test
-        void shouldCreateAttachment() {
+        void shouldCreateAttachments() {
             ArgumentCaptor<Attachment> attachmentArg = ArgumentCaptor.forClass(Attachment.class);
             ArgumentCaptor<Activity> activityArg = ArgumentCaptor.forClass(Activity.class);
             ArgumentCaptor<Job> jobArg = ArgumentCaptor.forClass(Job.class);
@@ -616,9 +618,15 @@ class JobUseCaseImplTest {
             when(integrationEventPublisher.publish(attachmentCreatedEventArgumentCaptor.capture())).thenAnswer(i -> i.getArgument(0));
             when(integrationEventPublisher.publish(activityAutomaticallyCreatedEventArgumentCaptor.capture())).thenAnswer(i -> i.getArgument(0));
 
-            Attachment result = underTest.addAttachmentToJob(new CreateAttachmentCommand("my file", file, "test.pdf", testJob.getUserId(), testJob.getId()));
+            List<Attachment> result = underTest.addAttachmentsToJob(
+                    new CreateAttachmentsCommand(
+                        List.of(new CreateAttachmentCommand("my file", file, "test.pdf"))
+                        , testJob.getUserId(), testJob.getId()
+                    )
+            );
 
             assertNotNull(result);
+            assertEquals(1, result.size());
             verify(jobDataManager).findByIdAndUserId(any(), any());
             verify(transactionProvider).executeInTransaction(any(Supplier.class));
             verify(fileStorage).store(eq(file), any(String.class), eq("test.pdf"));
@@ -627,12 +635,12 @@ class JobUseCaseImplTest {
             verify(integrationEventPublisher).publish(activityAutomaticallyCreatedEventArgumentCaptor.capture());
 
             // check created/updated entities
+            Attachment attachment = result.getFirst();
+            assertEquals("my file", attachment.getName());
+            assertEquals("newFileId", attachment.getFileId());
+            assertEquals("test.pdf", attachment.getFilename());
 
-            assertEquals("my file", result.getName());
-            assertEquals("newFileId", result.getFileId());
-            assertEquals("test.pdf", result.getFilename());
-
-            assertTrue(result.getCreatedAt().isAfter(before) || result.getUpdatedAt().equals(before));
+            assertTrue(attachment.getCreatedAt().isAfter(before) || attachment.getUpdatedAt().equals(before));
 
             Job job = jobArg.getValue();
             assertNotNull(job);
@@ -646,7 +654,7 @@ class JobUseCaseImplTest {
             AttachmentCreatedEvent attachmentCreatedEvent = attachmentCreatedEventArgumentCaptor.getValue();
             assertNotNull(attachmentCreatedEvent);
             assertEquals(job.getId(), attachmentCreatedEvent.getJobId());
-            assertEquals(result.getId(), attachmentCreatedEvent.getAttachmentId());
+            assertEquals(attachment.getId(), attachmentCreatedEvent.getAttachmentId());
 
             ActivityAutomaticallyCreatedEvent activityAutomaticallyCreatedEvent = activityAutomaticallyCreatedEventArgumentCaptor.getValue();
             assertNotNull(activityAutomaticallyCreatedEvent);
@@ -753,8 +761,12 @@ class JobUseCaseImplTest {
         void whenJobNotFound_thenShouldThrowJobNotFoundException() {
             reset(userDataManager);
             when(jobDataManager.findByIdAndUserId(any(), any())).thenReturn(Optional.empty());
-            var command = new CreateActivityCommand(ActivityType.EMAIL, "comment", UserId.generate(), JobId.generate());
-            assertThrows(JobNotFoundException.class, () -> underTest.addActivityToJob(command));
+            var command = new CreateActivitiesCommand(
+                List.of(new CreateActivityCommand(ActivityType.EMAIL, "comment")),
+                UserId.generate(),
+                JobId.generate()
+            );
+            assertThrows(JobNotFoundException.class, () -> underTest.addActivitiesToJob(command));
         }
 
         @Test
@@ -771,7 +783,13 @@ class JobUseCaseImplTest {
             when(jobDataManager.saveJobAndActivity(jobArg.capture(), activityArg.capture())).thenAnswer(i -> i.getArgument(0));
             when(integrationEventPublisher.publish(activityCreatedEventArg.capture())).thenAnswer(i -> i.getArgument(0));
 
-            Activity result = underTest.addActivityToJob(new CreateActivityCommand(ActivityType.EMAIL, "new activity comment", testJobWithActivity.getUserId(), testJobWithActivity.getId()));
+            Activity result = underTest.addActivitiesToJob(
+                    new CreateActivitiesCommand(
+                        List.of(new CreateActivityCommand(ActivityType.EMAIL, "new activity comment")),
+                        testJobWithActivity.getUserId(),
+                        testJobWithActivity.getId()
+                    )
+            ).getFirst();
 
             verify(jobDataManager).findByIdAndUserId(testJobWithActivity.getId(), testJobWithActivity.getUserId());
             verify(jobDataManager).saveJobAndActivity(jobArg.capture(), activityArg.capture());

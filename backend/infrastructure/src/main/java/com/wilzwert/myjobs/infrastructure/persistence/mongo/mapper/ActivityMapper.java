@@ -19,5 +19,5 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring", uses = IdMapper.class)
 public interface ActivityMapper extends EntityMapper<Activity, MongoActivity, CreateActivityRequest, CreateActivityCommand, UpdateActivityRequest, UpdateActivityCommand, ActivityResponse> {
     @Mapping(source = "createActivityRequest.type", target = "activityType")
-    CreateActivityCommand toCommand(CreateActivityRequest createActivityRequest, UserId userId, JobId jobId);
+    CreateActivityCommand toCommand(CreateActivityRequest createActivityRequest);
 }

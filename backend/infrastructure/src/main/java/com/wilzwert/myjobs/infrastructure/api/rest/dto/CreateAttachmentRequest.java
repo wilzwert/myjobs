@@ -19,5 +19,4 @@ public class CreateAttachmentRequest {
 
     @NotBlank(message = "FIELD_CANNOT_BE_EMPTY")
     private String content;
-
 }

@@ -3,6 +3,7 @@ package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 import com.wilzwert.myjobs.core.domain.model.AttachmentFileInfo;
 import com.wilzwert.myjobs.core.domain.model.attachment.command.CreateAttachmentCommand;
+import com.wilzwert.myjobs.core.domain.model.attachment.command.CreateAttachmentsCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.command.DeleteAttachmentCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.command.DownloadAttachmentCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
@@ -31,7 +32,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -73,29 +76,49 @@ public class AttachmentController {
 
     @PostMapping("{jobId}/attachments")
     @ResponseStatus(HttpStatus.CREATED)
-    public AttachmentResponse createAttachment(@PathVariable("jobId") String jobId, @RequestBody @Valid CreateAttachmentRequest createAttachmentRequest, Authentication authentication) {
+    public List<AttachmentResponse> createAttachment(@PathVariable("jobId") String jobId, @RequestBody @Valid List<CreateAttachmentRequest> createAttachmentsRequest, Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        // put file contents in temp file
+        // put files contents in temp files and create command
+        // (this should not be done here !)
+        List<File> tempFiles = new ArrayList<>();
+        List<Attachment> attachments;
         try {
-            File tempFile = File.createTempFile("atta", "chment");
+            List<CreateAttachmentCommand> createAttachmentCommands = new ArrayList<>();
 
-            String[] parts = createAttachmentRequest.getContent().split(",");
-            if (parts.length != 2) {
-                throw new IllegalArgumentException("Invalid base64 content");
-            }
-            byte[] fileData = Base64.getDecoder().decode(parts[1]);
-            try (FileOutputStream fos = new FileOutputStream(tempFile)) {
-                fos.write(fileData);
-            }
+            for(CreateAttachmentRequest createAttachmentRequest : createAttachmentsRequest) {
+                File tempFile = File.createTempFile("atta", "chment");
 
-            CreateAttachmentCommand command = attachmentMapper.toCommand(createAttachmentRequest, userDetails.getId(), new JobId(UUID.fromString(jobId)), tempFile);
-            Attachment attachment = addAttachmentToJobUseCase.addAttachmentToJob(command);
-            Files.delete(tempFile.toPath());
-            return attachmentMapper.toResponse(attachment);
-        } catch (IOException e) {
+                String[] parts = createAttachmentRequest.getContent().split(",");
+                if (parts.length != 2) {
+                    throw new IllegalArgumentException("Invalid base64 content");
+                }
+                byte[] fileData = Base64.getDecoder().decode(parts[1]);
+                try (FileOutputStream fos = new FileOutputStream(tempFile)) {
+                    fos.write(fileData);
+                }
+
+                tempFiles.add(tempFile);
+                createAttachmentCommands.add(attachmentMapper.toCommand(createAttachmentRequest, tempFile));
+            }
+            attachments = addAttachmentToJobUseCase.addAttachmentsToJob(new CreateAttachmentsCommand(createAttachmentCommands, userDetails.getId(), new JobId(UUID.fromString(jobId))));
+
+        }
+        catch (IOException e) {
             throw new StorageException("an io exception occurred", e);
         }
+
+        try {
+            for(File tempFile: tempFiles) {
+                Files.delete(tempFile.toPath());
+            }
+        }
+        catch (IOException e) {
+            log.error("An io exception occurred while deleting attachment temp  file", e);
+            throw new StorageException("an io exception occurred", e);
+        }
+
+        return attachmentMapper.toResponse(attachments);
     }
 
     @DeleteMapping("{jobId}/attachments/{id}")

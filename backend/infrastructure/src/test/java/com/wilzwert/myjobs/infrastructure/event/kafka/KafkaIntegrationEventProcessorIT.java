@@ -1,6 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.event.kafka;
 
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
+import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEvent;
 import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEventId;
 import com.wilzwert.myjobs.core.domain.model.job.event.integration.JobUpdatedEvent;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
@@ -79,7 +80,7 @@ class KafkaIntegrationEventProcessorIT extends AbstractBaseIntegrationTest {
 
     @Test
     void shouldSendEventToKafkaTopic() throws Exception {
-        com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEvent event = new JobUpdatedEvent(
+        IntegrationEvent event = new JobUpdatedEvent(
                 new IntegrationEventId(UUID.randomUUID()),
                 Instant.now(),
                 new JobId(UUID.randomUUID())
