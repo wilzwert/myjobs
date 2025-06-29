@@ -5,7 +5,6 @@ import com.wilzwert.myjobs.core.domain.model.user.UserId;
 /**
  * @author Wilhelm Zwertvaegher
  */
-
 public record CreateJobCommand(
     String title,
     String company,

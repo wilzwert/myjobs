@@ -65,6 +65,12 @@ public class JobUseCaseImpl implements
     DeleteAttachmentUseCase,
     GetAttachmentFileInfoUseCase {
 
+    private final static String SLASH = "/";
+    private static final Field[] createJobFields = Arrays.stream(CreateJobCommand.class.getDeclaredFields())
+        .filter(field -> !field.getName().equals("userId"))
+        .toList()
+        .toArray(Field[]::new);
+
     private final TransactionProvider transactionProvider;
     private final IntegrationEventPublisher integrationEventPublisher;
     private final JobDataManager jobDataManager;
@@ -72,11 +78,6 @@ public class JobUseCaseImpl implements
     private final FileStorage fileStorage;
     private final HtmlSanitizer htmlSanitizer;
     private final JobEnricher jobEnricher = new JobEnricher();
-
-    private static final Field[] createJobFields = Arrays.stream(CreateJobCommand.class.getDeclaredFields())
-        .filter(field -> !field.getName().equals("userId"))
-        .toList()
-        .toArray(Field[]::new);
 
     public JobUseCaseImpl(
         TransactionProvider transactionProvider,
@@ -324,10 +325,9 @@ public class JobUseCaseImpl implements
      */
     private <T> T sanitizeCommandFields(final T command, final Field[] fieldsToSanitize) {
         final Class<?> clazz = command.getClass();
-        final Object builder;
         try {
             final Class<?> builderClass = Class.forName(clazz.getName() + "$Builder");
-            builder = builderClass.getConstructor(clazz).newInstance(command);
+            final Object builder = builderClass.getConstructor(clazz).newInstance(command);
 
             for (Field field : fieldsToSanitize) {
                 field.setAccessible(true);
@@ -358,7 +358,7 @@ public class JobUseCaseImpl implements
         final AttachmentId attachmentId = AttachmentId.generate();
 
         return transactionProvider.executeInTransaction(() -> {
-            final DownloadableFile file = fileStorage.store(command.file(), command.userId().value().toString() + "/" + attachmentId.value().toString(), command.filename());
+            final DownloadableFile file = fileStorage.store(command.file(), command.userId().value().toString() + SLASH + attachmentId.value().toString(), command.filename());
             final Attachment attachment = Attachment.builder()
                 .id(attachmentId)
                 .name(command.name())

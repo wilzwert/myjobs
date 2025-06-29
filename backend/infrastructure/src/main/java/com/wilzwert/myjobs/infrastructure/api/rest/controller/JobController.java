@@ -68,9 +68,11 @@ public class JobController {
     }
 
     /*
-     * PagedModel de Spring ? Tu peux récupérer un Page en appelant le repository et en passant le param Pageable.
-     * et tu mappes ta Page dans un PagedModel pour la response après.
-     * Mais vu que t'as pas spring dans ton core ben en fait tu peux pas ^^
+     * Avec le PagedModel de Spring, tu peux récupérer un Page en appelant le repository et en passant le param Pageable.
+     * Tu mappes ta Page dans un PagedModel<JobResponse> pour la response après.
+     * Avec Swagger en plus (pour le ParameterObject) ça ressemble à ça le param :
+     * @ParameterObject @PageableDefault(size = 100, sort = "productId", direction = Sort.Direction.DESC) final Pageable pageable
+     *
      * Tu peux passer un type int au lieu de Integer aussi, par défaut si ya rien c'est 0, Integer par defaut c'est null.
      */
     @GetMapping
