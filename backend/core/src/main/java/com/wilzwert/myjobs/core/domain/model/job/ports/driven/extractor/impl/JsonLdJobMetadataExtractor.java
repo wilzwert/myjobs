@@ -2,6 +2,7 @@ package com.wilzwert.myjobs.core.domain.model.job.ports.driven.extractor.impl;
 
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,6 +18,13 @@ import com.wilzwert.myjobs.core.domain.model.job.ports.driven.extractor.JobMetad
  */
 public class JsonLdJobMetadataExtractor implements JobMetadataExtractor {
 
+    // list of keys of the json ld format that we can use as String only
+    private static final List<String> jsonLdValuesOnlyUsableAsStrings = List.of(
+            "experienceRequirements",
+            "educationRequirements",
+            "qualifications"
+    );
+
     private static final List<String> NOT_COMPATIBLE_DOMAINS = List.of("fhf.fr");
 
     private static final Pattern JSON_LD_PATTERN = Pattern.compile(
@@ -30,9 +38,8 @@ public class JsonLdJobMetadataExtractor implements JobMetadataExtractor {
         builder.description(jobPosting.description());
         var organization = jobPosting.hiringOrganization();
         if(organization != null) {
-            builder.company(organization.name());
+            builder.company(organization.getName());
         }
-
         if(jobPosting.qualifications() != null) {
             builder.profile(jobPosting.qualifications());
         }
@@ -44,6 +51,14 @@ public class JsonLdJobMetadataExtractor implements JobMetadataExtractor {
         return builder.build();
     }
 
+    private void removeIncompatibleMapData(Map<String, Object> data) {
+        for(String key : jsonLdValuesOnlyUsableAsStrings) {
+            Object value = data.get(key);
+            if(value != null && !(value instanceof String)) {
+                data.remove(key);
+            }
+        }
+    }
 
     @Override
     public Optional<JobMetadata> extractJobMetadata(String html) {
@@ -55,7 +70,15 @@ public class JsonLdJobMetadataExtractor implements JobMetadataExtractor {
         try {
             while(matcher.find()) {
                 if(matcher.group(1) != null) {
-                    JobPosting jobPosting = JSON.std.beanFrom(JobPosting.class, matcher.group(1));
+                    // first we get a map of values so that we can filter incompatible values
+                    // before parsing into a JobPosting instance
+                    Map<String, Object> data = JSON.std.mapFrom(matcher.group(1));
+                    removeIncompatibleMapData(data);
+
+                    JobPosting jobPosting = JSON.std
+                            .without(JSON.Feature.FAIL_ON_UNKNOWN_BEAN_PROPERTY)
+                            .beanFrom(JobPosting.class, JSON.std.asString(data));
+
                     return Optional.of(buildExtractedMetadataFromJobPosting(jobPosting));
                 }
             }

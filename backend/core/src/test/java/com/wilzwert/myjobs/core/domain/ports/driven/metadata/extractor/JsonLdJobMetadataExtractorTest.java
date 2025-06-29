@@ -3,7 +3,6 @@ package com.wilzwert.myjobs.core.domain.ports.driven.metadata.extractor;
 
 import com.wilzwert.myjobs.core.domain.model.job.JobMetadata;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.extractor.impl.JsonLdJobMetadataExtractor;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import utils.TestFileLoader;
 
@@ -129,7 +128,7 @@ class JsonLdJobMetadataExtractorTest {
             "hiringOrganization": {
                 "name": "TechCorp"
             }
-            // note: double virgule après "Software Developer" et commentaire JS non supporté
+            // note: double , after "Software Developer" and JS comment not supported
         }
         </script>
         </head>
@@ -139,6 +138,92 @@ class JsonLdJobMetadataExtractorTest {
 
         assertTrue(extractor.extractJobMetadata(invalidHtml).isEmpty());
     }
+
+
+    @Test
+    void shouldExtractHiringOrganization() {
+        String html;
+        html = """
+                <script type="application/ld+json">
+                {
+                      "@context": "https://schema.org",
+                      "@type": "JobPosting",
+                      "title": "Employe Fruits et Legumes H/F",
+                      "description": "<h2>Les missions du poste</h2><p>Le Groupement Mousquetaires, ce sont 7 enseignes de la grande distribution, 150 000 collaborateurs et plus de 3 000 chefs d'entreprise indépendants !I<br /><br />Intermarché propose des références créées en marque propre et majoritairement fabriquées en France. Frais, bio, premium, snacking : nos clients peuvent faire un VRAI plein de courses toute l'année à prix imbattables.<br /><br />- Accueille, renseigne et oriente le client avec l'attitude commerciale adéquate. Répond aux demandes spécifiques des clients. Participe à l'animation du PDV dans le cadre d'opérations spécifiques.<br />- Participe à la mise en place et au suivi des plans d'actions pour rectifier les écarts de chiffre d'affaires, de marge, de quota et de démarque.<br />- Suit le niveau de stock, l'historique des opérations (saisonnières et spécifiques).<br />- Prépare et propose les commandes (permanent et promotionnel).<br />- Vérifie les livraisons (contrôle qualitatif et quantitatif, présence des mentions obligatoires). Identifie et reporte les litiges fournisseurs à son/sa responsable (établit les bons de non-conformité) - Effectue le relevé des ruptures et prend connaissance des anomalies de stock, en réfère à sa hiérarchie.<br />- Participe à la réalisation des inventaires, à la lutte anti-démarque et aux opérations anti-gaspillage.<br /><br />Est chargé(e) de la mise en place et du suivi des implantations, de la présentation marchande et de la mise en scène (théâtralisation) des produits, en assure le suivi.<br />- Assure la qualité du remplissage des rayons, la rotation des produits entre la réserve, la chambre positive et le rayon.<br />- Assure le rangement des réserves.<br />- Respecte l'assortiment en fonction de la saisonnalité - Est chargé(e) de la mise en place des étiquettes prix, de l'information adéquate (fiches produits, origine, calibre...), de l'affichage PLV (publicité sur le lieu de vente) et ILV (information sur le lieu de vente), en assure le suivi.</p><h2>Le profil recherché</h2><p>Chez Intermarché, l'audace et l'envie d'entreprendre sont un véritable état d'esprit. Vous avez envie de vous investir et d'évoluer au sein d'une équipe de passionnés et qui saura reconnaître votre talent ? Grâce à vos qualités relationnelles, et commerçant dans l'âme, vous savez créer avec vos clients des liens de confiance et de proximité pour toujours leur apporter conseils et valeur ajoutée. De formation commerciale (de type CAP OU Bac Pro), vous justifiez d'au moins 2 ans d'expérience sur un poste similaire ou dans les métiers de la bouche<br /><br />Vous bénéficiez d'une rémunération attractive composée d'un salaire fixe + 5% de remise sur vos achats.<br /><br />Nos parcours de développement des compétences vous aideront à évoluer rapidement. <br />Vivez votre passion et engagez-vous à nos côtés au sein d'une équipe humaine et conviviale !</p><h2>Bienvenue chez Groupement Mousquetaires</h2><p>Le Groupement Mousquetaires, ce sont 7 enseignes de la grande distribution, 150 000 collaborateurs et plus de 3 000 chefs d'entreprise indépendants !I<br /><br />Intermarché propose des références créées en marque propre et majoritairement fabriquées en France. Frais, bio, premium, snacking : nos clients peuvent faire un VRAI plein de courses toute l'année à prix imbattables.</p>",
+                      "identifier": {
+                        "@type": "PropertyValue",
+                        "name": "Groupement Mousquetaires",
+                        "value": "REF43908R"
+                      },
+                      "url": "https://www.hellowork.com/fr-fr/emplois/65789313.html",
+                      "baseSalary": {
+                        "@type": "MonetaryAmount",
+                        "currency": "EUR",
+                        "value": {
+                          "@type": "QuantitativeValue"
+                        }
+                      },
+                      "datePosted": "2025-05-21T09:05:37Z",
+                      "directApply": true,
+                      "educationRequirements": [
+                        {
+                          "@type": "EducationalOccupationalCredential",
+                          "credentialCategory": "high school"
+                        },
+                        {
+                          "@type": "EducationalOccupationalCredential",
+                          "credentialCategory": "professional certificate"
+                        }
+                      ],
+                      "employmentType": "FULL_TIME",
+                      "estimatedSalary": {
+                        "@type": "MonetaryAmountDistribution",
+                        "name": "base",
+                        "duration": "P1Y",
+                        "median": 21621,
+                        "percentile90": 24200,
+                        "currency": "EUR"
+                      },
+                      "experienceRequirements": {
+                        "@type": "OccupationalExperienceRequirements",
+                        "monthsOfExperience": 12
+                      },
+                      "hiringOrganization": {
+                        "@type": "Organization",
+                        "name": "Groupement Mousquetaires",
+                        "url": "https://www.hellowork.com/fr-fr/entreprises/groupement-les-mousquetaires-12613.html",
+                        "logo": "https://f.hellowork.com/img/entreprises/160_160/12613.png"
+                      },
+                      "industry": [
+                        "Distribution",
+                        "Commerce de gros"
+                      ],
+                      "jobLocation": {
+                        "@type": "Place",
+                        "address": {
+                          "@type": "PostalAddress",
+                          "addressCountry": "FR",
+                          "addressLocality": "Toulouse",
+                          "addressRegion": "Occitanie",
+                          "postalCode": "31000"
+                        }
+                      },
+                      "occupationalCategory": "Vente",
+                      "qualifications": "Chez Intermarché, l'audace et l'envie d'entreprendre sont un véritable état d'esprit. Vous avez envie de vous investir et d'évoluer au sein d'une équipe de passionnés et qui saura reconnaître votre talent ? Grâce à vos qualités relationnelles, et commerçant dans l'âme, vous savez créer avec vos clients des liens de confiance et de proximité pour toujours leur apporter conseils et valeur ajoutée. De formation commerciale (de type CAP OU Bac Pro), vous justifiez d'au moins 2 ans d'expérience sur un poste similaire ou dans les métiers de la bouche<br /><br />Vous bénéficiez d'une rémunération attractive composée d'un salaire fixe + 5% de remise sur vos achats.<br /><br />Nos parcours de développement des compétences vous aideront à évoluer rapidement. <br />Vivez votre passion et engagez-vous à nos côtés au sein d'une équipe humaine et conviviale !",
+                      "salaryCurrency": "EUR",
+                      "skills": "Sens du relationnel",
+                      "validThrough": "2025-06-20T09:05:37Z"
+                    }
+                </script>
+            """;
+        extractor.extractJobMetadata(html).ifPresentOrElse(
+                extractedMetadata ->
+                    assertEquals("Groupement Mousquetaires", extractedMetadata.company())
+                ,
+                () -> fail("Metadata should not be empty")
+        );
+    }
+
 
     @Test
     void whenL4mJsonLd_thenShouldReturnMetadata() throws IOException {
@@ -162,9 +247,20 @@ class JsonLdJobMetadataExtractorTest {
     @Test
     void whenHelloWorkHtml_thenShouldReturnMetadata() throws IOException {
         String html  = TestFileLoader.loadFileAsString("jobposting.hellowork.html");
+
+        JobMetadata expectedMetadata = new JobMetadata.Builder()
+                .title("Employe Fruits et Legumes H/F")
+                .description("<h2>Les missions du poste</h2><p>Le Groupement Mousquetaires, ce sont 7 enseignes de la grande distribution, 150 000 collaborateurs et plus de 3 000 chefs d'entreprise indépendants !I<br /><br />Intermarché propose des références créées en marque propre et majoritairement fabriquées en France. Frais, bio, premium, snacking : nos clients peuvent faire un VRAI plein de courses toute l'année à prix imbattables.<br /><br />- Accueille, renseigne et oriente le client avec l'attitude commerciale adéquate. Répond aux demandes spécifiques des clients. Participe à l'animation du PDV dans le cadre d'opérations spécifiques.<br />- Participe à la mise en place et au suivi des plans d'actions pour rectifier les écarts de chiffre d'affaires, de marge, de quota et de démarque.<br />- Suit le niveau de stock, l'historique des opérations (saisonnières et spécifiques).<br />- Prépare et propose les commandes (permanent et promotionnel).<br />- Vérifie les livraisons (contrôle qualitatif et quantitatif, présence des mentions obligatoires). Identifie et reporte les litiges fournisseurs à son/sa responsable (établit les bons de non-conformité) - Effectue le relevé des ruptures et prend connaissance des anomalies de stock, en réfère à sa hiérarchie.<br />- Participe à la réalisation des inventaires, à la lutte anti-démarque et aux opérations anti-gaspillage.<br /><br />Est chargé(e) de la mise en place et du suivi des implantations, de la présentation marchande et de la mise en scène (théâtralisation) des produits, en assure le suivi.<br />- Assure la qualité du remplissage des rayons, la rotation des produits entre la réserve, la chambre positive et le rayon.<br />- Assure le rangement des réserves.<br />- Respecte l'assortiment en fonction de la saisonnalité - Est chargé(e) de la mise en place des étiquettes prix, de l'information adéquate (fiches produits, origine, calibre...), de l'affichage PLV (publicité sur le lieu de vente) et ILV (information sur le lieu de vente), en assure le suivi.</p><h2>Le profil recherché</h2><p>Chez Intermarché, l'audace et l'envie d'entreprendre sont un véritable état d'esprit. Vous avez envie de vous investir et d'évoluer au sein d'une équipe de passionnés et qui saura reconnaître votre talent ? Grâce à vos qualités relationnelles, et commerçant dans l'âme, vous savez créer avec vos clients des liens de confiance et de proximité pour toujours leur apporter conseils et valeur ajoutée. De formation commerciale (de type CAP OU Bac Pro), vous justifiez d'au moins 2 ans d'expérience sur un poste similaire ou dans les métiers de la bouche<br /><br />Vous bénéficiez d'une rémunération attractive composée d'un salaire fixe + 5% de remise sur vos achats.<br /><br />Nos parcours de développement des compétences vous aideront à évoluer rapidement. <br />Vivez votre passion et engagez-vous à nos côtés au sein d'une équipe humaine et conviviale !</p><h2>Bienvenue chez Groupement Mousquetaires</h2><p>Le Groupement Mousquetaires, ce sont 7 enseignes de la grande distribution, 150 000 collaborateurs et plus de 3 000 chefs d'entreprise indépendants !I<br /><br />Intermarché propose des références créées en marque propre et majoritairement fabriquées en France. Frais, bio, premium, snacking : nos clients peuvent faire un VRAI plein de courses toute l'année à prix imbattables.</p>")
+                .url("https://www.hellowork.com/fr-fr/emplois/65789313.html")
+                .company("Groupement Mousquetaires")
+                .profile("Chez Intermarché, l'audace et l'envie d'entreprendre sont un véritable état d'esprit. Vous avez envie de vous investir et d'évoluer au sein d'une équipe de passionnés et qui saura reconnaître votre talent ? Grâce à vos qualités relationnelles, et commerçant dans l'âme, vous savez créer avec vos clients des liens de confiance et de proximité pour toujours leur apporter conseils et valeur ajoutée. De formation commerciale (de type CAP OU Bac Pro), vous justifiez d'au moins 2 ans d'expérience sur un poste similaire ou dans les métiers de la bouche<br /><br />Vous bénéficiez d'une rémunération attractive composée d'un salaire fixe + 5% de remise sur vos achats.<br /><br />Nos parcours de développement des compétences vous aideront à évoluer rapidement. <br />Vivez votre passion et engagez-vous à nos côtés au sein d'une équipe humaine et conviviale !")
+                .salary("")
+                .build();
+
+
         // TODO compare expected metadata
         extractor.extractJobMetadata(html).ifPresentOrElse(
-                Assertions::assertNotNull,
+                extractedMetadata -> assertEquals(expectedMetadata, extractedMetadata),
                 () -> fail("Metadata should not be empty")
         );
     }

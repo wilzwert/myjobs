@@ -7,14 +7,12 @@ package com.wilzwert.myjobs.core.domain.model.job.jsonld;
 
 public record JobPosting (
     String title,
-    String datePosted,
     String description,
+    String url,
+    String datePosted,
     String experienceRequirements,
     String qualifications,
-    String industry,
     String employmentType,
-    String url,
-    String educationRequirements,
     String validThrough,
     JobLocation jobLocation,
     HiringOrganization hiringOrganization,
@@ -28,7 +26,7 @@ public record JobPosting (
         }
 
         if(baseSalary.numberValue() != null) {
-            return baseSalary().numberValue()+(salaryCurrency() != null ? "  "+salaryCurrency() : "");
+            return baseSalary.numberValue()+(salaryCurrency() != null ? "  "+salaryCurrency() : "");
         }
 
         if(baseSalary.value() == null) {
