@@ -6,7 +6,17 @@ import com.wilzwert.myjobs.core.domain.model.user.UserId;
  * @author Wilhelm Zwertvaegher
  */
 
-public record CreateJobCommand(String title, String company, String url, String description, String profile, String comment, String salary, UserId userId) {
+public record CreateJobCommand(
+    String title,
+    String company,
+    String url,
+    String description,
+    String profile,
+    String comment,
+    String salary,
+    UserId userId
+) {
+
     public static class Builder {
         private String title;
         private String company;

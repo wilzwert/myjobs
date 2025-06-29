@@ -14,6 +14,7 @@ import com.wilzwert.myjobs.infrastructure.api.rest.dto.job.*;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
 import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,8 +26,9 @@ import java.util.UUID;
 /**
  * @author Wilhelm Zwertvaegher
  */
-@RestController
 @Slf4j
+@RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/jobs")
 public class JobController {
 
@@ -37,20 +39,6 @@ public class JobController {
     private final ExtractJobMetadataUseCase extractJobMetadataUseCase;
     private final JobMapper jobMapper;
 
-    public JobController(
-            CreateJobUseCase createJobUseCase,
-            GetUserJobUseCase getUserJobUseCase,
-            DeleteJobUseCase deleteJobUseCase,
-            GetUserJobsUseCase getUserJobsUseCase,
-            ExtractJobMetadataUseCase extractJobMetadataUseCase,
-            JobMapper jobMapper) {
-        this.createJobUseCase = createJobUseCase;
-        this.getUserJobUseCase = getUserJobUseCase;
-        this.deleteJobUseCase = deleteJobUseCase;
-        this.getUserJobsUseCase = getUserJobsUseCase;
-        this.extractJobMetadataUseCase = extractJobMetadataUseCase;
-        this.jobMapper = jobMapper;
-    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -79,24 +67,27 @@ public class JobController {
         deleteJobUseCase.deleteJob(deleteJobCommand);
     }
 
-    @GetMapping()
+    /*
+     * PagedModel de Spring ? Tu peux récupérer un Page en appelant le repository et en passant le param Pageable.
+     * et tu mappes ta Page dans un PagedModel pour la response après.
+     * Mais vu que t'as pas spring dans ton core ben en fait tu peux pas ^^
+     * Tu peux passer un type int au lieu de Integer aussi, par défaut si ya rien c'est 0, Integer par defaut c'est null.
+     */
+    @GetMapping
+    @ResponseStatus(HttpStatus.PARTIAL_CONTENT)
     public RestPage<JobResponse> getUserJobs(
-            Authentication authentication,
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer itemsPerPage,
-            @RequestParam(required = false) JobStatus status,
-            @RequestParam(required = false) JobStatusMeta statusMeta,
-            @RequestParam(required = false) String sort) {
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        if(page == null) {
-            page = 0;
-        }
-        if(itemsPerPage == null) {
-            itemsPerPage = 10;
-        }
+        final Authentication authentication,
+        @RequestParam(required = false) final int page,
+        @RequestParam(required = false, defaultValue = "10") final int itemsPerPage,
+        @RequestParam(required = false) final JobStatus status,
+        @RequestParam(required = false) final JobStatusMeta statusMeta,
+        @RequestParam(required = false) final String sort) {
 
+        final UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         log.info("Getting user jobs with status[{}], statusMeta[[{}]", status, statusMeta);
 
-        return jobMapper.toEnrichedResponse(getUserJobsUseCase.getUserJobs(userDetails.getId(), page, itemsPerPage, status, statusMeta, sort));
+        return this.jobMapper.toEnrichedResponse(
+            this.getUserJobsUseCase.getUserJobs(userDetails.getId(), page, itemsPerPage, status, statusMeta, sort)
+        );
     }
 }

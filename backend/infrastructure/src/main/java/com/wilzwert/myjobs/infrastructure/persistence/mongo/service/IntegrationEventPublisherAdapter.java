@@ -9,6 +9,7 @@ import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoIntegrat
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoIntegrationEventRepository;
 import com.wilzwert.myjobs.infrastructure.serialization.IntegrationEventSerializationHandler;
 import com.wilzwert.myjobs.infrastructure.serialization.exception.SerializationException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -20,34 +21,30 @@ import java.util.Optional;
  * Date:06/06/2025
  * Time:16:18
  */
-@Component
+
 @Slf4j
+@Component
+@RequiredArgsConstructor
 public class IntegrationEventPublisherAdapter implements IntegrationEventPublisher, IntegrationEventDataManager {
 
     private final MongoIntegrationEventRepository eventRepository;
 
     private final IntegrationEventSerializationHandler integrationEventSerializationHandler;
 
-    IntegrationEventPublisherAdapter(
-            MongoIntegrationEventRepository mongoIntegrationEventRepository,
-            IntegrationEventSerializationHandler integrationEventSerializationHandler) {
-        this.eventRepository = mongoIntegrationEventRepository;
-        this.integrationEventSerializationHandler = integrationEventSerializationHandler;
-    }
 
     @Override
-    public IntegrationEvent publish(IntegrationEvent event) {
+    public IntegrationEvent publish(final IntegrationEvent event) {
         try {
-            MongoIntegrationEvent mongoEvent = new MongoIntegrationEvent();
+            final MongoIntegrationEvent mongoEvent = new MongoIntegrationEvent();
             mongoEvent.setId(event.getId().value());
             mongoEvent.setStatus(EventStatus.PENDING);
             mongoEvent.setOccurredAt(event.getOccurredAt());
-            mongoEvent.setType(integrationEventSerializationHandler.getResolvableType(event));
-            mongoEvent.setPayload(integrationEventSerializationHandler.serialize(event));
-            eventRepository.save(mongoEvent);
+            mongoEvent.setType(this.integrationEventSerializationHandler.getResolvableType(event));
+            mongoEvent.setPayload(this.integrationEventSerializationHandler.serialize(event));
+            this.eventRepository.save(mongoEvent);
+
             return event;
-        }
-        catch (SerializationException e) {
+        } catch (SerializationException e) {
             log.error(e.getMessage(), e);
             throw new RuntimeException(e);
         }
@@ -55,22 +52,29 @@ public class IntegrationEventPublisherAdapter implements IntegrationEventPublish
 
     @Override
     public Optional<IntegrationEvent> findById(IntegrationEventId integrationEventId) {
-        return eventRepository.findById(integrationEventId.value()).map(e -> integrationEventSerializationHandler.readFromPayload(e.getType(), e.getPayload()));
+        return eventRepository.findById(integrationEventId.value())
+            .map(e -> integrationEventSerializationHandler.readFromPayload(e.getType(), e.getPayload()));
     }
 
     @Override
     public List<IntegrationEvent> findPending() {
-        return eventRepository.findByStatus(EventStatus.PENDING).stream().map(e -> integrationEventSerializationHandler.readFromPayload(e.getType(), e.getPayload())).toList();
+        return eventRepository.findByStatus(EventStatus.PENDING).stream()
+            .map(e -> integrationEventSerializationHandler.readFromPayload(e.getType(), e.getPayload()))
+            .toList();
     }
 
     @Override
     public List<? extends IntegrationEvent> markAllAs(List<? extends IntegrationEvent> events, EventStatus status) {
         log.info("Marking {} events as {}", events.size(), status);
         eventRepository.saveAll(
-                eventRepository.findAllById(
+            eventRepository.findAllById(
                     events.stream().map(e -> e.getId().value()).toList()
                 )
-                .stream().map(e -> {e.setStatus(status); return e;})
+                .stream()
+                .map(e -> {
+                    e.setStatus(status);
+                    return e;
+                })
                 .toList()
         );
         return events;

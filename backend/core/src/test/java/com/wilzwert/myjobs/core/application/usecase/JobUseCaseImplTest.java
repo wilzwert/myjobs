@@ -251,7 +251,7 @@ class JobUseCaseImplTest {
             assertThrows(JobAlreadyExistsException.class, () -> underTest.createJob(command));
             verify(userDataManager).findById(any(UserId.class));
             // sanitizer should have been called for title, company, description
-            verify(htmlSanitizer, times(3)).sanitize(any(String.class));
+            verify(htmlSanitizer, times(4)).sanitize(any(String.class));
         }
 
         @Test
@@ -284,7 +284,7 @@ class JobUseCaseImplTest {
             verify(userDataManager).findById(any(UserId.class));
             verify(userDataManager).saveUserAndJob(userArgumentCaptor.capture(), jobArgumentCaptor.capture());
             // sanitizer should have been called rot title, company, description
-            verify(htmlSanitizer, times(5)).sanitize(any(String.class));
+            verify(htmlSanitizer, times(6)).sanitize(any(String.class));
             verify(integrationEventPublisher).publish(jobCreatedEventArgumentCaptor.capture());
 
             User user = userArgumentCaptor.getValue();

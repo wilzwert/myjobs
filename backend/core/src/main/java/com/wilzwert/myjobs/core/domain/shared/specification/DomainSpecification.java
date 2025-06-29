@@ -45,12 +45,17 @@ import java.util.List;
  */
 public abstract class DomainSpecification {
 
+    public static final String STATUS_FIELD = "status";
+    public static final String USER_ID_FIELD = "userId";
+    public static final String STATUS_UPDATED_AT_FIELD = "statusUpdatedAt";
+    public static final String CREATED_AT_FIELD = "createdAt";
+
     private final List<DomainSpecification.Sort> sort = new ArrayList<>();
 
     public final List<DomainSpecification.Sort> getSort() {
-        if(sort.isEmpty()) {
+        if (sort.isEmpty()) {
             // by convention, sort always defaults to createdAt desc
-            return List.of(new Sort("createdAt", SortDirection.DESC));
+            return List.of(new Sort(CREATED_AT_FIELD, SortDirection.DESC));
         }
         return sort;
     }
@@ -266,7 +271,7 @@ public abstract class DomainSpecification {
 
 
     /**
-     * Conditions : And / Or
+     * Conditions: And / Or
      */
     public abstract static class ConditionSpecification extends DomainSpecification {
         private final List<DomainSpecification> specifications;
@@ -358,7 +363,7 @@ public abstract class DomainSpecification {
         public JobFollowUpToRemind(Instant referenceInstant) {
             super();
             this.referenceInstant = referenceInstant;
-            super.sortBy(sort("userId", SortDirection.ASC));
+            super.sortBy(sort(USER_ID_FIELD, SortDirection.ASC));
         }
 
         public Instant getReferenceInstant() {
