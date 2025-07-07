@@ -15,12 +15,12 @@ import { MatOption, MatSelect } from '@angular/material/select';
 import { MatIcon } from '@angular/material/icon';
 import { ErrorProcessorService } from '@core/services/error-processor.service';
 import { TranslatorService } from '@app/core/services/translator.service';
-import { CommentInputComponent } from "../inputs/activity-comment-input.component";
+import { ActivityCommentInputComponent } from "../inputs/activity-comment-input.component";
 
 
 @Component({
   selector: 'app-job-activities-form',
-  imports: [ActivityLabelPipe, ReactiveFormsModule, MatFormField, MatLabel, MatButton, MatSelect, MatOption, MatIcon, CommentInputComponent],
+  imports: [ActivityLabelPipe, ReactiveFormsModule, MatFormField, MatLabel, MatButton, MatSelect, MatOption, MatIcon, ActivityCommentInputComponent],
   templateUrl: './job-actitivities-form.component.html',
   styleUrl: './job-actitivities-form.component.scss'
 })

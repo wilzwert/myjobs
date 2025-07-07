@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, FormGroup } from '@angular/forms';
-import { CommentInputComponent } from './comment-input.component';
+import { ActivityCommentInputComponent } from './activity-comment-input.component';
 import { TINYMCE_SCRIPT_SRC } from '@tinymce/tinymce-angular';
 import { By } from '@angular/platform-browser';
 
-describe('CommentInputComponent', () => {
-  let component: CommentInputComponent;
-  let fixture: ComponentFixture<CommentInputComponent>;
+describe('ActivityCommentInputComponent', () => {
+  let component: ActivityCommentInputComponent;
+  let fixture: ComponentFixture<ActivityCommentInputComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -14,7 +14,7 @@ describe('CommentInputComponent', () => {
       providers: [{ provide: TINYMCE_SCRIPT_SRC, useValue: 'tinymce/tinymce.min.js' }]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(CommentInputComponent);
+    fixture = TestBed.createComponent(ActivityCommentInputComponent);
     component = fixture.componentInstance;
 
     // Création d'un FormGroup vide, on l'injecte

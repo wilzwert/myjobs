@@ -14,7 +14,7 @@ import { BaseInputComponent } from "./baseinput.component";
   ],
   templateUrl: './activity-comment-input.component.html',
 })
-export class CommentInputComponent extends BaseInputComponent {
+export class ActivityCommentInputComponent extends BaseInputComponent {
     override configure(): void {
         this.form.addControl('comment', this.fb.control(this.initialValue, []));
     }
