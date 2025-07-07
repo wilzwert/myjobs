@@ -3,6 +3,7 @@ import { ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { ActivityCommentInputComponent } from './activity-comment-input.component';
 import { TINYMCE_SCRIPT_SRC } from '@tinymce/tinymce-angular';
 import { By } from '@angular/platform-browser';
+import { BaseInputComponent } from './baseinput.component';
 
 describe('ActivityCommentInputComponent', () => {
   let component: ActivityCommentInputComponent;
@@ -22,6 +23,11 @@ describe('ActivityCommentInputComponent', () => {
     component.initialValue = 'Initial comment';
 
     fixture.detectChanges();
+  });
+
+  it('should call constructor and extend BaseInputComponent', () => {
+    const component = TestBed.createComponent(ActivityCommentInputComponent).componentInstance;
+    expect(component).toBeInstanceOf(BaseInputComponent);
   });
 
   it('should create control on ngOnInit via configure()', () => {

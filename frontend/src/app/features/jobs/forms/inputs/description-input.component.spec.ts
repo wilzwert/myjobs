@@ -4,7 +4,7 @@ import { TINYMCE_SCRIPT_SRC } from '@tinymce/tinymce-angular';
 import { By } from '@angular/platform-browser';
 import { DescriptionInputComponent } from './description-input.component';
 
-describe('CommentInputComponent', () => {
+describe('DescriptionInputComponent', () => {
   let component: DescriptionInputComponent;
   let fixture: ComponentFixture<DescriptionInputComponent>;
 
