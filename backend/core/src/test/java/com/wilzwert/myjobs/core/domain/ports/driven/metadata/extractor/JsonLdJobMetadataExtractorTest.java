@@ -139,7 +139,6 @@ class JsonLdJobMetadataExtractorTest {
         assertTrue(extractor.extractJobMetadata(invalidHtml).isEmpty());
     }
 
-
     @Test
     void shouldExtractHiringOrganization() {
         String html;
