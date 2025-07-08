@@ -3,6 +3,7 @@
 
 import com.wilzwert.myjobs.core.domain.model.AttachmentFileInfo;
 import com.wilzwert.myjobs.core.domain.model.attachment.command.CreateAttachmentCommand;
+import com.wilzwert.myjobs.core.domain.model.attachment.command.CreateAttachmentsCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.command.DeleteAttachmentCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.command.DownloadAttachmentCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
@@ -31,14 +32,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.UUID;
 
 /**
  * @author Wilhelm Zwertvaegher
  */
 @RestController
-<span class="fc" id="L41">@Slf4j</span>
+<span class="fc" id="L44">@Slf4j</span>
 @RequestMapping(&quot;/api/jobs&quot;)
 public class AttachmentController {
 
@@ -62,65 +65,85 @@ public class AttachmentController {
             GetAttachmentFileInfoUseCase getAttachmentFileInfoUseCase,
             AttachmentMapper attachmentMapper,
             AttachmentFileInfoMapper attachmentFileInfoMapper
-<span class="fc" id="L65">    ) {</span>
-<span class="fc" id="L66">        this.addAttachmentToJobUseCase = addAttachmentToJobUseCase;</span>
-<span class="fc" id="L67">        this.downloadAttachmentUseCase = downloadAttachmentUseCase;</span>
-<span class="fc" id="L68">        this.deleteAttachmentUseCase = deleteAttachmentUseCase;</span>
-<span class="fc" id="L69">        this.getAttachmentFileInfoUseCase = getAttachmentFileInfoUseCase;</span>
-<span class="fc" id="L70">        this.attachmentMapper = attachmentMapper;</span>
-<span class="fc" id="L71">        this.attachmentFileInfoMapper = attachmentFileInfoMapper;</span>
-<span class="fc" id="L72">    }</span>
+<span class="fc" id="L68">    ) {</span>
+<span class="fc" id="L69">        this.addAttachmentToJobUseCase = addAttachmentToJobUseCase;</span>
+<span class="fc" id="L70">        this.downloadAttachmentUseCase = downloadAttachmentUseCase;</span>
+<span class="fc" id="L71">        this.deleteAttachmentUseCase = deleteAttachmentUseCase;</span>
+<span class="fc" id="L72">        this.getAttachmentFileInfoUseCase = getAttachmentFileInfoUseCase;</span>
+<span class="fc" id="L73">        this.attachmentMapper = attachmentMapper;</span>
+<span class="fc" id="L74">        this.attachmentFileInfoMapper = attachmentFileInfoMapper;</span>
+<span class="fc" id="L75">    }</span>
 
     @PostMapping(&quot;{jobId}/attachments&quot;)
     @ResponseStatus(HttpStatus.CREATED)
-    public AttachmentResponse createAttachment(@PathVariable(&quot;jobId&quot;) String jobId, @RequestBody @Valid CreateAttachmentRequest createAttachmentRequest, Authentication authentication) {
-<span class="fc" id="L77">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+    public List&lt;AttachmentResponse&gt; createAttachment(@PathVariable(&quot;jobId&quot;) String jobId, @RequestBody @Valid List&lt;CreateAttachmentRequest&gt; createAttachmentsRequest, Authentication authentication) {
+<span class="fc" id="L80">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
 
-        // put file contents in temp file
+        // put files contents in temp files and create command
+        // (this should not be done here !)
+<span class="fc" id="L84">        List&lt;File&gt; tempFiles = new ArrayList&lt;&gt;();</span>
+        List&lt;Attachment&gt; attachments;
         try {
-<span class="fc" id="L81">            File tempFile = File.createTempFile(&quot;atta&quot;, &quot;chment&quot;);</span>
+<span class="fc" id="L87">            List&lt;CreateAttachmentCommand&gt; createAttachmentCommands = new ArrayList&lt;&gt;();</span>
 
-<span class="fc" id="L83">            String[] parts = createAttachmentRequest.getContent().split(&quot;,&quot;);</span>
-<span class="pc bpc" id="L84" title="1 of 2 branches missed.">            if (parts.length != 2) {</span>
-<span class="nc" id="L85">                throw new IllegalArgumentException(&quot;Invalid base64 content&quot;);</span>
-            }
-<span class="fc" id="L87">            byte[] fileData = Base64.getDecoder().decode(parts[1]);</span>
-<span class="fc" id="L88">            try (FileOutputStream fos = new FileOutputStream(tempFile)) {</span>
-<span class="fc" id="L89">                fos.write(fileData);</span>
-            }
+<span class="fc bfc" id="L89" title="All 2 branches covered.">            for(CreateAttachmentRequest createAttachmentRequest : createAttachmentsRequest) {</span>
+<span class="fc" id="L90">                File tempFile = File.createTempFile(&quot;atta&quot;, &quot;chment&quot;);</span>
 
-<span class="fc" id="L92">            CreateAttachmentCommand command = attachmentMapper.toCommand(createAttachmentRequest, userDetails.getId(), new JobId(UUID.fromString(jobId)), tempFile);</span>
-<span class="fc" id="L93">            Attachment attachment = addAttachmentToJobUseCase.addAttachmentToJob(command);</span>
-<span class="fc" id="L94">            Files.delete(tempFile.toPath());</span>
-<span class="fc" id="L95">            return attachmentMapper.toResponse(attachment);</span>
-<span class="nc" id="L96">        } catch (IOException e) {</span>
-<span class="nc" id="L97">            throw new StorageException(&quot;an io exception occurred&quot;, e);</span>
+<span class="fc" id="L92">                String[] parts = createAttachmentRequest.getContent().split(&quot;,&quot;);</span>
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">                if (parts.length != 2) {</span>
+<span class="nc" id="L94">                    throw new IllegalArgumentException(&quot;Invalid base64 content&quot;);</span>
+                }
+<span class="fc" id="L96">                byte[] fileData = Base64.getDecoder().decode(parts[1]);</span>
+<span class="fc" id="L97">                try (FileOutputStream fos = new FileOutputStream(tempFile)) {</span>
+<span class="fc" id="L98">                    fos.write(fileData);</span>
+                }
+
+<span class="fc" id="L101">                tempFiles.add(tempFile);</span>
+<span class="fc" id="L102">                createAttachmentCommands.add(attachmentMapper.toCommand(createAttachmentRequest, tempFile));</span>
+<span class="fc" id="L103">            }</span>
+<span class="fc" id="L104">            attachments = addAttachmentToJobUseCase.addAttachmentsToJob(new CreateAttachmentsCommand(createAttachmentCommands, userDetails.getId(), new JobId(UUID.fromString(jobId))));</span>
+
         }
+<span class="nc" id="L107">        catch (IOException e) {</span>
+<span class="nc" id="L108">            throw new StorageException(&quot;an io exception occurred&quot;, e);</span>
+<span class="fc" id="L109">        }</span>
+
+        try {
+<span class="fc bfc" id="L112" title="All 2 branches covered.">            for(File tempFile: tempFiles) {</span>
+<span class="fc" id="L113">                Files.delete(tempFile.toPath());</span>
+<span class="fc" id="L114">            }</span>
+        }
+<span class="nc" id="L116">        catch (IOException e) {</span>
+<span class="nc" id="L117">            log.error(&quot;An io exception occurred while deleting attachment temp  file&quot;, e);</span>
+<span class="nc" id="L118">            throw new StorageException(&quot;an io exception occurred&quot;, e);</span>
+<span class="fc" id="L119">        }</span>
+
+<span class="fc" id="L121">        return attachmentMapper.toResponse(attachments);</span>
     }
 
     @DeleteMapping(&quot;{jobId}/attachments/{id}&quot;)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAttachment(@PathVariable(&quot;jobId&quot;) String jobId, @PathVariable(&quot;id&quot;) String id, Authentication authentication) {
-<span class="fc" id="L104">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
-<span class="fc" id="L105">        deleteAttachmentUseCase.deleteAttachment(new DeleteAttachmentCommand(new AttachmentId(UUID.fromString(id)), userDetails.getId(), new JobId(UUID.fromString(jobId))));</span>
-<span class="fc" id="L106">    }</span>
+<span class="fc" id="L127">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L128">        deleteAttachmentUseCase.deleteAttachment(new DeleteAttachmentCommand(new AttachmentId(UUID.fromString(id)), userDetails.getId(), new JobId(UUID.fromString(jobId))));</span>
+<span class="fc" id="L129">    }</span>
 
     @GetMapping(&quot;{jobId}/attachments/{id}/file&quot;)
     public ResponseEntity&lt;Resource&gt; downloadFile(@PathVariable(&quot;jobId&quot;) String jobId, @PathVariable(&quot;id&quot;) String id, Authentication authentication) {
-<span class="fc" id="L110">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
-<span class="fc" id="L111">        DownloadableFile downloadableFile = downloadAttachmentUseCase.downloadAttachment(new DownloadAttachmentCommand(id, userDetails.getId(), new JobId(UUID.fromString(jobId))));</span>
+<span class="fc" id="L133">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L134">        DownloadableFile downloadableFile = downloadAttachmentUseCase.downloadAttachment(new DownloadAttachmentCommand(id, userDetails.getId(), new JobId(UUID.fromString(jobId))));</span>
 
-<span class="fc" id="L113">        return ResponseEntity.ok()</span>
-<span class="fc" id="L114">                .contentType(MediaType.parseMediaType(downloadableFile.contentType()))</span>
-<span class="fc" id="L115">                .header(HttpHeaders.CONTENT_DISPOSITION, &quot;attachment; filename=\&quot;&quot; + downloadableFile.filename() + &quot;\&quot;&quot;)</span>
-<span class="fc" id="L116">                .body(new FileSystemResource(downloadableFile.path()));</span>
+<span class="fc" id="L136">        return ResponseEntity.ok()</span>
+<span class="fc" id="L137">                .contentType(MediaType.parseMediaType(downloadableFile.contentType()))</span>
+<span class="fc" id="L138">                .header(HttpHeaders.CONTENT_DISPOSITION, &quot;attachment; filename=\&quot;&quot; + downloadableFile.filename() + &quot;\&quot;&quot;)</span>
+<span class="fc" id="L139">                .body(new FileSystemResource(downloadableFile.path()));</span>
     }
 
     @GetMapping(&quot;{jobId}/attachments/{id}/file/info&quot;)
     public ProtectedFileResponse getProtectedFile(@PathVariable(&quot;jobId&quot;) String jobId, @PathVariable(&quot;id&quot;) String id, Authentication authentication) {
-<span class="fc" id="L121">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
-<span class="fc" id="L122">        AttachmentFileInfo info = getAttachmentFileInfoUseCase.getAttachmentFileInfo(new DownloadAttachmentCommand(id, userDetails.getId(), new JobId(UUID.fromString(jobId))));</span>
-<span class="fc" id="L123">        return attachmentFileInfoMapper.toResponse(info);</span>
+<span class="fc" id="L144">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L145">        AttachmentFileInfo info = getAttachmentFileInfoUseCase.getAttachmentFileInfo(new DownloadAttachmentCommand(id, userDetails.getId(), new JobId(UUID.fromString(jobId))));</span>
+<span class="fc" id="L146">        return attachmentFileInfoMapper.toResponse(info);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

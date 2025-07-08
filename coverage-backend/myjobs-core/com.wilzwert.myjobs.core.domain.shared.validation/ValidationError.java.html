@@ -45,5 +45,10 @@ public class ValidationError implements Serializable {
     public Map&lt;String, String&gt; details() {
 <span class="fc" id="L46">        return details;</span>
     }
+
+    @Override
+    public String toString() {
+<span class="fc" id="L51">        return &quot;ValidationError[code = &quot;+code+&quot;, field = &quot;+field+&quot;, details = &quot;+details+&quot;]&quot;;</span>
+    }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

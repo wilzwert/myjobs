@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = &quot;org.mapstruct.ap.MappingProcessor&quot;,
-    date = &quot;2025-06-18T09:42:43+0000&quot;,
+    date = &quot;2025-07-08T15:14:18+0000&quot;,
     comments = &quot;version: 1.6.2, compiler: javac, environment: Java 21.0.7 (Eclipse Adoptium)&quot;
 )
 @Component
@@ -121,7 +121,7 @@ import org.springframework.stereotype.Component;
     }
 
     @Override
-    public CreateActivityCommand toCommand(CreateActivityRequest request) {
+    public UpdateActivityCommand toUpdateCommand(UpdateActivityRequest request) {
 <span class="nc bnc" id="L125" title="All 2 branches missed.">        if ( request == null ) {</span>
 <span class="nc" id="L126">            return null;</span>
         }
@@ -130,55 +130,31 @@ import org.springframework.stereotype.Component;
 
 <span class="nc" id="L131">        comment = request.getComment();</span>
 
-<span class="nc" id="L133">        ActivityType activityType = null;</span>
-<span class="nc" id="L134">        UserId userId = null;</span>
-<span class="nc" id="L135">        JobId jobId = null;</span>
+<span class="nc" id="L133">        ActivityId activityId = null;</span>
+<span class="nc" id="L134">        ActivityType activityType = null;</span>
+<span class="nc" id="L135">        UserId userId = null;</span>
+<span class="nc" id="L136">        JobId jobId = null;</span>
 
-<span class="nc" id="L137">        CreateActivityCommand createActivityCommand = new CreateActivityCommand( activityType, comment, userId, jobId );</span>
+<span class="nc" id="L138">        UpdateActivityCommand updateActivityCommand = new UpdateActivityCommand( activityId, activityType, comment, userId, jobId );</span>
 
-<span class="nc" id="L139">        return createActivityCommand;</span>
+<span class="nc" id="L140">        return updateActivityCommand;</span>
     }
 
     @Override
-    public UpdateActivityCommand toUpdateCommand(UpdateActivityRequest request) {
-<span class="nc bnc" id="L144" title="All 2 branches missed.">        if ( request == null ) {</span>
-<span class="nc" id="L145">            return null;</span>
+    public CreateActivityCommand toCommand(CreateActivityRequest createActivityRequest) {
+<span class="nc bnc" id="L145" title="All 2 branches missed.">        if ( createActivityRequest == null ) {</span>
+<span class="nc" id="L146">            return null;</span>
         }
 
-<span class="nc" id="L148">        String comment = null;</span>
+<span class="nc" id="L149">        ActivityType activityType = null;</span>
+<span class="nc" id="L150">        String comment = null;</span>
 
-<span class="nc" id="L150">        comment = request.getComment();</span>
+<span class="nc" id="L152">        activityType = createActivityRequest.getType();</span>
+<span class="nc" id="L153">        comment = createActivityRequest.getComment();</span>
 
-<span class="nc" id="L152">        ActivityId activityId = null;</span>
-<span class="nc" id="L153">        ActivityType activityType = null;</span>
-<span class="nc" id="L154">        UserId userId = null;</span>
-<span class="nc" id="L155">        JobId jobId = null;</span>
+<span class="nc" id="L155">        CreateActivityCommand createActivityCommand = new CreateActivityCommand( activityType, comment );</span>
 
-<span class="nc" id="L157">        UpdateActivityCommand updateActivityCommand = new UpdateActivityCommand( activityId, activityType, comment, userId, jobId );</span>
-
-<span class="nc" id="L159">        return updateActivityCommand;</span>
-    }
-
-    @Override
-    public CreateActivityCommand toCommand(CreateActivityRequest createActivityRequest, UserId userId, JobId jobId) {
-<span class="nc bnc" id="L164" title="All 6 branches missed.">        if ( createActivityRequest == null &amp;&amp; userId == null &amp;&amp; jobId == null ) {</span>
-<span class="nc" id="L165">            return null;</span>
-        }
-
-<span class="nc" id="L168">        ActivityType activityType = null;</span>
-<span class="nc" id="L169">        String comment = null;</span>
-<span class="nc bnc" id="L170" title="All 2 branches missed.">        if ( createActivityRequest != null ) {</span>
-<span class="nc" id="L171">            activityType = createActivityRequest.getType();</span>
-<span class="nc" id="L172">            comment = createActivityRequest.getComment();</span>
-        }
-<span class="nc" id="L174">        UserId userId1 = null;</span>
-<span class="nc" id="L175">        userId1 = userId;</span>
-<span class="nc" id="L176">        JobId jobId1 = null;</span>
-<span class="nc" id="L177">        jobId1 = jobId;</span>
-
-<span class="nc" id="L179">        CreateActivityCommand createActivityCommand = new CreateActivityCommand( activityType, comment, userId1, jobId1 );</span>
-
-<span class="nc" id="L181">        return createActivityCommand;</span>
+<span class="nc" id="L157">        return createActivityCommand;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

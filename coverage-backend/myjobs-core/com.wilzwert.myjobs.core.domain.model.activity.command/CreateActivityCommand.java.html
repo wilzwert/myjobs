@@ -8,39 +8,25 @@ import com.wilzwert.myjobs.core.domain.model.user.UserId;
  * @author Wilhelm Zwertvaegher
  */
 
-<span class="fc" id="L11">public record CreateActivityCommand(ActivityType activityType, String comment, UserId userId, JobId jobId) {</span>
+<span class="fc" id="L11">public record CreateActivityCommand(ActivityType activityType, String comment) {</span>
     public static class Builder {
         private ActivityType activityType;
         private String comment;
-        private UserId userId;
-        private JobId jobId;
 
+<span class="nc" id="L16">        public Builder() {}</span>
 
-<span class="nc" id="L19">        public Builder() {}</span>
-
-<span class="fc" id="L21">        public Builder(CreateActivityCommand command) {</span>
-<span class="fc" id="L22">            this.activityType = command.activityType();</span>
-<span class="fc" id="L23">            this.comment = command.comment();</span>
-<span class="fc" id="L24">            this.userId = command.userId();</span>
-<span class="fc" id="L25">            this.jobId = command.jobId();</span>
-<span class="fc" id="L26">        }</span>
+<span class="fc" id="L18">        public Builder(CreateActivityCommand command) {</span>
+<span class="fc" id="L19">            this.activityType = command.activityType();</span>
+<span class="fc" id="L20">            this.comment = command.comment();</span>
+<span class="fc" id="L21">        }</span>
 
         public CreateActivityCommand.Builder comment(String comment) {
-<span class="fc" id="L29">            this.comment = comment;</span>
-<span class="fc" id="L30">            return this;</span>
-        }
-        public CreateActivityCommand.Builder userId(UserId userId) {
-<span class="nc" id="L33">            this.userId = userId;</span>
-<span class="nc" id="L34">            return this;</span>
-        }
-
-        public CreateActivityCommand.Builder jobId(JobId jobId) {
-<span class="nc" id="L38">            this.jobId = jobId;</span>
-<span class="nc" id="L39">            return this;</span>
+<span class="fc" id="L24">            this.comment = comment;</span>
+<span class="fc" id="L25">            return this;</span>
         }
 
         public CreateActivityCommand build() {
-<span class="fc" id="L43">            return new CreateActivityCommand(activityType, comment, userId, jobId);</span>
+<span class="fc" id="L29">            return new CreateActivityCommand(activityType, comment);</span>
         }
     }
 }

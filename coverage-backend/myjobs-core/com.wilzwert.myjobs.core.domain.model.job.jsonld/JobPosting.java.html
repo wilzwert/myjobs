@@ -7,14 +7,12 @@
 
 <span class="fc" id="L8">public record JobPosting (</span>
     String title,
-    String datePosted,
     String description,
+    String url,
+    String datePosted,
     String experienceRequirements,
     String qualifications,
-    String industry,
     String employmentType,
-    String url,
-    String educationRequirements,
     String validThrough,
     JobLocation jobLocation,
     HiringOrganization hiringOrganization,
@@ -23,29 +21,29 @@
 ) {
 
     public String computeSalary() {
-<span class="fc bfc" id="L26" title="All 2 branches covered.">        if(baseSalary == null) {</span>
-<span class="fc" id="L27">            return &quot;&quot;;</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">        if(baseSalary == null) {</span>
+<span class="fc" id="L25">            return &quot;&quot;;</span>
         }
 
-<span class="fc bfc" id="L30" title="All 2 branches covered.">        if(baseSalary.numberValue() != null) {</span>
-<span class="pc bpc" id="L31" title="1 of 2 branches missed.">            return baseSalary().numberValue()+(salaryCurrency() != null ? &quot;  &quot;+salaryCurrency() : &quot;&quot;);</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">        if(baseSalary.numberValue() != null) {</span>
+<span class="pc bpc" id="L29" title="1 of 2 branches missed.">            return baseSalary.numberValue()+(salaryCurrency() != null ? &quot;  &quot;+salaryCurrency() : &quot;&quot;);</span>
         }
 
-<span class="pc bpc" id="L34" title="1 of 2 branches missed.">        if(baseSalary.value() == null) {</span>
-<span class="nc" id="L35">            return &quot;&quot;;</span>
+<span class="pc bpc" id="L32" title="1 of 2 branches missed.">        if(baseSalary.value() == null) {</span>
+<span class="nc" id="L33">            return &quot;&quot;;</span>
         }
 
         // minValue implies that we have a MonetaryAmount with a range
-<span class="fc bfc" id="L39" title="All 2 branches covered.">        if(baseSalary.value().minValue() != null) {</span>
-<span class="fc" id="L40">            return baseSalary.value().minValue()+&quot; - &quot;+baseSalary.value().maxValue()+ &quot; &quot; +baseSalary.currency()+&quot; / &quot;+baseSalary.value().unitText();</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        if(baseSalary.value().minValue() != null) {</span>
+<span class="fc" id="L38">            return baseSalary.value().minValue()+&quot; - &quot;+baseSalary.value().maxValue()+ &quot; &quot; +baseSalary.currency()+&quot; / &quot;+baseSalary.value().unitText();</span>
         }
 
         // a price range
-<span class="pc bpc" id="L44" title="1 of 2 branches missed.">        if(baseSalary.value().minPrice() != null) {</span>
-<span class="nc" id="L45">            return baseSalary.value().minPrice()+&quot; - &quot;+baseSalary.value().maxPrice()+ &quot; &quot; +baseSalary.value().priceCurrency();</span>
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">        if(baseSalary.value().minPrice() != null) {</span>
+<span class="nc" id="L43">            return baseSalary.value().minPrice()+&quot; - &quot;+baseSalary.value().maxPrice()+ &quot; &quot; +baseSalary.value().priceCurrency();</span>
         }
 
-<span class="fc" id="L48">        return &quot;&quot;;</span>
+<span class="fc" id="L46">        return &quot;&quot;;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -51,7 +51,7 @@ public class S3FileStorage implements FileStorage {
 <span class="fc" id="L51">            s3Client.putObject(PutObjectRequest.builder()</span>
 <span class="fc" id="L52">                            .bucket(bucketName)</span>
 <span class="fc" id="L53">                            .key(targetFilename)</span>
-<span class="fc" id="L54">                            .contentDisposition(&quot;attachment; filename=\&quot;&quot; + originalFilename + &quot;\&quot;&quot;)</span>
+<span class="fc" id="L54">                            .contentDisposition(&quot;inline; filename=\&quot;&quot; + originalFilename + &quot;\&quot;&quot;)</span>
 <span class="fc" id="L55">                            .build(),</span>
 <span class="fc" id="L56">                    RequestBody.fromFile(file));</span>
         }
