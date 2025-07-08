@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { JobActivitiesFormComponent } from './job-actitivities-form.component';
+import { JobActivitiesFormComponent } from './job-activities-form.component';
 import { JobService } from '@core/services/job.service';
 import { NotificationService } from '@core/services/notification.service';
 import { ErrorProcessorService } from '@core/services/error-processor.service';

@@ -15,8 +15,8 @@ import { BaseInputComponent } from "./baseinput.component";
   templateUrl: './description-input.component.html'
 })
 export class DescriptionInputComponent extends BaseInputComponent {
-    override configure(): void {
-        this.form.addControl('description', this.fb.control(this.initialValue, [Validators.required]));
+    override getValidators(): any[] {
+        return [Validators.required];
     }
 
     constructor() {

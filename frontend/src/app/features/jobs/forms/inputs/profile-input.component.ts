@@ -15,10 +15,6 @@ import { BaseInputComponent } from "./baseinput.component";
   templateUrl: './profile-input.component.html'
 })
 export class ProfileInputComponent extends BaseInputComponent {
-    override configure(): void {
-        this.form.addControl('profile', this.fb.control(this.initialValue, []));
-    }
-
     constructor() {
         super('profile');
     }

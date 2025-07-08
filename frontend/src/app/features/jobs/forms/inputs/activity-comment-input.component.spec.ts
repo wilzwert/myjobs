@@ -49,7 +49,7 @@ describe('ActivityCommentInputComponent', () => {
   });
 
   it('should update textarea value when form control changes', () => {
-    component.control.setValue('Changed content');
+    component.control!.setValue('Changed content');
     fixture.detectChanges();
 
     const textarea = fixture.debugElement.query(By.css('textarea'));
@@ -65,6 +65,6 @@ describe('ActivityCommentInputComponent', () => {
 
     const result = component.updateRichText(mockEvent);
     expect(result).toBe(true);
-    expect(component.control.value).toBe('<p>Updated content</p>');
+    expect(component.control?.value).toBe('<p>Updated content</p>');
   });
 });

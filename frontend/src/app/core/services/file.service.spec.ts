@@ -32,6 +32,7 @@ describe('FileService', () => {
 
     expect(httpClientMock.get).toHaveBeenCalledWith('http://www.example.com/test-file', {
       responseType: 'blob',
+      withCredentials: false
     });
   });
 

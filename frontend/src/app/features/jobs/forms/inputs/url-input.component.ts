@@ -11,8 +11,8 @@ import { BaseInputComponent } from "./baseinput.component";
   templateUrl: './url-input.component.html'
 })
 export class UrlInputComponent extends BaseInputComponent {
-    override configure(): void {
-        this.form.addControl('url', this.fb.control(this.initialValue, [Validators.required, Validators.pattern('(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)')]));
+    override getValidators(): any[] {
+        return [Validators.required, Validators.pattern('(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})\\b([-a-zA-Z0-9@:%._\\+~#?&//=]*)')];
     }
 
     constructor() {

@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
 import { DataService } from './data.service';
 import { Job } from '@core/model/job.interface';
-import { BehaviorSubject, forkJoin, map, Observable, of, switchMap, tap } from 'rxjs';
+import { BehaviorSubject, map, Observable, of, switchMap, tap } from 'rxjs';
 import { Page } from '@core/model/page.interface';
 import { CreateJobRequest } from '@core/model/create-job-request.interface';
 import { UpdateJobFieldRequest, UpdateJobRequest } from '@core/model/update-job-request.interface';
 import { CreateJobAttachmentsRequest } from '@core/model/create-job-attachments-request.interface';
 import { CreateJobAttachmentRequest } from '@core/model/create-job-attachment-request.interface';
 import { CreateJobActivitiesRequest } from '@core/model/create-job-activities-request.interface';
-import { CreateJobActivityRequest } from '@core/model/create-job-activity-request.interface';
 import { UpdateJobStatusRequest } from '@core/model/update-job-status-request.interface';
 import { UpdateJobRatingRequest } from '@core/model/update-job-rating-request.interface';
 import { JobMetadata } from '@core/model/job-metadata.interface';

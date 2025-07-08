@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormField, MatLabel } from '@angular/material/form-field';
 import { JobService } from '@core/services/job.service';
 import { Job } from '@core/model/job.interface';
@@ -17,13 +17,14 @@ import { ErrorProcessorService } from '@core/services/error-processor.service';
 import { TranslatorService } from '@app/core/services/translator.service';
 import { ActivityCommentInputComponent } from "../inputs/activity-comment-input.component";
 import { MatTooltip } from '@angular/material/tooltip';
+import { JsonPipe } from '@angular/common';
 
 
 @Component({
   selector: 'app-job-activities-form',
-  imports: [ActivityLabelPipe, ReactiveFormsModule, MatFormField, MatLabel, MatButton, MatSelect, MatOption, MatIcon, ActivityCommentInputComponent, MatTooltip],
-  templateUrl: './job-actitivities-form.component.html',
-  styleUrl: './job-actitivities-form.component.scss'
+  imports: [ActivityLabelPipe, JsonPipe, ReactiveFormsModule, MatFormField, MatLabel, MatButton, MatSelect, MatOption, MatIcon, ActivityCommentInputComponent, MatTooltip],
+  templateUrl: './job-activities-form.component.html',
+  styleUrl: './job-activities-form.component.scss'
 })
 export class JobActivitiesFormComponent implements OnInit {
   @Input({ required: true }) job!: Job;
@@ -60,7 +61,7 @@ export class JobActivitiesFormComponent implements OnInit {
   addActivity(): void {
     const activityGroup = this.fb.group({
       type: ['', Validators.required],
-      comment: ['', Validators.required],
+      comment: ['', Validators.required]
     });
     this.activities.push(activityGroup);
   }
@@ -99,5 +100,9 @@ export class JobActivitiesFormComponent implements OnInit {
             this.activitiesSaved.emit(job);
           });
     }
+  }
+
+  asFormGroup(control: AbstractControl): FormGroup {
+    return control as FormGroup;
   }
 }

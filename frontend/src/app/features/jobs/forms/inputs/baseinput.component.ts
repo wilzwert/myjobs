@@ -4,10 +4,12 @@ import { EditorComponent } from "@tinymce/tinymce-angular";
 
 @Directive()
 export abstract class BaseInputComponent implements OnInit {
-    @Input({ required: true }) form!: FormGroup;
+    @Input({required: true}) form!: FormGroup;
+    @Input() controlName!: string;
     @Input() initialValue: string | undefined;
 
     protected fb = inject(FormBuilder);
+    public control: FormControl | null = null;
 
     // for rich text editors
     init: EditorComponent['init'] = {
@@ -18,11 +20,15 @@ export abstract class BaseInputComponent implements OnInit {
         statusbar: false
     };
     
-    constructor(protected controlName: string){
+    constructor(protected defaultControlName: string){
     }
 
     ngOnInit(): void {
-        this.configure();
+        if(!this.controlName) {
+            this.controlName = this.defaultControlName;
+        }
+        this.control = this.fb.control(this.initialValue, this.getValidators());
+        this.getForm().addControl(this.controlName, this.control);
     }
 
     updateRichText(event: any) :boolean {
@@ -32,9 +38,15 @@ export abstract class BaseInputComponent implements OnInit {
         return true;
     }
 
-    public get control() {
-        return this.form?.get(this.controlName) as FormControl;
+    protected getValidators(): any[] {
+        return [];
     }
 
-    abstract configure(): void;
+    protected getForm(): FormGroup {
+        if (this.form instanceof FormGroup) {
+            return this.form;
+        } else {
+            throw new Error('Form is not a FormGroup');
+        }
+    }
 }

@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Job } from '@core/model/job.interface';
-import { JobActivitiesFormComponent } from '@app/features/jobs/forms/job-actitivies-form/job-actitivities-form.component';
+import { JobActivitiesFormComponent } from '@app/features/jobs/forms/job-activities-form/job-activities-form.component';
 import { ModalService } from '@core/services/modal.service';
 import { DatePipe } from '@angular/common';
 import { ActivityLabelPipe } from '@core/pipe/activity-label.pipe';

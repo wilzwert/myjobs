@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { JobActivitiesComponent } from './job-activities.component';
-import { JobActivitiesFormComponent } from '@app/features/jobs/forms/job-actitivies-form/job-actitivities-form.component';
+import { JobActivitiesFormComponent } from '@app/features/jobs/forms/job-activities-form/job-activities-form.component';
 import { JobService } from '@core/services/job.service';
 import { ModalService } from '@core/services/modal.service';
 import { DatePipe } from '@angular/common';
@@ -29,6 +29,7 @@ describe('JobActivitiesComponent (Jest)', () => {
     attachments: [],
     company: 'company',
     description: 'job description',
+    comment: 'job comment',
     profile: 'job profile',
     salary: 'job salary',
     createdAt: '',

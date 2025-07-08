@@ -11,10 +11,6 @@ import { BaseInputComponent } from "./baseinput.component";
   templateUrl: './salary-input.component.html'
 })
 export class SalaryInputComponent extends BaseInputComponent {
-    override configure(): void {
-        this.form.addControl('salary', this.fb.control(this.initialValue, []));
-    }
-
     constructor() {
         super('salary');
     }
