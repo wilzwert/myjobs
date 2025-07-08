@@ -6,5 +6,3 @@ const env = dotenv.config();
 catch(e) {
 
 }
-
-console.log(process.env);

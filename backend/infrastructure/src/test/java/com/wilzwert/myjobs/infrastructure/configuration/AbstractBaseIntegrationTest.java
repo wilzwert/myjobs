@@ -41,7 +41,7 @@ public abstract class AbstractBaseIntegrationTest {
         testDataLoader.resetAndReload();
     }
 
-    // Container Mongo avec réplica set
+    // Mongo Replica Set container
     protected static final MongoDBContainer mongo = new MongoDBContainer("mongo:8.0")
             .withReuse(false)
             .waitingFor(Wait.forListeningPort())
@@ -52,7 +52,7 @@ public abstract class AbstractBaseIntegrationTest {
         initReplicaSet();
     }
 
-    // Initialisation du replica set (une seule fois)
+    // Init replica set
     private static void initReplicaSet() {
         try (MongoClient client = MongoClients.create(mongo.getReplicaSetUrl())) {
             Document isMaster = client.getDatabase("admin").runCommand(new Document("isMaster", 1));

@@ -33,7 +33,6 @@ export class JobEditableFieldComponent implements AfterContentInit {
   formVisible = false;
   loading = false;
   form!: FormGroup;
-  formFieldType = 'textarea';
 
   constructor(private readonly fb: FormBuilder, private readonly jobService: JobService, private readonly notificationService: NotificationService) {}
 
@@ -55,7 +54,6 @@ export class JobEditableFieldComponent implements AfterContentInit {
 
   submit(): void {
     if (this.form.valid) {
-      console.log('isvalid');
       this.loading = true;
       this.jobService.updateJobField(this.job.id, this.form.value as UpdateJobFieldRequest).subscribe((job) => {
         this.loading = false;

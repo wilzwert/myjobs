@@ -11,8 +11,8 @@ import { BaseInputComponent } from "./baseinput.component";
   templateUrl: './company-input.component.html'
 })
 export class CompanyInputComponent extends BaseInputComponent {
-    override configure(): void {
-        this.form.addControl('company', this.fb.control(this.initialValue, [Validators.required, Validators.minLength(2)]));
+    override getValidators(): any[] {
+        return [Validators.required, Validators.minLength(2)];
     }
 
     constructor() {

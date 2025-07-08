@@ -11,8 +11,8 @@ import { BaseInputComponent } from "./baseinput.component";
   templateUrl: './title-input.component.html'
 })
 export class TitleInputComponent extends BaseInputComponent {
-    override configure(): void {
-        this.form.addControl('title', this.fb.control(this.initialValue, [Validators.required, Validators.minLength(3)]));
+    override getValidators(): any[] {
+        return [Validators.required, Validators.minLength(3)];
     }
 
     constructor() {

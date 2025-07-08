@@ -8,10 +8,10 @@ import { CreateJobAttachmentsRequest } from '@core/model/create-job-attachments-
 import { Page } from '@core/model/page.interface';
 import { JobMetadata } from '@core/model/job-metadata.interface';
 import { UpdateJobFieldRequest, UpdateJobRequest } from '@core/model/update-job-request.interface';
-import { CreateJobAttachmentRequest } from '@core/model/create-job-attachment-request.interface';
 import { UpdateJobRatingRequest } from '@core/model/update-job-rating-request.interface';
 import { SessionService } from './session.service';
 import { JobsListOptions } from '../model/jobs-list-options';
+import { CreateJobActivitiesRequest } from '../model/create-job-activities-request.interface';
 
 describe('JobService', () => {
   let dataServiceMock: jest.Mocked<DataService>;
@@ -158,40 +158,44 @@ describe('JobService', () => {
     });
   });
 
-  it('createAttachments should call createAttachment for each attachment', (done) => {
+  it('should create attachments', (done) => {
     const jobId = '789';
     const job: Job = { id: jobId } as Job;
     const request: CreateJobAttachmentsRequest = {
-      attachments: [{ name: 'cv.pdf' }, { name: 'motivation.pdf' }]
+      attachments: [
+        { name: 'cv.pdf' }, { name: 'motivation.pdf' }
+      ]
     } as CreateJobAttachmentsRequest;
+    dataServiceMock.post.mockReturnValue(of(job));
+    const reloadSpy = jest.spyOn<any, any>(jobService as any, 'reloadIfNecessary');
+  jobService.createAttachments(jobId, request).subscribe(result => {
+        expect(dataServiceMock.post).toHaveBeenCalledWith(`jobs/${jobId}/attachments`, request.attachments);
+        expect(result).toEqual(job);
+        expect(reloadSpy).toHaveBeenCalledWith(job);
+        done()
+      });
+    }
+  );
 
-    const createAttachmentSpy = jest
-      .spyOn(jobService, 'createAttachment')
-      .mockReturnValue(of(job));
-
-    jobService.createAttachments(jobId, request).subscribe((result) => {
-      expect(createAttachmentSpy).toHaveBeenCalledTimes(2);
-      expect(result).toEqual(job);
-      done();
-    })
-  });
-
-  it('createAttachment should call dataService.post and reloadIfNecessary', (done) => {
+  it('should create activities', (done) => {
     const jobId = '789';
     const job: Job = { id: jobId } as Job;
-    const request: CreateJobAttachmentRequest = { name: 'cv.pdf' } as CreateJobAttachmentRequest;
-
-    const reloadSpy = jest.spyOn<any, any>(jobService as any, 'reloadIfNecessary');
-
+    const request: CreateJobActivitiesRequest = {
+      activities: [
+        { type: 'RELAUNCH', comment: "Relaunched application" }, 
+        { type: 'COMPANY_REFUSAL', comment: 'Company refused the application' }
+      ]
+    } as CreateJobActivitiesRequest;
     dataServiceMock.post.mockReturnValue(of(job));
-
-    jobService.createAttachment(jobId, request).subscribe(result => {
-      expect(dataServiceMock.post).toHaveBeenCalledWith(`jobs/${jobId}/attachments`, request);
-      expect(result).toEqual(job);
-      expect(reloadSpy).toHaveBeenCalledWith(job);
-      done()
-    });
-  });
+    const reloadSpy = jest.spyOn<any, any>(jobService as any, 'reloadIfNecessary');
+  jobService.createActivities(jobId, request).subscribe(result => {
+        expect(dataServiceMock.post).toHaveBeenCalledWith(`jobs/${jobId}/activities`, request.activities);
+        expect(result).toEqual(job);
+        expect(reloadSpy).toHaveBeenCalledWith(job);
+        done()
+      });
+    }
+  );
 
   it('getAllJobs should call dataService.get if page changes', (done) => {
     const page: Page<Job> = {

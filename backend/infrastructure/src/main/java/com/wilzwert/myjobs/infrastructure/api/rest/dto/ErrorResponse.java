@@ -25,6 +25,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
@@ -47,6 +48,10 @@ public class ErrorResponse {
 
     public static <E extends EntityNotFoundException>  ErrorResponse fromException(E ex) {
         return build(HttpStatus.NOT_FOUND, ex.getErrorCode().name());
+    }
+
+    public static ErrorResponse fromException(HandlerMethodValidationException ex) {
+        return build(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_FAILED.name());
     }
 
     public static ErrorResponse fromException(ValidationException ex) {
@@ -112,7 +117,7 @@ public class ErrorResponse {
             if (!formatEx.getPath().isEmpty()) {
                 fieldName = formatEx.getPath().getFirst().getFieldName();
             }
-            if(!fieldName.isEmpty()) {
+            if(fieldName != null && !fieldName.isEmpty()) {
                 Map<String, List<ValidationErrorResponse>> errors = new HashMap<>();
                 errors.put(fieldName, List.of(new ValidationErrorResponse(ErrorCode.INVALID_VALUE.name())));
                 return build(HttpStatus.BAD_REQUEST, ErrorCode.VALIDATION_FAILED.name(), errors);

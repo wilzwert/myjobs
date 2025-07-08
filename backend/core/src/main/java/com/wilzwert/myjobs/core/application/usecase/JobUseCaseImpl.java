@@ -4,6 +4,7 @@ package com.wilzwert.myjobs.core.application.usecase;
 import com.wilzwert.myjobs.core.domain.model.*;
 import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
+import com.wilzwert.myjobs.core.domain.model.activity.command.CreateActivitiesCommand;
 import com.wilzwert.myjobs.core.domain.model.activity.command.CreateActivityCommand;
 import com.wilzwert.myjobs.core.domain.model.activity.command.UpdateActivityCommand;
 import com.wilzwert.myjobs.core.domain.model.activity.event.integration.ActivityAutomaticallyCreatedEvent;
@@ -11,6 +12,7 @@ import com.wilzwert.myjobs.core.domain.model.activity.event.integration.Activity
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.attachment.AttachmentId;
 import com.wilzwert.myjobs.core.domain.model.attachment.command.CreateAttachmentCommand;
+import com.wilzwert.myjobs.core.domain.model.attachment.command.CreateAttachmentsCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.command.DeleteAttachmentCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.command.DownloadAttachmentCommand;
 import com.wilzwert.myjobs.core.domain.model.attachment.event.integration.AttachmentCreatedEvent;
@@ -232,7 +234,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
     }
 
     @Override
-    public Activity addActivityToJob(CreateActivityCommand command) {
+    public List<Activity> addActivitiesToJob(CreateActivitiesCommand command) {
         Optional<Job> foundJob = jobDataManager.findByIdAndUserId(command.jobId(), command.userId());
         if(foundJob.isEmpty()) {
             throw new JobNotFoundException();
@@ -240,23 +242,35 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
         Job job = foundJob.get();
 
-        CreateActivityCommand actualCommand = sanitizeCommandFields(command, List.of("comment"));
+        List<CreateActivityCommand> createActivityCommandList = command.createActivityCommandList();
+        List<CreateActivityCommand> actualCommands = createActivityCommandList.stream()
+                .map(c -> sanitizeCommandFields(c, List.of("comment")))
+                .toList();
+
+        CreateActivitiesCommand actualCommand = new CreateActivitiesCommand.Builder(command).commandList(actualCommands).build();
 
         return transactionProvider.executeInTransaction(() -> {
-            Activity activity = Activity.builder()
-                    .type(actualCommand.activityType())
-                    .comment(actualCommand.comment())
-                    .build();
-            Job updatedJob = job.addActivity(activity);
+            List<Activity> addedActivities = new ArrayList<>();
+            Job updatedJob = job;
 
-            // FIXME
-            // this is an ugly workaround to force the infra (persistence in particular) to save all data
-            // as I understand DDD, only the aggregate should be explicitly persisted
-            // but I just don't how to do it cleanly for now
-            this.jobDataManager.saveJobAndActivity(updatedJob, activity);
+            for(CreateActivityCommand createActivityCommand : actualCommand.createActivityCommandList()) {
+                Activity activity = Activity.builder()
+                        .type(createActivityCommand.activityType())
+                        .comment(createActivityCommand.comment())
+                        .build();
+                updatedJob = updatedJob.addActivity(activity);
 
-            this.integrationEventPublisher.publish(new ActivityCreatedEvent(IntegrationEventId.generate(), job.getId(), activity.getId(), activity.getType()));
-            return activity;
+                // FIXME
+                // this is an ugly workaround to force the infra (persistence in particular) to save all data
+                // as I understand DDD, only the aggregate should be explicitly persisted
+                // but I just don't how to do it cleanly for now
+                this.jobDataManager.saveJobAndActivity(updatedJob, activity);
+
+                this.integrationEventPublisher.publish(new ActivityCreatedEvent(IntegrationEventId.generate(), job.getId(), activity.getId(), activity.getType()));
+                addedActivities.add(activity);
+            }
+
+            return addedActivities;
         });
     }
 
@@ -289,7 +303,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
      * FIXME : this should be improved to avoid reflection and ugly casts, and externalized
      * @param command the command to sanitize
      * @param fieldsToSanitize the command fields to sanitize
-     * @return a new comment of the same class
+     * @return a new command of the same class
      * @param <T> the command class
      */
     private <T> T sanitizeCommandFields(T command, List<String> fieldsToSanitize) {
@@ -319,36 +333,38 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
     }
 
     @Override
-    public Attachment addAttachmentToJob(CreateAttachmentCommand command) {
-        Optional<Job> foundJob = jobDataManager.findByIdAndUserId(command.jobId(), command.userId());
-        if(foundJob.isEmpty()) {
-            throw new JobNotFoundException();
-        }
-
-        Job job = foundJob.get();
-        AttachmentId attachmentId = AttachmentId.generate();
+    public List<Attachment> addAttachmentsToJob(CreateAttachmentsCommand command) {
+        Job job = jobDataManager.findByIdAndUserId(command.jobId(), command.userId()).orElseThrow(JobNotFoundException::new);
 
         return transactionProvider.executeInTransaction(() -> {
-            DownloadableFile file = fileStorage.store(command.file(), command.userId().value().toString() + "/" + attachmentId.value().toString(), command.filename());
-            Attachment attachment = Attachment.builder()
-                    .id(attachmentId)
-                    .name(command.name())
-                    .fileId(file.fileId())
-                    .filename(command.filename())
-                    .contentType(file.contentType()).build();
-            Job updatedJob = job.addAttachment(attachment);
+            List<Attachment> addedAttachments = new ArrayList<>();
+            Job updatedJob = job;
+            for(CreateAttachmentCommand createAttachmentCommand: command.createAttachmentCommandList()) {
+                AttachmentId attachmentId = AttachmentId.generate();
+                DownloadableFile file = fileStorage.store(createAttachmentCommand.file(), command.userId().value().toString() + "/" + attachmentId.value().toString(), createAttachmentCommand.filename());
+                Attachment attachment = Attachment.builder()
+                        .id(attachmentId)
+                        .name(createAttachmentCommand.name())
+                        .fileId(file.fileId())
+                        .filename(createAttachmentCommand.filename())
+                        .contentType(file.contentType()).build();
+                updatedJob = updatedJob.addAttachment(attachment);
 
-            Activity activity = Activity.builder().type(ActivityType.ATTACHMENT_CREATION).comment(attachment.getName()).build();
-            updatedJob = updatedJob.addActivity(activity);
+                Activity activity = Activity.builder().type(ActivityType.ATTACHMENT_CREATION).comment(attachment.getName()).build();
+                updatedJob = updatedJob.addActivity(activity);
 
-            // FIXME
-            // this is an ugly workaround to force the infra (persistence in particular) to save all data
-            // as I understand DDD, only the aggregate should be explicitly persisted
-            // but I just don't how to do it cleanly for now
-            jobDataManager.saveJobAndAttachment(updatedJob, attachment, activity);
-            integrationEventPublisher.publish(new AttachmentCreatedEvent(IntegrationEventId.generate(), job.getId(), attachment.getId()));
-            integrationEventPublisher.publish(new ActivityAutomaticallyCreatedEvent(IntegrationEventId.generate(), job.getId(), activity.getId(), activity.getType()));
-            return attachment;
+                // FIXME
+                // this is an ugly workaround to force the infra (persistence in particular) to save all data
+                // as I understand DDD, only the aggregate should be explicitly persisted
+                // but I just don't how to do it cleanly for now
+                jobDataManager.saveJobAndAttachment(updatedJob, attachment, activity);
+                integrationEventPublisher.publish(new AttachmentCreatedEvent(IntegrationEventId.generate(), job.getId(), attachment.getId()));
+                integrationEventPublisher.publish(new ActivityAutomaticallyCreatedEvent(IntegrationEventId.generate(), job.getId(), activity.getId(), activity.getType()));
+
+                addedAttachments.add(attachment);
+            }
+
+            return addedAttachments;
         });
     }
 

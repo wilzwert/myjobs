@@ -11,24 +11,7 @@ public class HiringOrganization {
     private String url;
     private String logo;
 
-    public HiringOrganization() {}
-
-    public HiringOrganization(String name, String legalName, String url) {
-        this.name = name;
-        this.legalName = legalName;
-        this.url = url;
-    }
-
-    public HiringOrganization(String name) {
-        this.name = name;
-        this.legalName = "";
-        this.url = "";
-    }
-
-    public HiringOrganization(String name, String url) {
-        this.name = name;
-        this.legalName = "";
-        this.url = url;
+    public HiringOrganization() {
     }
 
     public void setName(String name) {
@@ -47,16 +30,16 @@ public class HiringOrganization {
         this.logo = logo;
     }
 
-    public String name() {
+    public String getName() {
         return name;
     }
-    public String legalName() {
+    public String getLegalName() {
         return legalName;
     }
-    public String url() {
+    public String getUrl() {
         return url;
     }
-    public String logo() {
+    public String getLogo() {
         return logo;
     }
 }

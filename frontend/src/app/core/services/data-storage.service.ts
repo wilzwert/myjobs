@@ -18,7 +18,7 @@ export class DataStorageService {
       return JSON.parse(item) as T;
     }
     catch(e) {
-      console.log(e);
+      console.log(`Error parsing item with key "${key}":`, e);
       return null;
     }
   }

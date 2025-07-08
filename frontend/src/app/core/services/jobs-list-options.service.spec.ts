@@ -120,7 +120,6 @@ describe('JobsListOptionsService', () => {
     service.filter('PENDING', 'ACTIVE');
     expect(spy).toHaveBeenCalled();
     const newOptions = spy.mock.calls[0][0] as JobsListOptions;
-    console.log(newOptions);
     expect(newOptions.getStatus()).toBe('PENDING');
     // we expect null, as status and statusMeta cannot be used at the same time
     expect(newOptions.getStatusMeta()).toBe(null);
@@ -132,7 +131,6 @@ describe('JobsListOptionsService', () => {
     service.filter(null, 'ACTIVE');
     expect(spy).toHaveBeenCalled();
     const newOptions = spy.mock.calls[0][0] as JobsListOptions;
-    console.log(newOptions);
     expect(newOptions.getStatus()).toBe(null);
     expect(newOptions.getStatusMeta()).toBe('ACTIVE');
   });

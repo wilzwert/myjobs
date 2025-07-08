@@ -57,16 +57,13 @@ export class JobAttachmentsComponent implements OnInit {
   }
 
   confirmDeleteAttachment(job: Job, attachment: Attachment) :void {
-    console.log('deleting attachment');
     this.jobService.deleteAttachment(job.id, attachment.id).pipe(
       take(1),
       tap(() => {
         this.notificationService.confirmation($localize `:@@message.attachment.deleted:Attachment deleted successfully`);
-        console.log('filtering attachments');
         job.attachments = job.attachments.filter((a) => a.id != attachment.id )
     })
     ).subscribe(() => {
-      console.log('something happened');
     });
   }
 

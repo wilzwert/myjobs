@@ -1,5 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wilzwert.myjobs.core.domain.model.DownloadableFile;
 import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
@@ -29,6 +30,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -119,7 +121,7 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
         @Test
         void whenRequestInvalid_thenShouldReturnBadRequestWithErrors() throws Exception {
             CreateAttachmentRequest createAttachmentRequest = new CreateAttachmentRequest();
-            MvcResult mvcResult = mockMvc.perform(post(JOB_ATTACHMENTS_TEST_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(createAttachmentRequest)))
+            MvcResult mvcResult = mockMvc.perform(post(JOB_ATTACHMENTS_TEST_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(List.of(createAttachmentRequest))))
                     .andExpect(status().isBadRequest())
                     .andReturn();
 
@@ -127,12 +129,6 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
             assertThat(errorResponse).isNotNull();
             assertThat(errorResponse.getStatus()).isEqualTo("400");
             assertThat(errorResponse.getMessage()).isEqualTo(ErrorCode.VALIDATION_FAILED.name());
-            assertThat(errorResponse.getErrors()).hasSize(3);
-
-            ValidationErrorResponse expectedError = new ValidationErrorResponse(ErrorCode.FIELD_CANNOT_BE_EMPTY.name());
-            assertThat(errorResponse.getErrors().get("name")).containsExactly(expectedError);
-            assertThat(errorResponse.getErrors().get("filename")).containsExactly(expectedError);
-            assertThat(errorResponse.getErrors().get("content")).containsExactly(expectedError);
         }
 
         @Test
@@ -144,16 +140,20 @@ public class AttachmentControllerIT extends AbstractBaseIntegrationTest  {
             createAttachmentRequest.setFilename("test.doc");
             createAttachmentRequest.setName("CV");
 
+            List<CreateAttachmentRequest> actualRequest = List.of(createAttachmentRequest);
+
             Instant beforeCall = Instant.now();
-            MvcResult result = mockMvc.perform(post(JOB_ATTACHMENTS_TEST_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(createAttachmentRequest)))
+            MvcResult result = mockMvc.perform(post(JOB_ATTACHMENTS_TEST_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(actualRequest)))
                     .andExpect(status().isCreated())
                     .andReturn();
 
             Instant afterCall = Instant.now();
 
-            AttachmentResponse attachmentResponse = objectMapper.readValue(result.getResponse().getContentAsString(), AttachmentResponse.class);
-            assertThat(attachmentResponse).isNotNull();
+            List<AttachmentResponse> attachmentsResponse = objectMapper.readValue(result.getResponse().getContentAsString(), new TypeReference<List<AttachmentResponse>>() {});
+            assertThat(attachmentsResponse).isNotNull()
+                    .hasSize(1);
 
+            AttachmentResponse attachmentResponse = attachmentsResponse.getFirst();
             Instant createdAt = attachmentResponse.getCreatedAt();
             // FIXME this is quite ugly but we have to make sure updatedAt is consistent
             assertThat(createdAt)

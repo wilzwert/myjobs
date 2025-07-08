@@ -51,7 +51,7 @@ public class S3FileStorage implements FileStorage {
             s3Client.putObject(PutObjectRequest.builder()
                             .bucket(bucketName)
                             .key(targetFilename)
-                            .contentDisposition("attachment; filename=\"" + originalFilename + "\"")
+                            .contentDisposition("inline; filename=\"" + originalFilename + "\"")
                             .build(),
                     RequestBody.fromFile(file));
         }

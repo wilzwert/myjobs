@@ -3,7 +3,7 @@ import { MAT_DIALOG_DATA, MatDialogActions, MatDialogContent, MatDialogRef } fro
 import { MatStepper, MatStepperIntl, MatStepperModule } from '@angular/material/stepper';
 import { Job } from '@core/model/job.interface';
 import { JobFormComponent } from '@app/features/jobs/forms/job-form/job-form.component';
-import { JobActivitiesFormComponent } from '@app/features/jobs/forms/job-actitivies-form/job-actitivities-form.component';
+import { JobActivitiesFormComponent } from '@app/features/jobs/forms/job-activities-form/job-activities-form.component';
 import { JobAttachmentsFormComponent } from '@app/features/jobs/forms/job-attachments-form/job-attachments-form.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
