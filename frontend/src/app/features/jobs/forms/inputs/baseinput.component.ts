@@ -7,8 +7,8 @@ export abstract class BaseInputComponent implements OnInit {
     @Input({ required: true }) form!: FormGroup;
     @Input() initialValue: string | undefined;
 
-    protected fb: FormBuilder;
-    
+    protected fb = inject(FormBuilder);
+
     // for rich text editors
     init: EditorComponent['init'] = {
         plugins: ['link', 'autolink', 'lists'],
@@ -19,7 +19,6 @@ export abstract class BaseInputComponent implements OnInit {
     };
     
     constructor(protected controlName: string){
-        this.fb = inject(FormBuilder);
     }
 
     ngOnInit(): void {

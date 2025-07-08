@@ -22,6 +22,7 @@ describe('ActivityCommentInputComponent', () => {
     component.form = new FormGroup({});
     component.initialValue = 'Initial comment';
 
+    component.ngOnInit();
     fixture.detectChanges();
   });
 

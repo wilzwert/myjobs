@@ -33,7 +33,6 @@ export class JobEditableFieldComponent implements AfterContentInit {
   formVisible = false;
   loading = false;
   form!: FormGroup;
-  formFieldType = 'textarea';
 
   constructor(private readonly fb: FormBuilder, private readonly jobService: JobService, private readonly notificationService: NotificationService) {}
 

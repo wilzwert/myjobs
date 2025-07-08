@@ -5,7 +5,7 @@ import { JobService } from '@core/services/job.service';
 import { NotificationService } from '@core/services/notification.service';
 import { ErrorProcessorService } from '@core/services/error-processor.service';
 import { TranslatorService } from '@app/core/services/translator.service';
-import { of, Subject, throwError } from 'rxjs';
+import { Subject, throwError } from 'rxjs';
 import { Job } from '@app/core/model/job.interface';
 
 describe('JobActivitiesFormComponent', () => {
@@ -47,7 +47,7 @@ describe('JobActivitiesFormComponent', () => {
     fixture = TestBed.createComponent(JobActivitiesFormComponent);
     component = fixture.componentInstance;
 
-    // Injection de l’input Job obligatoire
+    // required Job input
     component.job = { id: 'job123', title: 'Test Job' } as any;
   });
 

@@ -898,6 +898,23 @@
         <note priority="1" from="description">label preceeding a job&apos;s status date</note>
         <note priority="1" from="meaning">current job status date</note>
       </trans-unit>
+      <trans-unit id="input.activity.comment.label" datatype="html">
+        <source>Comment</source>
+        <note priority="1" from="description">activity comment input label</note>
+        <note priority="1" from="meaning">activity comment</note>
+      </trans-unit>
+      <trans-unit id="input.activity.comment.placeholder" datatype="html">
+        <source>Activity comment</source>
+        <note priority="1" from="description">activity comment input placeholder</note>
+        <note priority="1" from="meaning">activity comment placeholder</note>
+      </trans-unit>
+      <trans-unit id="action.activities.save" datatype="html">
+        <source>Save activities</source>
+      </trans-unit>
+      <trans-unit id="form.activities.add" datatype="html">
+        <source>Add an activity</source>
+        <note priority="1" from="description">Add an activity</note>
+      </trans-unit>
     </body>
   </file>
 </xliff>

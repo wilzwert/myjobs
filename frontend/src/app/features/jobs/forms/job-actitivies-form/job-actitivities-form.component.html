@@ -15,8 +15,8 @@
             <app-activity-comment-input [initialValue]="" [form]="activityForm"></app-activity-comment-input>
             
             @if($index >= defaultActivities) {
-                <button mat-icon-button (click)="removeActivity($index)">
-                    <mat-icon aria-hidden="false" aria-label="Remove this activity" i18n-aria-label="Remove this activity|label for activity removal action@@action.activity.delete" fontIcon="remove">Remove this activitiy</mat-icon>
+                <button aria-hidden="false" i18n-aria-label="Remove this activity|label for activity removal action@@action.activity.delete" aria-label="Remove this activity" matTooltip="Remove this activity" i18n-matTooltip="@@action.activity.delete" mat-icon-button (click)="removeActivity($index)">
+                    <mat-icon aria-hidden="false" aria-label="Remove this activity" i18n-aria-label="@@action.activity.delete" fontIcon="remove">Remove this activitiy</mat-icon>
                 </button>
             }
             
@@ -24,10 +24,17 @@
         }
     </div>
     @if(activities.controls.length > 0) {
-        <button mat-flat-button type="submit" [disabled]="activities.invalid || loading">Save activities</button>
+        <button 
+            mat-flat-button type="submit" 
+            [disabled]="activities.invalid || loading" 
+            i18n="Save activities action label@@action.activities.save"
+            i18n-aria-label="@@action.activities.save" aria-label="Save activities"
+        >
+            Save activities
+        </button>
     }
 
-    <button aria-hidden="false" aria-label="Add an activity"  mat-icon-button (click)="addActivity()">
-        <mat-icon fontIcon="add">Add an activity</mat-icon>
+    <button aria-hidden="false" i18n-aria-label="Add an activity@@form.activities.add" aria-label="Add an activity" matTooltip="Add an activity" i18n-matTooltip="@@form.activities.add" mat-icon-button (click)="addActivity()">
+        <mat-icon aria-hidden="false" aria-label="Add an activity" i18n-aria-label="@@form.activities.add" fontIcon="add">Add an activitiy</mat-icon>
     </button>
   </form>
