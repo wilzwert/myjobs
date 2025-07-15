@@ -17,12 +17,11 @@ import { ErrorProcessorService } from '@core/services/error-processor.service';
 import { TranslatorService } from '@app/core/services/translator.service';
 import { ActivityCommentInputComponent } from "../inputs/activity-comment-input.component";
 import { MatTooltip } from '@angular/material/tooltip';
-import { JsonPipe } from '@angular/common';
 
 
 @Component({
   selector: 'app-job-activities-form',
-  imports: [ActivityLabelPipe, JsonPipe, ReactiveFormsModule, MatFormField, MatLabel, MatButton, MatSelect, MatOption, MatIcon, ActivityCommentInputComponent, MatTooltip],
+  imports: [ActivityLabelPipe, ReactiveFormsModule, MatFormField, MatLabel, MatButton, MatSelect, MatOption, MatIcon, ActivityCommentInputComponent, MatTooltip],
   templateUrl: './job-activities-form.component.html',
   styleUrl: './job-activities-form.component.scss'
 })
@@ -61,7 +60,8 @@ export class JobActivitiesFormComponent implements OnInit {
   addActivity(): void {
     const activityGroup = this.fb.group({
       type: ['', Validators.required],
-      comment: ['', Validators.required]
+      // the comment field will be added by the activity-comment-input component
+      // comment: ['', Validators.required]
     });
     this.activities.push(activityGroup);
   }

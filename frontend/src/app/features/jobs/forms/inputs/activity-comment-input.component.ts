@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { ReactiveFormsModule } from "@angular/forms";
+import { ReactiveFormsModule, Validators } from "@angular/forms";
 import { MatFormField, MatHint, MatLabel } from "@angular/material/form-field";
 import { MatInput } from "@angular/material/input";
 import { StatusIconComponent } from "@app/layout/shared/status-icon/status-icon.component";
@@ -17,5 +17,9 @@ import { BaseInputComponent } from "./baseinput.component";
 export class ActivityCommentInputComponent extends BaseInputComponent {
     constructor() {
         super('comment');
+    }
+
+    protected override getValidators(): any[] {
+        return [Validators.required];
     }
 }

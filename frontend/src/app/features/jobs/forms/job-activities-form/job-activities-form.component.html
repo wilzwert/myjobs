@@ -25,7 +25,6 @@
     </div>
 
     @if(activities.controls.length > 0) {
-        {{ activityForm.invalid }}
         <button 
             mat-flat-button type="submit" 
             [disabled]="activityForm.invalid || loading" 

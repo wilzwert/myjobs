@@ -137,12 +137,12 @@ editor {
 }
 
 // all native textareas are hidden because they are used by the rich editor
-/*textarea {
+textarea {
     height: 0;
     width: 0;
     max-height: 0;
     overflow: hidden;
-}*/
+}
 
 .list-config {
   display: flex;

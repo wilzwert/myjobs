@@ -5,7 +5,7 @@
             <div class="timeline-marker"></div>
             <div class="timeline-content">
               <p>{{ activity.type | activityLabel }}</p>
-              <p>{{ activity.comment }}</p>
+              <div [innerHTML]="activity.comment"></div>
               <span class="timestamp">{{ activity.createdAt | date:'short' }}</span>
             </div>
           </div>
