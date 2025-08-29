@@ -416,12 +416,6 @@
       <trans-unit id="job.created_or_saved" datatype="html">
         <source>Job <x id="PH" equiv-text="term"/> successfully</source>
       </trans-unit>
-      <trans-unit id="action.job.status.edit" datatype="html">
-        <source>Change status</source>
-      </trans-unit>
-      <trans-unit id="info.job.status.updated" datatype="html">
-        <source>Status updated successfully.</source>
-      </trans-unit>
       <trans-unit id="job.stepper.create.label" datatype="html">
         <source>Job creation</source>
         <note priority="1" from="description">Job stepper job creation step label</note>
@@ -885,18 +879,12 @@
       </trans-unit>
       <trans-unit id="job.late" datatype="html">
         <source>This job has not been updated recently</source>
-        <note priority="1" from="description">tooltip label for job late warning</note>
-        <note priority="1" from="meaning">late job</note>
       </trans-unit>
       <trans-unit id="job.status" datatype="html">
         <source>Current status</source>
-        <note priority="1" from="description">label preceeding a job&apos;s status</note>
-        <note priority="1" from="meaning">current job status</note>
       </trans-unit>
       <trans-unit id="job.status.date" datatype="html">
         <source>Current status date</source>
-        <note priority="1" from="description">label preceeding a job&apos;s status date</note>
-        <note priority="1" from="meaning">current job status date</note>
       </trans-unit>
       <trans-unit id="input.activity.comment.label" datatype="html">
         <source>Comment</source>

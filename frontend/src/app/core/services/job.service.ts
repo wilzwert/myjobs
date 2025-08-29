@@ -121,21 +121,7 @@ export class JobService {
   }
 
   /**
-   * Updates a job status
-   * @returns the job
-   */
-  public updateJobStatus(jobId: string, request: UpdateJobStatusRequest): Observable<Job> {
-    // using patch because only some fields are edited
-    return this.dataService.patch<Job>(`jobs/${jobId}`, request).pipe(
-      map((j: Job) => {
-        this.reloadIfNecessary(j);
-        return j;
-      })
-    );
-  }
-
-  /**
-   * Updates a job status
+   * Updates a job rating
    * @returns the job
    */
   public updateJobRating(jobId: string, request: UpdateJobRatingRequest): Observable<Job> {

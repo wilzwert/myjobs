@@ -7,7 +7,6 @@ import { MatCardModule } from '@angular/material/card';
 import { RouterLink } from '@angular/router';
 import { Job } from '@core/model/job.interface';
 import { JobService } from '@core/services/job.service';
-import { NotificationService } from '@core/services/notification.service';
 import { ModalService } from '@core/services/modal.service';
 import { ConfirmDialogService } from '@core/services/confirm-dialog.service';
 import { take, tap } from 'rxjs';
@@ -29,7 +28,7 @@ export class JobSummaryComponent {
   @Output() deleted = new EventEmitter<Job>();
   @Output() jobChanged = new EventEmitter<Job>();
 
-  constructor(private jobService:JobService, private notificationService: NotificationService, private modalService: ModalService, private confirmDialogService: ConfirmDialogService) {}
+  constructor(private jobService:JobService, private modalService: ModalService, private confirmDialogService: ConfirmDialogService) {}
 
   onJobChanged(job: Job): void {
     this.job = job;
