@@ -52,7 +52,7 @@ import java.util.*;
  * @author Wilhelm Zwertvaegher
  */
 
-public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, UpdateJobUseCase, UpdateJobStatusUseCase, UpdateJobRatingUseCase, DeleteJobUseCase, GetUserJobsUseCase, AddActivityToJobUseCase, UpdateActivityUseCase, AddAttachmentToJobUseCase, DownloadAttachmentUseCase, DeleteAttachmentUseCase, GetAttachmentFileInfoUseCase {
+public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, UpdateJobUseCase, UpdateJobRatingUseCase, DeleteJobUseCase, GetUserJobsUseCase, AddActivityToJobUseCase, UpdateActivityUseCase, AddAttachmentToJobUseCase, DownloadAttachmentUseCase, DeleteAttachmentUseCase, GetAttachmentFileInfoUseCase {
 
     private final TransactionProvider transactionProvider;
 
@@ -149,12 +149,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
     @Override
     public DomainPage<EnrichedJob> getUserJobs(UserId userId, int page, int size, JobStatus status, JobStatusMeta statusMeta, String sort) {
-        Optional<User> foundUser = userDataManager.findById(userId);
-        if(foundUser.isEmpty()) {
-            throw new UserNotFoundException();
-        }
-
-        User user = foundUser.get();
+        User user = userDataManager.findById(userId).orElseThrow(UserNotFoundException::new);
 
         List<DomainSpecification> specs = new ArrayList<>(List.of(DomainSpecification.eq("userId", user.getId(), UserId.class)));
 
@@ -235,12 +230,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
     @Override
     public List<Activity> addActivitiesToJob(CreateActivitiesCommand command) {
-        Optional<Job> foundJob = jobDataManager.findByIdAndUserId(command.jobId(), command.userId());
-        if(foundJob.isEmpty()) {
-            throw new JobNotFoundException();
-        }
-
-        Job job = foundJob.get();
+        Job job = jobDataManager.findByIdAndUserId(command.jobId(), command.userId()).orElseThrow(JobNotFoundException::new);
 
         List<CreateActivityCommand> createActivityCommandList = command.createActivityCommandList();
         List<CreateActivityCommand> actualCommands = createActivityCommandList.stream()
@@ -295,8 +285,11 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
     }
 
     @Override
-    public Job getUserJob(UserId userId, JobId jobId) {
-        return jobDataManager.findByIdAndUserId(jobId, userId).orElseThrow(JobNotFoundException::new);
+    public EnrichedJob getUserJob(UserId userId, JobId jobId) {
+        return jobEnricher.enrich(
+                jobDataManager.findByIdAndUserId(jobId, userId).orElseThrow(JobNotFoundException::new),
+                userDataManager.findById(userId).orElseThrow(UserNotFoundException::new)
+        );
     }
 
     /**
@@ -426,21 +419,6 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
                 integrationEventPublisher.publish(new ActivityAutomaticallyCreatedEvent(IntegrationEventId.generate(), job.getId(), activity.getId(), activity.getType()));
             }
             return null;
-        });
-    }
-
-    @Override
-    public Job updateJobStatus(UpdateJobStatusCommand command) {
-        Optional<Job> foundJob = jobDataManager.findByIdAndUserId(command.jobId(), command.userId());
-        if(foundJob.isEmpty()) {
-            throw new JobNotFoundException();
-        }
-
-        return transactionProvider.executeInTransaction(() -> {
-            Job job = foundJob.get().updateStatus(command.status());
-            jobDataManager.saveJobAndActivity(job, job.getActivities().getFirst());
-            integrationEventPublisher.publish(new JobStatusUpdatedEvent(IntegrationEventId.generate(), job.getId(), job.getStatus()));
-            return job;
         });
     }
 
