@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>IntegrationEventWriter.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">MyJobsAggregateReport</a> &gt; <a href="../index.html" class="el_bundle">myjobs-infrastructure</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.infrastructure.event</a> &gt; <span class="el_source">IntegrationEventWriter.java</span></div><h1>IntegrationEventWriter.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.infrastructure.event;
+
+import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEvent;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.EventStatus;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.item.Chunk;
+import org.springframework.batch.item.ItemWriter;
+import org.springframework.stereotype.Component;
+
+@Component
+<span class="fc" id="L11">@Slf4j</span>
+public class IntegrationEventWriter implements ItemWriter&lt;IntegrationEvent&gt; {
+
+    private final IntegrationEventDataManager eventDataManager;
+
+<span class="fc" id="L16">    IntegrationEventWriter(IntegrationEventDataManager eventDataManager) {</span>
+<span class="fc" id="L17">        this.eventDataManager = eventDataManager;</span>
+<span class="fc" id="L18">    }</span>
+
+    @Override
+    public void write(Chunk&lt;? extends IntegrationEvent&gt; items) {
+<span class="fc" id="L22">        log.info(&quot;Marking {} integration events as dispatched&quot;, items.getItems().size());</span>
+<span class="fc" id="L23">        eventDataManager.markAllAs(items.getItems(), EventStatus.DISPATCHED);</span>
+<span class="fc" id="L24">        log.info(&quot;Integration events marked as dispatched&quot;);</span>
+<span class="fc" id="L25">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

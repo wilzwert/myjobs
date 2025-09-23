@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>ActivityController.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">MyJobsAggregateReport</a> &gt; <a href="../index.html" class="el_bundle">myjobs-infrastructure</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.infrastructure.api.rest.controller</a> &gt; <span class="el_source">ActivityController.java</span></div><h1>ActivityController.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.infrastructure.api.rest.controller;
+
+
+import com.wilzwert.myjobs.core.domain.model.activity.command.CreateActivitiesCommand;
+import com.wilzwert.myjobs.core.domain.model.job.JobId;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driving.AddActivityToJobUseCase;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.ActivityMapper;
+import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
+
+/**
+ * @author Wilhelm Zwertvaegher
+ */
+@RestController
+<span class="fc" id="L23">@Slf4j</span>
+@RequestMapping(&quot;/api/jobs&quot;)
+public class ActivityController {
+
+    private final AddActivityToJobUseCase createActivityUseCase;
+
+    private final ActivityMapper activityMapper;
+
+<span class="fc" id="L31">    public ActivityController(AddActivityToJobUseCase createActivityUseCase, ActivityMapper activityMapper) {</span>
+<span class="fc" id="L32">        this.createActivityUseCase = createActivityUseCase;</span>
+<span class="fc" id="L33">        this.activityMapper = activityMapper;</span>
+<span class="fc" id="L34">    }</span>
+
+    @PostMapping(&quot;/{id}/activities&quot;)
+    @ResponseStatus(HttpStatus.CREATED)
+    public List&lt;ActivityResponse&gt; addActivity(@PathVariable(&quot;id&quot;) String id, @RequestBody @Valid List&lt;CreateActivityRequest&gt; createActivitiesRequest, Authentication authentication) {
+<span class="fc" id="L39">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L40">        CreateActivitiesCommand createActivitiesCommand = new CreateActivitiesCommand(</span>
+<span class="fc" id="L41">                createActivitiesRequest.stream().map(activityMapper::toCommand).toList(),</span>
+<span class="fc" id="L42">                userDetails.getId(),</span>
+<span class="fc" id="L43">                new JobId(UUID.fromString(id))</span>
+        );
+<span class="fc" id="L45">        return activityMapper.toResponse(createActivityUseCase.addActivitiesToJob(createActivitiesCommand));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

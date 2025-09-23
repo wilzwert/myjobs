@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>JobMapperImpl.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">MyJobsAggregateReport</a> &gt; <a href="../index.html" class="el_bundle">myjobs-infrastructure</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper</a> &gt; <span class="el_source">JobMapperImpl.java</span></div><h1>JobMapperImpl.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper;
+
+import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
+import com.wilzwert.myjobs.core.domain.model.job.Job;
+import com.wilzwert.myjobs.core.domain.model.job.JobId;
+import com.wilzwert.myjobs.core.domain.model.job.JobRating;
+import com.wilzwert.myjobs.core.domain.model.job.command.CreateJobCommand;
+import com.wilzwert.myjobs.core.domain.model.job.command.UpdateJobFullCommand;
+import com.wilzwert.myjobs.core.domain.model.job.command.UpdateJobRatingCommand;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.AttachmentResponse;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.job.CreateJobRequest;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.job.JobResponse;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.job.UpdateJobRatingRequest;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.job.UpdateJobRequest;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoAttachment;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoJob;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.processing.Generated;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Generated(
+    value = &quot;org.mapstruct.ap.MappingProcessor&quot;,
+    date = &quot;2025-09-23T13:10:24+0000&quot;,
+    comments = &quot;version: 1.6.2, compiler: javac, environment: Java 21.0.8 (Eclipse Adoptium)&quot;
+)
+@Component
+<span class="nc" id="L30">public class JobMapperImpl implements JobMapper {</span>
+
+    @Autowired
+    private IdMapper idMapper;
+    @Autowired
+    private ActivityMapper activityMapper;
+    @Autowired
+    private JobRatingMapper jobRatingMapper;
+
+    @Override
+    public MongoJob toEntity(Job domain) {
+<span class="nc bnc" id="L41" title="All 2 branches missed.">        if ( domain == null ) {</span>
+<span class="nc" id="L42">            return null;</span>
+        }
+
+<span class="nc" id="L45">        MongoJob mongoJob = new MongoJob();</span>
+
+<span class="nc" id="L47">        mongoJob.setId( idMapper.toEntity( domain.getId() ) );</span>
+<span class="nc" id="L48">        mongoJob.setUrl( domain.getUrl() );</span>
+<span class="nc" id="L49">        mongoJob.setStatus( domain.getStatus() );</span>
+<span class="nc" id="L50">        mongoJob.setTitle( domain.getTitle() );</span>
+<span class="nc" id="L51">        mongoJob.setCompany( domain.getCompany() );</span>
+<span class="nc" id="L52">        mongoJob.setDescription( domain.getDescription() );</span>
+<span class="nc" id="L53">        mongoJob.setProfile( domain.getProfile() );</span>
+<span class="nc" id="L54">        mongoJob.setComment( domain.getComment() );</span>
+<span class="nc" id="L55">        mongoJob.setSalary( domain.getSalary() );</span>
+<span class="nc" id="L56">        mongoJob.setRating( domain.getRating() );</span>
+<span class="nc" id="L57">        mongoJob.setCreatedAt( domain.getCreatedAt() );</span>
+<span class="nc" id="L58">        mongoJob.setUpdatedAt( domain.getUpdatedAt() );</span>
+<span class="nc" id="L59">        mongoJob.setStatusUpdatedAt( domain.getStatusUpdatedAt() );</span>
+<span class="nc" id="L60">        mongoJob.setFollowUpReminderSentAt( domain.getFollowUpReminderSentAt() );</span>
+<span class="nc" id="L61">        mongoJob.setUserId( idMapper.toEntity( domain.getUserId() ) );</span>
+<span class="nc" id="L62">        mongoJob.setActivities( activityMapper.toEntity( domain.getActivities() ) );</span>
+<span class="nc" id="L63">        mongoJob.setAttachments( attachmentListToMongoAttachmentList( domain.getAttachments() ) );</span>
+
+<span class="nc" id="L65">        return mongoJob;</span>
+    }
+
+    @Override
+    public List&lt;MongoJob&gt; toEntity(List&lt;Job&gt; domains) {
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        if ( domains == null ) {</span>
+<span class="nc" id="L71">            return null;</span>
+        }
+
+<span class="nc" id="L74">        List&lt;MongoJob&gt; list = new ArrayList&lt;MongoJob&gt;( domains.size() );</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">        for ( Job job : domains ) {</span>
+<span class="nc" id="L76">            list.add( toEntity( job ) );</span>
+<span class="nc" id="L77">        }</span>
+
+<span class="nc" id="L79">        return list;</span>
+    }
+
+    @Override
+    public Job toDomain(MongoJob entity) {
+<span class="nc bnc" id="L84" title="All 2 branches missed.">        if ( entity == null ) {</span>
+<span class="nc" id="L85">            return null;</span>
+        }
+
+<span class="nc" id="L88">        Job.Builder job = Job.builder();</span>
+
+<span class="nc" id="L90">        job.id( idMapper.mapJobId( entity.getId() ) );</span>
+<span class="nc" id="L91">        job.url( entity.getUrl() );</span>
+<span class="nc" id="L92">        job.status( entity.getStatus() );</span>
+<span class="nc" id="L93">        job.title( entity.getTitle() );</span>
+<span class="nc" id="L94">        job.company( entity.getCompany() );</span>
+<span class="nc" id="L95">        job.description( entity.getDescription() );</span>
+<span class="nc" id="L96">        job.profile( entity.getProfile() );</span>
+<span class="nc" id="L97">        job.comment( entity.getComment() );</span>
+<span class="nc" id="L98">        job.salary( entity.getSalary() );</span>
+<span class="nc" id="L99">        job.rating( entity.getRating() );</span>
+<span class="nc" id="L100">        job.createdAt( entity.getCreatedAt() );</span>
+<span class="nc" id="L101">        job.updatedAt( entity.getUpdatedAt() );</span>
+<span class="nc" id="L102">        job.statusUpdatedAt( entity.getStatusUpdatedAt() );</span>
+<span class="nc" id="L103">        job.followUpReminderSentAt( entity.getFollowUpReminderSentAt() );</span>
+<span class="nc" id="L104">        job.userId( idMapper.mapUserId( entity.getUserId() ) );</span>
+<span class="nc" id="L105">        job.activities( activityMapper.toDomain( entity.getActivities() ) );</span>
+<span class="nc" id="L106">        job.attachments( mongoAttachmentListToAttachmentList( entity.getAttachments() ) );</span>
+
+<span class="nc" id="L108">        return job.build();</span>
+    }
+
+    @Override
+    public List&lt;Job&gt; toDomain(List&lt;MongoJob&gt; entities) {
+<span class="nc bnc" id="L113" title="All 2 branches missed.">        if ( entities == null ) {</span>
+<span class="nc" id="L114">            return null;</span>
+        }
+
+<span class="nc" id="L117">        List&lt;Job&gt; list = new ArrayList&lt;Job&gt;( entities.size() );</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">        for ( MongoJob mongoJob : entities ) {</span>
+<span class="nc" id="L119">            list.add( toDomain( mongoJob ) );</span>
+<span class="nc" id="L120">        }</span>
+
+<span class="nc" id="L122">        return list;</span>
+    }
+
+    @Override
+    public JobResponse toResponse(Job domain) {
+<span class="nc bnc" id="L127" title="All 2 branches missed.">        if ( domain == null ) {</span>
+<span class="nc" id="L128">            return null;</span>
+        }
+
+<span class="nc" id="L131">        JobResponse jobResponse = new JobResponse();</span>
+
+<span class="nc" id="L133">        jobResponse.setId( idMapper.toEntity( domain.getId() ) );</span>
+<span class="nc" id="L134">        jobResponse.setTitle( domain.getTitle() );</span>
+<span class="nc" id="L135">        jobResponse.setCompany( domain.getCompany() );</span>
+<span class="nc" id="L136">        jobResponse.setUrl( domain.getUrl() );</span>
+<span class="nc" id="L137">        jobResponse.setDescription( domain.getDescription() );</span>
+<span class="nc" id="L138">        jobResponse.setProfile( domain.getProfile() );</span>
+<span class="nc" id="L139">        jobResponse.setComment( domain.getComment() );</span>
+<span class="nc" id="L140">        jobResponse.setSalary( domain.getSalary() );</span>
+<span class="nc" id="L141">        jobResponse.setStatus( domain.getStatus() );</span>
+<span class="nc" id="L142">        jobResponse.setRating( jobRatingMapper.toResponse( domain.getRating() ) );</span>
+<span class="nc" id="L143">        jobResponse.setCreatedAt( domain.getCreatedAt() );</span>
+<span class="nc" id="L144">        jobResponse.setUpdatedAt( domain.getUpdatedAt() );</span>
+<span class="nc" id="L145">        jobResponse.setStatusUpdatedAt( domain.getStatusUpdatedAt() );</span>
+<span class="nc" id="L146">        jobResponse.setActivities( activityMapper.toResponse( domain.getActivities() ) );</span>
+<span class="nc" id="L147">        jobResponse.setAttachments( attachmentListToAttachmentResponseList( domain.getAttachments() ) );</span>
+
+<span class="nc" id="L149">        return jobResponse;</span>
+    }
+
+    @Override
+    public List&lt;JobResponse&gt; toResponse(List&lt;Job&gt; domains) {
+<span class="nc bnc" id="L154" title="All 2 branches missed.">        if ( domains == null ) {</span>
+<span class="nc" id="L155">            return null;</span>
+        }
+
+<span class="nc" id="L158">        List&lt;JobResponse&gt; list = new ArrayList&lt;JobResponse&gt;( domains.size() );</span>
+<span class="nc bnc" id="L159" title="All 2 branches missed.">        for ( Job job : domains ) {</span>
+<span class="nc" id="L160">            list.add( toResponse( job ) );</span>
+<span class="nc" id="L161">        }</span>
+
+<span class="nc" id="L163">        return list;</span>
+    }
+
+    @Override
+    public CreateJobCommand toCommand(CreateJobRequest request) {
+<span class="nc bnc" id="L168" title="All 2 branches missed.">        if ( request == null ) {</span>
+<span class="nc" id="L169">            return null;</span>
+        }
+
+<span class="nc" id="L172">        String title = null;</span>
+<span class="nc" id="L173">        String company = null;</span>
+<span class="nc" id="L174">        String url = null;</span>
+<span class="nc" id="L175">        String description = null;</span>
+<span class="nc" id="L176">        String profile = null;</span>
+<span class="nc" id="L177">        String comment = null;</span>
+<span class="nc" id="L178">        String salary = null;</span>
+
+<span class="nc" id="L180">        title = request.getTitle();</span>
+<span class="nc" id="L181">        company = request.getCompany();</span>
+<span class="nc" id="L182">        url = request.getUrl();</span>
+<span class="nc" id="L183">        description = request.getDescription();</span>
+<span class="nc" id="L184">        profile = request.getProfile();</span>
+<span class="nc" id="L185">        comment = request.getComment();</span>
+<span class="nc" id="L186">        salary = request.getSalary();</span>
+
+<span class="nc" id="L188">        UserId userId = null;</span>
+
+<span class="nc" id="L190">        CreateJobCommand createJobCommand = new CreateJobCommand( title, company, url, description, profile, comment, salary, userId );</span>
+
+<span class="nc" id="L192">        return createJobCommand;</span>
+    }
+
+    @Override
+    public UpdateJobFullCommand toUpdateCommand(UpdateJobRequest request) {
+<span class="nc bnc" id="L197" title="All 2 branches missed.">        if ( request == null ) {</span>
+<span class="nc" id="L198">            return null;</span>
+        }
+
+<span class="nc" id="L201">        String title = null;</span>
+<span class="nc" id="L202">        String company = null;</span>
+<span class="nc" id="L203">        String url = null;</span>
+<span class="nc" id="L204">        String description = null;</span>
+<span class="nc" id="L205">        String profile = null;</span>
+<span class="nc" id="L206">        String comment = null;</span>
+<span class="nc" id="L207">        String salary = null;</span>
+
+<span class="nc" id="L209">        title = request.getTitle();</span>
+<span class="nc" id="L210">        company = request.getCompany();</span>
+<span class="nc" id="L211">        url = request.getUrl();</span>
+<span class="nc" id="L212">        description = request.getDescription();</span>
+<span class="nc" id="L213">        profile = request.getProfile();</span>
+<span class="nc" id="L214">        comment = request.getComment();</span>
+<span class="nc" id="L215">        salary = request.getSalary();</span>
+
+<span class="nc" id="L217">        JobId jobId = null;</span>
+<span class="nc" id="L218">        UserId userId = null;</span>
+
+<span class="nc" id="L220">        UpdateJobFullCommand updateJobFullCommand = new UpdateJobFullCommand( jobId, userId, title, company, url, description, profile, comment, salary );</span>
+
+<span class="nc" id="L222">        return updateJobFullCommand;</span>
+    }
+
+    @Override
+    public CreateJobCommand toCommand(CreateJobRequest createJobRequest, UserId userId) {
+<span class="nc bnc" id="L227" title="All 4 branches missed.">        if ( createJobRequest == null &amp;&amp; userId == null ) {</span>
+<span class="nc" id="L228">            return null;</span>
+        }
+
+<span class="nc" id="L231">        String title = null;</span>
+<span class="nc" id="L232">        String company = null;</span>
+<span class="nc" id="L233">        String url = null;</span>
+<span class="nc" id="L234">        String description = null;</span>
+<span class="nc" id="L235">        String profile = null;</span>
+<span class="nc" id="L236">        String comment = null;</span>
+<span class="nc" id="L237">        String salary = null;</span>
+<span class="nc bnc" id="L238" title="All 2 branches missed.">        if ( createJobRequest != null ) {</span>
+<span class="nc" id="L239">            title = createJobRequest.getTitle();</span>
+<span class="nc" id="L240">            company = createJobRequest.getCompany();</span>
+<span class="nc" id="L241">            url = createJobRequest.getUrl();</span>
+<span class="nc" id="L242">            description = createJobRequest.getDescription();</span>
+<span class="nc" id="L243">            profile = createJobRequest.getProfile();</span>
+<span class="nc" id="L244">            comment = createJobRequest.getComment();</span>
+<span class="nc" id="L245">            salary = createJobRequest.getSalary();</span>
+        }
+<span class="nc" id="L247">        UserId userId1 = null;</span>
+<span class="nc" id="L248">        userId1 = userId;</span>
+
+<span class="nc" id="L250">        CreateJobCommand createJobCommand = new CreateJobCommand( title, company, url, description, profile, comment, salary, userId1 );</span>
+
+<span class="nc" id="L252">        return createJobCommand;</span>
+    }
+
+    @Override
+    public UpdateJobFullCommand toCommand(UpdateJobRequest updateJobRequest, UserId userId, JobId jobId) {
+<span class="nc bnc" id="L257" title="All 6 branches missed.">        if ( updateJobRequest == null &amp;&amp; userId == null &amp;&amp; jobId == null ) {</span>
+<span class="nc" id="L258">            return null;</span>
+        }
+
+<span class="nc" id="L261">        String title = null;</span>
+<span class="nc" id="L262">        String company = null;</span>
+<span class="nc" id="L263">        String url = null;</span>
+<span class="nc" id="L264">        String description = null;</span>
+<span class="nc" id="L265">        String profile = null;</span>
+<span class="nc" id="L266">        String comment = null;</span>
+<span class="nc" id="L267">        String salary = null;</span>
+<span class="nc bnc" id="L268" title="All 2 branches missed.">        if ( updateJobRequest != null ) {</span>
+<span class="nc" id="L269">            title = updateJobRequest.getTitle();</span>
+<span class="nc" id="L270">            company = updateJobRequest.getCompany();</span>
+<span class="nc" id="L271">            url = updateJobRequest.getUrl();</span>
+<span class="nc" id="L272">            description = updateJobRequest.getDescription();</span>
+<span class="nc" id="L273">            profile = updateJobRequest.getProfile();</span>
+<span class="nc" id="L274">            comment = updateJobRequest.getComment();</span>
+<span class="nc" id="L275">            salary = updateJobRequest.getSalary();</span>
+        }
+<span class="nc" id="L277">        UserId userId1 = null;</span>
+<span class="nc" id="L278">        userId1 = userId;</span>
+<span class="nc" id="L279">        JobId jobId1 = null;</span>
+<span class="nc" id="L280">        jobId1 = jobId;</span>
+
+<span class="nc" id="L282">        UpdateJobFullCommand updateJobFullCommand = new UpdateJobFullCommand( jobId1, userId1, title, company, url, description, profile, comment, salary );</span>
+
+<span class="nc" id="L284">        return updateJobFullCommand;</span>
+    }
+
+    @Override
+    public UpdateJobRatingCommand toCommand(UpdateJobRatingRequest updateJobStatusRequest, UserId userId, JobId jobId) {
+<span class="nc bnc" id="L289" title="All 6 branches missed.">        if ( updateJobStatusRequest == null &amp;&amp; userId == null &amp;&amp; jobId == null ) {</span>
+<span class="nc" id="L290">            return null;</span>
+        }
+
+<span class="nc" id="L293">        JobRating rating = null;</span>
+<span class="nc bnc" id="L294" title="All 2 branches missed.">        if ( updateJobStatusRequest != null ) {</span>
+<span class="nc" id="L295">            rating = updateJobStatusRequest.getRating();</span>
+        }
+<span class="nc" id="L297">        UserId userId1 = null;</span>
+<span class="nc" id="L298">        userId1 = userId;</span>
+<span class="nc" id="L299">        JobId jobId1 = null;</span>
+<span class="nc" id="L300">        jobId1 = jobId;</span>
+
+<span class="nc" id="L302">        UpdateJobRatingCommand updateJobRatingCommand = new UpdateJobRatingCommand( jobId1, userId1, rating );</span>
+
+<span class="nc" id="L304">        return updateJobRatingCommand;</span>
+    }
+
+    protected MongoAttachment attachmentToMongoAttachment(Attachment attachment) {
+<span class="nc bnc" id="L308" title="All 2 branches missed.">        if ( attachment == null ) {</span>
+<span class="nc" id="L309">            return null;</span>
+        }
+
+<span class="nc" id="L312">        MongoAttachment mongoAttachment = new MongoAttachment();</span>
+
+<span class="nc" id="L314">        mongoAttachment.setId( idMapper.toEntity( attachment.getId() ) );</span>
+<span class="nc" id="L315">        mongoAttachment.setName( attachment.getName() );</span>
+<span class="nc" id="L316">        mongoAttachment.setFileId( attachment.getFileId() );</span>
+<span class="nc" id="L317">        mongoAttachment.setFilename( attachment.getFilename() );</span>
+<span class="nc" id="L318">        mongoAttachment.setContentType( attachment.getContentType() );</span>
+<span class="nc" id="L319">        mongoAttachment.setCreatedAt( attachment.getCreatedAt() );</span>
+<span class="nc" id="L320">        mongoAttachment.setUpdatedAt( attachment.getUpdatedAt() );</span>
+
+<span class="nc" id="L322">        return mongoAttachment;</span>
+    }
+
+    protected List&lt;MongoAttachment&gt; attachmentListToMongoAttachmentList(List&lt;Attachment&gt; list) {
+<span class="nc bnc" id="L326" title="All 2 branches missed.">        if ( list == null ) {</span>
+<span class="nc" id="L327">            return null;</span>
+        }
+
+<span class="nc" id="L330">        List&lt;MongoAttachment&gt; list1 = new ArrayList&lt;MongoAttachment&gt;( list.size() );</span>
+<span class="nc bnc" id="L331" title="All 2 branches missed.">        for ( Attachment attachment : list ) {</span>
+<span class="nc" id="L332">            list1.add( attachmentToMongoAttachment( attachment ) );</span>
+<span class="nc" id="L333">        }</span>
+
+<span class="nc" id="L335">        return list1;</span>
+    }
+
+    protected Attachment mongoAttachmentToAttachment(MongoAttachment mongoAttachment) {
+<span class="nc bnc" id="L339" title="All 2 branches missed.">        if ( mongoAttachment == null ) {</span>
+<span class="nc" id="L340">            return null;</span>
+        }
+
+<span class="nc" id="L343">        Attachment.Builder attachment = Attachment.builder();</span>
+
+<span class="nc" id="L345">        attachment.id( idMapper.mapAttachmentId( mongoAttachment.getId() ) );</span>
+<span class="nc" id="L346">        attachment.name( mongoAttachment.getName() );</span>
+<span class="nc" id="L347">        attachment.fileId( mongoAttachment.getFileId() );</span>
+<span class="nc" id="L348">        attachment.filename( mongoAttachment.getFilename() );</span>
+<span class="nc" id="L349">        attachment.contentType( mongoAttachment.getContentType() );</span>
+<span class="nc" id="L350">        attachment.createdAt( mongoAttachment.getCreatedAt() );</span>
+<span class="nc" id="L351">        attachment.updatedAt( mongoAttachment.getUpdatedAt() );</span>
+
+<span class="nc" id="L353">        return attachment.build();</span>
+    }
+
+    protected List&lt;Attachment&gt; mongoAttachmentListToAttachmentList(List&lt;MongoAttachment&gt; list) {
+<span class="nc bnc" id="L357" title="All 2 branches missed.">        if ( list == null ) {</span>
+<span class="nc" id="L358">            return null;</span>
+        }
+
+<span class="nc" id="L361">        List&lt;Attachment&gt; list1 = new ArrayList&lt;Attachment&gt;( list.size() );</span>
+<span class="nc bnc" id="L362" title="All 2 branches missed.">        for ( MongoAttachment mongoAttachment : list ) {</span>
+<span class="nc" id="L363">            list1.add( mongoAttachmentToAttachment( mongoAttachment ) );</span>
+<span class="nc" id="L364">        }</span>
+
+<span class="nc" id="L366">        return list1;</span>
+    }
+
+    protected AttachmentResponse attachmentToAttachmentResponse(Attachment attachment) {
+<span class="nc bnc" id="L370" title="All 2 branches missed.">        if ( attachment == null ) {</span>
+<span class="nc" id="L371">            return null;</span>
+        }
+
+<span class="nc" id="L374">        AttachmentResponse attachmentResponse = new AttachmentResponse();</span>
+
+<span class="nc" id="L376">        attachmentResponse.setId( idMapper.toEntity( attachment.getId() ) );</span>
+<span class="nc" id="L377">        attachmentResponse.setName( attachment.getName() );</span>
+<span class="nc" id="L378">        attachmentResponse.setFilename( attachment.getFilename() );</span>
+<span class="nc" id="L379">        attachmentResponse.setContentType( attachment.getContentType() );</span>
+<span class="nc" id="L380">        attachmentResponse.setCreatedAt( attachment.getCreatedAt() );</span>
+
+<span class="nc" id="L382">        return attachmentResponse;</span>
+    }
+
+    protected List&lt;AttachmentResponse&gt; attachmentListToAttachmentResponseList(List&lt;Attachment&gt; list) {
+<span class="nc bnc" id="L386" title="All 2 branches missed.">        if ( list == null ) {</span>
+<span class="nc" id="L387">            return null;</span>
+        }
+
+<span class="nc" id="L390">        List&lt;AttachmentResponse&gt; list1 = new ArrayList&lt;AttachmentResponse&gt;( list.size() );</span>
+<span class="nc bnc" id="L391" title="All 2 branches missed.">        for ( Attachment attachment : list ) {</span>
+<span class="nc" id="L392">            list1.add( attachmentToAttachmentResponse( attachment ) );</span>
+<span class="nc" id="L393">        }</span>
+
+<span class="nc" id="L395">        return list1;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

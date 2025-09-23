@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>DefaultHtmlSanitizer.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">MyJobsAggregateReport</a> &gt; <a href="../index.html" class="el_bundle">myjobs-infrastructure</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.infrastructure.adapter</a> &gt; <span class="el_source">DefaultHtmlSanitizer.java</span></div><h1>DefaultHtmlSanitizer.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.infrastructure.adapter;
+
+
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.HtmlSanitizer;
+import org.owasp.html.HtmlPolicyBuilder;
+import org.owasp.html.PolicyFactory;
+import org.springframework.stereotype.Component;
+
+
+/**
+ * @author Wilhelm Zwertvaegher
+ */
+
+@Component
+public class DefaultHtmlSanitizer implements HtmlSanitizer {
+
+    private final PolicyFactory policy;
+
+    public DefaultHtmlSanitizer() {
+<span class="fc" id="L20">        super();</span>
+<span class="fc" id="L21">        HtmlPolicyBuilder policyBuilder = new HtmlPolicyBuilder();</span>
+
+<span class="fc" id="L23">        getAllowedTags().forEach(policyBuilder::allowElements);</span>
+
+<span class="fc" id="L25">        policyBuilder.allowUrlProtocols(&quot;https&quot;, &quot;http&quot;);</span>
+
+<span class="pc bpc" id="L27" title="1 of 2 branches missed.">        if(getAllowedTags().contains(&quot;a&quot;)) {</span>
+<span class="fc" id="L28">            policyBuilder.allowAttributes(&quot;href&quot;).onElements(&quot;a&quot;)</span>
+<span class="fc" id="L29">                    .requireRelNofollowOnLinks();</span>
+        }
+
+<span class="fc" id="L32">        policy = policyBuilder.toFactory();</span>
+<span class="fc" id="L33">    }</span>
+
+    @Override
+    public String sanitize(String html) {
+<span class="fc" id="L37">        return policy.sanitize(html);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

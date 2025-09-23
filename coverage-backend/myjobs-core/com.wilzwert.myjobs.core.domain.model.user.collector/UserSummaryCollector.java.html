@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>UserSummaryCollector.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">MyJobsAggregateReport</a> &gt; <a href="../index.html" class="el_bundle">myjobs-core</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.core.domain.model.user.collector</a> &gt; <span class="el_source">UserSummaryCollector.java</span></div><h1>UserSummaryCollector.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.core.domain.model.user.collector;
+
+
+import com.wilzwert.myjobs.core.domain.model.job.JobState;
+import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
+import com.wilzwert.myjobs.core.domain.model.job.JobStatusMeta;
+import com.wilzwert.myjobs.core.domain.model.user.User;
+import com.wilzwert.myjobs.core.domain.model.user.UserSummary;
+
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
+/**
+ * @author Wilhelm Zwertvaegher
+ * Date:03/06/2025
+ * Time:09:51
+ */
+
+public class UserSummaryCollector implements Collector&lt;JobState, Map&lt;JobStatus, List&lt;JobState&gt;&gt;, UserSummary&gt; {
+
+
+    private final User user;
+
+<span class="fc" id="L29">    private int jobsCount = 0;</span>
+
+<span class="fc" id="L31">    public UserSummaryCollector(User user) {</span>
+<span class="fc" id="L32">        this.user = user;</span>
+<span class="fc" id="L33">    }</span>
+
+    @Override
+    public Supplier&lt;Map&lt;JobStatus, List&lt;JobState&gt;&gt;&gt; supplier() {
+<span class="fc" id="L37">        return HashMap::new;</span>
+    }
+
+    @Override
+    public BiConsumer&lt;Map&lt;JobStatus, List&lt;JobState&gt;&gt;, JobState&gt; accumulator() {
+<span class="fc" id="L42">        return (statusesToCount, jobState) -&gt; {</span>
+<span class="fc" id="L43">            jobsCount++;</span>
+<span class="fc" id="L44">            statusesToCount.computeIfAbsent(jobState.status(), jobStatus -&gt; new ArrayList&lt;&gt;() ).add(jobState);</span>
+<span class="fc" id="L45">        };</span>
+    }
+
+    @Override
+    public BinaryOperator&lt;Map&lt;JobStatus, List&lt;JobState&gt;&gt;&gt; combiner() {
+<span class="pc" id="L50">        return (set1, set2) -&gt; { throw new UnsupportedOperationException(&quot;Parallel processing is not supported&quot;); };</span>
+    }
+
+    @Override
+    public Function&lt;Map&lt;JobStatus, List&lt;JobState&gt;&gt;, UserSummary&gt; finisher() {
+<span class="fc" id="L55">        return statusToStates -&gt; {</span>
+            // FIXME : it may actually be better to loop through statusToStates
+            // than to use numerous streams
+
+            // map statuses to jobs count
+<span class="fc" id="L60">            Map&lt;JobStatus, Integer&gt; statusToCount = statusToStates.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -&gt; e.getValue().size()));</span>
+
+            // compute active, inactive jobs counts
+<span class="fc" id="L63">            int activeJobsCount = statusToStates.entrySet().stream()</span>
+<span class="fc" id="L64">                   .filter(e -&gt; JobStatus.activeStatuses().contains(e.getKey()))</span>
+<span class="fc" id="L65">                   .mapToInt(e -&gt; e.getValue().size()).sum();</span>
+<span class="fc" id="L66">            int inactiveJobsCount = jobsCount - activeJobsCount;</span>
+
+            // compute usable filters
+<span class="fc" id="L69">            Set&lt;JobStatusMeta&gt; filters = new HashSet&lt;&gt;();</span>
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">            if(statusToStates.entrySet().stream().anyMatch(e -&gt; JobStatus.activeStatuses().contains(e.getKey()))) {</span>
+<span class="fc" id="L71">                filters.add(JobStatusMeta.ACTIVE);</span>
+            }
+<span class="pc bpc" id="L73" title="1 of 2 branches missed.">            if(statusToStates.entrySet().stream().anyMatch(e -&gt; JobStatus.inactiveStatuses().contains(e.getKey()))) {</span>
+<span class="fc" id="L74">                filters.add(JobStatusMeta.INACTIVE);</span>
+            }
+
+<span class="fc" id="L77">            long lateJobsCount = statusToStates.entrySet().stream()</span>
+<span class="fc" id="L78">                    .filter(e -&gt; JobStatus.activeStatuses().contains(e.getKey()))</span>
+<span class="fc" id="L79">                    .flatMap(jobStatusListEntry -&gt; jobStatusListEntry.getValue().stream())</span>
+<span class="fc" id="L80">                    .filter(state -&gt; user.isJobLate(state.statusUpdatedAt()))</span>
+<span class="fc" id="L81">                    .count();</span>
+
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">            if(lateJobsCount &gt; Integer.MAX_VALUE) {</span>
+<span class="nc" id="L84">                lateJobsCount = Integer.MAX_VALUE;</span>
+            }
+
+<span class="pc bpc" id="L87" title="1 of 2 branches missed.">            if(lateJobsCount &gt; 0) {</span>
+<span class="fc" id="L88">                filters.add(JobStatusMeta.LATE);</span>
+            }
+
+<span class="fc" id="L91">            return new UserSummary(jobsCount, activeJobsCount, inactiveJobsCount, (int)lateJobsCount, statusToCount, filters);</span>
+        };
+    }
+
+    @Override
+    public Set&lt;Characteristics&gt; characteristics() {
+<span class="fc" id="L97">        return Set.of();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

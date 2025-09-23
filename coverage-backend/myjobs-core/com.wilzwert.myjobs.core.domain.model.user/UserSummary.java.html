@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>UserSummary.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">MyJobsAggregateReport</a> &gt; <a href="../index.html" class="el_bundle">myjobs-core</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.core.domain.model.user</a> &gt; <span class="el_source">UserSummary.java</span></div><h1>UserSummary.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.core.domain.model.user;
+
+
+import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
+import com.wilzwert.myjobs.core.domain.model.job.JobStatusMeta;
+
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * @author Wilhelm Zwertvaegher
+ * Date:03/06/2025
+ * Time:09:43
+ * Represents a User's summary, which consists of metadata about its jobs
+ * A related use case gets and returns a user's summary, which may be useful
+ * for a client (frontend...) to display only appropriate filters
+ */
+
+public final class UserSummary {
+
+    private final int jobsCount;
+
+    private final int activeJobsCount;
+
+    private final int inactiveJobsCount;
+
+    private final int lateJobsCount;
+
+    private final Map&lt;JobStatus, Integer&gt; jobStatuses;
+
+    private final Set&lt;JobStatusMeta&gt; usableJobStatusMetas;
+
+<span class="fc" id="L33">    public UserSummary(int jobsCount, int activeJobsCount, int inactiveJobsCount, int lateJobsCount, Map&lt;JobStatus, Integer&gt; jobStatuses, Set&lt;JobStatusMeta&gt; usableJobStatusMetas) {</span>
+<span class="fc" id="L34">        this.jobsCount = jobsCount;</span>
+<span class="fc" id="L35">        this.activeJobsCount = activeJobsCount;</span>
+<span class="fc" id="L36">        this.inactiveJobsCount = inactiveJobsCount;</span>
+<span class="fc" id="L37">        this.lateJobsCount = lateJobsCount;</span>
+<span class="fc" id="L38">        this.jobStatuses = jobStatuses;</span>
+<span class="fc" id="L39">        this.usableJobStatusMetas = usableJobStatusMetas;</span>
+<span class="fc" id="L40">    }</span>
+
+    public int getJobsCount() {
+<span class="fc" id="L43">        return jobsCount;</span>
+    }
+
+    public int getActiveJobsCount() {
+<span class="fc" id="L47">        return activeJobsCount;</span>
+    }
+
+    public int getLateJobsCount() {
+<span class="fc" id="L51">        return lateJobsCount;</span>
+    }
+
+    public int getInactiveJobsCount() {
+<span class="fc" id="L55">        return inactiveJobsCount;</span>
+    }
+
+    public Map&lt;JobStatus, Integer&gt; getJobStatuses() {
+<span class="fc" id="L59">        return jobStatuses;</span>
+    }
+
+    public Set&lt;JobStatusMeta&gt; getUsableJobStatusMetas() {
+<span class="fc" id="L63">        return usableJobStatusMetas;</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L68">        return &quot;UserSummary [jobsCount=&quot; + jobsCount</span>
+                + &quot;, activeJobsCount=&quot; + activeJobsCount
+                + &quot;, inactiveJobsCount=&quot; + inactiveJobsCount
+                + &quot;, lateJobsCount=&quot; + lateJobsCount
+                + &quot;, jobStatuses=&quot; + jobStatuses
+                + &quot;, usableJobStatusMetas=&quot; + usableJobStatusMetas
+                + &quot;]&quot;;
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

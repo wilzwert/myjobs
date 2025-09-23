@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>Validator.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">MyJobsAggregateReport</a> &gt; <a href="../index.html" class="el_bundle">myjobs-core</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.core.domain.shared.validation</a> &gt; <span class="el_source">Validator.java</span></div><h1>Validator.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.core.domain.shared.validation;
+
+
+import com.wilzwert.myjobs.core.domain.model.EntityId;
+
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.util.Map;
+import java.util.function.BooleanSupplier;
+import java.util.regex.Pattern;
+
+/**
+ * @author Wilhelm Zwertvaegher
+ */
+
+public class Validator {
+
+    private final ValidationErrors validationErrors;
+
+<span class="fc" id="L20">    public Validator() {</span>
+<span class="fc" id="L21">        validationErrors = new ValidationErrors();</span>
+<span class="fc" id="L22">    }</span>
+
+    public ValidationErrors getErrors() {
+<span class="fc" id="L25">        return validationErrors;</span>
+    }
+
+    private boolean notEmpty(String fieldName, Object fieldValue) {
+<span class="fc bfc" id="L29" title="All 4 branches covered.">        if(fieldValue == null</span>
+<span class="fc bfc" id="L30" title="All 4 branches covered.">            || fieldValue instanceof String string &amp;&amp; string.isEmpty()</span>
+<span class="pc bpc" id="L31" title="1 of 2 branches missed.">            || fieldValue instanceof EntityId&lt;?&gt; entityId &amp;&amp; entityId.value() == null) {</span>
+<span class="fc" id="L32">            validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_CANNOT_BE_EMPTY));</span>
+<span class="fc" id="L33">            return false;</span>
+        }
+<span class="fc" id="L35">        return true;</span>
+    }
+
+    public Validator requireNotNull(String fieldName, Object fieldValue) {
+<span class="nc bnc" id="L39" title="All 2 branches missed.">        if(null == fieldValue) {</span>
+<span class="nc" id="L40">            validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_CANNOT_BE_NULL));</span>
+        }
+<span class="nc" id="L42">        return this;</span>
+    }
+
+    public Validator requireNotEmpty(String fieldName, String fieldValue) {
+<span class="fc" id="L46">        notEmpty(fieldName, fieldValue);</span>
+<span class="fc" id="L47">        return this;</span>
+    }
+
+    public Validator requireNotEmpty(String fieldName, EntityId&lt;?&gt; id) {
+<span class="fc" id="L51">        notEmpty(fieldName, id);</span>
+<span class="fc" id="L52">        return this;</span>
+    }
+
+    public Validator requireValidEmail(String fieldName, String fieldValue) {
+<span class="fc" id="L56">        String pattern = &quot;^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$&quot;;</span>
+<span class="fc bfc" id="L57" title="All 4 branches covered.">        if(notEmpty(fieldName, fieldValue) &amp;&amp; !Pattern.compile(pattern).matcher(fieldValue).matches()) {</span>
+<span class="fc" id="L58">            validationErrors.add(new ValidationError(fieldName, ErrorCode.INVALID_EMAIL));</span>
+        }
+<span class="fc" id="L60">        return this;</span>
+    }
+
+    public Validator requireValidUrl(String fieldName, String fieldValue) {
+        try {
+<span class="fc" id="L65">            new URI(fieldValue).toURL();</span>
+            // we want at least something like domain.com
+            // we have to check it because toURL accepts http://localhost or similar URLS
+<span class="fc bfc" id="L68" title="All 2 branches covered.">            if(!fieldValue.contains(&quot;.&quot;)) {</span>
+<span class="fc" id="L69">                throw new MalformedURLException();</span>
+            }
+
+<span class="fc" id="L72">        } catch (Exception e) {</span>
+<span class="fc" id="L73">            validationErrors.add(new ValidationError(fieldName, ErrorCode.INVALID_URL));</span>
+<span class="fc" id="L74">        }</span>
+<span class="fc" id="L75">        return this;</span>
+    }
+
+    public Validator requireMinLength(String fieldName, String fieldValue, int minLength) {
+<span class="fc bfc" id="L79" title="All 2 branches covered.">        if(minLength &lt; 1) {</span>
+<span class="fc" id="L80">            throw new IllegalArgumentException(&quot;minLength must be greater than 0&quot;);</span>
+        }
+<span class="fc bfc" id="L82" title="All 4 branches covered.">        if(notEmpty(fieldName, fieldValue) &amp;&amp; fieldValue.length() &lt; minLength) {</span>
+<span class="fc" id="L83">            validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_TOO_SHORT));</span>
+        }
+<span class="fc" id="L85">        return this;</span>
+    }
+
+    public Validator requireMaxLength(String fieldName, String fieldValue, int maxLength) {
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        if(maxLength &lt; 1) {</span>
+<span class="fc" id="L90">            throw new IllegalArgumentException(&quot;maxLength must be greater than 0&quot;);</span>
+        }
+<span class="fc bfc" id="L92" title="All 4 branches covered.">        if(notEmpty(fieldName, fieldValue) &amp;&amp; fieldValue.length() &gt; maxLength) {</span>
+<span class="fc" id="L93">            validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_TOO_LONG));</span>
+        }
+<span class="fc" id="L95">        return this;</span>
+    }
+
+    public Validator requireMin(String fieldName, Integer fieldValue, int minValue) {
+<span class="pc bpc" id="L99" title="1 of 4 branches missed.">        if(notEmpty(fieldName, fieldValue) &amp;&amp; fieldValue &lt; minValue) {</span>
+<span class="fc" id="L100">            validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_VALUE_TOO_SMALL, Map.of(&quot;min&quot;, String.valueOf(minValue))));</span>
+        }
+<span class="fc" id="L102">        return this;</span>
+    }
+
+    public Validator requireMinIfNotNull(String fieldName, Integer fieldValue, int minValue) {
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        if(fieldValue == null) {</span>
+<span class="fc" id="L107">            return this;</span>
+        }
+<span class="fc bfc" id="L109" title="All 2 branches covered.">        if(fieldValue &lt; minValue) {</span>
+<span class="fc" id="L110">            validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_VALUE_TOO_SMALL, Map.of(&quot;min&quot;, String.valueOf(minValue))));</span>
+        }
+<span class="fc" id="L112">        return this;</span>
+    }
+
+    public Validator requireMax(String fieldName, Integer fieldValue, int maxValue) {
+<span class="pc bpc" id="L116" title="1 of 4 branches missed.">        if(notEmpty(fieldName, fieldValue) &amp;&amp; fieldValue &gt; maxValue) {</span>
+<span class="fc" id="L117">            validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_VALUE_TOO_BIG, Map.of(&quot;max&quot;, String.valueOf(maxValue))));</span>
+        }
+<span class="fc" id="L119">        return this;</span>
+    }
+
+    public Validator requireMaxIfNotNull(String fieldName, Integer fieldValue, int maxValue) {
+<span class="fc bfc" id="L123" title="All 2 branches covered.">        if(fieldValue == null) {</span>
+<span class="fc" id="L124">            return this;</span>
+        }
+<span class="fc bfc" id="L126" title="All 2 branches covered.">        if(fieldValue &gt; maxValue) {</span>
+<span class="fc" id="L127">            validationErrors.add(new ValidationError(fieldName, ErrorCode.FIELD_VALUE_TOO_BIG, Map.of(&quot;max&quot;, String.valueOf(maxValue))));</span>
+        }
+<span class="fc" id="L129">        return this;</span>
+    }
+
+    public Validator require(String fieldName, BooleanSupplier supplier, ErrorCode errorCode) {
+<span class="fc bfc" id="L133" title="All 2 branches covered.">        if(!supplier.getAsBoolean()) {</span>
+<span class="fc" id="L134">            validationErrors.add(new ValidationError(fieldName, errorCode));</span>
+        }
+<span class="fc" id="L136">        return this;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

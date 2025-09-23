@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>MongoConfiguration.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">MyJobsAggregateReport</a> &gt; <a href="../index.html" class="el_bundle">myjobs-infrastructure</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.infrastructure.persistence.mongo.configuration</a> &gt; <span class="el_source">MongoConfiguration.java</span></div><h1>MongoConfiguration.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.infrastructure.persistence.mongo.configuration;
+
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.JobRatingReadConverter;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.JobRatingWriteConverter;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
+import org.springframework.data.mongodb.MongoTransactionManager;
+import org.springframework.data.mongodb.core.convert.DbRefResolver;
+import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
+import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
+import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
+import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
+
+import java.util.Arrays;
+
+/**
+ * @author Wilhelm Zwertvaegher
+ */
+
+
+@Configuration
+<span class="fc" id="L23">public class MongoConfiguration {</span>
+
+    @Bean
+    MongoTransactionManager transactionManager(MongoDatabaseFactory dbFactory) {
+<span class="fc" id="L27">        return new MongoTransactionManager(dbFactory);</span>
+    }
+
+    @Bean
+    public MongoCustomConversions customConversions() {
+<span class="fc" id="L32">        return new MongoCustomConversions(</span>
+<span class="fc" id="L33">                Arrays.asList(</span>
+                        new JobRatingReadConverter(),
+                        new JobRatingWriteConverter()
+                )
+        );
+    }
+
+    @Bean
+    public MappingMongoConverter mappingMongoConverter(MongoDatabaseFactory factory,
+                                                       MongoCustomConversions conversions,
+                                                       MongoMappingContext context) {
+
+<span class="fc" id="L45">        DbRefResolver dbRefResolver = new DefaultDbRefResolver(factory);</span>
+<span class="fc" id="L46">        MappingMongoConverter converter = new MappingMongoConverter(dbRefResolver, context);</span>
+<span class="fc" id="L47">        converter.setCustomConversions(conversions);</span>
+
+<span class="fc" id="L49">        converter.setMapKeyDotReplacement(&quot;_&quot;);</span>
+<span class="fc" id="L50">        return converter;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

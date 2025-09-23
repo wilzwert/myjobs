@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>CreateActivitiesCommand.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">MyJobsAggregateReport</a> &gt; <a href="../index.html" class="el_bundle">myjobs-core</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.core.domain.model.activity.command</a> &gt; <span class="el_source">CreateActivitiesCommand.java</span></div><h1>CreateActivitiesCommand.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.core.domain.model.activity.command;
+
+import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
+import com.wilzwert.myjobs.core.domain.model.job.JobId;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
+
+import java.util.List;
+
+/**
+ * @author Wilhelm Zwertvaegher
+ */
+
+<span class="fc" id="L13">public record CreateActivitiesCommand(List&lt;CreateActivityCommand&gt; createActivityCommandList, UserId userId, JobId jobId) {</span>
+    public static class Builder {
+        private List&lt;CreateActivityCommand&gt; createActivityCommandList;
+        private UserId userId;
+        private JobId jobId;
+
+
+<span class="fc" id="L20">        public Builder() {}</span>
+
+<span class="fc" id="L22">        public Builder(CreateActivitiesCommand command) {</span>
+<span class="fc" id="L23">            this.createActivityCommandList = command.createActivityCommandList();</span>
+<span class="fc" id="L24">            this.userId = command.userId();</span>
+<span class="fc" id="L25">            this.jobId = command.jobId();</span>
+<span class="fc" id="L26">        }</span>
+
+        public CreateActivitiesCommand.Builder commandList(List&lt;CreateActivityCommand&gt; createActivityCommandList) {
+<span class="fc" id="L29">            this.createActivityCommandList = createActivityCommandList;</span>
+<span class="fc" id="L30">            return this;</span>
+        }
+        public CreateActivitiesCommand.Builder userId(UserId userId) {
+<span class="fc" id="L33">            this.userId = userId;</span>
+<span class="fc" id="L34">            return this;</span>
+        }
+
+        public CreateActivitiesCommand.Builder jobId(JobId jobId) {
+<span class="fc" id="L38">            this.jobId = jobId;</span>
+<span class="fc" id="L39">            return this;</span>
+        }
+
+        public CreateActivitiesCommand build() {
+<span class="fc" id="L43">            return new CreateActivitiesCommand(createActivityCommandList, userId, jobId);</span>
+        }
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

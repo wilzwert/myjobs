@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>LocalFileStorage.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">MyJobsAggregateReport</a> &gt; <a href="../index.html" class="el_bundle">myjobs-infrastructure</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.infrastructure.storage</a> &gt; <span class="el_source">LocalFileStorage.java</span></div><h1>LocalFileStorage.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.infrastructure.storage;
+
+
+import com.wilzwert.myjobs.core.domain.model.attachment.AttachmentId;
+import com.wilzwert.myjobs.core.domain.model.attachment.exception.AttachmentFileNotReadableException;
+import com.wilzwert.myjobs.core.domain.model.DownloadableFile;
+import com.wilzwert.myjobs.core.domain.model.job.JobId;
+import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.MediaTypeFactory;
+import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Optional;
+
+
+/**
+ * @author Wilhelm Zwertvaegher
+ */
+@Profile(&quot;dev&quot;)
+@Component
+public class LocalFileStorage implements FileStorage {
+
+    private final Path storageLocation; // Dossier local
+
+    private final String backendUrl;
+
+    @Autowired
+    public LocalFileStorage(@Value(&quot;${application.backend.url}&quot;) final String backendUrl) {
+<span class="nc" id="L38">        this(backendUrl, Paths.get(&quot;uploads&quot;));</span>
+<span class="nc" id="L39">    }</span>
+
+<span class="fc" id="L41">    public LocalFileStorage(String backendUrl, Path storageLocation) {</span>
+        try {
+<span class="pc bpc" id="L43" title="1 of 2 branches missed.">            if (!Files.exists(storageLocation)) {</span>
+<span class="fc" id="L44">                Files.createDirectories(storageLocation); // Crée le répertoire s'il n'existe pas</span>
+            }
+<span class="nc" id="L46">        } catch (IOException e) {</span>
+<span class="nc" id="L47">            throw new StorageException(&quot;Failed to initialize local storage&quot;, e);</span>
+<span class="fc" id="L48">        }</span>
+<span class="fc" id="L49">        this.storageLocation = storageLocation;</span>
+<span class="fc" id="L50">        this.backendUrl = backendUrl;</span>
+<span class="fc" id="L51">    }</span>
+
+    @Override
+    public DownloadableFile store(File file, String targetFilename, String originalFilename) {
+        try {
+<span class="fc" id="L56">            Path targetLocation = storageLocation.resolve(targetFilename);</span>
+<span class="fc" id="L57">            Path directory = targetLocation.getParent();</span>
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">            if (!Files.exists(directory)) {</span>
+<span class="nc" id="L59">                Files.createDirectories(directory);</span>
+            }
+<span class="fc" id="L61">            Files.copy(file.toPath(), targetLocation);</span>
+            // we use the targetlocation as fileid
+<span class="fc" id="L63">            return new DownloadableFile(targetLocation.toString(), targetLocation.toString(), getContentType(originalFilename, targetLocation.toString()), &quot;&quot;);</span>
+<span class="nc" id="L64">        } catch (IOException e) {</span>
+<span class="nc" id="L65">            throw new StorageException(&quot;Failed to store file&quot;, e);</span>
+        }
+    }
+
+    @Override
+    public void delete(String fileId) {
+        try {
+<span class="fc" id="L72">            Files.delete(Paths.get(fileId));</span>
+<span class="nc" id="L73">        } catch (IOException e) {</span>
+<span class="nc" id="L74">            throw new StorageException(&quot;Failed to delete file&quot;, e);</span>
+<span class="fc" id="L75">        }</span>
+<span class="fc" id="L76">    }</span>
+
+    @Override
+    public DownloadableFile retrieve(String fileId, String originalFilename) {
+<span class="fc" id="L80">        Path filePath = Paths.get(fileId);</span>
+<span class="fc" id="L81">        FileSystemResource resource = new FileSystemResource(filePath.toFile());</span>
+<span class="pc bpc" id="L82" title="1 of 4 branches missed.">        if (!resource.exists() || !resource.isReadable()) {</span>
+<span class="fc" id="L83">            throw new AttachmentFileNotReadableException();</span>
+        }
+
+        try {
+            // for now, target path and fileId are the same
+<span class="fc" id="L88">            return new DownloadableFile(filePath.toString(), filePath.toString(), getContentType(originalFilename, fileId), originalFilename);</span>
+        }
+<span class="nc" id="L90">        catch (IOException e) {</span>
+<span class="nc" id="L91">            throw new AttachmentFileNotReadableException();</span>
+        }
+    }
+
+    @Override
+    public String generateProtectedUrl(JobId jobId, AttachmentId attachmentId, String fileId) {
+<span class="fc" id="L97">        return backendUrl+&quot;/api/jobs/&quot;+jobId.value().toString()+&quot;/attachments/&quot;+attachmentId.value().toString()+&quot;/file&quot;;</span>
+    }
+
+    private String getContentType(String originalFilename, String filePath) throws IOException {
+        // get file MIME type
+<span class="fc" id="L102">        String contentType = Files.probeContentType(Paths.get(filePath));</span>
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">        if(contentType == null) {</span>
+<span class="nc" id="L104">            Optional&lt;MediaType&gt; mimeTypeOptional = MediaTypeFactory.getMediaType(originalFilename);</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">            if(mimeTypeOptional.isPresent()) {</span>
+<span class="nc" id="L106">                contentType = mimeTypeOptional.get().toString();</span>
+            }
+        }
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">        if (contentType == null) {</span>
+<span class="nc" id="L110">            contentType = &quot;application/octet-stream&quot;; // default value</span>
+        }
+
+<span class="fc" id="L113">        return contentType;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

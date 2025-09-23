@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>JobController.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">MyJobsAggregateReport</a> &gt; <a href="../index.html" class="el_bundle">myjobs-infrastructure</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.infrastructure.api.rest.controller</a> &gt; <span class="el_source">JobController.java</span></div><h1>JobController.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.infrastructure.api.rest.controller;
+
+
+import com.wilzwert.myjobs.core.domain.model.job.JobId;
+import com.wilzwert.myjobs.core.domain.model.job.JobMetadata;
+import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
+import com.wilzwert.myjobs.core.domain.model.job.JobStatusMeta;
+import com.wilzwert.myjobs.core.domain.model.job.command.*;
+import com.wilzwert.myjobs.core.domain.model.job.ports.driving.*;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.GetUserJobUseCase;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driving.GetUserJobsUseCase;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.*;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.job.*;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper.JobMapper;
+import com.wilzwert.myjobs.infrastructure.security.service.UserDetailsImpl;
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
+
+/**
+ * @author Wilhelm Zwertvaegher
+ */
+@RestController
+<span class="fc" id="L29">@Slf4j</span>
+@RequestMapping(&quot;/api/jobs&quot;)
+public class JobController {
+
+    private final CreateJobUseCase createJobUseCase;
+    private final DeleteJobUseCase deleteJobUseCase;
+    private final GetUserJobUseCase getUserJobUseCase;
+    private final GetUserJobsUseCase getUserJobsUseCase;
+    private final ExtractJobMetadataUseCase extractJobMetadataUseCase;
+    private final JobMapper jobMapper;
+
+    public JobController(
+            CreateJobUseCase createJobUseCase,
+            GetUserJobUseCase getUserJobUseCase,
+            DeleteJobUseCase deleteJobUseCase,
+            GetUserJobsUseCase getUserJobsUseCase,
+            ExtractJobMetadataUseCase extractJobMetadataUseCase,
+<span class="fc" id="L46">            JobMapper jobMapper) {</span>
+<span class="fc" id="L47">        this.createJobUseCase = createJobUseCase;</span>
+<span class="fc" id="L48">        this.getUserJobUseCase = getUserJobUseCase;</span>
+<span class="fc" id="L49">        this.deleteJobUseCase = deleteJobUseCase;</span>
+<span class="fc" id="L50">        this.getUserJobsUseCase = getUserJobsUseCase;</span>
+<span class="fc" id="L51">        this.extractJobMetadataUseCase = extractJobMetadataUseCase;</span>
+<span class="fc" id="L52">        this.jobMapper = jobMapper;</span>
+<span class="fc" id="L53">    }</span>
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public JobResponse create(@RequestBody @Valid final CreateJobRequest createJobRequest, Authentication authentication) {
+<span class="fc" id="L58">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L59">        CreateJobCommand createJobCommand = jobMapper.toCommand(createJobRequest, userDetails.getId());</span>
+<span class="fc" id="L60">        return jobMapper.toResponse(createJobUseCase.createJob(createJobCommand));</span>
+    }
+
+    @GetMapping(&quot;/metadata&quot;)
+    public ResponseEntity&lt;JobMetadata&gt; extract(@RequestParam() String url) {
+<span class="nc" id="L65">        return ResponseEntity.ok(extractJobMetadataUseCase.extract(url));</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    public JobResponse get(@PathVariable(&quot;id&quot;) String id, Authentication authentication) {
+<span class="fc" id="L70">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L71">        return jobMapper.toEnrichedResponse(getUserJobUseCase.getUserJob(userDetails.getId(), new JobId(UUID.fromString(id))));</span>
+    }
+
+    @DeleteMapping(&quot;/{id}&quot;)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable(&quot;id&quot;) String id, Authentication authentication) {
+<span class="fc" id="L77">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc" id="L78">        DeleteJobCommand deleteJobCommand = new DeleteJobCommand(new JobId(UUID.fromString(id)), userDetails.getId());</span>
+<span class="fc" id="L79">        deleteJobUseCase.deleteJob(deleteJobCommand);</span>
+<span class="fc" id="L80">    }</span>
+
+    @GetMapping()
+    public RestPage&lt;JobResponse&gt; getUserJobs(
+            Authentication authentication,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer itemsPerPage,
+            @RequestParam(required = false) JobStatus status,
+            @RequestParam(required = false) JobStatusMeta statusMeta,
+            @RequestParam(required = false) String sort) {
+<span class="fc" id="L90">        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        if(page == null) {</span>
+<span class="fc" id="L92">            page = 0;</span>
+        }
+<span class="fc bfc" id="L94" title="All 2 branches covered.">        if(itemsPerPage == null) {</span>
+<span class="fc" id="L95">            itemsPerPage = 10;</span>
+        }
+
+<span class="fc" id="L98">        log.info(&quot;Getting user jobs with status[{}], statusMeta[[{}]&quot;, status, statusMeta);</span>
+
+<span class="fc" id="L100">        return jobMapper.toEnrichedResponse(getUserJobsUseCase.getUserJobs(userDetails.getId(), page, itemsPerPage, status, statusMeta, sort));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

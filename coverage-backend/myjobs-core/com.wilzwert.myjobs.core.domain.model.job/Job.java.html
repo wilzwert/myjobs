@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>Job.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">MyJobsAggregateReport</a> &gt; <a href="../index.html" class="el_bundle">myjobs-core</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.core.domain.model.job</a> &gt; <span class="el_source">Job.java</span></div><h1>Job.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.core.domain.model.job;
+
+import com.wilzwert.myjobs.core.domain.model.activity.exception.ActivityNotFoundException;
+import com.wilzwert.myjobs.core.domain.shared.exception.ValidationException;
+import com.wilzwert.myjobs.core.domain.model.activity.Activity;
+import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
+import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
+import com.wilzwert.myjobs.core.domain.model.DomainEntity;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
+import com.wilzwert.myjobs.core.domain.shared.validation.ValidationErrors;
+import com.wilzwert.myjobs.core.domain.shared.validation.Validator;
+
+import java.time.Instant;
+import java.util.*;
+
+/**
+ * @author Wilhelm Zwertvaegher
+ */
+public class Job extends DomainEntity&lt;JobId&gt; {
+    private final JobId id;
+
+    private final String url;
+
+    private final JobStatus status;
+
+    private final String title;
+
+    private final String company;
+
+    private final String description;
+
+    private final String profile;
+
+    private final String comment;
+
+    private final String salary;
+
+    private final JobRating rating;
+
+    private final Instant createdAt;
+
+    private final Instant updatedAt;
+
+    private final Instant statusUpdatedAt;
+
+    private final Instant followUpReminderSentAt;
+
+    private final UserId userId;
+
+    private final List&lt;Activity&gt; activities;
+
+    private final List&lt;Attachment&gt; attachments;
+
+<span class="fc" id="L54">    private static final Map&lt;ActivityType, JobStatus&gt; activityToStatus = Map.of(</span>
+        ActivityType.APPLICATION, JobStatus.PENDING,
+        ActivityType.APPLICANT_REFUSAL, JobStatus.APPLICANT_REFUSED,
+        ActivityType.COMPANY_REFUSAL, JobStatus.COMPANY_REFUSED,
+        ActivityType.RELAUNCH, JobStatus.RELAUNCHED,
+        ActivityType.JOB_EXPIRATION, JobStatus.EXPIRED,
+        ActivityType.JOB_CANCELLATION, JobStatus.CANCELLED,
+        ActivityType.ACCEPTANCE, JobStatus.ACCEPTED,
+        ActivityType.HIRING, JobStatus.HIRED
+    );
+
+    public static Builder builder() {
+<span class="fc" id="L66">        return new Builder();</span>
+    }
+
+    public static Builder from(Job job) {
+<span class="fc" id="L70">        return new Builder(job, true);</span>
+    }
+
+    /**
+     * Warning : this is used to get a Builder allowing an incomplete aggregate
+     * Use with great caution, as some methods on the aggregate won't work if it is not complete !
+     * @param job the job we want to get a Builder from
+     * @return the Builder
+     */
+    public static Builder fromMinimal(Job job) {
+<span class="fc" id="L80">        return new Job.Builder(job, false);</span>
+    }
+
+    public static class Builder {
+        private JobId id;
+
+        private String url;
+
+        private JobStatus status;
+
+        private String title;
+
+        private String company;
+
+        private String description;
+
+        private String profile;
+
+        private String comment;
+
+        private String salary;
+
+        private JobRating rating;
+
+        private Instant createdAt;
+
+        private Instant updatedAt;
+
+        private Instant statusUpdatedAt;
+
+        private Instant followUpReminderSentAt;
+
+        private UserId userId;
+
+        private List&lt;Activity&gt; activities;
+
+        private List&lt;Attachment&gt; attachments;
+
+<span class="fc" id="L118">        public Builder() {</span>
+<span class="fc" id="L119">        }</span>
+
+<span class="fc" id="L121">        public Builder(Job job, boolean full) {</span>
+<span class="fc" id="L122">            this.id = job.getId();</span>
+<span class="fc" id="L123">            this.url = job.getUrl();</span>
+<span class="fc" id="L124">            this.status = job.getStatus();</span>
+<span class="fc" id="L125">            this.title = job.getTitle();</span>
+<span class="fc" id="L126">            this.company = job.getCompany();</span>
+<span class="fc" id="L127">            this.description = job.getDescription();</span>
+<span class="fc" id="L128">            this.profile = job.getProfile();</span>
+<span class="fc" id="L129">            this.comment = job.getComment();</span>
+<span class="fc" id="L130">            this.salary = job.getSalary();</span>
+<span class="fc" id="L131">            this.rating = job.getRating();</span>
+<span class="fc" id="L132">            this.createdAt = job.getCreatedAt();</span>
+<span class="fc" id="L133">            this.updatedAt = job.getUpdatedAt();</span>
+<span class="fc" id="L134">            this.statusUpdatedAt = job.getStatusUpdatedAt();</span>
+<span class="fc" id="L135">            this.followUpReminderSentAt = job.getFollowUpReminderSentAt();</span>
+<span class="fc" id="L136">            this.userId = job.getUserId();</span>
+<span class="pc bpc" id="L137" title="1 of 4 branches missed.">            this.activities = full || job.activities != null ? job.getActivities() : null;</span>
+<span class="pc bpc" id="L138" title="1 of 4 branches missed.">            this.attachments = full || job.attachments != null ? job.getAttachments() : null;</span>
+<span class="fc" id="L139">        }</span>
+
+        public Builder id(JobId id) {
+<span class="fc" id="L142">            this.id = id;</span>
+<span class="fc" id="L143">            return this;</span>
+        }
+
+        public Builder url(String url) {
+<span class="fc" id="L147">            this.url = url;</span>
+<span class="fc" id="L148">            return this;</span>
+        }
+
+        public Builder status(JobStatus status) {
+<span class="fc" id="L152">            this.status = status;</span>
+<span class="fc" id="L153">            return this;</span>
+        }
+
+        public Builder title(String title) {
+<span class="fc" id="L157">            this.title = title;</span>
+<span class="fc" id="L158">            return this;</span>
+        }
+
+        public Builder company(String company) {
+<span class="fc" id="L162">            this.company = company;</span>
+<span class="fc" id="L163">            return this;</span>
+        }
+
+        public Builder description(String description) {
+<span class="fc" id="L167">            this.description = description;</span>
+<span class="fc" id="L168">            return this;</span>
+        }
+
+        public Builder profile(String profile) {
+<span class="fc" id="L172">            this.profile = profile;</span>
+<span class="fc" id="L173">            return this;</span>
+        }
+
+        public Builder comment(String comment) {
+<span class="fc" id="L177">            this.comment = comment;</span>
+<span class="fc" id="L178">            return this;</span>
+        }
+
+        public Builder salary(String salary) {
+<span class="fc" id="L182">            this.salary = salary;</span>
+<span class="fc" id="L183">            return this;</span>
+        }
+
+        public Builder rating(JobRating rating) {
+<span class="fc" id="L187">            this.rating = rating;</span>
+<span class="fc" id="L188">            return this;</span>
+        }
+
+        public Builder createdAt(Instant createdAt) {
+<span class="fc" id="L192">            this.createdAt = createdAt;</span>
+<span class="fc" id="L193">            return this;</span>
+        }
+
+        public Builder updatedAt(Instant updatedAt) {
+<span class="fc" id="L197">            this.updatedAt = updatedAt;</span>
+<span class="fc" id="L198">            return this;</span>
+        }
+
+        public Builder statusUpdatedAt(Instant updatedAt) {
+<span class="fc" id="L202">            this.statusUpdatedAt = updatedAt;</span>
+<span class="fc" id="L203">            return this;</span>
+        }
+
+        public Builder followUpReminderSentAt(Instant followUpReminderSentAt) {
+<span class="fc" id="L207">            this.followUpReminderSentAt = followUpReminderSentAt;</span>
+<span class="fc" id="L208">            return this;</span>
+        }
+
+        public Builder userId(UserId userId) {
+<span class="fc" id="L212">            this.userId = userId;</span>
+<span class="fc" id="L213">            return this;</span>
+        }
+
+        public Builder activities(List&lt;Activity&gt; activities) {
+<span class="fc" id="L217">            this.activities = activities;</span>
+<span class="fc" id="L218">            return this;</span>
+        }
+
+        public Builder attachments(List&lt;Attachment&gt; attachments) {
+<span class="fc" id="L222">            this.attachments = attachments;</span>
+<span class="fc" id="L223">            return this;</span>
+        }
+
+        public Job build() {
+<span class="fc" id="L227">            return new Job(this);</span>
+        }
+    }
+
+    private ValidationErrors validate() {
+<span class="fc" id="L232">        return  new Validator()</span>
+<span class="fc" id="L233">                .requireNotEmpty(&quot;id&quot;, id)</span>
+<span class="fc" id="L234">                .requireNotEmpty(&quot;userId&quot;, userId)</span>
+<span class="fc" id="L235">                .requireNotEmpty(&quot;title&quot;, title)</span>
+<span class="fc" id="L236">                .requireNotEmpty(&quot;description&quot;, description)</span>
+<span class="fc" id="L237">                .requireNotEmpty(&quot;company&quot;, company)</span>
+<span class="fc" id="L238">                .requireValidUrl(&quot;url&quot;, url)</span>
+<span class="fc" id="L239">                .getErrors();</span>
+    }
+
+<span class="fc" id="L242">    private Job(Builder builder) {</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">        this.id = builder.id != null ? builder.id : JobId.generate();</span>
+<span class="fc" id="L244">        this.url = builder.url;</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">        this.status = builder.status != null ? builder.status : JobStatus.CREATED;</span>
+<span class="fc" id="L246">        this.title = builder.title;</span>
+<span class="fc" id="L247">        this.company = builder.company;</span>
+<span class="fc" id="L248">        this.description = builder.description;</span>
+<span class="fc" id="L249">        this.profile = builder.profile;</span>
+<span class="fc" id="L250">        this.comment = builder.comment;</span>
+<span class="fc" id="L251">        this.salary = builder.salary;</span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">        this.rating = builder.rating != null ? builder.rating : JobRating.of(0);</span>
+<span class="fc bfc" id="L253" title="All 2 branches covered.">        this.createdAt = builder.createdAt != null ? builder.createdAt : Instant.now();</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">        this.updatedAt = builder.updatedAt != null ? builder.updatedAt : Instant.now();</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">        this.statusUpdatedAt = builder.statusUpdatedAt != null ? builder.statusUpdatedAt : Instant.now();</span>
+<span class="fc" id="L256">        this.followUpReminderSentAt = builder.followUpReminderSentAt;</span>
+<span class="fc" id="L257">        this.userId = builder.userId;</span>
+
+        // ensure immutability
+        // null is accepted because in some cases we allow working on aggregates that could be &quot;incomplete&quot;
+<span class="fc bfc" id="L261" title="All 2 branches covered.">        this.activities = builder.activities != null ? List.copyOf(builder.activities) : null;</span>
+        // ensure immutability
+        // null is accepted because in some cases we allow working on aggregates that could be &quot;incomplete&quot;
+<span class="fc bfc" id="L264" title="All 2 branches covered.">        this.attachments = builder.attachments != null ? List.copyOf(builder.attachments) : null;</span>
+
+<span class="fc" id="L266">        ValidationErrors validationErrors = validate();</span>
+<span class="fc bfc" id="L267" title="All 2 branches covered.">        if(validationErrors.hasErrors()) {</span>
+<span class="fc" id="L268">            throw new ValidationException(validationErrors);</span>
+        }
+<span class="fc" id="L270">    }</span>
+
+    public static Job create(Job.Builder builder) {
+<span class="fc" id="L273">        builder.attachments(Collections.emptyList()).activities(Collections.emptyList());</span>
+<span class="fc" id="L274">        return new Job(builder);</span>
+    }
+
+    private void requireFull() {
+<span class="fc" id="L278">        requireLoadedProperty(attachments);</span>
+<span class="fc" id="L279">        requireLoadedProperty(activities);</span>
+<span class="fc" id="L280">    }</span>
+
+    private Job copy(List&lt;Attachment&gt; attachments, List&lt;Activity&gt; activities, JobStatus status, Instant updatedAt) {
+<span class="fc" id="L283">        Instant newStatusUpdatedAt = getStatusUpdatedAt();</span>
+<span class="fc bfc" id="L284" title="All 2 branches covered.">        if( status != null) {</span>
+            // set statusUpdatedAt
+<span class="fc" id="L286">            newStatusUpdatedAt = Instant.now();</span>
+        }
+
+<span class="fc" id="L289">        return new Job(</span>
+<span class="fc" id="L290">            from(this)</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">                .status(status != null ? status : getStatus())</span>
+<span class="pc bpc" id="L292" title="1 of 2 branches missed.">                .updatedAt(updatedAt != null ? updatedAt : getUpdatedAt())</span>
+<span class="fc" id="L293">                .statusUpdatedAt(newStatusUpdatedAt)</span>
+<span class="fc bfc" id="L294" title="All 2 branches covered.">                .activities(activities != null ? activities : getActivities())</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">                .attachments(attachments != null ? attachments : getAttachments())</span>
+        );
+    }
+    public Job addActivity(Activity activity) {
+<span class="fc" id="L299">        requireFull();</span>
+
+<span class="fc" id="L301">        JobStatus newJobStatus = activityToStatus.get(activity.getType());</span>
+<span class="fc" id="L302">        var updatedActivities = new ArrayList&lt;&gt;(getActivities());</span>
+<span class="fc" id="L303">        updatedActivities.add(activity);</span>
+<span class="fc" id="L304">        updatedActivities.sort(Comparator.comparing(Activity::getCreatedAt).reversed());</span>
+<span class="fc" id="L305">        return copy(null, updatedActivities, newJobStatus, Instant.now());</span>
+    }
+
+    public Job updateActivity(Activity activity) {
+<span class="fc" id="L309">        requireFull();</span>
+
+<span class="fc" id="L311">        Activity oldActivity = activities.stream().filter(a -&gt; a.equals(activity)).findFirst().orElseThrow(ActivityNotFoundException::new);</span>
+
+<span class="fc" id="L313">        JobStatus newJobStatus = activityToStatus.get(activity.getType());</span>
+
+        // create new activity based on the old one and the activity passed
+<span class="fc" id="L316">        Activity updateActivity = Activity.from(oldActivity)</span>
+<span class="fc" id="L317">                .updatedAt(Instant.now())</span>
+<span class="fc" id="L318">                .type(activity.getType())</span>
+<span class="fc" id="L319">                .comment(activity.getComment())</span>
+<span class="fc" id="L320">                .build();</span>
+
+        // update activities list
+<span class="fc" id="L323">        var updatedActivities = new ArrayList&lt;&gt;(getActivities());</span>
+<span class="fc" id="L324">        updatedActivities.remove(oldActivity);</span>
+<span class="fc" id="L325">        updatedActivities.add(updateActivity);</span>
+<span class="fc" id="L326">        updatedActivities.sort(Comparator.comparing(Activity::getCreatedAt).thenComparing(Activity::getUpdatedAt).reversed());</span>
+
+        // return a copy of this job with updated data
+<span class="fc" id="L329">        return copy(null, updatedActivities, newJobStatus, Instant.now());</span>
+    }
+
+    public Job addAttachment(Attachment attachment) {
+<span class="fc" id="L333">        requireFull();</span>
+<span class="fc" id="L334">        var updatedAttachments = new ArrayList&lt;&gt;(getAttachments());</span>
+<span class="fc" id="L335">        updatedAttachments.add(attachment);</span>
+<span class="fc" id="L336">        updatedAttachments.sort(Comparator.comparing(Attachment::getCreatedAt).reversed());</span>
+<span class="fc" id="L337">        return copy(updatedAttachments, null, null, Instant.now());</span>
+    }
+
+    public Job removeAttachment(Attachment attachment) {
+<span class="fc" id="L341">        requireFull();</span>
+<span class="fc" id="L342">        var updatedAttachments = new ArrayList&lt;&gt;(getAttachments());</span>
+<span class="pc bpc" id="L343" title="1 of 2 branches missed.">        if(!updatedAttachments.contains(attachment)) {</span>
+<span class="nc" id="L344">            throw new IllegalArgumentException(&quot;Attachment not in list&quot;);</span>
+        }
+
+<span class="fc" id="L347">        updatedAttachments.remove(attachment);</span>
+<span class="fc" id="L348">        return copy(updatedAttachments, null, null, Instant.now());</span>
+    }
+
+    public Job updateStatus(JobStatus newStatus) {
+<span class="fc bfc" id="L352" title="All 2 branches covered.">        if(this.status == newStatus) return this;</span>
+
+<span class="fc" id="L354">        requireFull();</span>
+
+        Job result;
+<span class="fc" id="L357">        ActivityType activityType = activityToStatus.entrySet().stream().filter(entry -&gt; newStatus.equals(entry.getValue())).map(Map.Entry::getKey).findFirst().orElse(null);</span>
+<span class="pc bpc" id="L358" title="1 of 2 branches missed.">        Activity activity = !activities.isEmpty() ? activities.getLast() : null;</span>
+<span class="pc bpc" id="L359" title="4 of 6 branches missed.">        if(activityType != null &amp;&amp; (activity == null || !activity.getType().equals(activityType))) {</span>
+            // create activity
+<span class="fc" id="L361">            Activity newActivity = Activity.builder().type(activityType).build();</span>
+<span class="fc" id="L362">            result = addActivity(newActivity);</span>
+<span class="fc" id="L363">        }</span>
+        else {
+<span class="nc" id="L365">            result = this;</span>
+        }
+
+<span class="fc" id="L368">        return result.copy(null, result.getActivities(), newStatus, Instant.now());</span>
+    }
+
+    public Job updateRating(JobRating newJobRating) {
+<span class="fc bfc" id="L372" title="All 2 branches covered.">        if(newJobRating.equals(getRating())) return this;</span>
+
+<span class="fc" id="L374">        requireFull();</span>
+
+<span class="fc" id="L376">        Job result = new Job(</span>
+<span class="fc" id="L377">            from(this)</span>
+<span class="fc" id="L378">                .rating(newJobRating)</span>
+<span class="fc" id="L379">                .updatedAt(Instant.now())</span>
+        );
+<span class="fc" id="L381">        Activity newActivity = Activity.builder().type(ActivityType.RATING).comment(&quot;&quot;+newJobRating.getValue()).build();</span>
+<span class="fc" id="L382">        return result.addActivity(newActivity);</span>
+    }
+
+    public Job saveFollowUpReminderSentAt() {
+<span class="fc" id="L386">        return new Job(</span>
+<span class="fc" id="L387">            from(this)</span>
+<span class="fc" id="L388">                .followUpReminderSentAt(Instant.now())</span>
+        );
+    }
+
+    public JobId getId() {
+<span class="fc" id="L393">        return id;</span>
+    }
+
+    public String getUrl() {
+<span class="fc" id="L397">        return url;</span>
+    }
+
+    public JobStatus getStatus() {
+<span class="fc" id="L401">        return status;</span>
+    }
+
+    public String getTitle() {
+<span class="fc" id="L405">        return title;</span>
+    }
+
+    public String getCompany() {
+<span class="fc" id="L409">        return company;</span>
+    }
+
+    public String getDescription() {
+<span class="fc" id="L413">        return description;</span>
+    }
+
+    public String getProfile() {
+<span class="fc" id="L417">        return profile;</span>
+    }
+
+<span class="fc" id="L420">    public String getComment() { return comment; }</span>
+
+<span class="fc" id="L422">    public String getSalary() { return salary; }</span>
+
+    public JobRating getRating() {
+<span class="fc" id="L425">        return rating;</span>
+    }
+
+<span class="fc" id="L428">    public Instant getCreatedAt() {return createdAt;}</span>
+
+    public Instant getUpdatedAt() {
+<span class="fc" id="L431">        return updatedAt;</span>
+    }
+
+    public Instant getStatusUpdatedAt() {
+<span class="fc" id="L435">        return statusUpdatedAt;</span>
+    }
+
+<span class="fc" id="L438">    public Instant getFollowUpReminderSentAt() { return followUpReminderSentAt; }</span>
+
+    public UserId getUserId() {
+<span class="fc" id="L441">        return userId;</span>
+    }
+
+    public List&lt;Activity&gt; getActivities() {
+<span class="fc" id="L445">        return activities;</span>
+    }
+    public List&lt;Attachment&gt; getAttachments() {
+<span class="fc" id="L448">        return attachments;</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L453">        return getId().toString()+ &quot; [userId=&quot;+getUserId().toString()+&quot;,title=&quot;+getTitle() + &quot;]&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

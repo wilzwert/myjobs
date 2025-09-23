@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>ActivityMapperImpl.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">MyJobsAggregateReport</a> &gt; <a href="../index.html" class="el_bundle">myjobs-infrastructure</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper</a> &gt; <span class="el_source">ActivityMapperImpl.java</span></div><h1>ActivityMapperImpl.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper;
+
+import com.wilzwert.myjobs.core.domain.model.activity.Activity;
+import com.wilzwert.myjobs.core.domain.model.activity.ActivityId;
+import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
+import com.wilzwert.myjobs.core.domain.model.activity.command.CreateActivityCommand;
+import com.wilzwert.myjobs.core.domain.model.activity.command.UpdateActivityCommand;
+import com.wilzwert.myjobs.core.domain.model.job.JobId;
+import com.wilzwert.myjobs.core.domain.model.user.UserId;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.ActivityResponse;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.CreateActivityRequest;
+import com.wilzwert.myjobs.infrastructure.api.rest.dto.UpdateActivityRequest;
+import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoActivity;
+import java.util.ArrayList;
+import java.util.List;
+import javax.annotation.processing.Generated;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Generated(
+    value = &quot;org.mapstruct.ap.MappingProcessor&quot;,
+    date = &quot;2025-09-23T13:10:24+0000&quot;,
+    comments = &quot;version: 1.6.2, compiler: javac, environment: Java 21.0.8 (Eclipse Adoptium)&quot;
+)
+@Component
+<span class="nc" id="L26">public class ActivityMapperImpl implements ActivityMapper {</span>
+
+    @Autowired
+    private IdMapper idMapper;
+
+    @Override
+    public MongoActivity toEntity(Activity domain) {
+<span class="nc bnc" id="L33" title="All 2 branches missed.">        if ( domain == null ) {</span>
+<span class="nc" id="L34">            return null;</span>
+        }
+
+<span class="nc" id="L37">        MongoActivity mongoActivity = new MongoActivity();</span>
+
+<span class="nc" id="L39">        mongoActivity.setId( idMapper.toEntity( domain.getId() ) );</span>
+<span class="nc" id="L40">        mongoActivity.setType( domain.getType() );</span>
+<span class="nc" id="L41">        mongoActivity.setComment( domain.getComment() );</span>
+<span class="nc" id="L42">        mongoActivity.setCreatedAt( domain.getCreatedAt() );</span>
+<span class="nc" id="L43">        mongoActivity.setUpdatedAt( domain.getUpdatedAt() );</span>
+
+<span class="nc" id="L45">        return mongoActivity;</span>
+    }
+
+    @Override
+    public List&lt;MongoActivity&gt; toEntity(List&lt;Activity&gt; domains) {
+<span class="nc bnc" id="L50" title="All 2 branches missed.">        if ( domains == null ) {</span>
+<span class="nc" id="L51">            return null;</span>
+        }
+
+<span class="nc" id="L54">        List&lt;MongoActivity&gt; list = new ArrayList&lt;MongoActivity&gt;( domains.size() );</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">        for ( Activity activity : domains ) {</span>
+<span class="nc" id="L56">            list.add( toEntity( activity ) );</span>
+<span class="nc" id="L57">        }</span>
+
+<span class="nc" id="L59">        return list;</span>
+    }
+
+    @Override
+    public Activity toDomain(MongoActivity entity) {
+<span class="nc bnc" id="L64" title="All 2 branches missed.">        if ( entity == null ) {</span>
+<span class="nc" id="L65">            return null;</span>
+        }
+
+<span class="nc" id="L68">        Activity.Builder activity = Activity.builder();</span>
+
+<span class="nc" id="L70">        activity.id( idMapper.mapActivityId( entity.getId() ) );</span>
+<span class="nc" id="L71">        activity.type( entity.getType() );</span>
+<span class="nc" id="L72">        activity.comment( entity.getComment() );</span>
+<span class="nc" id="L73">        activity.createdAt( entity.getCreatedAt() );</span>
+<span class="nc" id="L74">        activity.updatedAt( entity.getUpdatedAt() );</span>
+
+<span class="nc" id="L76">        return activity.build();</span>
+    }
+
+    @Override
+    public List&lt;Activity&gt; toDomain(List&lt;MongoActivity&gt; entities) {
+<span class="nc bnc" id="L81" title="All 2 branches missed.">        if ( entities == null ) {</span>
+<span class="nc" id="L82">            return null;</span>
+        }
+
+<span class="nc" id="L85">        List&lt;Activity&gt; list = new ArrayList&lt;Activity&gt;( entities.size() );</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        for ( MongoActivity mongoActivity : entities ) {</span>
+<span class="nc" id="L87">            list.add( toDomain( mongoActivity ) );</span>
+<span class="nc" id="L88">        }</span>
+
+<span class="nc" id="L90">        return list;</span>
+    }
+
+    @Override
+    public ActivityResponse toResponse(Activity domain) {
+<span class="nc bnc" id="L95" title="All 2 branches missed.">        if ( domain == null ) {</span>
+<span class="nc" id="L96">            return null;</span>
+        }
+
+<span class="nc" id="L99">        ActivityResponse activityResponse = new ActivityResponse();</span>
+
+<span class="nc" id="L101">        activityResponse.setId( idMapper.toEntity( domain.getId() ) );</span>
+<span class="nc" id="L102">        activityResponse.setComment( domain.getComment() );</span>
+<span class="nc" id="L103">        activityResponse.setType( domain.getType() );</span>
+<span class="nc" id="L104">        activityResponse.setCreatedAt( domain.getCreatedAt() );</span>
+
+<span class="nc" id="L106">        return activityResponse;</span>
+    }
+
+    @Override
+    public List&lt;ActivityResponse&gt; toResponse(List&lt;Activity&gt; domains) {
+<span class="nc bnc" id="L111" title="All 2 branches missed.">        if ( domains == null ) {</span>
+<span class="nc" id="L112">            return null;</span>
+        }
+
+<span class="nc" id="L115">        List&lt;ActivityResponse&gt; list = new ArrayList&lt;ActivityResponse&gt;( domains.size() );</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">        for ( Activity activity : domains ) {</span>
+<span class="nc" id="L117">            list.add( toResponse( activity ) );</span>
+<span class="nc" id="L118">        }</span>
+
+<span class="nc" id="L120">        return list;</span>
+    }
+
+    @Override
+    public UpdateActivityCommand toUpdateCommand(UpdateActivityRequest request) {
+<span class="nc bnc" id="L125" title="All 2 branches missed.">        if ( request == null ) {</span>
+<span class="nc" id="L126">            return null;</span>
+        }
+
+<span class="nc" id="L129">        String comment = null;</span>
+
+<span class="nc" id="L131">        comment = request.getComment();</span>
+
+<span class="nc" id="L133">        ActivityId activityId = null;</span>
+<span class="nc" id="L134">        ActivityType activityType = null;</span>
+<span class="nc" id="L135">        UserId userId = null;</span>
+<span class="nc" id="L136">        JobId jobId = null;</span>
+
+<span class="nc" id="L138">        UpdateActivityCommand updateActivityCommand = new UpdateActivityCommand( activityId, activityType, comment, userId, jobId );</span>
+
+<span class="nc" id="L140">        return updateActivityCommand;</span>
+    }
+
+    @Override
+    public CreateActivityCommand toCommand(CreateActivityRequest createActivityRequest) {
+<span class="nc bnc" id="L145" title="All 2 branches missed.">        if ( createActivityRequest == null ) {</span>
+<span class="nc" id="L146">            return null;</span>
+        }
+
+<span class="nc" id="L149">        ActivityType activityType = null;</span>
+<span class="nc" id="L150">        String comment = null;</span>
+
+<span class="nc" id="L152">        activityType = createActivityRequest.getType();</span>
+<span class="nc" id="L153">        comment = createActivityRequest.getComment();</span>
+
+<span class="nc" id="L155">        CreateActivityCommand createActivityCommand = new CreateActivityCommand( activityType, comment );</span>
+
+<span class="nc" id="L157">        return createActivityCommand;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

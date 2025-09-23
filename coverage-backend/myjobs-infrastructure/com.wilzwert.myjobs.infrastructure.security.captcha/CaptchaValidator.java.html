@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>CaptchaValidator.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">MyJobsAggregateReport</a> &gt; <a href="../index.html" class="el_bundle">myjobs-infrastructure</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.infrastructure.security.captcha</a> &gt; <span class="el_source">CaptchaValidator.java</span></div><h1>CaptchaValidator.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.infrastructure.security.captcha;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@Service
+<span class="fc" id="L13">@Slf4j</span>
+public class CaptchaValidator {
+
+    private static final String GOOGLE_RECAPTCHA_ENTERPRISE_ENDPOINT = &quot;https://recaptchaenterprise.googleapis.com/v1/projects/myjobs-454309/assessments?key=&quot;;
+
+    private final String recaptchaSiteKey;
+
+    private final String recaptchaApiKey;
+
+    private final boolean recaptchaAlwaysValid;
+
+    private final RestTemplate restTemplate;
+
+    public CaptchaValidator(
+            @Value(&quot;${google.recaptcha.site-key}&quot;) String recaptchaSiteKey,
+            @Value(&quot;${google.recaptcha.api-key}&quot;) String recaptchaApiKey,
+            @Value(&quot;${google.recaptcha.always-valid}&quot;) boolean recaptchaAlwaysValid,
+            RestTemplate restTemplate
+<span class="fc" id="L31">    ) {</span>
+<span class="fc" id="L32">        this.recaptchaSiteKey = recaptchaSiteKey;</span>
+<span class="fc" id="L33">        this.recaptchaApiKey = recaptchaApiKey;</span>
+<span class="fc" id="L34">        this.recaptchaAlwaysValid = recaptchaAlwaysValid;</span>
+<span class="fc" id="L35">        this.restTemplate = restTemplate;</span>
+<span class="fc" id="L36">    }</span>
+
+
+    public boolean validateCaptcha(String captchaResponse){
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        if(recaptchaAlwaysValid) {</span>
+<span class="fc" id="L41">            log.info(&quot;Recaptcha Always Valid&quot;);</span>
+<span class="fc" id="L42">            return true;</span>
+        }
+
+<span class="fc" id="L45">        log.info(&quot;Validating captcha&quot;);</span>
+
+<span class="fc" id="L47">        Map&lt;String, Object&gt; event = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L48">        event.put(&quot;token&quot;, captchaResponse);</span>
+<span class="fc" id="L49">        event.put(&quot;siteKey&quot;, recaptchaSiteKey);</span>
+
+<span class="fc" id="L51">        Map&lt;String, Map&lt;String, Object&gt;&gt; requestBody = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L52">        requestBody.put(&quot;event&quot;, event);</span>
+
+<span class="fc" id="L54">        ResponseEntity&lt;AssessmentResponse&gt; apiResponse = restTemplate.postForEntity(GOOGLE_RECAPTCHA_ENTERPRISE_ENDPOINT +recaptchaApiKey, requestBody, AssessmentResponse.class);</span>
+<span class="fc" id="L55">        AssessmentResponse response = apiResponse.getBody();</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        if(response == null) {</span>
+<span class="fc" id="L57">            return false;</span>
+        }
+
+<span class="fc" id="L60">        log.info(&quot;Captcha validation status returned {}&quot;, response.getTokenProperties().isValid());</span>
+<span class="fc" id="L61">        return response.getTokenProperties().isValid();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

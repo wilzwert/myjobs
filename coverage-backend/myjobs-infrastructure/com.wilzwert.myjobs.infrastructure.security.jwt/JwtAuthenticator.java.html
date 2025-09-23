@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>JwtAuthenticator.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">MyJobsAggregateReport</a> &gt; <a href="../index.html" class="el_bundle">myjobs-infrastructure</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.infrastructure.security.jwt</a> &gt; <span class="el_source">JwtAuthenticator.java</span></div><h1>JwtAuthenticator.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.infrastructure.security.jwt;
+
+
+import com.wilzwert.myjobs.core.domain.model.user.AuthenticatedUser;
+import com.wilzwert.myjobs.core.domain.model.user.User;
+import com.wilzwert.myjobs.core.domain.model.user.ports.driven.Authenticator;
+import com.wilzwert.myjobs.infrastructure.security.model.RefreshToken;
+import com.wilzwert.myjobs.infrastructure.security.service.JwtService;
+import com.wilzwert.myjobs.infrastructure.security.service.RefreshTokenService;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.stereotype.Component;
+
+/**
+ * @author Wilhelm Zwertvaegher
+ */
+
+@Component
+public class JwtAuthenticator implements Authenticator {
+
+    private final JwtService jwtService;
+
+    private final RefreshTokenService refreshTokenService;
+
+<span class="fc" id="L24">    public JwtAuthenticator(final JwtService jwtService, final RefreshTokenService refreshTokenService) {</span>
+<span class="fc" id="L25">        this.jwtService = jwtService;</span>
+<span class="fc" id="L26">        this.refreshTokenService = refreshTokenService;</span>
+<span class="fc" id="L27">    }</span>
+
+    @Override
+    public AuthenticatedUser authenticate(User user) throws AuthenticationException {
+<span class="fc" id="L31">        String token = jwtService.generateToken(user.getId().value().toString());</span>
+<span class="fc" id="L32">        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);</span>
+<span class="fc" id="L33">        return new JwtAuthenticatedUser(user.getEmail(), user.getUsername(), token, refreshToken.getToken(), user.getRole());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

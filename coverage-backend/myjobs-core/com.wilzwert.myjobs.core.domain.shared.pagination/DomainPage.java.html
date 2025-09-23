@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>DomainPage.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">MyJobsAggregateReport</a> &gt; <a href="../index.html" class="el_bundle">myjobs-core</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.core.domain.shared.pagination</a> &gt; <span class="el_source">DomainPage.java</span></div><h1>DomainPage.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.core.domain.shared.pagination;
+
+
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * @author Wilhelm Zwertvaegher
+ */
+
+public class DomainPage&lt;T&gt; {
+    private static final int MINIMAL_PAGE_COUNT = 1;
+
+    private final List&lt;T&gt; content;
+    private final int currentPage;
+    private final int pageSize;
+    private final long totalElementsCount;
+    private final int pageCount;
+
+<span class="fc" id="L20">    private DomainPage(DomainPageBuilder&lt;T&gt; builder) {</span>
+<span class="fc bfc" id="L21" title="All 2 branches covered.">        if(builder.pageSize == -1) {</span>
+<span class="fc" id="L22">            throw new IllegalStateException(&quot;Page size is not set&quot;);</span>
+        }
+<span class="fc bfc" id="L24" title="All 2 branches covered.">        if(builder.totalElementsCount == -1) {</span>
+<span class="fc" id="L25">            throw new IllegalStateException(&quot;Total elements count is not set&quot;);</span>
+        }
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        if(builder.currentPage == -1) {</span>
+<span class="fc" id="L28">            throw new IllegalStateException(&quot;Current page is not set&quot;);</span>
+        }
+<span class="fc" id="L30">        content = buildContent(builder.content);</span>
+<span class="fc" id="L31">        currentPage = builder.currentPage;</span>
+<span class="fc" id="L32">        pageSize = builder.pageSize;</span>
+<span class="fc" id="L33">        totalElementsCount = builder.totalElementsCount;</span>
+<span class="fc" id="L34">        pageCount = buildPageCount();</span>
+<span class="fc" id="L35">    }</span>
+
+    private List&lt;T&gt; buildContent(List&lt;T&gt; content) {
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        if (content == null) {</span>
+<span class="fc" id="L39">            return List.of();</span>
+        }
+
+<span class="fc" id="L42">        return Collections.unmodifiableList(content);</span>
+    }
+
+    public int buildPageCount() {
+<span class="fc bfc" id="L46" title="All 2 branches covered.">        if (totalElementsCount &gt; 0) {</span>
+<span class="fc" id="L47">            return (int) Math.ceil(totalElementsCount / (float) pageSize);</span>
+        }
+
+<span class="fc" id="L50">        return MINIMAL_PAGE_COUNT;</span>
+    }
+
+    public static &lt;T&gt; DomainPageBuilder&lt;T&gt; builder(DomainPage&lt;?&gt; page, List&lt;T&gt; content) {
+<span class="fc" id="L54">        return new DomainPageBuilder&lt;&gt;(content)</span>
+<span class="fc" id="L55">                .currentPage(page.currentPage)</span>
+<span class="fc" id="L56">                .pageSize(page.pageSize)</span>
+<span class="fc" id="L57">                .totalElementsCount(page.totalElementsCount)</span>
+                ;
+    }
+
+    public static &lt;T&gt; DomainPageBuilder&lt;T&gt; builder(List&lt;T&gt; content) {
+<span class="fc" id="L62">        return new DomainPageBuilder&lt;&gt;(content);</span>
+    }
+
+    public static &lt;T&gt; DomainPage&lt;T&gt; singlePage(List&lt;T&gt; content) {
+<span class="fc" id="L66">        return builder(content)</span>
+<span class="fc" id="L67">                .currentPage(0)</span>
+<span class="fc" id="L68">                .totalElementsCount(content.size())</span>
+<span class="fc" id="L69">                .pageSize(content.size())</span>
+<span class="fc" id="L70">                .build();</span>
+    }
+
+    public List&lt;T&gt; getContent() {
+<span class="fc" id="L74">        return content;</span>
+    }
+
+    public int getCurrentPage() {
+<span class="fc" id="L78">        return currentPage;</span>
+    }
+
+    public int getPageSize() {
+<span class="fc" id="L82">        return pageSize;</span>
+    }
+
+    public long getTotalElementsCount() {
+<span class="fc" id="L86">        return totalElementsCount;</span>
+    }
+
+    public int getPageCount() {
+<span class="fc" id="L90">        return pageCount;</span>
+    }
+
+    public boolean isNotLast() {
+<span class="fc bfc" id="L94" title="All 2 branches covered.">        return currentPage + 1 != getPageCount();</span>
+    }
+
+    public static class DomainPageBuilder&lt;T&gt; {
+        private final List&lt;T&gt; content;
+<span class="fc" id="L99">        private int currentPage = -1;</span>
+<span class="fc" id="L100">        private int pageSize = -1;</span>
+<span class="fc" id="L101">        private long totalElementsCount = -1;</span>
+
+<span class="fc" id="L103">        private DomainPageBuilder(List&lt;T&gt; content) {</span>
+<span class="fc" id="L104">            this.content = content;</span>
+<span class="fc" id="L105">        }</span>
+
+        public DomainPageBuilder&lt;T&gt; pageSize(int pageSize) {
+<span class="fc" id="L108">            this.pageSize = pageSize;</span>
+
+<span class="fc" id="L110">            return this;</span>
+        }
+
+        public DomainPageBuilder&lt;T&gt; currentPage(int currentPage) {
+<span class="fc" id="L114">            this.currentPage = currentPage;</span>
+
+<span class="fc" id="L116">            return this;</span>
+        }
+
+        public DomainPageBuilder&lt;T&gt; totalElementsCount(long totalElementsCount) {
+<span class="fc" id="L120">            this.totalElementsCount = totalElementsCount;</span>
+
+<span class="fc" id="L122">            return this;</span>
+        }
+
+        public DomainPage&lt;T&gt; build() {
+<span class="fc" id="L126">           return new DomainPage&lt;&gt;(this);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
