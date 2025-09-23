@@ -8,7 +8,6 @@ import { UpdateJobFieldRequest, UpdateJobRequest } from '@core/model/update-job-
 import { CreateJobAttachmentsRequest } from '@core/model/create-job-attachments-request.interface';
 import { CreateJobAttachmentRequest } from '@core/model/create-job-attachment-request.interface';
 import { CreateJobActivitiesRequest } from '@core/model/create-job-activities-request.interface';
-import { UpdateJobStatusRequest } from '@core/model/update-job-status-request.interface';
 import { UpdateJobRatingRequest } from '@core/model/update-job-rating-request.interface';
 import { JobMetadata } from '@core/model/job-metadata.interface';
 import { SessionService } from './session.service';
@@ -121,21 +120,7 @@ export class JobService {
   }
 
   /**
-   * Updates a job status
-   * @returns the job
-   */
-  public updateJobStatus(jobId: string, request: UpdateJobStatusRequest): Observable<Job> {
-    // using patch because only some fields are edited
-    return this.dataService.patch<Job>(`jobs/${jobId}`, request).pipe(
-      map((j: Job) => {
-        this.reloadIfNecessary(j);
-        return j;
-      })
-    );
-  }
-
-  /**
-   * Updates a job status
+   * Updates a job rating
    * @returns the job
    */
   public updateJobRating(jobId: string, request: UpdateJobRatingRequest): Observable<Job> {

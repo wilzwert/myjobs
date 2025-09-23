@@ -4,7 +4,7 @@
 
     <button routerLink="/jobs" class="action-back" matTooltip="Go back to jobs" i18n-matTooltip="back to jobs|back to jobs action label@@action.jobs.back" aria-label="Go back to jobs" i18n-aria-label="@@action.jobs.back" mat-icon-button><mat-icon>arrow_back</mat-icon></button>
 
-    <app-job-summary [job]="job" (deleted)="onDelete(job)" (jobChanged)="onJobChanged($event)" context="detail"></app-job-summary>
+    <app-job-summary [job]="job" (deleted)="onDelete(job)" (jobChanged)="reloadJob($event)" context="detail"></app-job-summary>
 
     <mat-card appearance="outlined" i18n-aria-label="job description label@@job.description.label" aria-label="Description">
         <mat-card-header>

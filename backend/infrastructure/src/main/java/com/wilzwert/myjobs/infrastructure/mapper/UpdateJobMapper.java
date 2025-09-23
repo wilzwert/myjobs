@@ -18,7 +18,6 @@ public interface UpdateJobMapper {
 
     default UpdateJobCommand toCommand(UpdateJobDto request, JobId jobId, UserId userId) {
         return switch (request) {
-            case UpdateJobStatusRequest u -> toCommand(u, jobId, userId);
             case UpdateJobRatingRequest r -> toCommand(r, jobId, userId);
             case UpdateJobRequest j -> toCommand(j, jobId, userId);
             case UpdateJobFieldRequest f -> toCommand(f, jobId, userId);
@@ -31,8 +30,6 @@ public interface UpdateJobMapper {
     }
 
     UpdateJobFullCommand toCommand(UpdateJobRequest updateJobRequest, JobId jobId, UserId userId);
-
-    UpdateJobStatusCommand toCommand(UpdateJobStatusRequest updateJobStatusRequest, JobId jobId, UserId userId);
 
     UpdateJobRatingCommand toCommand(UpdateJobRatingRequest updateJobRatingRequest, JobId jobId, UserId userId);
 }

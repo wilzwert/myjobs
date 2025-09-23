@@ -1,5 +1,6 @@
 package com.wilzwert.myjobs.core.application.usecase;
 
+import com.wilzwert.myjobs.core.domain.model.AttachmentFileInfo;
 import com.wilzwert.myjobs.core.domain.model.DownloadableFile;
 import com.wilzwert.myjobs.core.domain.model.activity.Activity;
 import com.wilzwert.myjobs.core.domain.model.activity.ActivityId;
@@ -21,10 +22,7 @@ import com.wilzwert.myjobs.core.domain.model.attachment.event.integration.Attach
 import com.wilzwert.myjobs.core.domain.model.attachment.exception.AttachmentFileNotReadableException;
 import com.wilzwert.myjobs.core.domain.model.attachment.exception.AttachmentNotFoundException;
 import com.wilzwert.myjobs.core.domain.model.job.*;
-import com.wilzwert.myjobs.core.domain.model.job.command.CreateJobCommand;
-import com.wilzwert.myjobs.core.domain.model.job.command.DeleteJobCommand;
-import com.wilzwert.myjobs.core.domain.model.job.command.UpdateJobFullCommand;
-import com.wilzwert.myjobs.core.domain.model.job.command.UpdateJobFieldCommand;
+import com.wilzwert.myjobs.core.domain.model.job.command.*;
 import com.wilzwert.myjobs.core.domain.model.job.event.integration.JobCreatedEvent;
 import com.wilzwert.myjobs.core.domain.model.job.event.integration.JobDeletedEvent;
 import com.wilzwert.myjobs.core.domain.model.job.event.integration.JobFieldUpdatedEvent;
@@ -56,6 +54,7 @@ import java.util.*;
 import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -79,11 +78,12 @@ class JobUseCaseImplTest {
     private User testUser;
     private Job testJob;
     private Job testFollowUpLateJob;
+    private AttachmentId attachmentId;
 
     @BeforeEach
     void setUp() {
         UserId testUserId = UserId.generate();
-        AttachmentId attachmentId = AttachmentId.generate();
+        attachmentId = AttachmentId.generate();
         testJob = Job.builder()
                 .id(JobId.generate())
                 .userId(testUserId)
@@ -93,6 +93,7 @@ class JobUseCaseImplTest {
                 .profile("job profile 1")
                 .status(JobStatus.PENDING)
                 .url("http://www.example.com/1")
+                .rating(JobRating.of(5))
                 .attachments(List.of(
                         Attachment.builder()
                                 .id(attachmentId)
@@ -133,6 +134,44 @@ class JobUseCaseImplTest {
         // Mocks UserDataManager
         when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.of(testUser));
         underTest = new JobUseCaseImpl(transactionProvider, integrationEventPublisher, jobDataManager, userDataManager, fileStorage, htmlSanitizer);
+    }
+
+    @Nested
+    class GetJobTest {
+
+        @Test
+        void whenUserNotFound_thenGetUserJob_shouldThrowUserNotFoundException() {
+            reset(userDataManager);
+            when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.empty());
+
+            when(jobDataManager.findByIdAndUserId(any(JobId.class), any(UserId.class))).thenReturn(Optional.of(testFollowUpLateJob));
+
+            assertThrows(UserNotFoundException.class, () -> underTest.getUserJob(UserId.generate(), JobId.generate()));
+        }
+
+        @Test
+        void whenJobNotFound_thenGetUserJob_shouldThrowJobNotFoundException() {
+            // no need to actively mock the userDataManager as we expect the JobNotFoundException to be thrown before it is called
+            reset(userDataManager);
+            when(jobDataManager.findByIdAndUserId(any(JobId.class), any(UserId.class))).thenReturn(Optional.empty());
+            assertThrows(JobNotFoundException.class, () -> underTest.getUserJob(UserId.generate(), JobId.generate()));
+        }
+
+        @Test
+        void shouldGetJob() {
+            when(jobDataManager.findByIdAndUserId(testJob.getId(), testJob.getUserId())).thenReturn(Optional.of(testJob));
+
+            // call test method
+            EnrichedJob enrichedJob = underTest.getUserJob(testUser.getId(), testJob.getId());
+
+
+            verify(jobDataManager).findByIdAndUserId(testJob.getId(), testJob.getUserId());
+            verify(userDataManager).findById(any(UserId.class));
+
+            // check result is enriched
+            assertNotNull(enrichedJob);
+            assertEquals(testJob, enrichedJob.job());
+        }
     }
 
     @Nested
@@ -856,4 +895,70 @@ class JobUseCaseImplTest {
             assertThrows(ActivityNotFoundException.class, () -> underTest.updateActivity(command));
         }
     }
+
+    @Nested
+    class GetAttachmentFileInfoTest {
+
+        @Test
+        void whenJobNotFound_thenShouldThrowJobNotFoundException() {
+            reset(userDataManager);
+            when(jobDataManager.findByIdAndUserId(any(), any())).thenReturn(Optional.empty());
+            var command = new DownloadAttachmentCommand("someAttachement", UserId.generate(), JobId.generate());
+            assertThrows(JobNotFoundException.class, () -> underTest.getAttachmentFileInfo(command));
+        }
+
+        @Test
+        void whenAttachmentNotFound_thenShouldThrowAttachmentNotFoundException() {
+            reset(userDataManager);
+            when(jobDataManager.findByIdAndUserId(any(), any())).thenReturn(Optional.of(testJob));
+            var command = new DownloadAttachmentCommand("someId'", UserId.generate(), JobId.generate());
+            assertThrows(AttachmentNotFoundException.class, () -> underTest.getAttachmentFileInfo(command));
+        }
+
+        @Test
+        void shouldReturnAttachmentFileInfo() {
+            JobId jobId = JobId.generate();
+            UserId userId = UserId.generate();
+
+            reset(userDataManager);
+            when(jobDataManager.findByIdAndUserId(jobId, userId)).thenReturn(Optional.of(testJob));
+            when(fileStorage.generateProtectedUrl(testJob.getId(), attachmentId, "fileId")).thenReturn("http://my.url");
+            var command = new DownloadAttachmentCommand(attachmentId.toString(), userId, jobId);
+
+            AttachmentFileInfo info = underTest.getAttachmentFileInfo(command);
+            assertInstanceOf(AttachmentFileInfo.class, info);
+
+            verify(jobDataManager).findByIdAndUserId(jobId, userId);
+            verify(fileStorage).generateProtectedUrl(testJob.getId(), attachmentId, "fileId");
+
+            assertEquals("fileId", info.fileId());
+            assertEquals("http://my.url", info.url());
+        }
+    }
+
+
+    @Nested
+    class UpdateJobRatingTest {
+
+        @Test
+        void whenJobNotFound_thenShouldThrowJobNotFoundException() {
+            reset(userDataManager);
+            when(jobDataManager.findByIdAndUserId(any(JobId.class), any(UserId.class))).thenReturn(Optional.empty());
+            UpdateJobRatingCommand command = new UpdateJobRatingCommand(JobId.generate(), UserId.generate(), JobRating.of(2));
+            assertThrows(JobNotFoundException.class, () -> underTest.updateJobRating(command));
+        }
+
+        @Test
+        void shouldUpdateJobRating() {
+            reset(userDataManager);
+            when(jobDataManager.findByIdAndUserId(any(JobId.class), any(UserId.class))).thenReturn(Optional.of(testJob));
+            when(transactionProvider.executeInTransaction(any(Supplier.class))).thenAnswer(i -> ((Supplier<?>)i.getArgument(0)).get());
+
+            Job updatedJob = underTest.updateJobRating(new UpdateJobRatingCommand(JobId.generate(), UserId.generate(), JobRating.of(2)));
+
+            assertEquals(2, updatedJob.getRating().getValue());
+        }
+    }
+
+
 }

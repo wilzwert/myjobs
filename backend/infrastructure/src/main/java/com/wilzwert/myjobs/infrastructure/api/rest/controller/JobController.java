@@ -68,7 +68,7 @@ public class JobController {
     @GetMapping("/{id}")
     public JobResponse get(@PathVariable("id") String id, Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        return jobMapper.toResponse(getUserJobUseCase.getUserJob(userDetails.getId(), new JobId(UUID.fromString(id))));
+        return jobMapper.toEnrichedResponse(getUserJobUseCase.getUserJob(userDetails.getId(), new JobId(UUID.fromString(id))));
     }
 
     @DeleteMapping("/{id}")

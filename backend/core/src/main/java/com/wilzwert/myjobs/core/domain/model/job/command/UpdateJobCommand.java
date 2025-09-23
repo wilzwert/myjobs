@@ -6,5 +6,5 @@ package com.wilzwert.myjobs.core.domain.model.job.command;
  * Date:05/06/2025
  * Time:13:38
  */
-public sealed interface UpdateJobCommand permits UpdateJobFullCommand, UpdateJobRatingCommand, UpdateJobStatusCommand, UpdateJobFieldCommand{
+public sealed interface UpdateJobCommand permits UpdateJobFullCommand, UpdateJobRatingCommand, UpdateJobFieldCommand{
 }

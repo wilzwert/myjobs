@@ -416,12 +416,6 @@
       <trans-unit id="job.created_or_saved" datatype="html">
         <source>Job <x id="PH" equiv-text="term"/> successfully</source>
       </trans-unit>
-      <trans-unit id="action.job.status.edit" datatype="html">
-        <source>Change status</source>
-      </trans-unit>
-      <trans-unit id="info.job.status.updated" datatype="html">
-        <source>Status updated successfully.</source>
-      </trans-unit>
       <trans-unit id="job.stepper.create.label" datatype="html">
         <source>Job creation</source>
         <note priority="1" from="description">Job stepper job creation step label</note>
@@ -914,6 +908,23 @@
       <trans-unit id="form.activities.add" datatype="html">
         <source>Add an activity</source>
         <note priority="1" from="description">Add an activity</note>
+      </trans-unit>
+      <trans-unit id="job.activity.acceptance" datatype="html">
+        <source>Job accepted</source>
+      </trans-unit>
+      <trans-unit id="job.activity.hiring" datatype="html">
+        <source>Hired</source>
+      </trans-unit>
+      <trans-unit id="job.activity.job_cancellation" datatype="html">
+        <source>Job cancelled</source>
+      </trans-unit>
+      <trans-unit id="job.activity.job_expiration" datatype="html">
+        <source>Job expired</source>
+      </trans-unit>
+      <trans-unit id="action.job.activities" datatype="html">
+        <source>Activities</source>
+        <note priority="1" from="description">label of a job&apos;s activities management action</note>
+        <note priority="1" from="meaning">edit job&apos;s activities</note>
       </trans-unit>
     </body>
   </file>

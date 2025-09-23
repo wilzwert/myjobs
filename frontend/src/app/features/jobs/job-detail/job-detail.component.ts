@@ -78,6 +78,7 @@ export class JobDetailComponent implements OnInit, OnDestroy {
     this.modalService.openJobModal('job', job, () => this.loadJob(job.id))
   }
 
+  // job changed from child component
   onJobChanged(job: Job): void {
     this.job = job;
   }

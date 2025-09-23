@@ -108,10 +108,61 @@ describe('JobSummaryComponent', () => {
 
   it('should stop propagation and open attachment modal on manageAttachments()', () => {
     const event = { stopPropagation: jest.fn() } as unknown as MouseEvent;
+     jest.spyOn(component, 'onJobChanged');
 
     component.manageAttachments(event, fakeJob);
 
     expect(event.stopPropagation).toHaveBeenCalled();
     expect(modalServiceMock.openJobModal).toHaveBeenCalledWith('attachments', fakeJob, expect.any(Function));
+    const callback = modalServiceMock.openJobModal.mock.calls[0][2];
+    expect(typeof callback).toBe('function');
+    callback();
+    expect(component.onJobChanged).not.toHaveBeenCalled();
+  });
+
+  it('should stop propagation and open activities modal on manageActivities()', () => {
+    const event = { stopPropagation: jest.fn() } as unknown as MouseEvent;
+    jest.spyOn(component, 'onJobChanged');
+
+    component.manageActivities(event, fakeJob);
+
+    expect(event.stopPropagation).toHaveBeenCalled();
+    expect(modalServiceMock.openJobModal).toHaveBeenCalledWith('activities', fakeJob, expect.any(Function));
+    const callback = modalServiceMock.openJobModal.mock.calls[0][2];
+    expect(typeof callback).toBe('function');
+    callback();
+    expect(component.onJobChanged).not.toHaveBeenCalled();
+  });
+
+  it('should stop propagation and open attachment modal on manageAttachments() in detail context', () => {
+    const event = { stopPropagation: jest.fn() } as unknown as MouseEvent;
+     jest.spyOn(component, 'onJobChanged');
+
+    component.context = 'detail';
+    fixture.detectChanges();
+    component.manageAttachments(event, fakeJob);
+
+    expect(event.stopPropagation).toHaveBeenCalled();
+    expect(modalServiceMock.openJobModal).toHaveBeenCalledWith('attachments', fakeJob, expect.any(Function));
+    const callback = modalServiceMock.openJobModal.mock.calls[0][2];
+    expect(typeof callback).toBe('function');
+    callback();
+    expect(component.onJobChanged).toHaveBeenCalled();
+  });
+
+  it('should stop propagation and open activities modal on manageActivities() in detail context', () => {
+    const event = { stopPropagation: jest.fn() } as unknown as MouseEvent;
+     jest.spyOn(component, 'onJobChanged');
+
+    component.context = 'detail';
+    fixture.detectChanges();
+    component.manageActivities(event, fakeJob);
+
+    expect(event.stopPropagation).toHaveBeenCalled();
+    expect(modalServiceMock.openJobModal).toHaveBeenCalledWith('activities', fakeJob, expect.any(Function));
+    const callback = modalServiceMock.openJobModal.mock.calls[0][2];
+    expect(typeof callback).toBe('function');
+    callback()
+    expect(component.onJobChanged).toHaveBeenCalled();
   });
 });

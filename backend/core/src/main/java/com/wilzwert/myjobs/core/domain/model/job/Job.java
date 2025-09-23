@@ -55,7 +55,11 @@ public class Job extends DomainEntity<JobId> {
         ActivityType.APPLICATION, JobStatus.PENDING,
         ActivityType.APPLICANT_REFUSAL, JobStatus.APPLICANT_REFUSED,
         ActivityType.COMPANY_REFUSAL, JobStatus.COMPANY_REFUSED,
-        ActivityType.RELAUNCH, JobStatus.RELAUNCHED
+        ActivityType.RELAUNCH, JobStatus.RELAUNCHED,
+        ActivityType.JOB_EXPIRATION, JobStatus.EXPIRED,
+        ActivityType.JOB_CANCELLATION, JobStatus.CANCELLED,
+        ActivityType.ACCEPTANCE, JobStatus.ACCEPTED,
+        ActivityType.HIRING, JobStatus.HIRED
     );
 
     public static Builder builder() {
@@ -277,7 +281,7 @@ public class Job extends DomainEntity<JobId> {
 
     private Job copy(List<Attachment> attachments, List<Activity> activities, JobStatus status, Instant updatedAt) {
         Instant newStatusUpdatedAt = getStatusUpdatedAt();
-        if( status != null && !status.equals(getStatus())) {
+        if( status != null) {
             // set statusUpdatedAt
             newStatusUpdatedAt = Instant.now();
         }

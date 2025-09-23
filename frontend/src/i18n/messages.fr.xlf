@@ -355,10 +355,6 @@
         <target state="translated">Détails</target>
         <note priority="1" from="description">job details</note>
       </trans-unit>
-      <trans-unit id="action.job.status.edit" datatype="html">
-        <source>Change status</source>
-        <target state="translated">Modifier le statut</target>
-      </trans-unit>
       <trans-unit id="job.created" datatype="html">
         <source>Job creation date</source>
         <target state="translated">Créé</target>
@@ -617,10 +613,6 @@
       <trans-unit id="warning.job.delete" datatype="html">
         <source>Delete job "<x id="PH" equiv-text="job.title"/>" ? All data will be lost.</source>
         <target state="translated">Supprimer "<x id="PH" equiv-text="job.title"/>" ? Toutes les données seront perdues.</target>
-      </trans-unit>
-      <trans-unit id="info.job.status.updated" datatype="html">
-        <source>Status updated successfully.</source>
-        <target state="translated">Le statut a bien été modifié.</target>
       </trans-unit>
       <trans-unit id="info.job.rating.updated" datatype="html">
         <source>Rating updated successfully.</source>
@@ -1148,6 +1140,28 @@
         <source>Add an activity</source>
         <target state="translated">Ajouter une activité</target>
         <note priority="1" from="description">Add an activity</note>
+      </trans-unit>
+      <trans-unit id="job.activity.job_expiration" datatype="html">
+        <source>Job expired</source>
+        <target state="translated">Job expiré</target>
+      </trans-unit>
+      <trans-unit id="job.activity.job_cancellation" datatype="html">
+        <source>Job cancelled</source>
+        <target state="translated">Recrutement annulé</target>
+      </trans-unit>
+      <trans-unit id="job.activity.acceptance" datatype="html">
+        <source>Job accepted</source>
+        <target state="translated">Poste accepté</target>
+      </trans-unit>
+      <trans-unit id="job.activity.hiring" datatype="html">
+        <source>Hired</source>
+        <target state="translated">Recruté</target>
+      </trans-unit>
+      <trans-unit id="action.job.activities" datatype="html">
+        <source>Activities</source>
+        <target state="translated">Activités</target>
+        <note priority="1" from="description">label of a job's activities management action</note>
+        <note priority="1" from="meaning">edit job's activities</note>
       </trans-unit>
     </body>
   </file>

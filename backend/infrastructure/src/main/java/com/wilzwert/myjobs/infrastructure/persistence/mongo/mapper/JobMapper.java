@@ -4,7 +4,6 @@ package com.wilzwert.myjobs.infrastructure.persistence.mongo.mapper;
 import com.wilzwert.myjobs.core.domain.model.job.command.CreateJobCommand;
 import com.wilzwert.myjobs.core.domain.model.job.command.UpdateJobFullCommand;
 import com.wilzwert.myjobs.core.domain.model.job.command.UpdateJobRatingCommand;
-import com.wilzwert.myjobs.core.domain.model.job.command.UpdateJobStatusCommand;
 import com.wilzwert.myjobs.core.domain.model.job.EnrichedJob;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
@@ -23,8 +22,6 @@ public interface JobMapper extends EnrichedEntityMapper<Job, MongoJob, CreateJob
     CreateJobCommand toCommand(CreateJobRequest createJobRequest, UserId userId);
 
     UpdateJobFullCommand toCommand(UpdateJobRequest updateJobRequest, UserId userId, JobId jobId);
-
-    UpdateJobStatusCommand toCommand(UpdateJobStatusRequest updateJobStatusRequest, UserId userId, JobId jobId);
 
     UpdateJobRatingCommand toCommand(UpdateJobRatingRequest updateJobStatusRequest, UserId userId, JobId jobId);
 

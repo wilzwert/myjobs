@@ -87,7 +87,7 @@ jobs:
         if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
         # it may be interesting to prevent SonarQube from running if requirements have not been met
         # if: steps.run-frontend-tests.outcome == 'success'
-        uses: SonarSource/sonarqube-scan-action@v4
+        uses: SonarSource/sonarqube-scan-action@v6.0.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONTEND }}
         with:
@@ -101,7 +101,7 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         # it may be interesting to prevent SonarQube from running if requirements have not been met
         # if: steps.run-frontend-tests.outcome == 'success'
-        uses: SonarSource/sonarqube-scan-action@v4
+        uses: SonarSource/sonarqube-scan-action@v6.0.0
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONTEND }}
         with:
