@@ -114,4 +114,13 @@ describe('JobSummaryComponent', () => {
     expect(event.stopPropagation).toHaveBeenCalled();
     expect(modalServiceMock.openJobModal).toHaveBeenCalledWith('attachments', fakeJob, expect.any(Function));
   });
+
+  it('should stop propagation and open activities modal on manageActivities()', () => {
+    const event = { stopPropagation: jest.fn() } as unknown as MouseEvent;
+
+    component.manageActivities(event, fakeJob);
+
+    expect(event.stopPropagation).toHaveBeenCalled();
+    expect(modalServiceMock.openJobModal).toHaveBeenCalledWith('activities', fakeJob, expect.any(Function));
+  });
 });

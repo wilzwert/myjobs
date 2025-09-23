@@ -29,7 +29,6 @@ public class PatchJobController {
 
     private final UpdateJobDtoFactory updateJobDtoFactory;
     private final UpdateJobUseCase updateJobUseCase;
-    private final UpdateJobStatusUseCase updateJobStatusUseCase;
     private final UpdateJobRatingUseCase updateJobRatingUseCase;
     private final JobMapper jobMapper;
     private final UpdateJobMapper updateJobMapper;
@@ -38,14 +37,12 @@ public class PatchJobController {
     public PatchJobController(
             UpdateJobDtoFactory updateJobDtoFactory,
             UpdateJobUseCase updateJobUseCase,
-            UpdateJobStatusUseCase updateJobStatusUseCase,
             UpdateJobRatingUseCase updateJobRatingUseCase,
             JobMapper jobMapper,
             UpdateJobMapper updateJobMapper,
             Validator validator) {
         this.updateJobDtoFactory = updateJobDtoFactory;
         this.updateJobUseCase = updateJobUseCase;
-        this.updateJobStatusUseCase = updateJobStatusUseCase;
         this.updateJobRatingUseCase = updateJobRatingUseCase;
         this.jobMapper = jobMapper;
         this.updateJobMapper = updateJobMapper;
@@ -75,7 +72,6 @@ public class PatchJobController {
         return jobMapper.toResponse(switch (command) {
             case UpdateJobFieldCommand c -> updateJobUseCase.updateJobField(c);
             case UpdateJobRatingCommand c -> updateJobRatingUseCase.updateJobRating(c);
-            case UpdateJobStatusCommand c -> updateJobStatusUseCase.updateJobStatus(c);
             case UpdateJobFullCommand c -> updateJobUseCase.updateJob(c);
         });
     }

@@ -241,62 +241,6 @@ class PatchJobControllerIT extends AbstractBaseIntegrationTest  {
     }
 
     @Nested
-    class JobControllerUpdateStatusIt {
-        @Test
-        void whenRequestInvalid_thenShouldReturnBadRequestWithErrors() throws Exception {
-            String invalidJson = """
-                {
-                    "status": "NOT_A_VALID_JOB_STATUS"
-                }
-            """;
-
-            MvcResult mvcResult = mockMvc.perform(patch(JOB_FOR_TEST_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(invalidJson))
-                    .andExpect(status().isUnprocessableEntity())
-                    .andReturn();
-
-            ErrorResponse errorResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ErrorResponse.class);
-
-            assertThat(errorResponse).isNotNull();
-            assertThat(errorResponse.getStatus()).isEqualTo("422");
-            assertThat(errorResponse.getMessage()).isEqualTo(ErrorCode.VALIDATION_FAILED.name());
-            assertThat(errorResponse.getErrors()).hasSize(1);
-            assertThat(errorResponse.getErrors().get("status")).extracting(ValidationErrorResponse::getCode).containsExactly(ErrorCode.INVALID_VALUE.name());
-        }
-
-        @Test
-        void shouldUpdateJobStatus() throws Exception {
-            // we need a fully valid request, because data validation occurs before use case call
-            UpdateJobStatusRequest updateJobStatusRequest = new UpdateJobStatusRequest();
-            updateJobStatusRequest.setStatus(JobStatus.RELAUNCHED);
-
-            Instant beforeCall = Instant.now();
-            MvcResult result = mockMvc.perform(patch(JOB_FOR_TEST_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateJobStatusRequest)))
-                    .andExpect(status().isOk())
-                    .andReturn();
-
-            Instant afterCall = Instant.now();
-
-            JobResponse jobResponse = objectMapper.readValue(result.getResponse().getContentAsString(), JobResponse.class);
-            assertThat(jobResponse).isNotNull();
-
-            Instant updatedAt = jobResponse.getUpdatedAt();
-
-            // FIXME this is quite ugly but we have to make sure updatedAt is consistent
-            assertThat(updatedAt)
-                    .isAfterOrEqualTo(beforeCall)
-                    .isBeforeOrEqualTo(afterCall);
-            assertThat(jobResponse.getStatus()).isEqualTo(JobStatus.RELAUNCHED);
-
-            // let's check the update job is retrievable and consistent
-            Job updatedJob = jobDataManager.findById(new JobId(UUID.fromString(JOB_FOR_TEST_ID))).orElse(null);
-            assertThat(updatedJob).isNotNull();
-            assertThat(updatedJob.getStatus()).isEqualTo(JobStatus.RELAUNCHED);
-
-            integrationEventUtility.assertEventCreated("JobStatusUpdatedEvent", JOB_FOR_TEST_ID, beforeCall);
-        }
-    }
-
-    @Nested
     class JobControllerUpdateRatingIT {
 
         @Test

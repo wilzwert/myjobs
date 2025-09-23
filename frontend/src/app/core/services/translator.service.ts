@@ -73,7 +73,11 @@ export class TranslatorService {
     IN_PERSON_INTERVIEW : $localize `:@@job.activity.in_person_interview:In person interview`,
     VIDEO_INTERVIEW : $localize `:@@job.activity.video_interview:Video interview`,
     TEL_INTERVIEW : $localize `:@@job.activity.phone_interview:Phone interview`,
-    RATING : $localize `:@@job.activity.rating:Rating`
+    RATING : $localize `:@@job.activity.rating:Rating`,
+    JOB_EXPIRATION : $localize `:@@job.activity.job_expiration:Job expired`,
+    JOB_CANCELLATION : $localize `:@@job.activity.job_cancellation:Job cancelled`,
+    ACCEPTANCE : $localize `:@@job.activity.acceptance:Job accepted`,
+    HIRING : $localize `:@@job.activity.hiring:Hired`
   }
 
   translateError(code: string, details: Record<string, string> | null = {}): string {

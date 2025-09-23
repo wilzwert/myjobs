@@ -35,6 +35,7 @@
             <mat-menu matRipple #actionsMenu="matMenu">
                 <button mat-menu-item (click)="editJob($event, job)" i18n="edit job|label of a job's edition action@@action.job.edit">Edit</button>
                 <button mat-menu-item (click)="manageAttachments($event, job)" i18n="edit job's attachments|label of a job's attachments management action@@action.job.attachements">Attachments</button>
+                <button mat-menu-item (click)="manageActivities($event, job)" i18n="edit job's activities|label of a job's activities management action@@action.job.activities">Activities</button>
                 <button mat-menu-item [routerLink]="job.id" aria-label="Go to job details" i18n="view job's details|label of a job's details view action@@action.job.details">Details</button>
                 <button mat-menu-item (click)="deleteJob(job)" aria-label="Delete job" i18n="delete a job|label of a job's delete action@@action.job.delete">Delete</button>
             </mat-menu>

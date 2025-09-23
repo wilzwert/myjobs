@@ -17,13 +17,14 @@ import java.util.Map;
  * @author Wilhelm Zwertvaegher
  * Date:05/06/2025
  * Time:10:20
+ *
+ * Factory used to create appropriate DTO based on Job patch request
  */
 
 @Service
 public class UpdateJobDtoFactory {
 
     private static final Map<String, Class<? extends UpdateJobDto>> keyToDto = Map.of(
-        "status", UpdateJobStatusRequest.class,
         "rating", UpdateJobRatingRequest.class,
         "title", UpdateJobTitleRequest.class,
         "description", UpdateJobDescriptionRequest.class,

@@ -23,8 +23,6 @@ public class JacksonConfig {
      */
     private final List<JacksonIntegrationEventDeserializer<? extends IntegrationEvent>> deserializers;
 
-
-
     public JacksonConfig(List<JacksonIntegrationEventDeserializer<? extends IntegrationEvent>> deserializers) {
         this.deserializers = deserializers;
     }

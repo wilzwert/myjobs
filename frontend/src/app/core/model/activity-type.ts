@@ -10,7 +10,11 @@ export enum ActivityType {
     IN_PERSON_INTERVIEW = "In-person interview",  
     APPLICANT_REFUSAL = "Refused by applicant",
     COMPANY_REFUSAL = "Refused by company",
-    RATING = "Rating"
+    RATING = "Rating",
+    JOB_EXPIRATION = "Job expired",
+    JOB_CANCELLATION = "Job cancelled",
+    ACCEPTANCE = "Job accepted",
+    HIRING = "Hired"
 
 }
 
@@ -23,5 +27,9 @@ export enum UserActitivityType {
     VIDEO_INTERVIEW = "VI",
     IN_PERSON_INTERVIEW = "PI",  
     APPLICANT_REFUSAL = "AR",
-    COMPANY_REFUSAL = "CR"
+    COMPANY_REFUSAL = "CR",
+    JOB_EXPIRATION = "JE",
+    JOB_CANCELLATION = "JC",
+    ACCEPTANCE = "AC",
+    HIRING = "H"
 }

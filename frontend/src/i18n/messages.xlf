@@ -879,12 +879,18 @@
       </trans-unit>
       <trans-unit id="job.late" datatype="html">
         <source>This job has not been updated recently</source>
+        <note priority="1" from="description">tooltip label for job late warning</note>
+        <note priority="1" from="meaning">late job</note>
       </trans-unit>
       <trans-unit id="job.status" datatype="html">
         <source>Current status</source>
+        <note priority="1" from="description">label preceeding a job&apos;s status</note>
+        <note priority="1" from="meaning">current job status</note>
       </trans-unit>
       <trans-unit id="job.status.date" datatype="html">
         <source>Current status date</source>
+        <note priority="1" from="description">label preceeding a job&apos;s status date</note>
+        <note priority="1" from="meaning">current job status date</note>
       </trans-unit>
       <trans-unit id="input.activity.comment.label" datatype="html">
         <source>Comment</source>
@@ -902,6 +908,23 @@
       <trans-unit id="form.activities.add" datatype="html">
         <source>Add an activity</source>
         <note priority="1" from="description">Add an activity</note>
+      </trans-unit>
+      <trans-unit id="job.activity.acceptance" datatype="html">
+        <source>Job accepted</source>
+      </trans-unit>
+      <trans-unit id="job.activity.hiring" datatype="html">
+        <source>Hired</source>
+      </trans-unit>
+      <trans-unit id="job.activity.job_cancellation" datatype="html">
+        <source>Job cancelled</source>
+      </trans-unit>
+      <trans-unit id="job.activity.job_expiration" datatype="html">
+        <source>Job expired</source>
+      </trans-unit>
+      <trans-unit id="action.job.activities" datatype="html">
+        <source>Activities</source>
+        <note priority="1" from="description">label of a job&apos;s activities management action</note>
+        <note priority="1" from="meaning">edit job&apos;s activities</note>
       </trans-unit>
     </body>
   </file>
