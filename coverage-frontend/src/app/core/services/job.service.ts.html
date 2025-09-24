@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">54.7% </span>
+                <span class="strong">55% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>64/117</span>
+                <span class='fraction'>66/120</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">92.18% </span>
+                <span class="strong">92.42% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>59/64</span>
+                <span class='fraction'>61/66</span>
             </div>
         
             
@@ -261,7 +261,14 @@
 <a name='L196'></a><a href='#L196'>196</a>
 <a name='L197'></a><a href='#L197'>197</a>
 <a name='L198'></a><a href='#L198'>198</a>
-<a name='L199'></a><a href='#L199'>199</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">18x</span>
+<a name='L199'></a><a href='#L199'>199</a>
+<a name='L200'></a><a href='#L200'>200</a>
+<a name='L201'></a><a href='#L201'>201</a>
+<a name='L202'></a><a href='#L202'>202</a>
+<a name='L203'></a><a href='#L203'>203</a>
+<a name='L204'></a><a href='#L204'>204</a>
+<a name='L205'></a><a href='#L205'>205</a>
+<a name='L206'></a><a href='#L206'>206</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">18x</span>
 <span class="cline-any cline-yes">18x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">18x</span>
@@ -304,6 +311,7 @@
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-yes">11x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
@@ -315,6 +323,12 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -501,6 +515,7 @@ export class JobService {
   public <span class="fstat-no" title="function not covered" >getAllJobs(</span>jobsListOptions: JobsListOptions): Observable&lt;Page&lt;Job&gt;&gt; {
 <span class="cstat-no" title="statement not covered" >    return this.jobsSubject.pipe(</span>
       switchMap((jobsPage: Page&lt;Job&gt; | null) =&gt; {
+<span class="cstat-no" title="statement not covered" >        console.log('JobService.getAllJobs called with options:', jobsListOptions);</span>
 <span class="cstat-no" title="statement not covered" >        if(jobsPage === null || jobsListOptions.getMustReload() || !this.currentOptions.equals(jobsListOptions)) {</span>
           // create a new instance to store current options, otherwise the current instance would be the same as the one in the service
 <span class="cstat-no" title="statement not covered" >          this.currentOptions = jobsListOptions;</span>
@@ -514,7 +529,13 @@ export class JobService {
           else <span class="cstat-no" title="statement not covered" >if (statusMeta !== null) {</span>
 <span class="cstat-no" title="statement not covered" >            statusOrFilterParam += `statusMeta=${statusMeta}`;</span>
           }
-          return this.dataService.get&lt;Page&lt;Job&gt;&gt;(`jobs?page=${this.currentOptions.getCurrentPage()}&amp;itemsPerPage=${this.currentOptions.getItemsPerPage()}`+(statusOrFilterParam ? `&amp;${statusOrFilterParam}` : '')+`&amp;sort=${this.currentOptions.getSort()}`).pipe(
+          
+          const url = `jobs?page=${this.currentOptions.getCurrentPage()}&amp;itemsPerPage=${this.currentOptions.getItemsPerPage()}`
+            +(statusOrFilterParam ? `&amp;${statusOrFilterParam}` : '')
+            +`&amp;sort=${this.currentOptions.getSort()}`
+            +`&amp;query=${encodeURIComponent(this.currentOptions.getQuery() as string)}`
+&nbsp;
+          return this.dataService.get&lt;Page&lt;Job&gt;&gt;(url).pipe(
             switchMap((fetchedJobs: Page&lt;Job&gt;) =&gt; {
 <span class="cstat-no" title="statement not covered" >              this.jobsSubject.next(fetchedJobs);</span>
 <span class="cstat-no" title="statement not covered" >              return of(fetchedJobs);</span>
@@ -664,7 +685,7 @@ export class JobService {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-23T13:13:01.075Z
+                at 2025-09-24T14:10:07.200Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>
