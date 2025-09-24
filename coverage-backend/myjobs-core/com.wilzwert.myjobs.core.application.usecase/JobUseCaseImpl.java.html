@@ -148,8 +148,8 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 <span class="fc" id="L148">    }</span>
 
     @Override
-    public DomainPage&lt;EnrichedJob&gt; getUserJobs(UserId userId, int page, int size, JobStatus status, JobStatusMeta statusMeta, String sort) {
-<span class="fc" id="L152">        User user = userDataManager.findById(userId).orElseThrow(UserNotFoundException::new);</span>
+    public DomainPage&lt;EnrichedJob&gt; getUserJobs(GetUserJobsCommand command) {
+<span class="fc" id="L152">        User user = userDataManager.findById(command.userId()).orElseThrow(UserNotFoundException::new);</span>
 
 <span class="fc" id="L154">        List&lt;DomainSpecification&gt; specs = new ArrayList&lt;&gt;(List.of(DomainSpecification.eq(&quot;userId&quot;, user.getId(), UserId.class)));</span>
 
@@ -157,9 +157,9 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
 <span class="fc" id="L158">        String statusField = &quot;status&quot;;</span>
 
-<span class="fc bfc" id="L160" title="All 2 branches covered.">        if(statusMeta != null) {</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">        if(command.statusMeta() != null) {</span>
             // threshold instant : jobs not updated since that instant are considered late
-<span class="pc bpc" id="L162" title="2 of 4 branches missed.">            switch (statusMeta) {</span>
+<span class="pc bpc" id="L162" title="2 of 4 branches missed.">            switch (command.statusMeta()) {</span>
 <span class="fc" id="L163">                case ACTIVE: specs.add(DomainSpecification.in(statusField, JobStatus.activeStatuses())); break;</span>
 <span class="nc" id="L164">                case INACTIVE: specs.add(DomainSpecification.in(statusField, JobStatus.inactiveStatuses())); break;</span>
                 case LATE:
@@ -170,125 +170,129 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
             }
         }
 
-<span class="fc bfc" id="L173" title="All 2 branches covered.">        if( status != null) {</span>
-<span class="fc" id="L174">            specs.add(DomainSpecification.eq(statusField, status, JobStatus.class));</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">        if( command.status() != null) {</span>
+<span class="fc" id="L174">            specs.add(DomainSpecification.eq(statusField, command.status(), JobStatus.class));</span>
         }
 
-<span class="fc" id="L177">        var finalSpecs = DomainSpecification.and(specs);</span>
-<span class="pc bpc" id="L178" title="1 of 4 branches missed.">        if(sort != null &amp;&amp; !sort.isEmpty()) {</span>
-<span class="fc" id="L179">            DomainSpecification.applySort(finalSpecs, DomainSpecification.sort(sort));</span>
+<span class="pc bpc" id="L177" title="1 of 4 branches missed.">        if( command.query() != null &amp;&amp; !command.query().isEmpty()) {</span>
+<span class="fc" id="L178">            specs.add(new DomainSpecification.MatchQuerySpecification&lt;&gt;(Job.class, command.query()));</span>
         }
 
-<span class="fc" id="L182">        jobs = jobDataManager.findPaginated(finalSpecs, page, size);</span>
-<span class="fc" id="L183">        return jobEnricher.enrich(jobs, user);</span>
+<span class="fc" id="L181">        var finalSpecs = DomainSpecification.and(specs);</span>
+<span class="pc bpc" id="L182" title="1 of 4 branches missed.">        if(command.sort() != null &amp;&amp; !command.sort().isEmpty()) {</span>
+<span class="fc" id="L183">            DomainSpecification.applySort(finalSpecs, DomainSpecification.sort(command.sort()));</span>
+        }
+
+<span class="fc" id="L186">        jobs = jobDataManager.findPaginated(finalSpecs, command.page(), command.itemsPerPage());</span>
+<span class="fc" id="L187">        return jobEnricher.enrich(jobs, user);</span>
     }
 
     @Override
     public Job updateJobField(UpdateJobFieldCommand command) {
-<span class="fc" id="L188">        User user = userDataManager.findById(command.userId()).orElseThrow(UserNotFoundException::new);</span>
-<span class="fc" id="L189">        Job job = jobDataManager.findByIdAndUserId(command.jobId(), user.getId()).orElseThrow(JobNotFoundException::new);</span>
-<span class="fc" id="L190">        UpdateJobFieldCommand actualCommand = sanitizeCommandFields(command, List.of(&quot;value&quot;));</span>
+<span class="fc" id="L192">        User user = userDataManager.findById(command.userId()).orElseThrow(UserNotFoundException::new);</span>
+<span class="fc" id="L193">        Job job = jobDataManager.findByIdAndUserId(command.jobId(), user.getId()).orElseThrow(JobNotFoundException::new);</span>
+<span class="fc" id="L194">        UpdateJobFieldCommand actualCommand = sanitizeCommandFields(command, List.of(&quot;value&quot;));</span>
 
-<span class="fc" id="L192">        return transactionProvider.executeInTransaction(() -&gt; {</span>
-<span class="fc" id="L193">            User updatedUser = user.updateJobField(job, actualCommand.field(), actualCommand.value());</span>
+<span class="fc" id="L196">        return transactionProvider.executeInTransaction(() -&gt; {</span>
+<span class="fc" id="L197">            User updatedUser = user.updateJobField(job, actualCommand.field(), actualCommand.value());</span>
             // soft reload the updatedJob in the loaded collection
-<span class="pc" id="L195">            Job updatedJob = updatedUser.getJobById(job.getId()).orElseThrow(() -&gt; new DomainException(ErrorCode.UNEXPECTED_ERROR));</span>
+<span class="pc" id="L199">            Job updatedJob = updatedUser.getJobById(job.getId()).orElseThrow(() -&gt; new DomainException(ErrorCode.UNEXPECTED_ERROR));</span>
 
             // FIXME
             // this is an ugly workaround to force the infra (persistence in particular) to save all data
             // as I understand DDD, only the root aggregate should be explicitly persisted
             // but I just don't how to do it cleanly for now
-<span class="fc" id="L201">            userDataManager.saveUserAndJob(updatedUser, updatedJob);</span>
+<span class="fc" id="L205">            userDataManager.saveUserAndJob(updatedUser, updatedJob);</span>
 
-<span class="fc" id="L203">            integrationEventPublisher.publish(new JobFieldUpdatedEvent(IntegrationEventId.generate(), job.getId(), actualCommand.field()));</span>
-<span class="fc" id="L204">            return updatedJob;</span>
+<span class="fc" id="L207">            integrationEventPublisher.publish(new JobFieldUpdatedEvent(IntegrationEventId.generate(), job.getId(), actualCommand.field()));</span>
+<span class="fc" id="L208">            return updatedJob;</span>
         });
     }
 
     @Override
     public Job updateJob(UpdateJobFullCommand command) {
-<span class="fc" id="L210">        User user = userDataManager.findById(command.userId()).orElseThrow(UserNotFoundException::new);</span>
-<span class="fc" id="L211">        Job job = jobDataManager.findByIdAndUserId(command.jobId(), user.getId()).orElseThrow(JobNotFoundException::new);</span>
+<span class="fc" id="L214">        User user = userDataManager.findById(command.userId()).orElseThrow(UserNotFoundException::new);</span>
+<span class="fc" id="L215">        Job job = jobDataManager.findByIdAndUserId(command.jobId(), user.getId()).orElseThrow(JobNotFoundException::new);</span>
 
-<span class="fc" id="L213">        UpdateJobFullCommand actualCommand = sanitizeCommandFields(command, List.of(&quot;title&quot;, &quot;company&quot;, &quot;description&quot;, &quot;profile&quot;, &quot;comment&quot;, &quot;salary&quot;));</span>
+<span class="fc" id="L217">        UpdateJobFullCommand actualCommand = sanitizeCommandFields(command, List.of(&quot;title&quot;, &quot;company&quot;, &quot;description&quot;, &quot;profile&quot;, &quot;comment&quot;, &quot;salary&quot;));</span>
 
-<span class="fc" id="L215">        return transactionProvider.executeInTransaction(() -&gt; {</span>
+<span class="fc" id="L219">        return transactionProvider.executeInTransaction(() -&gt; {</span>
 
-<span class="fc" id="L217">            User updatedUser = user.updateJob(job, actualCommand.url(), actualCommand.title(), actualCommand.company(), actualCommand.description(), actualCommand.profile(), actualCommand.comment(), actualCommand.salary());</span>
+<span class="fc" id="L221">            User updatedUser = user.updateJob(job, actualCommand.url(), actualCommand.title(), actualCommand.company(), actualCommand.description(), actualCommand.profile(), actualCommand.comment(), actualCommand.salary());</span>
             // soft reload the updatedJob in the loaded collection
-<span class="pc" id="L219">            Job updatedJob = updatedUser.getJobById(job.getId()).orElseThrow(() -&gt; new DomainException(ErrorCode.UNEXPECTED_ERROR));</span>
+<span class="pc" id="L223">            Job updatedJob = updatedUser.getJobById(job.getId()).orElseThrow(() -&gt; new DomainException(ErrorCode.UNEXPECTED_ERROR));</span>
 
             // FIXME
             // this is an ugly workaround to force the infra (persistence in particular) to save all data
             // as I understand DDD, only the root aggregate should be explicitly persisted
             // but I just don't how to do it cleanly for now
-<span class="fc" id="L225">            userDataManager.saveUserAndJob(updatedUser, updatedJob);</span>
-<span class="fc" id="L226">            integrationEventPublisher.publish(new JobUpdatedEvent(IntegrationEventId.generate(), job.getId()));</span>
-<span class="fc" id="L227">            return updatedJob;</span>
+<span class="fc" id="L229">            userDataManager.saveUserAndJob(updatedUser, updatedJob);</span>
+<span class="fc" id="L230">            integrationEventPublisher.publish(new JobUpdatedEvent(IntegrationEventId.generate(), job.getId()));</span>
+<span class="fc" id="L231">            return updatedJob;</span>
         });
     }
 
     @Override
     public List&lt;Activity&gt; addActivitiesToJob(CreateActivitiesCommand command) {
-<span class="fc" id="L233">        Job job = jobDataManager.findByIdAndUserId(command.jobId(), command.userId()).orElseThrow(JobNotFoundException::new);</span>
+<span class="fc" id="L237">        Job job = jobDataManager.findByIdAndUserId(command.jobId(), command.userId()).orElseThrow(JobNotFoundException::new);</span>
 
-<span class="fc" id="L235">        List&lt;CreateActivityCommand&gt; createActivityCommandList = command.createActivityCommandList();</span>
-<span class="fc" id="L236">        List&lt;CreateActivityCommand&gt; actualCommands = createActivityCommandList.stream()</span>
-<span class="fc" id="L237">                .map(c -&gt; sanitizeCommandFields(c, List.of(&quot;comment&quot;)))</span>
-<span class="fc" id="L238">                .toList();</span>
+<span class="fc" id="L239">        List&lt;CreateActivityCommand&gt; createActivityCommandList = command.createActivityCommandList();</span>
+<span class="fc" id="L240">        List&lt;CreateActivityCommand&gt; actualCommands = createActivityCommandList.stream()</span>
+<span class="fc" id="L241">                .map(c -&gt; sanitizeCommandFields(c, List.of(&quot;comment&quot;)))</span>
+<span class="fc" id="L242">                .toList();</span>
 
-<span class="fc" id="L240">        CreateActivitiesCommand actualCommand = new CreateActivitiesCommand.Builder(command).commandList(actualCommands).build();</span>
+<span class="fc" id="L244">        CreateActivitiesCommand actualCommand = new CreateActivitiesCommand.Builder(command).commandList(actualCommands).build();</span>
 
-<span class="fc" id="L242">        return transactionProvider.executeInTransaction(() -&gt; {</span>
-<span class="fc" id="L243">            List&lt;Activity&gt; addedActivities = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L244">            Job updatedJob = job;</span>
+<span class="fc" id="L246">        return transactionProvider.executeInTransaction(() -&gt; {</span>
+<span class="fc" id="L247">            List&lt;Activity&gt; addedActivities = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L248">            Job updatedJob = job;</span>
 
-<span class="fc bfc" id="L246" title="All 2 branches covered.">            for(CreateActivityCommand createActivityCommand : actualCommand.createActivityCommandList()) {</span>
-<span class="fc" id="L247">                Activity activity = Activity.builder()</span>
-<span class="fc" id="L248">                        .type(createActivityCommand.activityType())</span>
-<span class="fc" id="L249">                        .comment(createActivityCommand.comment())</span>
-<span class="fc" id="L250">                        .build();</span>
-<span class="fc" id="L251">                updatedJob = updatedJob.addActivity(activity);</span>
+<span class="fc bfc" id="L250" title="All 2 branches covered.">            for(CreateActivityCommand createActivityCommand : actualCommand.createActivityCommandList()) {</span>
+<span class="fc" id="L251">                Activity activity = Activity.builder()</span>
+<span class="fc" id="L252">                        .type(createActivityCommand.activityType())</span>
+<span class="fc" id="L253">                        .comment(createActivityCommand.comment())</span>
+<span class="fc" id="L254">                        .build();</span>
+<span class="fc" id="L255">                updatedJob = updatedJob.addActivity(activity);</span>
 
                 // FIXME
                 // this is an ugly workaround to force the infra (persistence in particular) to save all data
                 // as I understand DDD, only the aggregate should be explicitly persisted
                 // but I just don't how to do it cleanly for now
-<span class="fc" id="L257">                this.jobDataManager.saveJobAndActivity(updatedJob, activity);</span>
+<span class="fc" id="L261">                this.jobDataManager.saveJobAndActivity(updatedJob, activity);</span>
 
-<span class="fc" id="L259">                this.integrationEventPublisher.publish(new ActivityCreatedEvent(IntegrationEventId.generate(), job.getId(), activity.getId(), activity.getType()));</span>
-<span class="fc" id="L260">                addedActivities.add(activity);</span>
-<span class="fc" id="L261">            }</span>
+<span class="fc" id="L263">                this.integrationEventPublisher.publish(new ActivityCreatedEvent(IntegrationEventId.generate(), job.getId(), activity.getId(), activity.getType()));</span>
+<span class="fc" id="L264">                addedActivities.add(activity);</span>
+<span class="fc" id="L265">            }</span>
 
-<span class="fc" id="L263">            return addedActivities;</span>
+<span class="fc" id="L267">            return addedActivities;</span>
         });
     }
 
     @Override
     public Activity updateActivity(UpdateActivityCommand command) {
-<span class="fc" id="L269">        Job job = jobDataManager.findByIdAndUserId(command.jobId(), command.userId()).orElseThrow(JobNotFoundException::new);</span>
+<span class="fc" id="L273">        Job job = jobDataManager.findByIdAndUserId(command.jobId(), command.userId()).orElseThrow(JobNotFoundException::new);</span>
 
-<span class="fc" id="L271">        Activity activity = Activity.builder()</span>
-<span class="fc" id="L272">                .id(command.activityId())</span>
-<span class="fc" id="L273">                .type(command.activityType())</span>
-<span class="fc" id="L274">                .comment(command.comment())</span>
-<span class="fc" id="L275">                .build();</span>
+<span class="fc" id="L275">        Activity activity = Activity.builder()</span>
+<span class="fc" id="L276">                .id(command.activityId())</span>
+<span class="fc" id="L277">                .type(command.activityType())</span>
+<span class="fc" id="L278">                .comment(command.comment())</span>
+<span class="fc" id="L279">                .build();</span>
 
-<span class="fc" id="L277">        job = job.updateActivity(activity);</span>
+<span class="fc" id="L281">        job = job.updateActivity(activity);</span>
 
         // FIXME
         // this is an ugly workaround to force the infra (persistence in particular) to save all data
         // as I understand DDD, only the aggregate should be explicitly persisted
         // but I just don't how to do it cleanly for now
-<span class="fc" id="L283">        this.jobDataManager.saveJobAndActivity(job, activity);</span>
-<span class="fc" id="L284">        return activity;</span>
+<span class="fc" id="L287">        this.jobDataManager.saveJobAndActivity(job, activity);</span>
+<span class="fc" id="L288">        return activity;</span>
     }
 
     @Override
     public EnrichedJob getUserJob(UserId userId, JobId jobId) {
-<span class="fc" id="L289">        return jobEnricher.enrich(</span>
-<span class="fc" id="L290">                jobDataManager.findByIdAndUserId(jobId, userId).orElseThrow(JobNotFoundException::new),</span>
-<span class="fc" id="L291">                userDataManager.findById(userId).orElseThrow(UserNotFoundException::new)</span>
+<span class="fc" id="L293">        return jobEnricher.enrich(</span>
+<span class="fc" id="L294">                jobDataManager.findByIdAndUserId(jobId, userId).orElseThrow(JobNotFoundException::new),</span>
+<span class="fc" id="L295">                userDataManager.findById(userId).orElseThrow(UserNotFoundException::new)</span>
         );
     }
 
@@ -300,140 +304,140 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
      * @param &lt;T&gt; the command class
      */
     private &lt;T&gt; T sanitizeCommandFields(T command, List&lt;String&gt; fieldsToSanitize) {
-<span class="fc" id="L303">        Class&lt;?&gt; clazz = command.getClass();</span>
+<span class="fc" id="L307">        Class&lt;?&gt; clazz = command.getClass();</span>
 
         Object builder;
         try {
             // get a builder
-<span class="fc" id="L308">            Class&lt;?&gt; builderClass = Class.forName(clazz.getName()+&quot;$Builder&quot;);</span>
-<span class="fc" id="L309">            builder = builderClass.getConstructor(clazz).newInstance(command);</span>
+<span class="fc" id="L312">            Class&lt;?&gt; builderClass = Class.forName(clazz.getName()+&quot;$Builder&quot;);</span>
+<span class="fc" id="L313">            builder = builderClass.getConstructor(clazz).newInstance(command);</span>
 
-<span class="fc bfc" id="L311" title="All 2 branches covered.">            for (String field : fieldsToSanitize) {</span>
-<span class="fc" id="L312">                Method getterMethod = clazz.getMethod(field);</span>
-<span class="fc" id="L313">                String fieldValue = (String) getterMethod.invoke(command);</span>
+<span class="fc bfc" id="L315" title="All 2 branches covered.">            for (String field : fieldsToSanitize) {</span>
+<span class="fc" id="L316">                Method getterMethod = clazz.getMethod(field);</span>
+<span class="fc" id="L317">                String fieldValue = (String) getterMethod.invoke(command);</span>
 
-<span class="fc bfc" id="L315" title="All 2 branches covered.">                if (fieldValue != null) {</span>
-<span class="fc" id="L316">                    String sanitizedValue = htmlSanitizer.sanitize(fieldValue);</span>
-<span class="fc" id="L317">                    Method setterMethod = builder.getClass().getMethod(field, String.class);</span>
-<span class="fc" id="L318">                    setterMethod.invoke(builder, sanitizedValue);</span>
+<span class="fc bfc" id="L319" title="All 2 branches covered.">                if (fieldValue != null) {</span>
+<span class="fc" id="L320">                    String sanitizedValue = htmlSanitizer.sanitize(fieldValue);</span>
+<span class="fc" id="L321">                    Method setterMethod = builder.getClass().getMethod(field, String.class);</span>
+<span class="fc" id="L322">                    setterMethod.invoke(builder, sanitizedValue);</span>
                 }
-<span class="fc" id="L320">            }</span>
-<span class="fc" id="L321">            return (T) builder.getClass().getMethod(&quot;build&quot;).invoke(builder);</span>
-<span class="nc" id="L322">        } catch (Exception e) {</span>
-<span class="nc" id="L323">            e.printStackTrace();</span>
+<span class="fc" id="L324">            }</span>
+<span class="fc" id="L325">            return (T) builder.getClass().getMethod(&quot;build&quot;).invoke(builder);</span>
+<span class="nc" id="L326">        } catch (Exception e) {</span>
+<span class="nc" id="L327">            e.printStackTrace();</span>
         }
-<span class="nc" id="L325">        return command;</span>
+<span class="nc" id="L329">        return command;</span>
     }
 
     @Override
     public List&lt;Attachment&gt; addAttachmentsToJob(CreateAttachmentsCommand command) {
-<span class="fc" id="L330">        Job job = jobDataManager.findByIdAndUserId(command.jobId(), command.userId()).orElseThrow(JobNotFoundException::new);</span>
+<span class="fc" id="L334">        Job job = jobDataManager.findByIdAndUserId(command.jobId(), command.userId()).orElseThrow(JobNotFoundException::new);</span>
 
-<span class="fc" id="L332">        return transactionProvider.executeInTransaction(() -&gt; {</span>
-<span class="fc" id="L333">            List&lt;Attachment&gt; addedAttachments = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L334">            Job updatedJob = job;</span>
-<span class="fc bfc" id="L335" title="All 2 branches covered.">            for(CreateAttachmentCommand createAttachmentCommand: command.createAttachmentCommandList()) {</span>
-<span class="fc" id="L336">                AttachmentId attachmentId = AttachmentId.generate();</span>
-<span class="fc" id="L337">                DownloadableFile file = fileStorage.store(createAttachmentCommand.file(), command.userId().value().toString() + &quot;/&quot; + attachmentId.value().toString(), createAttachmentCommand.filename());</span>
-<span class="fc" id="L338">                Attachment attachment = Attachment.builder()</span>
-<span class="fc" id="L339">                        .id(attachmentId)</span>
-<span class="fc" id="L340">                        .name(createAttachmentCommand.name())</span>
-<span class="fc" id="L341">                        .fileId(file.fileId())</span>
-<span class="fc" id="L342">                        .filename(createAttachmentCommand.filename())</span>
-<span class="fc" id="L343">                        .contentType(file.contentType()).build();</span>
-<span class="fc" id="L344">                updatedJob = updatedJob.addAttachment(attachment);</span>
+<span class="fc" id="L336">        return transactionProvider.executeInTransaction(() -&gt; {</span>
+<span class="fc" id="L337">            List&lt;Attachment&gt; addedAttachments = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L338">            Job updatedJob = job;</span>
+<span class="fc bfc" id="L339" title="All 2 branches covered.">            for(CreateAttachmentCommand createAttachmentCommand: command.createAttachmentCommandList()) {</span>
+<span class="fc" id="L340">                AttachmentId attachmentId = AttachmentId.generate();</span>
+<span class="fc" id="L341">                DownloadableFile file = fileStorage.store(createAttachmentCommand.file(), command.userId().value().toString() + &quot;/&quot; + attachmentId.value().toString(), createAttachmentCommand.filename());</span>
+<span class="fc" id="L342">                Attachment attachment = Attachment.builder()</span>
+<span class="fc" id="L343">                        .id(attachmentId)</span>
+<span class="fc" id="L344">                        .name(createAttachmentCommand.name())</span>
+<span class="fc" id="L345">                        .fileId(file.fileId())</span>
+<span class="fc" id="L346">                        .filename(createAttachmentCommand.filename())</span>
+<span class="fc" id="L347">                        .contentType(file.contentType()).build();</span>
+<span class="fc" id="L348">                updatedJob = updatedJob.addAttachment(attachment);</span>
 
-<span class="fc" id="L346">                Activity activity = Activity.builder().type(ActivityType.ATTACHMENT_CREATION).comment(attachment.getName()).build();</span>
-<span class="fc" id="L347">                updatedJob = updatedJob.addActivity(activity);</span>
+<span class="fc" id="L350">                Activity activity = Activity.builder().type(ActivityType.ATTACHMENT_CREATION).comment(attachment.getName()).build();</span>
+<span class="fc" id="L351">                updatedJob = updatedJob.addActivity(activity);</span>
 
                 // FIXME
                 // this is an ugly workaround to force the infra (persistence in particular) to save all data
                 // as I understand DDD, only the aggregate should be explicitly persisted
                 // but I just don't how to do it cleanly for now
-<span class="fc" id="L353">                jobDataManager.saveJobAndAttachment(updatedJob, attachment, activity);</span>
-<span class="fc" id="L354">                integrationEventPublisher.publish(new AttachmentCreatedEvent(IntegrationEventId.generate(), job.getId(), attachment.getId()));</span>
-<span class="fc" id="L355">                integrationEventPublisher.publish(new ActivityAutomaticallyCreatedEvent(IntegrationEventId.generate(), job.getId(), activity.getId(), activity.getType()));</span>
+<span class="fc" id="L357">                jobDataManager.saveJobAndAttachment(updatedJob, attachment, activity);</span>
+<span class="fc" id="L358">                integrationEventPublisher.publish(new AttachmentCreatedEvent(IntegrationEventId.generate(), job.getId(), attachment.getId()));</span>
+<span class="fc" id="L359">                integrationEventPublisher.publish(new ActivityAutomaticallyCreatedEvent(IntegrationEventId.generate(), job.getId(), activity.getId(), activity.getType()));</span>
 
-<span class="fc" id="L357">                addedAttachments.add(attachment);</span>
-<span class="fc" id="L358">            }</span>
+<span class="fc" id="L361">                addedAttachments.add(attachment);</span>
+<span class="fc" id="L362">            }</span>
 
-<span class="fc" id="L360">            return addedAttachments;</span>
+<span class="fc" id="L364">            return addedAttachments;</span>
         });
     }
 
 
     @Override
     public DownloadableFile downloadAttachment(DownloadAttachmentCommand command) {
-<span class="fc" id="L367">        Job job = jobDataManager.findByIdAndUserId(command.jobId(), command.userId()).orElseThrow(JobNotFoundException::new);</span>
+<span class="fc" id="L371">        Job job = jobDataManager.findByIdAndUserId(command.jobId(), command.userId()).orElseThrow(JobNotFoundException::new);</span>
 
-<span class="fc" id="L369">        Attachment attachment = job.getAttachments().stream().filter(a -&gt; a.getId().value().toString().equals(command.id())).findAny().orElse(null);</span>
-<span class="fc bfc" id="L370" title="All 2 branches covered.">        if(attachment == null) {</span>
-<span class="fc" id="L371">            throw new AttachmentNotFoundException();</span>
+<span class="fc" id="L373">        Attachment attachment = job.getAttachments().stream().filter(a -&gt; a.getId().value().toString().equals(command.id())).findAny().orElse(null);</span>
+<span class="fc bfc" id="L374" title="All 2 branches covered.">        if(attachment == null) {</span>
+<span class="fc" id="L375">            throw new AttachmentNotFoundException();</span>
         }
 
-<span class="fc" id="L374">        return fileStorage.retrieve(attachment.getFileId(), attachment.getFilename());</span>
+<span class="fc" id="L378">        return fileStorage.retrieve(attachment.getFileId(), attachment.getFilename());</span>
     }
 
     @Override
     public AttachmentFileInfo getAttachmentFileInfo(DownloadAttachmentCommand command) {
-<span class="fc" id="L379">        Job job = jobDataManager.findByIdAndUserId(command.jobId(), command.userId()).orElseThrow(JobNotFoundException::new);</span>
+<span class="fc" id="L383">        Job job = jobDataManager.findByIdAndUserId(command.jobId(), command.userId()).orElseThrow(JobNotFoundException::new);</span>
 
-<span class="fc" id="L381">        Attachment attachment = job.getAttachments().stream().filter(a -&gt; a.getId().value().toString().equals(command.id())).findAny().orElse(null);</span>
-<span class="fc bfc" id="L382" title="All 2 branches covered.">        if(attachment == null) {</span>
-<span class="fc" id="L383">            throw new AttachmentNotFoundException();</span>
+<span class="fc" id="L385">        Attachment attachment = job.getAttachments().stream().filter(a -&gt; a.getId().value().toString().equals(command.id())).findAny().orElse(null);</span>
+<span class="fc bfc" id="L386" title="All 2 branches covered.">        if(attachment == null) {</span>
+<span class="fc" id="L387">            throw new AttachmentNotFoundException();</span>
         }
 
-<span class="fc" id="L386">        return new AttachmentFileInfo(attachment.getFileId(), fileStorage.generateProtectedUrl(job.getId(), attachment.getId(), attachment.getFileId()));</span>
+<span class="fc" id="L390">        return new AttachmentFileInfo(attachment.getFileId(), fileStorage.generateProtectedUrl(job.getId(), attachment.getId(), attachment.getFileId()));</span>
     }
 
     @Override
     public void deleteAttachment(DeleteAttachmentCommand command) {
-<span class="fc" id="L391">        Optional&lt;Job&gt; foundJob = jobDataManager.findByIdAndUserId(command.jobId(), command.userId());</span>
-<span class="fc bfc" id="L392" title="All 2 branches covered.">        if(foundJob.isEmpty()) {</span>
-<span class="fc" id="L393">            throw new JobNotFoundException();</span>
+<span class="fc" id="L395">        Optional&lt;Job&gt; foundJob = jobDataManager.findByIdAndUserId(command.jobId(), command.userId());</span>
+<span class="fc bfc" id="L396" title="All 2 branches covered.">        if(foundJob.isEmpty()) {</span>
+<span class="fc" id="L397">            throw new JobNotFoundException();</span>
         }
 
-<span class="fc" id="L396">        Attachment attachment = foundJob.get().getAttachments().stream().filter(a -&gt; a.getId().equals(command.id())).findAny().orElse(null);</span>
-<span class="fc bfc" id="L397" title="All 2 branches covered.">        if(attachment == null) {</span>
-<span class="fc" id="L398">            throw new AttachmentNotFoundException();</span>
+<span class="fc" id="L400">        Attachment attachment = foundJob.get().getAttachments().stream().filter(a -&gt; a.getId().equals(command.id())).findAny().orElse(null);</span>
+<span class="fc bfc" id="L401" title="All 2 branches covered.">        if(attachment == null) {</span>
+<span class="fc" id="L402">            throw new AttachmentNotFoundException();</span>
         }
-<span class="fc" id="L400">        transactionProvider.executeInTransaction(() -&gt; {</span>
+<span class="fc" id="L404">        transactionProvider.executeInTransaction(() -&gt; {</span>
             // FIXME : maybe the activity should be created by the Job aggregate
             // however for now we do it here,
             // to be able to explicitly ask the JobDataManager to delete the attachment and store both the job and the new activity
-<span class="fc" id="L404">            Job job = foundJob.get().removeAttachment(attachment);</span>
-<span class="fc" id="L405">            Activity activity = Activity.builder().type(ActivityType.ATTACHMENT_DELETION).comment(attachment.getName()).build();</span>
-<span class="fc" id="L406">            job = job.addActivity(activity);</span>
+<span class="fc" id="L408">            Job job = foundJob.get().removeAttachment(attachment);</span>
+<span class="fc" id="L409">            Activity activity = Activity.builder().type(ActivityType.ATTACHMENT_DELETION).comment(attachment.getName()).build();</span>
+<span class="fc" id="L410">            job = job.addActivity(activity);</span>
             // FIXME
             // this is an ugly workaround to force the infra (persistence in particular) to save all data
             // as I understand DDD, only the root aggregate should be explicitly persisted
             // but I just don't how to do it cleanly for now
-<span class="fc" id="L411">            jobDataManager.deleteAttachmentAndSaveJob(job, attachment, activity);</span>
+<span class="fc" id="L415">            jobDataManager.deleteAttachmentAndSaveJob(job, attachment, activity);</span>
             try {
-<span class="fc" id="L413">                fileStorage.delete(attachment.getFileId());</span>
-<span class="nc" id="L414">            } catch (Exception e) {</span>
+<span class="fc" id="L417">                fileStorage.delete(attachment.getFileId());</span>
+<span class="nc" id="L418">            } catch (Exception e) {</span>
                 // TODO do something about it
             }
             finally {
-<span class="fc" id="L418">                integrationEventPublisher.publish(new AttachmentDeletedEvent(IntegrationEventId.generate(), job.getId(), attachment.getId()));</span>
-<span class="fc" id="L419">                integrationEventPublisher.publish(new ActivityAutomaticallyCreatedEvent(IntegrationEventId.generate(), job.getId(), activity.getId(), activity.getType()));</span>
+<span class="fc" id="L422">                integrationEventPublisher.publish(new AttachmentDeletedEvent(IntegrationEventId.generate(), job.getId(), attachment.getId()));</span>
+<span class="fc" id="L423">                integrationEventPublisher.publish(new ActivityAutomaticallyCreatedEvent(IntegrationEventId.generate(), job.getId(), activity.getId(), activity.getType()));</span>
             }
-<span class="fc" id="L421">            return null;</span>
+<span class="fc" id="L425">            return null;</span>
         });
-<span class="fc" id="L423">    }</span>
+<span class="fc" id="L427">    }</span>
 
     @Override
     public Job updateJobRating(UpdateJobRatingCommand command) {
-<span class="fc" id="L427">        Optional&lt;Job&gt; foundJob = jobDataManager.findByIdAndUserId(command.jobId(), command.userId());</span>
-<span class="fc bfc" id="L428" title="All 2 branches covered.">        if(foundJob.isEmpty()) {</span>
-<span class="fc" id="L429">            throw new JobNotFoundException();</span>
+<span class="fc" id="L431">        Optional&lt;Job&gt; foundJob = jobDataManager.findByIdAndUserId(command.jobId(), command.userId());</span>
+<span class="fc bfc" id="L432" title="All 2 branches covered.">        if(foundJob.isEmpty()) {</span>
+<span class="fc" id="L433">            throw new JobNotFoundException();</span>
         }
 
-<span class="fc" id="L432">        return transactionProvider.executeInTransaction(() -&gt; {</span>
-<span class="fc" id="L433">            Job job = foundJob.get().updateRating(command.rating());</span>
-<span class="fc" id="L434">            jobDataManager.saveJobAndActivity(job, job.getActivities().getFirst());</span>
-<span class="fc" id="L435">            integrationEventPublisher.publish(new JobRatingUpdatedEvent(IntegrationEventId.generate(), job.getId(), job.getRating()));</span>
-<span class="fc" id="L436">            return job;</span>
+<span class="fc" id="L436">        return transactionProvider.executeInTransaction(() -&gt; {</span>
+<span class="fc" id="L437">            Job job = foundJob.get().updateRating(command.rating());</span>
+<span class="fc" id="L438">            jobDataManager.saveJobAndActivity(job, job.getActivities().getFirst());</span>
+<span class="fc" id="L439">            integrationEventPublisher.publish(new JobRatingUpdatedEvent(IntegrationEventId.generate(), job.getId(), job.getRating()));</span>
+<span class="fc" id="L440">            return job;</span>
         });
     }
 }

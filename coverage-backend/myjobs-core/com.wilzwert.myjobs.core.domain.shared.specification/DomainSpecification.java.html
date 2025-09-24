@@ -316,6 +316,30 @@ import java.util.List;
 <span class="fc" id="L316">    public abstract static class FullSpecification extends DomainSpecification {</span>
     }
 
+    /** Specific Specification to allow passing a String query (aka search keyword) to the infra
+     * As the domain cannot assume how the query can be executed or event on which &quot;fields&quot;, we let
+     * the infra handle it
+      */
+    public static class MatchQuerySpecification&lt;V&gt; extends DomainSpecification {
+
+        private final Class&lt;V&gt; targetClass;
+
+        private final String query;
+
+<span class="fc" id="L329">        public MatchQuerySpecification(Class&lt;V&gt; targetClass, String query) {</span>
+<span class="fc" id="L330">            this.targetClass = targetClass;</span>
+<span class="fc" id="L331">            this.query = query;</span>
+<span class="fc" id="L332">        }</span>
+
+        public Class&lt;V&gt; getTargetClass() {
+<span class="fc" id="L335">            return targetClass;</span>
+        }
+
+        public String getQuery() {
+<span class="fc" id="L339">            return query;</span>
+        }
+    }
+
 
     /**
      * This specification is very specific, and should be understood and applied by the infra.
@@ -323,46 +347,34 @@ import java.util.List;
      * &quot;threshold&quot; instant, which should be checked in infra, based on provided Instant and user's jobFollowUpReminderDelay
       */
     public static UserJobFollowUpReminderThreshold UserJobFollowUpReminderThreshold(Instant referenceInstant) {
-<span class="nc" id="L326">        return new UserJobFollowUpReminderThreshold(referenceInstant);</span>
+<span class="nc" id="L350">        return new UserJobFollowUpReminderThreshold(referenceInstant);</span>
     }
     public static final class UserJobFollowUpReminderThreshold extends FullSpecification {
         private final Instant referenceInstant;
 
-<span class="nc" id="L331">        public UserJobFollowUpReminderThreshold(Instant referenceInstant) {</span>
-<span class="nc" id="L332">            this.referenceInstant = referenceInstant;</span>
-<span class="nc" id="L333">        }</span>
+<span class="nc" id="L355">        public UserJobFollowUpReminderThreshold(Instant referenceInstant) {</span>
+<span class="nc" id="L356">            this.referenceInstant = referenceInstant;</span>
+<span class="nc" id="L357">        }</span>
 
         public Instant getReferenceInstant() {
-<span class="nc" id="L336">            return referenceInstant;</span>
+<span class="nc" id="L360">            return referenceInstant;</span>
         }
     }
 
-    /**
-     * This Specification is used to query a list of Job based on these criteria :
-     * - related users MUST have a not null jobFollowUpReminderDays
-     * - jobs are active (ie status IN JobStatus.activeStatuses())
-     * - have ever been updated less than user.jobFollowUpReminderDays days before provided referenceInstant
-     * - have not been reminded less than user.jobFollowUpReminderDays days before provided referenceInstant
-     * As this would be nearly impossible to effectively model it using DomainSpecification
-     * (especially because we would be assuming how the infra persistence layer works (joins in Sql based DBMS, collections in NoSql...)),
-     * we kindly ask (and trust) the infra to convert and handle it
-     * Rules :
-     * -
-     */
     public static JobFollowUpToRemind JobFollowUpToRemind(Instant referenceInstant) {
-<span class="fc" id="L353">        return new JobFollowUpToRemind(referenceInstant);</span>
+<span class="fc" id="L365">        return new JobFollowUpToRemind(referenceInstant);</span>
     }
     public static final class JobFollowUpToRemind extends FullSpecification {
         private final Instant referenceInstant;
 
         public JobFollowUpToRemind(Instant referenceInstant) {
-<span class="fc" id="L359">            super();</span>
-<span class="fc" id="L360">            this.referenceInstant = referenceInstant;</span>
-<span class="fc" id="L361">            super.sortBy(sort(&quot;userId&quot;, SortDirection.ASC));</span>
-<span class="fc" id="L362">        }</span>
+<span class="fc" id="L371">            super();</span>
+<span class="fc" id="L372">            this.referenceInstant = referenceInstant;</span>
+<span class="fc" id="L373">            super.sortBy(sort(&quot;userId&quot;, SortDirection.ASC));</span>
+<span class="fc" id="L374">        }</span>
 
         public Instant getReferenceInstant() {
-<span class="fc" id="L365">            return referenceInstant;</span>
+<span class="fc" id="L377">            return referenceInstant;</span>
         }
     }
 }

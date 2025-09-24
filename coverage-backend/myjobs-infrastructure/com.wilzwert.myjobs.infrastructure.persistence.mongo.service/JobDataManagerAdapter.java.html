@@ -63,16 +63,16 @@ public class JobDataManagerAdapter implements JobDataManager {
     }
 
     @Override
-    public DomainPage&lt;Job&gt; findPaginated(DomainSpecification specifications, int page, int size) {
-<span class="fc" id="L67">        Aggregation aggregation = aggregationService.createAggregationPaginated(specifications, page, size);</span>
+    public DomainPage&lt;Job&gt; findPaginated(DomainSpecification specifications, int page, int itemsPerPage) {
+<span class="fc" id="L67">        Aggregation aggregation = aggregationService.createAggregationPaginated(specifications, page, itemsPerPage);</span>
 <span class="fc" id="L68">        List&lt;MongoJob&gt; jobs = aggregationService.aggregate(aggregation, &quot;jobs&quot;, MongoJob.class);</span>
 
 <span class="fc bfc" id="L70" title="All 2 branches covered.">        if(jobs.isEmpty()) {</span>
-<span class="fc" id="L71">            return DomainPage.builder(this.jobMapper.toDomain(jobs)).totalElementsCount(0L).currentPage(page).pageSize(size).build();</span>
+<span class="fc" id="L71">            return DomainPage.builder(this.jobMapper.toDomain(jobs)).totalElementsCount(0L).currentPage(page).pageSize(itemsPerPage).build();</span>
         }
 
 <span class="fc" id="L74">        long total = aggregationService.getAggregationCount(aggregation, &quot;jobs&quot;);</span>
-<span class="fc" id="L75">        return DomainPage.builder(this.jobMapper.toDomain(jobs)).totalElementsCount(total).currentPage(page).pageSize(size).build();</span>
+<span class="fc" id="L75">        return DomainPage.builder(this.jobMapper.toDomain(jobs)).totalElementsCount(total).currentPage(page).pageSize(itemsPerPage).build();</span>
     }
 
     @Override
