@@ -45,10 +45,12 @@ public class MongoJob {
     @TextIndexed(weight = 3)
     private String company;
 
+    @TextIndexed(weight = 2)
     private String description;
 
     private String profile;
 
+    @TextIndexed(weight = 4)
     private String comment;
 
     private String salary;

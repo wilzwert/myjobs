@@ -91,8 +91,6 @@ public class JobController {
             ) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        log.info("Getting user jobs with status[{}], statusMeta[{}], page[{}], itemsPerPage[{}]", status, statusMeta, page, itemsPerPage);
-
         GetUserJobsCommand command = new GetUserJobsCommand.Builder()
                 .userId(userDetails.getId())
                 .page(page)
@@ -102,6 +100,9 @@ public class JobController {
                 .sort(sort)
                 .query(query)
                 .build();
+
+        log.info("Getting user jobs with command {}", command);
+
         return jobMapper.toEnrichedResponse(getUserJobsUseCase.getUserJobs(command));
     }
 }
