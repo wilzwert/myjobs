@@ -6,6 +6,7 @@ import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.shared.specification.DomainSpecification;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.exception.UnsupportedDomainCriterionException;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.Document;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -23,11 +24,13 @@ import java.util.function.Function;
 @Slf4j
 public class DomainSpecificationConverter {
 
+    // provide a field values builder based on target class
     private static final Map<Class<?>, Function<DomainSpecification.FieldSpecificationWithValuesList<?>, List<?>>> valuesClassMap = Map.of(
         UserId.class, spec -> spec.getValues().stream().map(u -> ((UserId) u).value()).toList(),
         JobId.class, spec -> spec.getValues().stream().map(u -> ((JobId) u).value()).toList()
     );
 
+    // provide a field value builder based on target class
     private static final Map<Class<?>, Function<DomainSpecification.FieldSpecificationWithSingleValue<?>, ?>> valueClassMap = Map.of(
             UserId.class, spec -> ((UserId) spec.getValue()).value(),
             JobId.class, spec -> ((JobId) spec.getValue()).value()
@@ -70,13 +73,10 @@ public class DomainSpecificationConverter {
      * @return a MongoDb Criteria
      */
     public Criteria domainCriterionToCriteria(DomainSpecification domainSpecification) {
+        log.debug("Getting domainCriterionToCriteria of class {}", domainSpecification.getClass());
         switch (domainSpecification) {
-            case null -> {
-                log.debug("criteria is null because domainSpecification is null");
-                return null;
-            }
             case DomainSpecification.Eq<?> c -> {
-                log.debug("criteria is EQ for " + c.getField());
+                log.debug("criteria is EQ for {}", c.getField());
                 return Criteria.where(convertField(c.getField())).is(convertValue(c));
             }
             case DomainSpecification.In<?> c -> {
@@ -95,6 +95,10 @@ public class DomainSpecificationConverter {
             case DomainSpecification.And c -> {
                 log.debug("criteria is And");
                 return new Criteria().andOperator(c.getSpecifications().stream().map(this::domainCriterionToCriteria).toList());
+            }
+            case DomainSpecification.MatchQuerySpecification<?> m -> {
+                log.debug("criteria is MatchQuerySpecification");
+                return Criteria.where("$text").is(new Document("$search", m.getQuery()));
             }
             default -> throw new UnsupportedDomainCriterionException(domainSpecification.getClass().getName());
         }
@@ -115,10 +119,10 @@ public class DomainSpecificationConverter {
         }
 
         List<AggregationOperation> result;
-        if(domainSpecification instanceof DomainSpecification.FullSpecification fullSpecification) {
+
+        if (Objects.requireNonNull(domainSpecification) instanceof DomainSpecification.FullSpecification fullSpecification) {
             result = domainSpecificationToAggregationOperation(fullSpecification);
-        }
-        else {
+        } else {
             result = new ArrayList<>(List.of(Aggregation.match(domainCriterionToCriteria(domainSpecification))));
         }
 

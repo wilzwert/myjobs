@@ -1,5 +1,6 @@
 package com.wilzwert.myjobs.core.domain.shared.specification;
 
+import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.shared.exception.DomainSpecificationException;
 import org.junit.jupiter.api.Test;
 
@@ -167,5 +168,12 @@ class DomainSpecificationTest {
     void whenValuesAndNoValueClass_thenShouldInferValueClass() {
         var in = DomainSpecification.in("title", List.of("1"));
         assertEquals(String.class, in.getValueClass());
+    }
+
+    @Test
+    void testMatchQuerySpecification() {
+        var spec = new DomainSpecification.MatchQuerySpecification<>(Job.class, "query");
+        assertEquals(Job.class, spec.getTargetClass());
+        assertEquals("query", spec.getQuery());
     }
 }

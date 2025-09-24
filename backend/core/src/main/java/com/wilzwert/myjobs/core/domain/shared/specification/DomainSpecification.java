@@ -316,6 +316,30 @@ public abstract class DomainSpecification {
     public abstract static class FullSpecification extends DomainSpecification {
     }
 
+    /** Specific Specification to allow passing a String query (aka search keyword) to the infra
+     * As the domain cannot assume how the query can be executed or event on which "fields", we let
+     * the infra handle it
+      */
+    public static class MatchQuerySpecification<V> extends DomainSpecification {
+
+        private final Class<V> targetClass;
+
+        private final String query;
+
+        public MatchQuerySpecification(Class<V> targetClass, String query) {
+            this.targetClass = targetClass;
+            this.query = query;
+        }
+
+        public Class<V> getTargetClass() {
+            return targetClass;
+        }
+
+        public String getQuery() {
+            return query;
+        }
+    }
+
 
     /**
      * This specification is very specific, and should be understood and applied by the infra.
@@ -337,18 +361,6 @@ public abstract class DomainSpecification {
         }
     }
 
-    /**
-     * This Specification is used to query a list of Job based on these criteria :
-     * - related users MUST have a not null jobFollowUpReminderDays
-     * - jobs are active (ie status IN JobStatus.activeStatuses())
-     * - have ever been updated less than user.jobFollowUpReminderDays days before provided referenceInstant
-     * - have not been reminded less than user.jobFollowUpReminderDays days before provided referenceInstant
-     * As this would be nearly impossible to effectively model it using DomainSpecification
-     * (especially because we would be assuming how the infra persistence layer works (joins in Sql based DBMS, collections in NoSql...)),
-     * we kindly ask (and trust) the infra to convert and handle it
-     * Rules :
-     * -
-     */
     public static JobFollowUpToRemind JobFollowUpToRemind(Instant referenceInstant) {
         return new JobFollowUpToRemind(referenceInstant);
     }

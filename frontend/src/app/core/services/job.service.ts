@@ -53,7 +53,8 @@ export class JobService {
           else if (statusMeta !== null) {
             statusOrFilterParam += `statusMeta=${statusMeta}`;
           }
-          return this.dataService.get<Page<Job>>(`jobs?page=${this.currentOptions.getCurrentPage()}&itemsPerPage=${this.currentOptions.getItemsPerPage()}`+(statusOrFilterParam ? `&${statusOrFilterParam}` : '')+`&sort=${this.currentOptions.getSort()}`).pipe(
+          return this.dataService.get<Page<Job>>(`jobs?`+(statusOrFilterParam ? `&${statusOrFilterParam}` : '')+`&sort=${this.currentOptions.getSort()}`).pipe(
+          // return this.dataService.get<Page<Job>>(`jobs?page=${this.currentOptions.getCurrentPage()}&itemsPerPage=${this.currentOptions.getItemsPerPage()}`+(statusOrFilterParam ? `&${statusOrFilterParam}` : '')+`&sort=${this.currentOptions.getSort()}`).pipe(
             switchMap((fetchedJobs: Page<Job>) => {
               this.jobsSubject.next(fetchedJobs);
               return of(fetchedJobs);

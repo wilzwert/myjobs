@@ -26,7 +26,7 @@ public interface JobDataManager {
 
     Optional<Job> findByIdAndUserId(JobId jobId, UserId userId);
 
-    DomainPage<Job> findPaginated(DomainSpecification specifications, int page, int size);
+    DomainPage<Job> findPaginated(DomainSpecification specifications, int page, int itemsPerPage);
 
     Map<JobId, Job> findMinimal(DomainSpecification specification);
 

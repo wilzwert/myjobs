@@ -63,16 +63,16 @@ public class JobDataManagerAdapter implements JobDataManager {
     }
 
     @Override
-    public DomainPage<Job> findPaginated(DomainSpecification specifications, int page, int size) {
-        Aggregation aggregation = aggregationService.createAggregationPaginated(specifications, page, size);
+    public DomainPage<Job> findPaginated(DomainSpecification specifications, int page, int itemsPerPage) {
+        Aggregation aggregation = aggregationService.createAggregationPaginated(specifications, page, itemsPerPage);
         List<MongoJob> jobs = aggregationService.aggregate(aggregation, "jobs", MongoJob.class);
 
         if(jobs.isEmpty()) {
-            return DomainPage.builder(this.jobMapper.toDomain(jobs)).totalElementsCount(0L).currentPage(page).pageSize(size).build();
+            return DomainPage.builder(this.jobMapper.toDomain(jobs)).totalElementsCount(0L).currentPage(page).pageSize(itemsPerPage).build();
         }
 
         long total = aggregationService.getAggregationCount(aggregation, "jobs");
-        return DomainPage.builder(this.jobMapper.toDomain(jobs)).totalElementsCount(total).currentPage(page).pageSize(size).build();
+        return DomainPage.builder(this.jobMapper.toDomain(jobs)).totalElementsCount(total).currentPage(page).pageSize(itemsPerPage).build();
     }
 
     @Override
