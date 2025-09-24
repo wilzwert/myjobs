@@ -1,5 +1,5 @@
 import { Component, effect, OnDestroy, OnInit, Signal } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { debounceTime, Observable, Subject } from 'rxjs';
 import { AsyncPipe, KeyValuePipe } from '@angular/common';
 import { MatPaginatorIntl, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card';
@@ -10,7 +10,7 @@ import { ModalService } from '../../../core/services/modal.service';
 import { StatusLabelPipe } from '../../../core/pipe/status-label.pipe';
 import { MatButton } from '@angular/material/button';
 import { NotificationService } from '../../../core/services/notification.service';
-import { FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { MatRippleModule } from '@angular/material/core';
 import { MatMenuModule } from '@angular/material/menu';
 import { JobMetadata } from '../../../core/model/job-metadata.interface';
@@ -24,11 +24,12 @@ import { UserSummary } from '@app/core/model/user-summary.interface';
 import { StatusMetaLabelPipe } from '@app/core/pipe/status-meta-label.pipe';
 import { JobsListOptions } from '@app/core/model/jobs-list-options';
 import { JobsListOptionsService } from '@app/core/services/jobs-list-options.service';
+import { MatFormField, MatInput } from "@angular/material/input";
 
 
 @Component({
   selector: 'app-jobs',
-  imports: [AsyncPipe, KeyValuePipe, MatMenuModule, MatRippleModule, MatCardModule, MatPaginatorModule, MatIcon, JobSummaryComponent, StatusLabelPipe, StatusMetaLabelPipe, MatButton, FormsModule, ReactiveFormsModule],
+  imports: [AsyncPipe, KeyValuePipe, MatMenuModule, MatRippleModule, MatFormField, MatInput, MatCardModule, MatPaginatorModule, MatIcon, JobSummaryComponent, StatusLabelPipe, StatusMetaLabelPipe, MatButton, FormsModule, ReactiveFormsModule, MatInput],
   providers: [{ provide: MatPaginatorIntl, useClass: CustomPaginatorIntl }],
   templateUrl: './jobs.component.html',
   styleUrl: './jobs.component.scss'
@@ -48,6 +49,9 @@ export class JobsComponent implements OnDestroy {
   // make options available to the template
   protected jobsOptions!: Signal<JobsListOptions | null>;
 
+  searchControl = new FormControl('');
+  private queryFieldInit: boolean = false;
+
   constructor(
     private readonly userService: UserService, 
     private readonly jobService: JobService, 
@@ -65,8 +69,21 @@ export class JobsComponent implements OnDestroy {
       if(options === null) {
         return;
       }
+      // initialize search control value and subscription only once
+      if(!this.queryFieldInit) {
+        this.searchControl.setValue(options.getQuery());
+        this.searchControl.valueChanges
+        .pipe(debounceTime(500))
+        .subscribe(value => {
+          this.query(value);
+        });
+        this.queryFieldInit = true;
+      }
+
       this.jobs$ = this.jobService.getAllJobs(options);
     })
+
+    
   }
 
   ngOnDestroy(): void {
@@ -75,6 +92,10 @@ export class JobsComponent implements OnDestroy {
 
   sortBy(sort: string): void {
     this.jobsListOptionsService.sort(sort);
+  }
+
+  query(query: string | null): void {
+    this.jobsListOptionsService.query(query);
   }
 
   filter(status: string | null, statusMeta: string | null): void {

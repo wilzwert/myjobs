@@ -92,6 +92,11 @@ export class JobsListOptionsService {
     this.save(newOptions.changePagination(page, itemsPerPage));
   }
 
+  public query(query: string | null): void {
+    const newOptions = this.copyOptions();
+    this.save(newOptions.query(query));
+  }
+
   public filter(status: string | null, statusMeta: string | null): void {
     const newOptions = this.copyOptions();
     this.save(newOptions.filter(status, statusMeta));

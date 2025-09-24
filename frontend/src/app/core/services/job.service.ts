@@ -40,6 +40,7 @@ export class JobService {
   public getAllJobs(jobsListOptions: JobsListOptions): Observable<Page<Job>> {
     return this.jobsSubject.pipe(
       switchMap((jobsPage: Page<Job> | null) => {
+        console.log('JobService.getAllJobs called with options:', jobsListOptions);
         if(jobsPage === null || jobsListOptions.getMustReload() || !this.currentOptions.equals(jobsListOptions)) {
           // create a new instance to store current options, otherwise the current instance would be the same as the one in the service
           this.currentOptions = jobsListOptions;
@@ -53,8 +54,13 @@ export class JobService {
           else if (statusMeta !== null) {
             statusOrFilterParam += `statusMeta=${statusMeta}`;
           }
-          return this.dataService.get<Page<Job>>(`jobs?`+(statusOrFilterParam ? `&${statusOrFilterParam}` : '')+`&sort=${this.currentOptions.getSort()}`).pipe(
-          // return this.dataService.get<Page<Job>>(`jobs?page=${this.currentOptions.getCurrentPage()}&itemsPerPage=${this.currentOptions.getItemsPerPage()}`+(statusOrFilterParam ? `&${statusOrFilterParam}` : '')+`&sort=${this.currentOptions.getSort()}`).pipe(
+          
+          const url = `jobs?page=${this.currentOptions.getCurrentPage()}&itemsPerPage=${this.currentOptions.getItemsPerPage()}`
+            +(statusOrFilterParam ? `&${statusOrFilterParam}` : '')
+            +`&sort=${this.currentOptions.getSort()}`
+            +`&query=${encodeURIComponent(this.currentOptions.getQuery() as string)}`
+
+          return this.dataService.get<Page<Job>>(url).pipe(
             switchMap((fetchedJobs: Page<Job>) => {
               this.jobsSubject.next(fetchedJobs);
               return of(fetchedJobs);

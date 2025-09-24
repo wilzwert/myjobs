@@ -926,6 +926,11 @@
         <note priority="1" from="description">label of a job&apos;s activities management action</note>
         <note priority="1" from="meaning">edit job&apos;s activities</note>
       </trans-unit>
+      <trans-unit id="input.job.query.placeholder" datatype="html">
+        <source>Search (full words only)</source>
+        <note priority="1" from="description">placeholder for query input to setch jobs</note>
+        <note priority="1" from="meaning">search job by query placeholder</note>
+      </trans-unit>
     </body>
   </file>
 </xliff>
