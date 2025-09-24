@@ -5,13 +5,15 @@ export class JobsListOptions {
     private itemsPerPage: number = 10;
     private jobStatus: keyof typeof JobStatus | null = null;
     private jobStatusMeta: keyof typeof JobStatusMeta | null = null;
+    private searchQuery: string | null = null;
     private currentSort: string;
     private mustReload: boolean | null = null;
 
 
-    constructor(jobsStatus: string | null = null, jobStatusMeta: string | null = null, sort: string | null = null) {
+    constructor(jobsStatus: string | null = null, jobStatusMeta: string | null = null, searchQuery: string | null = null, sort: string | null = null) {
         this.jobStatus = jobsStatus as keyof typeof JobStatus;
         this.jobStatusMeta = jobStatusMeta as keyof typeof JobStatusMeta;
+        this.searchQuery = searchQuery;
         this.currentSort = sort ?? 'createdAt,desc';
     }
 
@@ -31,6 +33,10 @@ export class JobsListOptions {
         return this.jobStatusMeta;
     }
 
+    getQuery(): string | null {
+        return this.searchQuery;
+    }
+    
     getSort(): string {
         return this.currentSort;
     }
@@ -44,6 +50,7 @@ export class JobsListOptions {
             && this.itemsPerPage === jobsListOptions.getItemsPerPage()
             && this.jobStatus === jobsListOptions.getStatus() 
             && this.jobStatusMeta === jobsListOptions.getStatusMeta()
+            && this.searchQuery === jobsListOptions.getQuery()
             && this.currentSort == jobsListOptions.getSort();
     }
 
@@ -57,6 +64,11 @@ export class JobsListOptions {
     
     forceReload(force: boolean | null): this {
         this.mustReload = force;
+        return this;
+    }
+
+    query(searchQuery: string | null): this {
+        this.searchQuery = searchQuery;
         return this;
     }
 

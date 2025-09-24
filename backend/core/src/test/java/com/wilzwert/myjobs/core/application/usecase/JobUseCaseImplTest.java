@@ -183,8 +183,15 @@ class JobUseCaseImplTest {
             when(userDataManager.findById(any(UserId.class))).thenReturn(Optional.empty());
 
             UserId userId = new UserId(UUID.randomUUID());
+            GetUserJobsCommand command = new GetUserJobsCommand.Builder()
+                    .userId(userId)
+                    .page(0)
+                    .itemsPerPage(10)
+                    .status(JobStatus.PENDING)
+                    .sort("date,desc")
+                    .build();
 
-            assertThrows(UserNotFoundException.class, () -> underTest.getUserJobs(userId, 0, 10, JobStatus.PENDING, null, "date,desc"));
+            assertThrows(UserNotFoundException.class, () -> underTest.getUserJobs(command));
         }
 
 
@@ -194,7 +201,15 @@ class JobUseCaseImplTest {
 
             when(jobDataManager.findPaginated(any(), eq(0), eq(10))).thenReturn(mockJobPage);
 
-            DomainPage<EnrichedJob> result = underTest.getUserJobs(testUser.getId(), 0, 10, JobStatus.PENDING, JobStatusMeta.LATE, "date,desc");
+            GetUserJobsCommand command = new GetUserJobsCommand.Builder()
+                    .userId(testUser.getId())
+                    .page(0)
+                    .itemsPerPage(10)
+                    .status(JobStatus.PENDING)
+                    .statusMeta(JobStatusMeta.LATE)
+                    .sort("date,desc")
+                    .build();
+            DomainPage<EnrichedJob> result = underTest.getUserJobs(command);
 
             // check specification passed to the jobDataManager
             verify(jobDataManager).findPaginated(
@@ -222,12 +237,59 @@ class JobUseCaseImplTest {
         }
 
         @Test
+        void whenQuery_thenShouldGetUserJobsWithQuery() {
+            DomainPage<Job> mockJobPage = DomainPage.builder(List.of(testFollowUpLateJob)).pageSize(1).currentPage(0).totalElementsCount(1).build();
+
+            when(jobDataManager.findPaginated(any(), eq(0), eq(10))).thenReturn(mockJobPage);
+
+            GetUserJobsCommand command = new GetUserJobsCommand.Builder()
+                    .userId(testUser.getId())
+                    .page(0)
+                    .itemsPerPage(10)
+                    .status(JobStatus.PENDING)
+                    .query("search something")
+                    .sort("date,desc")
+                    .build();
+            DomainPage<EnrichedJob> result = underTest.getUserJobs(command);
+
+            // check specification passed to the jobDataManager
+            verify(jobDataManager).findPaginated(
+                    argThat(specification -> {
+                        // TODO we MUST check userId, filter late and sort specs
+                        DomainSpecification.And spec = (DomainSpecification.And) specification;
+
+                        // specs include spec for JobStatus.PENDING + specs for the late filter
+                        return spec.getSpecifications().size() == 3 &&
+                                // user id
+                                spec.getSpecifications().getFirst() instanceof DomainSpecification.Eq &&
+                                // JobStatus.PENDING
+                                spec.getSpecifications().get(1) instanceof DomainSpecification.Eq<?> &&
+                                // query
+                                spec.getSpecifications().get(2) instanceof DomainSpecification.MatchQuerySpecification matchQuerySpecification &&
+                                matchQuerySpecification.getQuery().equals("search something");
+
+                    }), eq(0), eq(10));
+
+            // check results page is enriched
+            assertNotNull(result);
+            assertEquals(1, result.getTotalElementsCount());
+            assertTrue(result.getContent().getFirst().isFollowUpLate());
+        }
+
+        @Test
         void whenFilterLateFalse_thenShouldGetUserJobs() {
             DomainPage<Job> mockJobPage = DomainPage.builder(List.of(testJob)).pageSize(1).currentPage(0).totalElementsCount(1).build();
+            GetUserJobsCommand command = new GetUserJobsCommand.Builder()
+                    .userId(testUser.getId())
+                    .page(0)
+                    .itemsPerPage(10)
+                    .status(JobStatus.PENDING)
+                    .sort("date")
+                    .build();
 
             when(jobDataManager.findPaginated(any(DomainSpecification.class), eq(0), eq(10))).thenReturn(mockJobPage);
 
-            DomainPage<EnrichedJob> result = underTest.getUserJobs(testUser.getId(), 0, 10, JobStatus.PENDING, null, "date");
+            DomainPage<EnrichedJob> result = underTest.getUserJobs(command);
 
             // TODO : check that the DomainSpecification is correctly built
             // as is, we only check that some spec has been built
@@ -241,11 +303,18 @@ class JobUseCaseImplTest {
         @Test
         void testEnrichJobs() {
             DomainPage<Job> mockJobPage = DomainPage.builder(List.of(testJob)).pageSize(1).currentPage(0).totalElementsCount(1).build();
+            GetUserJobsCommand command = new GetUserJobsCommand.Builder()
+                    .userId(testUser.getId())
+                    .page(0)
+                    .itemsPerPage(10)
+                    .status(JobStatus.PENDING)
+                    .sort("date")
+                    .build();
 
             when(jobDataManager.findPaginated(any(DomainSpecification.class), eq(0), eq(10))).thenReturn(mockJobPage);
 
             // call test method
-            DomainPage<EnrichedJob> result = underTest.getUserJobs(testUser.getId(), 0, 10, JobStatus.PENDING, null, "date");
+            DomainPage<EnrichedJob> result = underTest.getUserJobs(command);
 
             // check result is enriched
             assertNotNull(result);

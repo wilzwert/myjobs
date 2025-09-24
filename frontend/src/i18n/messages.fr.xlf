@@ -1163,6 +1163,12 @@
         <note priority="1" from="description">label of a job's activities management action</note>
         <note priority="1" from="meaning">edit job's activities</note>
       </trans-unit>
+      <trans-unit id="input.job.query.placeholder" datatype="html">
+        <source>Search (full words only)</source>
+        <target state="translated">Mot(s)-clé (mots entiers uniquement)</target>
+        <note priority="1" from="description">placeholder for query input to setch jobs</note>
+        <note priority="1" from="meaning">search job by query placeholder</note>
+      </trans-unit>
     </body>
   </file>
 </xliff>

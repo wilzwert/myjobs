@@ -212,6 +212,28 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
         }
 
         @Test
+        void shouldGetJobsFilteredByQuery() throws Exception {
+            MvcResult mvcResult = mockMvc.perform(
+                            get(JOBS_URL).cookie(accessTokenCookie)
+                                    .param("query", "Wilzwert")
+                    )
+                    .andExpect(status().isOk())
+                    .andReturn();
+
+            RestPage<JobResponse> jobResponseRestPage = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), new TypeReference<RestPage<JobResponse>>() {});
+            assertThat(jobResponseRestPage).isNotNull();
+            assertThat(jobResponseRestPage.getContent()).isNotNull();
+            assertThat(jobResponseRestPage.getContent()).hasSize(1);
+            assertThat(jobResponseRestPage.getTotalElementsCount()).isEqualTo(1);
+            assertThat(jobResponseRestPage.getPageSize()).isEqualTo(10);
+            assertThat(jobResponseRestPage.getPagesCount()).isEqualTo(1);
+            assertThat(jobResponseRestPage.getCurrentPage()).isZero();
+
+            List<String> titles = jobResponseRestPage.getContent().stream().map(JobResponse::getTitle).toList();
+            assertThat(titles).containsExactly("My second job");
+        }
+
+        @Test
         void whenJobIdInvalid_thenShouldReturnBadRequest() throws Exception {
             mockMvc.perform(
                     get(JOBS_URL+"/invalid").cookie(accessTokenCookie)

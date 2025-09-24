@@ -148,8 +148,8 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
     }
 
     @Override
-    public DomainPage<EnrichedJob> getUserJobs(UserId userId, int page, int size, JobStatus status, JobStatusMeta statusMeta, String sort) {
-        User user = userDataManager.findById(userId).orElseThrow(UserNotFoundException::new);
+    public DomainPage<EnrichedJob> getUserJobs(GetUserJobsCommand command) {
+        User user = userDataManager.findById(command.userId()).orElseThrow(UserNotFoundException::new);
 
         List<DomainSpecification> specs = new ArrayList<>(List.of(DomainSpecification.eq("userId", user.getId(), UserId.class)));
 
@@ -157,9 +157,9 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 
         String statusField = "status";
 
-        if(statusMeta != null) {
+        if(command.statusMeta() != null) {
             // threshold instant : jobs not updated since that instant are considered late
-            switch (statusMeta) {
+            switch (command.statusMeta()) {
                 case ACTIVE: specs.add(DomainSpecification.in(statusField, JobStatus.activeStatuses())); break;
                 case INACTIVE: specs.add(DomainSpecification.in(statusField, JobStatus.inactiveStatuses())); break;
                 case LATE:
@@ -170,16 +170,20 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
             }
         }
 
-        if( status != null) {
-            specs.add(DomainSpecification.eq(statusField, status, JobStatus.class));
+        if( command.status() != null) {
+            specs.add(DomainSpecification.eq(statusField, command.status(), JobStatus.class));
+        }
+
+        if( command.query() != null && !command.query().isEmpty()) {
+            specs.add(new DomainSpecification.MatchQuerySpecification<>(Job.class, command.query()));
         }
 
         var finalSpecs = DomainSpecification.and(specs);
-        if(sort != null && !sort.isEmpty()) {
-            DomainSpecification.applySort(finalSpecs, DomainSpecification.sort(sort));
+        if(command.sort() != null && !command.sort().isEmpty()) {
+            DomainSpecification.applySort(finalSpecs, DomainSpecification.sort(command.sort()));
         }
 
-        jobs = jobDataManager.findPaginated(finalSpecs, page, size);
+        jobs = jobDataManager.findPaginated(finalSpecs, command.page(), command.itemsPerPage());
         return jobEnricher.enrich(jobs, user);
     }
 

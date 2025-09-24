@@ -11,6 +11,7 @@ import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -38,14 +39,18 @@ public class MongoJob {
     @Indexed
     private JobStatus status;
 
+    @TextIndexed(weight = 5)
     private String title;
 
+    @TextIndexed(weight = 3)
     private String company;
 
+    @TextIndexed(weight = 2)
     private String description;
 
     private String profile;
 
+    @TextIndexed(weight = 4)
     private String comment;
 
     private String salary;

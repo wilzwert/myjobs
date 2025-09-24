@@ -82,21 +82,27 @@ public class JobController {
     @GetMapping()
     public RestPage<JobResponse> getUserJobs(
             Authentication authentication,
-            @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer itemsPerPage,
+            @RequestParam(required = false, defaultValue = "0") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer itemsPerPage,
             @RequestParam(required = false) JobStatus status,
             @RequestParam(required = false) JobStatusMeta statusMeta,
-            @RequestParam(required = false) String sort) {
+            @RequestParam(required = false) String sort,
+            @RequestParam(required = false) String query
+            ) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        if(page == null) {
-            page = 0;
-        }
-        if(itemsPerPage == null) {
-            itemsPerPage = 10;
-        }
 
-        log.info("Getting user jobs with status[{}], statusMeta[[{}]", status, statusMeta);
+        GetUserJobsCommand command = new GetUserJobsCommand.Builder()
+                .userId(userDetails.getId())
+                .page(page)
+                .itemsPerPage(itemsPerPage)
+                .status(status)
+                .statusMeta(statusMeta)
+                .sort(sort)
+                .query(query)
+                .build();
 
-        return jobMapper.toEnrichedResponse(getUserJobsUseCase.getUserJobs(userDetails.getId(), page, itemsPerPage, status, statusMeta, sort));
+        log.info("Getting user jobs with command {}", command);
+
+        return jobMapper.toEnrichedResponse(getUserJobsUseCase.getUserJobs(command));
     }
 }

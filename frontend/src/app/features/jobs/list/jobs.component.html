@@ -36,6 +36,9 @@
                 }
         </mat-menu>
     </div>
+    <mat-form-field>
+        <input matInput [formControl]="searchControl" i18n-placeholder="search job by query placeholder|placeholder for query input to setch jobs@@input.job.query.placeholder" placeholder="Search (full words only)" />
+    </mat-form-field>
 }
 
 

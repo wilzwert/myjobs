@@ -43,6 +43,7 @@ describe('JobsListOptionsService', () => {
     stored.changePagination(1, 15);
     stored.filter(JobStatus.PENDING, null);
     stored.sort("rating,asc");
+    stored.query("search term");
     getItem.mockReturnValue(stored);
 
     // simulate a summary loading error
@@ -56,6 +57,7 @@ describe('JobsListOptionsService', () => {
     expect(currentOptions).toBeInstanceOf(JobsListOptions);
     expect(currentOptions.getStatus()).toEqual(JobStatus.PENDING);
     expect(currentOptions.getSort()).toEqual("rating,asc");
+    expect(currentOptions.getQuery()).toEqual("search term");
     expect(currentOptions.getCurrentPage()).toEqual(1);
     expect(currentOptions.getItemsPerPage()).toEqual(15);
     expect(dataStorageMock.setItem).toHaveBeenCalled(); // sauvegarde appelée
