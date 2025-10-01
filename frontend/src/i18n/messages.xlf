@@ -17,11 +17,11 @@
       <trans-unit id="pagination.previous_page_label" datatype="html">
         <source>Previous page</source>
       </trans-unit>
-      <trans-unit id="pagination_page_one_of_one" datatype="html">
-        <source>Page 1 of 1</source>
+      <trans-unit id="pagination_empty_items" datatype="html">
+        <source>No items found.</source>
       </trans-unit>
       <trans-unit id="pagination_range_label" datatype="html">
-        <source>Page <x id="PH" equiv-text="page + 1"/> of <x id="PH_1" equiv-text="amountPages"/></source>
+        <source>Items <x id="PH" equiv-text="startIndex + 1"/>-<x id="PH_1" equiv-text="endIndex"/> of <x id="PH_2" equiv-text="length"/></source>
       </trans-unit>
       <trans-unit id="stepper.optional.label" datatype="html">
         <source>Optional</source>

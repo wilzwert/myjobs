@@ -1,6 +1,4 @@
 import {Injectable} from '@angular/core';
-import { MatPaginatorIntl } from '@angular/material/paginator';
-import {Subject} from 'rxjs';
 
 import '@angular/localize/init';
 import { MatStepperIntl } from '@angular/material/stepper';
