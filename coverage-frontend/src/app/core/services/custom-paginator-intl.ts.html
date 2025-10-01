@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">85.71% </span>
+                <span class="strong">86.36% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>18/21</span>
+                <span class='fraction'>19/22</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">20% </span>
+                <span class="strong">44.44% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/5</span>
+                <span class='fraction'>4/9</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>14/14</span>
+                <span class='fraction'>15/15</span>
             </div>
         
             
@@ -90,7 +90,9 @@
 <a name='L25'></a><a href='#L25'>25</a>
 <a name='L26'></a><a href='#L26'>26</a>
 <a name='L27'></a><a href='#L27'>27</a>
-<a name='L28'></a><a href='#L28'>28</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -98,28 +100,30 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">17x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">17x</span>
+<span class="cline-any cline-yes">17x</span>
+<span class="cline-any cline-yes">17x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">17x</span>
+<span class="cline-any cline-yes">17x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import {Injectable} from '@angular/core';
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Injectable } from '@angular/core';
 import { MatPaginatorIntl } from '@angular/material/paginator';
-import {Subject} from 'rxjs';
+import { Subject } from 'rxjs';
 &nbsp;
 import '@angular/localize/init';
 &nbsp;
@@ -130,18 +134,20 @@ export class CustomPaginatorIntl implements MatPaginatorIntl {
   firstPageLabel = $localize`:@@pagination.first_page_label:First page`;
   itemsPerPageLabel = $localize`:@@pagination.items_per_page_label:Items per page`;
   lastPageLabel = $localize`:@@pagination.last_page_label:Last page`;
-&nbsp;
-  // You can set labels to an arbitrary string too, or dynamically compute
-  // it through other third-party internationalization libraries.
+  
   nextPageLabel = $localize`:@@pagination.next_page_label:Next page`;
   previousPageLabel = $localize`:@@pagination.previous_page_label:Previous page`;
 &nbsp;
 <span class="fstat-no" title="function not covered" >  getRangeLabel(</span>page: number, pageSize: number, length: number): string {
-<span class="cstat-no" title="statement not covered" >    if (length === 0) {</span>
-<span class="cstat-no" title="statement not covered" >      return $localize`:@@pagination_page_one_of_one:Page 1 of 1`;</span>
+<span class="cstat-no" title="statement not covered" >    if (length === 0 || pageSize === 0) {</span>
+<span class="cstat-no" title="statement not covered" >      return $localize`:@@pagination_empty_items:No items found.`;</span>
     }
-    const amountPages = Math.ceil(length / pageSize);
-<span class="cstat-no" title="statement not covered" >    return $localize`:@@pagination_range_label:Page ${page + 1} of ${amountPages}`;</span>
+&nbsp;
+    const startIndex = page * pageSize;
+    const endIndex = startIndex &lt; length
+      ? Math.min(startIndex + pageSize, length)
+      : <span class="branch-1 cbranch-no" title="branch not covered" >startIndex + pageSize;</span>
+<span class="cstat-no" title="statement not covered" >    return $localize`:@@pagination_range_label:Items ${startIndex + 1}-${endIndex} of ${length}`;</span>
   }
 }
 &nbsp;</pre></td></tr></table></pre>
@@ -151,7 +157,7 @@ export class CustomPaginatorIntl implements MatPaginatorIntl {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-24T14:10:07.200Z
+                at 2025-10-01T14:31:51.003Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>
