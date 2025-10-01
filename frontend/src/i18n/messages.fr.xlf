@@ -408,12 +408,12 @@
         <target state="translated">Page précédente</target>
       </trans-unit>
       <trans-unit id="pagination_page_one_of_one" datatype="html">
-        <source>Page 1 of 1</source>
-        <target state="translated">Page 1 sur 1</target>
+        <source>Items 0 of 0</source>
+        <target state="translated">Eléments 0 sur 0</target>
       </trans-unit>
       <trans-unit id="pagination_range_label" datatype="html">
-        <source>Page <x id="PH" equiv-text="page + 1"/> of <x id="PH_1" equiv-text="amountPages"/></source>
-        <target state="translated">Page <x id="PH" equiv-text="page + 1"/> sur <x id="PH_1" equiv-text="amountPages"/></target>
+        <source>Elements <x id="PH" equiv-text="startIndex + 1"/>-<x id="PH_1" equiv-text="endIndex"/> of <x id="PH_2" equiv-text="length"/></source>
+        <target state="translated">Éléments <x id="PH" equiv-text="startIndex+ 1"/>-<x id="PH_2" equiv-text="endIndex"/> sur <x id="PH_2" equiv-text="length"/></target>
       </trans-unit>
       <trans-unit id="pagination.jobs.select_page_label" datatype="html">
         <source>Select list page</source>

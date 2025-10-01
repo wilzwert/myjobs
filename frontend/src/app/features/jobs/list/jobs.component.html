@@ -14,6 +14,9 @@
 @if(summary && options) {
     <div>
         <button mat-button [matMenuTriggerFor]="filterMenu">
+            @if(options.getStatus() || options.getStatusMeta()) {
+                <mat-icon>check</mat-icon>
+            }
             <mat-icon>filter_alt</mat-icon><span i18n="sort@@action.filter.status">Status</span>
         </button>
         <mat-menu #filterMenu="matMenu">
@@ -85,6 +88,7 @@
                 [length]="page.totalElementsCount"
                 [pageSize]="options!.getItemsPerPage()"
                 [pageIndex]="options!.getCurrentPage()"
+                [hidePageSize]="true"
                 aria-label="Select list page"
                 i18n-aria-label="Select list page@@pagination.jobs.select_page_label">
         </mat-paginator>
