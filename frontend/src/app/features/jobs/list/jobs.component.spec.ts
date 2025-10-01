@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { JobsComponent } from './jobs.component';
 import { UserService } from '../../../core/services/user.service';
 import { JobService } from '../../../core/services/job.service';
@@ -163,7 +163,9 @@ describe('JobsComponent', () => {
       "jobStatus": null,
       "jobStatusMeta": null,
       "mustReload": null,
-      "page": 1
+      "page": 1,
+      "searchQuery": null,
     } as unknown as JobsListOptions);
   });
+
 });

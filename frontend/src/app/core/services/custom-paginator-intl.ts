@@ -16,14 +16,14 @@ export class CustomPaginatorIntl implements MatPaginatorIntl {
   previousPageLabel = $localize`:@@pagination.previous_page_label:Previous page`;
 
   getRangeLabel(page: number, pageSize: number, length: number): string {
-    if (length === 0 ||page) {
-      return $localize`:@@pagination_page_one_of_one:Items 0 of 0`;
+    if (length === 0 || pageSize === 0) {
+      return $localize`:@@pagination_empty_items:No items found.`;
     }
 
     const startIndex = page * pageSize;
     const endIndex = startIndex < length
       ? Math.min(startIndex + pageSize, length)
       : startIndex + pageSize;
-    return $localize`:@@pagination_range_label:Elements ${startIndex + 1}-${endIndex} of ${length}`;
+    return $localize`:@@pagination_range_label:Items ${startIndex + 1}-${endIndex} of ${length}`;
   }
 }

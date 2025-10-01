@@ -25,13 +25,13 @@ describe('CustomPaginatorIntl test', () => {
   });
 
   describe('getRangeLabel', () => {
-    it('should return "Page 1 of 1" if length is 0', () => {
-      expect(service.getRangeLabel(0, 10, 0)).toContain('Page 1 of 1');
+    it('should return "No items found." if length is 0', () => {
+      expect(service.getRangeLabel(0, 10, 0)).toContain('No items found.');
     });
 
-    it('should compute correct page and total pages', () => {
+    it('should compute correct items range and total items', () => {
       const result = service.getRangeLabel(1, 10, 45);
-      expect(result).toContain('Page 2 of 5'); // page 1 (0-based) -> Page 2
+      expect(result).toContain('Items 11-20 of 45'); // page 1 (0-based) -> Page 2
     });
   });
 });
