@@ -40,6 +40,7 @@ jobs:
         uses: appleboy/ssh-action@v1.2.4
         with:
             host: ${{ vars.BACKEND_HOST }}
+            port: ${{ secrets.BACKEND_HOST_SSH_PORT }}
             username: ${{ secrets.BACKEND_HOST_SSH_USERNAME }}
             key: ${{ secrets.BACKEND_HOST_SSH_KEY }}
             script: |
