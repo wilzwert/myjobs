@@ -2,7 +2,7 @@
 
 
 import com.wilzwert.myjobs.core.domain.model.DownloadableFile;
-import com.wilzwert.myjobs.core.domain.model.attachment.AttachmentId;
+import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
 import lombok.extern.slf4j.Slf4j;
@@ -93,35 +93,36 @@ public class S3FileStorage implements FileStorage {
     }
 
     @Override
-    public String generateProtectedUrl(JobId jobId, AttachmentId attachmentId, String fileId) {
+    public String generateProtectedUrl(JobId jobId, Attachment attachment) {
 <span class="fc" id="L97">        GetObjectRequest getRequest = GetObjectRequest.builder()</span>
 <span class="fc" id="L98">                .bucket(bucketName)</span>
-<span class="fc" id="L99">                .key(fileId)</span>
-<span class="fc" id="L100">                .build();</span>
+<span class="fc" id="L99">                .key(attachment.getFileId())</span>
+<span class="fc" id="L100">                .responseContentDisposition(&quot;attachment; filename=\&quot;&quot;+attachment.getFilename()+&quot;\&quot;&quot;)</span>
+<span class="fc" id="L101">                .build();</span>
 
-<span class="fc" id="L102">        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()</span>
-<span class="fc" id="L103">                .signatureDuration(Duration.ofMinutes(30))</span>
-<span class="fc" id="L104">                .getObjectRequest(getRequest)</span>
-<span class="fc" id="L105">                .build();</span>
+<span class="fc" id="L103">        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()</span>
+<span class="fc" id="L104">                .signatureDuration(Duration.ofMinutes(30))</span>
+<span class="fc" id="L105">                .getObjectRequest(getRequest)</span>
+<span class="fc" id="L106">                .build();</span>
 
-<span class="fc" id="L107">        URL presignedUrl = s3Presigner.presignGetObject(presignRequest).url();</span>
-<span class="fc" id="L108">        return presignedUrl.toString();</span>
+<span class="fc" id="L108">        URL presignedUrl = s3Presigner.presignGetObject(presignRequest).url();</span>
+<span class="fc" id="L109">        return presignedUrl.toString();</span>
     }
 
     public String getContentType(String originalFilename) {
         // get file MIME type
-<span class="fc" id="L113">        String contentType = null;</span>
+<span class="fc" id="L114">        String contentType = null;</span>
 
-<span class="fc" id="L115">        Optional&lt;MediaType&gt; mimeTypeOptional = MediaTypeFactory.getMediaType(originalFilename);</span>
-<span class="fc bfc" id="L116" title="All 2 branches covered.">        if(mimeTypeOptional.isPresent()) {</span>
-<span class="fc" id="L117">            contentType = mimeTypeOptional.get().toString();</span>
+<span class="fc" id="L116">        Optional&lt;MediaType&gt; mimeTypeOptional = MediaTypeFactory.getMediaType(originalFilename);</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">        if(mimeTypeOptional.isPresent()) {</span>
+<span class="fc" id="L118">            contentType = mimeTypeOptional.get().toString();</span>
         }
 
-<span class="fc bfc" id="L120" title="All 2 branches covered.">        if (contentType == null) {</span>
-<span class="fc" id="L121">            contentType = &quot;application/octet-stream&quot;; // default value</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        if (contentType == null) {</span>
+<span class="fc" id="L122">            contentType = &quot;application/octet-stream&quot;; // default value</span>
         }
 
-<span class="fc" id="L124">        return contentType;</span>
+<span class="fc" id="L125">        return contentType;</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

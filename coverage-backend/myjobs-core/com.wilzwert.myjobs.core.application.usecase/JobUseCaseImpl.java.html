@@ -387,7 +387,7 @@ public class JobUseCaseImpl implements CreateJobUseCase, GetUserJobUseCase, Upda
 <span class="fc" id="L387">            throw new AttachmentNotFoundException();</span>
         }
 
-<span class="fc" id="L390">        return new AttachmentFileInfo(attachment.getFileId(), fileStorage.generateProtectedUrl(job.getId(), attachment.getId(), attachment.getFileId()));</span>
+<span class="fc" id="L390">        return new AttachmentFileInfo(attachment.getFileId(), fileStorage.generateProtectedUrl(job.getId(), attachment));</span>
     }
 
     @Override
