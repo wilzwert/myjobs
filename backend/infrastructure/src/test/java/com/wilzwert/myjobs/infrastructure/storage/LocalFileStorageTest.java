@@ -2,6 +2,7 @@ package com.wilzwert.myjobs.infrastructure.storage;
 
 
 import com.wilzwert.myjobs.core.domain.model.DownloadableFile;
+import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.attachment.AttachmentId;
 import com.wilzwert.myjobs.core.domain.model.attachment.exception.AttachmentFileNotReadableException;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
@@ -83,9 +84,15 @@ class LocalFileStorageTest {
     void shouldGenerateProtectedUrl() {
         JobId jobId = new JobId(UUID.randomUUID());
         AttachmentId attachmentId = new AttachmentId(UUID.randomUUID());
-        String fileId = "some-file-id";
+        Attachment attachment = Attachment.builder()
+                .id(attachmentId)
+                .fileId("some-file-id")
+                .name("some-file-name")
+                .filename("some-file-name.doc")
+                .contentType("application/msword ")
+                .build();
 
-        String url = fileStorage.generateProtectedUrl(jobId, attachmentId, fileId);
+        String url = fileStorage.generateProtectedUrl(jobId, attachment);
 
         assertEquals("http://localhost:8080/api/jobs/" + jobId.value() + "/attachments/" + attachmentId.value() + "/file", url);
     }

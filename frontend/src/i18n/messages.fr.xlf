@@ -413,7 +413,7 @@
       </trans-unit>
       <trans-unit id="pagination_range_label" datatype="html">
         <source>Items <x id="PH" equiv-text="startIndex + 1"/>-<x id="PH_1" equiv-text="endIndex"/> of <x id="PH_2" equiv-text="length"/></source>
-        <target state="new">Éléments <x id="PH" equiv-text="startIndex+ 1"/>-<x id="PH_2" equiv-text="endIndex"/> sur <x id="PH_2" equiv-text="length"/></target>
+        <target state="translated">Éléments <x id="PH" equiv-text="startIndex+ 1"/>-<x id="PH_1" equiv-text="endIndex"/> sur <x id="PH_2" equiv-text="length"/></target>
       </trans-unit>
       <trans-unit id="pagination.jobs.select_page_label" datatype="html">
         <source>Select list page</source>

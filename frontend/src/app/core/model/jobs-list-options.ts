@@ -109,6 +109,9 @@ export class JobsListOptions {
             this.jobStatus = null;
         }
 
+        // in any case, filtering or canceling a filter resets the pagination
+        this.page = 0;
+
         return this;
     }
 }
