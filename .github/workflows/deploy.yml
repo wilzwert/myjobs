@@ -4,6 +4,8 @@ on:
   # deploy should be able to run manually
   workflow_dispatch:
   push:
+    branches:
+      - master
     tags:
       - 'v*'  # triggered by tags v1.0.0, v2.3.1, etc.
 
@@ -50,16 +52,53 @@ jobs:
 
 
 
-#  deploy-frontend:
-#    runs-on: ubuntu-latest
-#    environment: production
-#
-#    steps:
-#      - name: Checkout repo
-#        uses: actions/checkout@v4
-#      - name: Build frontend
-#        run:
-#            ng build --localize
-#      - name: Push to S3
-#        run:
-#            push
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    environment: production
+    env:
+      GOOGLE_RECAPTCHA_SITE_KEY: ${{ secrets.GOOGLE_RECAPTCHA_SITE_KEY }}
+      API_URL: ${{ vars.BACKEND_API_URL }}
+      API_SECURE: ${{ vars.BACKEND_API_SECURE }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build frontend
+        run:
+          ng build --localize --configuration=production
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.FRONTEND_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.FRONTEND_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.FRONTEND_AWS_S3_REGION }}
+
+      - name: Sync to S3
+        run: |
+          aws s3 sync dist/ s3://${{ secrets.FRONTEND_AWS_BUCKET }} \
+            --delete \
+            --cache-control "public,max-age=31536000,immutable" \
+            --exclude "index.html"
+          
+          aws s3 sync dist/ s3://${{ secrets.FRONTEND_AWS_BUCKET }} \
+            --cache-control "no-cache" \
+            --include "index.html"
+
+      - name: Invalidate CloudFront
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.FRONTEND_AWS_DISTRIBUTION_ID }} \
+            --paths "/*"
