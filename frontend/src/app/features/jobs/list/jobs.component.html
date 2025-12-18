@@ -79,18 +79,20 @@
 
 </div>
 
-<div class="paginator-container">
-    <mat-paginator #paginator
-            class="jobs-paginator"
-            (page)="handlePageEvent($event)"
-            [length]="page?.totalElementsCount"
-            [pageSize]="options!.getItemsPerPage()"
-            [pageIndex]="options!.getCurrentPage()"
-            [hidePageSize]="true"
-            aria-label="Select list page"
-            i18n-aria-label="Select list page@@pagination.jobs.select_page_label">
-    </mat-paginator>
-</div>
+@if(options !== null) {    
+    <div class="paginator-container">
+        <mat-paginator #paginator
+                class="jobs-paginator"
+                (page)="handlePageEvent($event)"
+                [length]="page?.totalElementsCount"
+                [pageSize]="options.getItemsPerPage()"
+                [pageIndex]="options.getCurrentPage()"
+                [hidePageSize]="true"
+                aria-label="Select list page"
+                i18n-aria-label="Select list page@@pagination.jobs.select_page_label">
+        </mat-paginator>
+    </div>
+}
 
 
 @if(page !== null && options !== null) {

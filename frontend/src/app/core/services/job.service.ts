@@ -40,7 +40,6 @@ export class JobService {
   public getAllJobs(jobsListOptions: JobsListOptions): Observable<Page<Job>> {
     return this.jobsSubject.pipe(
       switchMap((jobsPage: Page<Job> | null) => {
-        console.log('JobService.getAllJobs called with options:', jobsListOptions);
         if(jobsPage === null || jobsListOptions.getMustReload() || !this.currentOptions.equals(jobsListOptions)) {
           // create a new instance to store current options, otherwise the current instance would be the same as the one in the service
           this.currentOptions = jobsListOptions;

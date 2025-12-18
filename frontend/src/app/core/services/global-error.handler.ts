@@ -15,6 +15,7 @@ export class GlobalErrorHandler extends ErrorHandler {
 
 
     override handleError(error: Error) {
+        console.error('GlobalErrorHandler caught an error: ', error);
         this.notificationService.error(error.message??'', error);
     }
 }
