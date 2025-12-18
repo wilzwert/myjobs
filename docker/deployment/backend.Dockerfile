@@ -9,5 +9,5 @@ RUN ls -l infrastructure/target
 # 2 - Run
 FROM eclipse-temurin:21-jre
 COPY --from=builder /app/infrastructure/target/myjobs-prod.jar app.jar
-EXPOSE 8080
+EXPOSE 80
 ENTRYPOINT ["java", "-jar", "/app.jar"]

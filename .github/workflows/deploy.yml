@@ -1,53 +1,104 @@
-name: Deploy to Cloud Run
+name: Deployment
 
 on:
   # deploy should be able to run manually
   workflow_dispatch:
   push:
+    branches:
+      - master
     tags:
       - 'v*'  # triggered by tags v1.0.0, v2.3.1, etc.
 
 jobs:
-  deploy-backend:
+  deployment-backend:
     runs-on: ubuntu-latest
+    environment: production
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+      - name: Login to registry
+        run: |
+          echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login ${{ secrets.REGISTRY_HOST }} \
+            -u "${{ secrets.REGISTRY_USERNAME }}" \
+            --password-stdin
 
-      - name: Set up gcloud CLI
-        uses: google-github-actions/setup-gcloud@v2
-
+      # Build + tag Docker image
       - name: Build Docker image
         run: |
-          docker build -t europe-docker.pkg.dev/YOUR_PROJECT/YOUR_REPO/YOUR_IMAGE:$GITHUB_REF_NAME .
+          docker build \
+            -f docker/deployment/backend.Dockerfile \
+            -t ${{ secrets.REGISTRY_HOST }}/${{ secrets.BACKEND_IMAGE_NAME }}:latest \
+            -t ${{ secrets.REGISTRY_HOST }}/${{ secrets.BACKEND_IMAGE_NAME }}:sha-${{ github.sha }} \
+            .
 
-      - name: Push to Artifact Registry
+      - name: Push Docker image
         run: |
-          docker push europe-docker.pkg.dev/YOUR_PROJECT/YOUR_REPO/YOUR_IMAGE:$GITHUB_REF_NAME
+          docker push ${{ secrets.REGISTRY_HOST }}/${{ secrets.BACKEND_IMAGE_NAME }}:latest
+          docker push ${{ secrets.REGISTRY_HOST }}/${{ secrets.BACKEND_IMAGE_NAME }}:sha-${{ github.sha }}
 
-      - name: Deploy to Cloud Run
-        run: |
-          gcloud run deploy your-service-name \
-            --image=europe-docker.pkg.dev/YOUR_PROJECT/YOUR_REPO/YOUR_IMAGE:$GITHUB_REF_NAME \
-            --region=europe-west3 \
-            --platform=managed \
-            --allow-unauthenticated \
-            --project=YOUR_PROJECT
+      - name: Deploy
+        uses: appleboy/ssh-action@v1.2.4
+        with:
+            host: ${{ vars.BACKEND_HOST }}
+            port: ${{ secrets.BACKEND_HOST_SSH_PORT }}
+            username: ${{ secrets.BACKEND_HOST_SSH_USERNAME }}
+            key: ${{ secrets.BACKEND_HOST_SSH_KEY }}
+            script: |
+              cd /opt/apps/myjobs-backend
+              ./deploy.sh sha-${{ github.sha }}
+            
+
+
+
   deploy-frontend:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    environment: production
+    env:
+      GOOGLE_RECAPTCHA_SITE_KEY: ${{ secrets.GOOGLE_RECAPTCHA_SITE_KEY }}
+      API_URL: ${{ vars.BACKEND_API_URL }}
+      API_SECURE: ${{ vars.BACKEND_API_SECURE }}
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm ci
+
       - name: Build frontend
         run:
-            ng build --localize
-      - name: Push to S3
-        run:
-            push
+          npx ng build --localize --configuration=production
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.FRONTEND_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.FRONTEND_AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.FRONTEND_AWS_S3_REGION }}
+
+      - name: Sync to S3
+        run: |
+          aws s3 sync dist/ s3://${{ secrets.FRONTEND_AWS_BUCKET }} \
+            --delete \
+            --cache-control "public,max-age=31536000,immutable" \
+            --exclude "index.html"
+          
+          aws s3 sync dist/ s3://${{ secrets.FRONTEND_AWS_BUCKET }} \
+            --cache-control "no-cache" \
+            --include "index.html"
+
+      - name: Invalidate CloudFront
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ secrets.FRONTEND_AWS_DISTRIBUTION_ID }} \
+            --paths "/*"
