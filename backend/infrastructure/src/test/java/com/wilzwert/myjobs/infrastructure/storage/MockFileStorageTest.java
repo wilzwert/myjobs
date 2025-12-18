@@ -2,6 +2,7 @@ package com.wilzwert.myjobs.infrastructure.storage;
 
 
 import com.wilzwert.myjobs.core.domain.model.DownloadableFile;
+import com.wilzwert.myjobs.core.domain.model.attachment.Attachment;
 import com.wilzwert.myjobs.core.domain.model.attachment.AttachmentId;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.shared.ports.driven.FileStorage;
@@ -32,11 +33,17 @@ public class MockFileStorageTest {
         assertEquals("application/msword", uploadedFile.contentType());
 
         // Test de la récupération
-        String fileId = uploadedFile.path(); // Utilise le fileId retourné
-        String url = underTest.generateProtectedUrl(JobId.generate(), AttachmentId.generate(), fileId);
+        Attachment attachment = Attachment.builder()
+                .id(AttachmentId.generate())
+                .fileId(uploadedFile.path())
+                .name("test file")
+                .filename("testfile.doc")
+                .contentType("application/msword")
+                .build();
+        String url = underTest.generateProtectedUrl(JobId.generate(), attachment);
         assertEquals("https://mockstorage.local/fake-url/faked_uploads/cv.doc", url);
 
         // Test de la suppression
-        underTest.delete(fileId);
+        underTest.delete(attachment.getFileId());
     }
 }

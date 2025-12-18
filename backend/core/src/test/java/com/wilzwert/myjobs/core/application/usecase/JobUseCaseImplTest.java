@@ -79,11 +79,19 @@ class JobUseCaseImplTest {
     private Job testJob;
     private Job testFollowUpLateJob;
     private AttachmentId attachmentId;
+    private Attachment attachment;
 
     @BeforeEach
     void setUp() {
         UserId testUserId = UserId.generate();
         attachmentId = AttachmentId.generate();
+        attachment = Attachment.builder()
+                .id(attachmentId)
+                .name("Attachment name")
+                .fileId("fileId")
+                .filename("attachment.pdf")
+                .contentType("application/pdf")
+                .build();
         testJob = Job.builder()
                 .id(JobId.generate())
                 .userId(testUserId)
@@ -94,15 +102,7 @@ class JobUseCaseImplTest {
                 .status(JobStatus.PENDING)
                 .url("http://www.example.com/1")
                 .rating(JobRating.of(5))
-                .attachments(List.of(
-                        Attachment.builder()
-                                .id(attachmentId)
-                                .name("Attachment name")
-                                .fileId("fileId")
-                                .filename("attachment.pdf")
-                                .contentType("application/pdf")
-                                .build()
-                ))
+                .attachments(List.of(attachment))
                 .activities(Collections.emptyList())
                 .statusUpdatedAt(Instant.now().minusSeconds(3600)).build();
         testFollowUpLateJob = Job.builder()
@@ -991,14 +991,14 @@ class JobUseCaseImplTest {
 
             reset(userDataManager);
             when(jobDataManager.findByIdAndUserId(jobId, userId)).thenReturn(Optional.of(testJob));
-            when(fileStorage.generateProtectedUrl(testJob.getId(), attachmentId, "fileId")).thenReturn("http://my.url");
+            when(fileStorage.generateProtectedUrl(testJob.getId(), attachment)).thenReturn("http://my.url");
             var command = new DownloadAttachmentCommand(attachmentId.toString(), userId, jobId);
 
             AttachmentFileInfo info = underTest.getAttachmentFileInfo(command);
             assertInstanceOf(AttachmentFileInfo.class, info);
 
             verify(jobDataManager).findByIdAndUserId(jobId, userId);
-            verify(fileStorage).generateProtectedUrl(testJob.getId(), attachmentId, "fileId");
+            verify(fileStorage).generateProtectedUrl(testJob.getId(), attachment);
 
             assertEquals("fileId", info.fileId());
             assertEquals("http://my.url", info.url());
