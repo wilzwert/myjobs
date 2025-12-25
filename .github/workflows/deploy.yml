@@ -46,8 +46,8 @@ jobs:
             username: ${{ secrets.BACKEND_HOST_SSH_USERNAME }}
             key: ${{ secrets.BACKEND_HOST_SSH_KEY }}
             script: |
-              cd /opt/apps/myjobs-backend
-              ./deploy.sh sha-${{ github.sha }}
+              cd /opt/deploy-tools
+              ./deploy.sh myjobs-backend sha-${{ github.sha }}
             
 
 

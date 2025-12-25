@@ -66,6 +66,6 @@ if "%SONAR_SUPPORTS_BRANCH%"=="true" (
 echo [INFO] Launching Sonar with args: %SONAR_ARGS%
 
 REM === Run maven with Sonar ===
-./mvnw clean install sonar:sonar %SONAR_ARGS%
+./mvnw clean install org.sonarsource.scanner.maven:sonar-maven-plugin:sonar %SONAR_ARGS%
 
 endlocal
