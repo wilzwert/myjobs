@@ -1,4 +1,4 @@
-package com.wilzwert.myjobs.infrastructure.batch;
+/*package com.wilzwert.myjobs.infrastructure.batch;
 
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.ReplaceOptions;
@@ -15,6 +15,8 @@ import java.util.Map;
  * Configure Spring Batch to use mongo repo and explorer
  * @author Wilhelm Zwertvaegher
  */
+
+/*
 @Component
 public class MongoBatchCollectionsInitializer {
 
@@ -90,4 +92,4 @@ public class MongoBatchCollectionsInitializer {
         mongoTemplate.indexOps(batchStepExecutionCollection)
                 .ensureIndex(new Index().on("stepExecutionId", Sort.Direction.ASC).named("step_execution_idx"));
     }
-}
+}*/

@@ -1,5 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 

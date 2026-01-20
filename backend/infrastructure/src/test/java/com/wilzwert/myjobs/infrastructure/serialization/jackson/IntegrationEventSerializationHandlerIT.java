@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.serialization.jackson;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import com.wilzwert.myjobs.core.domain.model.activity.ActivityId;
 import com.wilzwert.myjobs.core.domain.model.activity.ActivityType;
 import com.wilzwert.myjobs.core.domain.model.activity.event.integration.ActivityAutomaticallyCreatedEvent;
@@ -139,14 +139,14 @@ class IntegrationEventSerializationHandlerIT extends AbstractBaseIntegrationTest
 
     @ParameterizedTest
     @MethodSource("provideEvents")
-    <T extends IntegrationEvent> void shouldSerializeEvent(T event) throws JsonProcessingException {
+    <T extends IntegrationEvent> void shouldSerializeEvent(T event) throws JacksonException {
         String json = handler.serialize(event);
         assertThat(json).isNotEmpty();
     }
 
     @ParameterizedTest
     @MethodSource("provideEvents")
-    <T extends IntegrationEvent> void shouldDeserializeEvent(T event, BiFunction <IntegrationEvent, IntegrationEvent, Boolean> check) throws JsonProcessingException {
+    <T extends IntegrationEvent> void shouldDeserializeEvent(T event, BiFunction <IntegrationEvent, IntegrationEvent, Boolean> check) throws JacksonException {
         String payload = objectMapper.writeValueAsString(event);
         MongoIntegrationEvent mongoEvent = new MongoIntegrationEvent();
         mongoEvent.setId(eventId);

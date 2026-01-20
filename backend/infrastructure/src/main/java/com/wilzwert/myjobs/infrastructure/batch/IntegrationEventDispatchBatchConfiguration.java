@@ -6,14 +6,13 @@ import com.wilzwert.myjobs.infrastructure.event.IntegrationEventProcessor;
 import com.wilzwert.myjobs.infrastructure.event.IntegrationEventReader;
 import com.wilzwert.myjobs.infrastructure.event.IntegrationEventWriter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.Step;
+import org.springframework.batch.core.job.Job;
+import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.MongoTransactionManager;
 
 /**
  * @author Wilhelm Zwertvaegher
@@ -29,7 +28,11 @@ public class IntegrationEventDispatchBatchConfiguration {
 
     private final IntegrationEventWriter integrationEventWriter;
 
-    IntegrationEventDispatchBatchConfiguration(IntegrationEventReader integrationEventReader, IntegrationEventProcessor integrationEventProcessor, IntegrationEventWriter integrationEventWriter) {
+    IntegrationEventDispatchBatchConfiguration(
+            IntegrationEventReader integrationEventReader,
+            IntegrationEventProcessor integrationEventProcessor,
+            IntegrationEventWriter integrationEventWriter
+    ) {
         this.integrationEventReader = integrationEventReader;
         this.integrationEventProcessor = integrationEventProcessor;
         this.integrationEventWriter = integrationEventWriter;
@@ -37,16 +40,16 @@ public class IntegrationEventDispatchBatchConfiguration {
 
     @Bean
     public Job integrationEventDispatchJob(Step integrationEventDispatchStep, JobRepository jobRepository) {
-        return new JobBuilder("IntegrationEventDispatch", jobRepository)
+        return new JobBuilder("integrationEventDispatch", jobRepository)
                 .start(integrationEventDispatchStep)
                 .preventRestart()
                 .build();
     }
 
     @Bean
-    public Step integrationEventDispatchStep(JobRepository jobRepository, MongoTransactionManager transactionManager) {
+    public Step integrationEventDispatchStep(JobRepository jobRepository) {
         return new StepBuilder("integrationEventStep", jobRepository)
-                .<IntegrationEvent, IntegrationEvent>chunk(10, transactionManager)
+                .<IntegrationEvent, IntegrationEvent>chunk(10)
                 .reader(integrationEventReader)
                 .processor(integrationEventProcessor)
                 .writer(integrationEventWriter)

@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 import com.wilzwert.myjobs.core.domain.model.user.Lang;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

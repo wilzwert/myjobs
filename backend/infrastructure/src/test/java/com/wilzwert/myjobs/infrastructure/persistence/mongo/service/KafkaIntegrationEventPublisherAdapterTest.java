@@ -1,6 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import tools.jackson.core.JacksonException;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.event.integration.*;
 import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEvent;
@@ -39,7 +39,7 @@ class KafkaIntegrationEventPublisherAdapterTest {
     }
 
     @Test
-    void publish_shouldSaveEventToMongo() throws JsonProcessingException {
+    void publish_shouldSaveEventToMongo() throws JacksonException {
         JobUpdatedEvent event = new JobUpdatedEvent(
                 new IntegrationEventId(eventId),
                 now,

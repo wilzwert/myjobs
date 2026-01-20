@@ -1,15 +1,15 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.dto.job;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
 import com.wilzwert.myjobs.core.domain.model.job.JobRating;
+import tools.jackson.databind.ValueDeserializer;
 
-import java.io.IOException;
 
-public class JobRatingDeserializer extends JsonDeserializer<JobRating> {
+public class JobRatingDeserializer extends ValueDeserializer<JobRating> {
     @Override
-    public JobRating deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
+    public JobRating deserialize(JsonParser p, DeserializationContext ctxt) throws JacksonException {
         int value = p.getIntValue();
         return JobRating.of(value);
     }

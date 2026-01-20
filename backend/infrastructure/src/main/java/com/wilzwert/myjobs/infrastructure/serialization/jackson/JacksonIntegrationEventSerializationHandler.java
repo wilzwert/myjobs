@@ -1,8 +1,8 @@
 package com.wilzwert.myjobs.infrastructure.serialization.jackson;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEvent;
 import com.wilzwert.myjobs.infrastructure.serialization.IntegrationEventSerializationHandler;
 import com.wilzwert.myjobs.infrastructure.serialization.exception.DeserializationException;
@@ -49,7 +49,7 @@ public class JacksonIntegrationEventSerializationHandler implements IntegrationE
             log.info("Reading payload into {}", clazz.getSimpleName());
             return objectMapper.readValue(payload, clazz);
         }
-        catch (JsonProcessingException ex) {
+        catch (JacksonException ex) {
             throw new DeserializationException("Cannot process JSON", ex);
         }
     }
@@ -59,7 +59,7 @@ public class JacksonIntegrationEventSerializationHandler implements IntegrationE
         try {
             return objectMapper.writeValueAsString(event);
         }
-        catch(JsonProcessingException e) {
+        catch(JacksonException e) {
             throw new SerializationException("Serialization failed", e);
         }
     }

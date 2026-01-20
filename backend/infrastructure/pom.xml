@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.5</version>
+        <version>4.0.1</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.wilzwert.myjobs.infrastructure</groupId>
@@ -28,7 +28,10 @@
         <url/>
     </scm>
     <properties>
-        <java.version>21</java.version>
+        <java.version>25</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <spring-boot.version>4.0.1</spring-boot.version>
     </properties>
     <dependencies>
         <dependency>
@@ -68,23 +71,27 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-batch</artifactId>
-            <version>3.4.5</version>
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>1.19.1</version>
+            <version>1.22.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.36</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -94,52 +101,52 @@
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct</artifactId>
-            <version>1.6.2</version>
+            <version>1.6.3</version>
         </dependency>
         <dependency>
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct-processor</artifactId>
-            <version>1.6.2</version>
+            <version>1.6.3</version>
         </dependency>
 
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
-            <version>0.12.6</version>
+            <version>0.13.0</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-impl</artifactId>
-            <version>0.12.6</version>
+            <version>0.13.0</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-jackson</artifactId>
-            <version>0.12.6</version>
+            <version>0.13.0</version>
             <scope>runtime</scope>
         </dependency>
 
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
-            <version>3.2.0</version>
+            <version>3.2.3</version>
         </dependency>
 
         <dependency>
             <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
             <artifactId>owasp-java-html-sanitizer</artifactId>
-            <version>20240325.1</version>
+            <version>20260102.1</version>
         </dependency>
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>s3</artifactId>
-            <version>2.25.27</version>
+            <version>2.41.10</version>
         </dependency>
 
         <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
-            <version>8.0</version>
+            <version>9.0</version>
         </dependency>
 
         <dependency>
@@ -149,16 +156,21 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.kafka</groupId>
-            <artifactId>spring-kafka</artifactId>
-            <version>4.0.0-M2</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-kafka</artifactId>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy-agent -->
         <dependency>
             <groupId>net.bytebuddy</groupId>
             <artifactId>byte-buddy-agent</artifactId>
-            <version>1.15.11</version>
+            <version>1.18.4</version>
             <scope>test</scope>
         </dependency>
 
@@ -169,21 +181,15 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.batch</groupId>
-            <artifactId>spring-batch-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.11.4</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-batch-test</artifactId>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>junit-jupiter</artifactId>
+            <version>1.21.4</version>
             <scope>test</scope>
         </dependency>
 
@@ -196,33 +202,36 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>mongodb</artifactId>
+            <version>1.21.4</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>kafka</artifactId>
+            <version>1.21.4</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.kafka</groupId>
-            <artifactId>spring-kafka-test</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-kafka-test</artifactId>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.bucket4j</groupId>
-            <artifactId>bucket4j-core</artifactId>
-            <version>8.10.1</version>
+            <artifactId>bucket4j_jdk17-core</artifactId>
+            <version>8.16.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.fusesource.jansi</groupId>
             <artifactId>jansi</artifactId>
-            <version>2.4.1</version>
+            <version>2.4.2</version>
             <scope>runtime</scope>
         </dependency>
+
 
 
         <!-- Optional Dependency for Development -->
@@ -237,6 +246,10 @@
             <groupId>com.wilzwert.myjobs.core</groupId>
             <artifactId>myjobs-core</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
 
@@ -267,7 +280,7 @@
                         <path>
                             <groupId>org.mapstruct</groupId>
                             <artifactId>mapstruct-processor</artifactId>
-                            <version>1.6.2</version>
+                            <version>1.6.3</version>
                         </path>
                         <path>
                             <groupId>org.projectlombok</groupId>
@@ -277,7 +290,6 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.36</version>
                         </path>
                     </annotationProcessorPaths>
                     <compilerArgs>
@@ -309,9 +321,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.2</version>
+                <version>3.5.4</version>
                 <configuration>
-                    <argLine>@{argLine} -javaagent:${net.bytebuddy:byte-buddy-agent:jar} -Djava.security.manager=allow</argLine>
+                    <!-- <argLine>@{argLine} -javaagent:${net.bytebuddy:byte-buddy-agent:jar} -Djava.security.manager=allow</argLine>-->
+                    <argLine>@{argLine} -javaagent:${net.bytebuddy:byte-buddy-agent:jar}</argLine>
                     <systemPropertyVariables>
                         <spring.profiles.active>test</spring.profiles.active>
                     </systemPropertyVariables>
@@ -325,9 +338,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <version>3.2.5</version>
+                <version>3.5.4</version>
                 <configuration>
-                    <argLine>@{argLine} -javaagent:${net.bytebuddy:byte-buddy-agent:jar} -Djava.security.manager=allow</argLine>
+                    <!-- <argLine>@{argLine} -javaagent:${net.bytebuddy:byte-buddy-agent:jar} -Djava.security.manager=allow</argLine>-->
+                    <argLine>@{argLine} -javaagent:${net.bytebuddy:byte-buddy-agent:jar}</argLine>
                     <systemPropertyVariables>
                         <spring.profiles.active>integration</spring.profiles.active>
                     </systemPropertyVariables>
@@ -349,7 +363,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.12</version>
+                <version>0.8.14</version>
                 <configuration>
                     <excludes>
                         <exclude>**/*MapperImpl*</exclude>

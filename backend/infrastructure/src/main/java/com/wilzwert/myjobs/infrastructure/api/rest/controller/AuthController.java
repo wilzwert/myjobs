@@ -100,13 +100,13 @@ public class AuthController {
     @GetMapping("/email-check")
     @RequiresCaptcha
     public ResponseEntity<Void> emailCheck(@RequestParam("email") String email) {
-        return checkUserAvailabilityUseCase.isEmailTaken(email) ? new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY) : new ResponseEntity<>(HttpStatus.OK);
+        return checkUserAvailabilityUseCase.isEmailTaken(email) ? new ResponseEntity<>(HttpStatus.UNPROCESSABLE_CONTENT) : new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/username-check")
     @RequiresCaptcha
     public ResponseEntity<Void> usernameCheck(@RequestParam("username") String username) {
-        return checkUserAvailabilityUseCase.isUsernameTaken(username) ? new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY) : new ResponseEntity<>(HttpStatus.OK);
+        return checkUserAvailabilityUseCase.isUsernameTaken(username) ? new ResponseEntity<>(HttpStatus.UNPROCESSABLE_CONTENT) : new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/refresh-token")

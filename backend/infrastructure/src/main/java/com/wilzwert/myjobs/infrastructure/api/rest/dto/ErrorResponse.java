@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import tools.jackson.databind.DatabindException;
 import com.wilzwert.myjobs.core.domain.model.user.exception.LoginException;
 import com.wilzwert.myjobs.core.domain.shared.exception.DomainException;
 import com.wilzwert.myjobs.core.domain.shared.exception.EntityAlreadyExistsException;
@@ -59,7 +59,7 @@ public class ErrorResponse {
         for (ValidationError error : ex.getFlatErrors()) {
             errors.computeIfAbsent(error.field(), k -> new ArrayList<>()).add(new ValidationErrorResponse(error.code().name(), error.details()));
         }
-        return build(HttpStatus.UNPROCESSABLE_ENTITY, ErrorCode.VALIDATION_FAILED.name(), errors);
+        return build(HttpStatus.UNPROCESSABLE_CONTENT, ErrorCode.VALIDATION_FAILED.name(), errors);
     }
 
     public static ErrorResponse fromException(DomainException ex) {
@@ -87,7 +87,7 @@ public class ErrorResponse {
         for(ConstraintViolation<?> violation : ex.getConstraintViolations()){
             errors.computeIfAbsent(violation.getPropertyPath().toString(), k -> new ArrayList<>()).add(new ValidationErrorResponse(violation.getMessage() != null ? violation.getMessage() : ErrorCode.UNEXPECTED_ERROR.name()));
         }
-        return build(HttpStatus.UNPROCESSABLE_ENTITY, ErrorCode.VALIDATION_FAILED.name(), errors);
+        return build(HttpStatus.UNPROCESSABLE_CONTENT, ErrorCode.VALIDATION_FAILED.name(), errors);
     }
 
     public static ErrorResponse fromException(LoginException ex) {
@@ -112,10 +112,10 @@ public class ErrorResponse {
 
     public static ErrorResponse fromException(HttpMessageNotReadableException ex) {
         Throwable cause = ex.getCause();
-        if (cause instanceof JsonMappingException formatEx) {
+        if (cause instanceof DatabindException formatEx) {
             String fieldName = "";
             if (!formatEx.getPath().isEmpty()) {
-                fieldName = formatEx.getPath().getFirst().getFieldName();
+                fieldName = formatEx.getPath().getFirst().getPropertyName();
             }
             if(fieldName != null && !fieldName.isEmpty()) {
                 Map<String, List<ValidationErrorResponse>> errors = new HashMap<>();

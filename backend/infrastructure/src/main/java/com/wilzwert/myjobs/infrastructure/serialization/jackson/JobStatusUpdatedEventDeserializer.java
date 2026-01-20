@@ -1,8 +1,9 @@
 package com.wilzwert.myjobs.infrastructure.serialization.jackson;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEventId;
@@ -21,8 +22,8 @@ public class JobStatusUpdatedEventDeserializer extends JacksonIntegrationEventDe
     }
 
     @Override
-    public JobStatusUpdatedEvent deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-        JsonNode node = p.getCodec().readTree(p);
+    public JobStatusUpdatedEvent deserialize(JsonParser p, DeserializationContext ctxt) throws JacksonException {
+        JsonNode node = p.objectReadContext().readTree(p);
 
         IntegrationEventId id = IntegrationEventDeserializationUtils.extractId(node);
         Instant occurredAt = IntegrationEventDeserializationUtils.extractOccurredAt(node);

@@ -50,12 +50,14 @@ public class PatchJobController {
     }
 
     @PatchMapping("/{id}")
-    public JobResponse patch(@PathVariable("id") String id, @RequestBody Map<String, Object> fields, Authentication authentication) {
+    public JobResponse patch(@PathVariable String id, @RequestBody Map<String, Object> fields, Authentication authentication) {
         // we need the right DTO for the right job
         // the factory will build one based on the request contents
+        System.out.println(fields);
         UpdateJobDto updateJobDto = updateJobDtoFactory.createUpdateJobDto(fields);
         Set<ConstraintViolation<UpdateJobDto>> violations = validator.validate(updateJobDto);
         if (!violations.isEmpty()) {
+            System.out.println("violations found !");
             throw new ConstraintViolationException(violations);
         }
 

@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.serialization.jackson;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import com.wilzwert.myjobs.core.domain.model.user.UserId;
 import com.wilzwert.myjobs.core.domain.model.user.event.integration.UserCreatedEvent;
 import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEventId;
@@ -27,9 +27,9 @@ class IntegrationEventSerializationHandlerTest {
     private JacksonIntegrationEventSerializationHandler handler;
 
     @Test
-    void whenJsonJsonProcessingException_thenShouldThrowSerializationException() throws JsonProcessingException {
+    void whenJsonJsonProcessingException_thenShouldThrowSerializationException() throws JacksonException {
         UserCreatedEvent event = new UserCreatedEvent(IntegrationEventId.generate(), UserId.generate());
-        when(objectMapper.writeValueAsString(event)).thenThrow(JsonProcessingException.class);
+        when(objectMapper.writeValueAsString(event)).thenThrow(JacksonException.class);
 
         var ex = assertThrows(SerializationException.class, () -> handler.serialize(event));
         assertThat(ex.getMessage()).contains("Serialization failed");

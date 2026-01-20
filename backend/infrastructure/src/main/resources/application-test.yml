@@ -6,4 +6,4 @@ logging:
         data:
           mongodb: WARN
 
-application.kafka.topic.prefix: myjobs-test
+application.kafka.topic-prefix: myjobs-test-

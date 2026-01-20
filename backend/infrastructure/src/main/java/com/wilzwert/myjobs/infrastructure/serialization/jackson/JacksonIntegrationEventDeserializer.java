@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.serialization.jackson;
 
 
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import tools.jackson.databind.deser.std.StdDeserializer;
 import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEvent;
 
 /**
