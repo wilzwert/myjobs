@@ -1,6 +1,6 @@
 # this file is used to build the final docker image used to deploy the project on Cloud Run
 # 1- Build
-FROM maven:3.9.9-eclipse-temurin-25 AS builder
+FROM maven:3.9.11-eclipse-temurin-25 AS builder
 WORKDIR /app
 COPY ./backend .
 RUN mvn clean package -DskipTests -Pprod
