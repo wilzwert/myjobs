@@ -70,7 +70,7 @@ public abstract class AbstractBaseIntegrationTest {
 
     @DynamicPropertySource
     static void registerMongoProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.data.mongodb.uri", mongo::getReplicaSetUrl);
-        registry.add("spring.data.mongodb.database", () -> "testdb");
+        registry.add("spring.mongodb.uri", mongo::getReplicaSetUrl);
+        registry.add("spring.mongodb.database", () -> "testdb");
     }
 }
