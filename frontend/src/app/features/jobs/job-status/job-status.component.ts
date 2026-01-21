@@ -16,7 +16,6 @@ import { MatTooltip } from '@angular/material/tooltip';
 })
 export class JobStatusComponent {
   @Input({ required: true }) job!: Job;
-  @Output() statusChanged = new EventEmitter<Job>();
 
   statusKeys: string[] = [];
 

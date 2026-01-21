@@ -6,6 +6,7 @@ import { CookieService } from 'ngx-cookie-service';
 import { User } from '@core/model/user.interface';
 import { EmailStatus } from '@core/model/email-status';
 import { Lang } from '@core/model/lang';
+import { LocationService } from './location.service';
 
 describe('LocaleService tests', () => {
   let service: LocaleService;
@@ -13,20 +14,10 @@ describe('LocaleService tests', () => {
   let sessionServiceMock: jest.Mocked<SessionService>;
   let userServiceMock: jest.Mocked<UserService>;
   let cookieServiceMock: jest.Mocked<CookieService>;
+  let locationServiceMock: jest.Mocked<LocationService>;
 
   let userMock = { firstName: 'John', lastName: 'Doe', username: 'john', email: 'john@doe.com', lang: Lang.FR, emailStatus: EmailStatus.VALIDATED, createdAt: '' } as User;
-
-  const locationMock = { href: '', assign: jest.fn() };
-  global.window.location = locationMock as any;
-
-  Object.defineProperty(window, 'location', {
-    value: {
-      ...window.location,
-      assign: jest.fn(),
-    },
-    writable: true,
-  });
-
+  
   beforeEach(() => {
     sessionServiceMock = {
       isLogged: jest.fn()
@@ -43,7 +34,11 @@ describe('LocaleService tests', () => {
       get: jest.fn()
     } as unknown as jest.Mocked<CookieService>;
 
-    service = new LocaleService(sessionServiceMock, userServiceMock, cookieServiceMock);
+    locationServiceMock = {
+      assign: jest.fn()
+    } as unknown as jest.Mocked<LocationService>;
+
+    service = new LocaleService(sessionServiceMock, userServiceMock, cookieServiceMock, locationServiceMock);
   });
 
   it('should be created', () => {
@@ -116,7 +111,7 @@ describe('LocaleService tests', () => {
       setTimeout(() => {
         expect(userServiceMock.saveUserLang).toHaveBeenCalledWith('fr');
         expect(cookieServiceMock.set).toHaveBeenCalledWith('lang', 'fr', { expires: 365, path: '/' });
-        expect(window.location.assign).toHaveBeenCalledWith(expect.stringContaining('/fr'));
+        expect(locationServiceMock.assign).toHaveBeenCalledWith(expect.stringContaining('/fr'));
         done();
       }, 10);
     });
@@ -131,7 +126,7 @@ describe('LocaleService tests', () => {
       setTimeout(() => {
         expect(userServiceMock.saveUserLang).not.toHaveBeenCalled();
         expect(cookieServiceMock.set).toHaveBeenCalledWith('lang', 'fr', { expires: 365, path: '/' });
-        expect(window.location.assign).toHaveBeenCalledWith(expect.stringContaining('/fr'));
+        expect(locationServiceMock.assign).toHaveBeenCalledWith(expect.stringContaining('/fr'));
         done();
       }, 10);
     });

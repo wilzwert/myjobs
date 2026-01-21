@@ -7,6 +7,7 @@ import { UserService } from './user.service';
 import { SessionService } from './session.service';
 import { CookieService } from 'ngx-cookie-service'
 import { AVAILABLE_LANGS } from '@lang/lang';
+import { LocationService } from './location.service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +21,7 @@ export class LocaleService {
   private initialLoadHandled = false;
   private isInitialized = false;
 
-  constructor(private sessionService: SessionService, private userService: UserService, private cookieService: CookieService) {}
+  constructor(private sessionService: SessionService, private userService: UserService, private cookieService: CookieService, private locationService: LocationService) {}
 
   private save(lang: string): Observable<void> {
     // cookie will allow access to the preferred lang from the front web server (nginx, cloudfront...)
@@ -71,7 +72,7 @@ export class LocaleService {
   }
 
   private redirectTo(url: string) :void {
-    window.location.assign(url);
+    this.locationService.assign(url);
   }
 
   private async resolveDefaultLocale() : Promise<string> {

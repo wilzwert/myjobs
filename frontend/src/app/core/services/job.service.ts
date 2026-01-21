@@ -54,10 +54,13 @@ export class JobService {
             statusOrFilterParam += `statusMeta=${statusMeta}`;
           }
           
-          const url = `jobs?page=${this.currentOptions.getCurrentPage()}&itemsPerPage=${this.currentOptions.getItemsPerPage()}`
+          let url = `jobs?page=${this.currentOptions.getCurrentPage()}&itemsPerPage=${this.currentOptions.getItemsPerPage()}`
             +(statusOrFilterParam ? `&${statusOrFilterParam}` : '')
-            +`&sort=${this.currentOptions.getSort()}`
-            +`&query=${encodeURIComponent(this.currentOptions.getQuery() as string)}`
+            +`&sort=${this.currentOptions.getSort()}`;
+          const query = this.currentOptions.getQuery();
+          if(query !== null && query.length > 0) {
+            url += `&query=${encodeURIComponent(this.currentOptions.getQuery() as string)}`;
+          }
 
           return this.dataService.get<Page<Job>>(url).pipe(
             switchMap((fetchedJobs: Page<Job>) => {

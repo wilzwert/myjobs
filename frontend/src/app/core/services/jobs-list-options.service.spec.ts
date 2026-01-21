@@ -40,15 +40,15 @@ describe('JobsListOptionsService', () => {
 
   it('should initialize from stored options when summary unable to load', () => {
     const stored = new JobsListOptions();
-    stored.changePagination(1, 15);
     stored.filter(JobStatus.PENDING, null);
     stored.sort("rating,asc");
     stored.query("search term");
+    stored.changePagination(1, 15);
     getItem.mockReturnValue(stored);
 
     // simulate a summary loading error
     userSummarySignal.set(false);
-    TestBed.flushEffects();
+    TestBed.tick();
 
     // check options have been retrieved from the storage service
     expect(getItem).toHaveBeenCalledWith('jobs-filter');
@@ -62,7 +62,7 @@ describe('JobsListOptionsService', () => {
     expect(currentOptions.getItemsPerPage()).toEqual(15);
     expect(dataStorageMock.setItem).toHaveBeenCalled(); // sauvegarde appelée
   });
-
+  
   it('should create default options when no options stored and summary unable to load', () => {
     // no stored options
     getItem.mockReturnValue(null);

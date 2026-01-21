@@ -51,6 +51,8 @@ describe('JobStatusComponent', () => {
     });
   });
 
+
+  /* TODO as of now there is no possibility to update only status, so this test is unncessary
   describe('editJobStatus()', () => {
     it('should call jobService.updateJobStatus with correct params and notify on success', () => {
       const newStatus = JobStatus.PENDING;
@@ -63,7 +65,7 @@ describe('JobStatusComponent', () => {
         $localize`:@@info.job.status.updated:Status updated successfully.`
       );
     });
-  });
+  });*/
 
   it('should initialize statusKeys with enum keys', () => {
     const keys = Object.keys(JobStatus);

@@ -43,7 +43,7 @@ describe('JobSummaryComponent', () => {
     status: 'PENDING',
     salary: "Salary",
     rating: {value: 5},
-    statusUpdatedAt:  new Date().toISOString();
+    statusUpdatedAt:  new Date().toISOString(),
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     activities: [],
