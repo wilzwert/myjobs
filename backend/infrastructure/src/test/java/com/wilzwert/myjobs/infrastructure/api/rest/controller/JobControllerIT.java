@@ -258,7 +258,6 @@ public class JobControllerIT extends AbstractBaseIntegrationTest  {
                     )
                     .andExpect(status().isOk())
                     .andReturn();
-            System.out.println(mvcResult.getResponse().getContentAsString());
             JobResponse jobResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), JobResponse.class);
             assertThat(jobResponse).isNotNull();
             assertEquals("My second job", jobResponse.getTitle());

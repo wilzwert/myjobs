@@ -1,5 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.configuration;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.boot.EnvironmentPostProcessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -22,7 +23,7 @@ public class DotEnvConfiguration implements EnvironmentPostProcessor {
     private static final String DOT_ENV_PATH_KEY = "DOT_ENV_PATH";
 
     @Override
-    public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
+    public void postProcessEnvironment(@NonNull ConfigurableEnvironment environment, @NonNull SpringApplication application) {
         try {
             File baseEnv = getEnvFile();
             if (baseEnv.exists()) {
@@ -47,13 +48,13 @@ public class DotEnvConfiguration implements EnvironmentPostProcessor {
         String overridePath = props.getProperty(DOT_ENV_PATH_KEY);
 
         if (overridePath != null && !overridePath.isBlank()) {
-            loadEnvFile(new File(overridePath), environment, "DOT_ENV_PATH");
+            loadEnvFile(new File(overridePath), environment);
         } else {
-            loadEnvFile(envFile, environment, "local .env");
+            loadEnvFile(envFile, environment);
         }
     }
 
-    private void loadEnvFile(File file, ConfigurableEnvironment environment, String origin) throws IOException {
+    private void loadEnvFile(File file, ConfigurableEnvironment environment) throws IOException {
         ResourcePropertySource source = new ResourcePropertySource(new FileSystemResource(file));
         environment.getPropertySources().addLast(source);
     }

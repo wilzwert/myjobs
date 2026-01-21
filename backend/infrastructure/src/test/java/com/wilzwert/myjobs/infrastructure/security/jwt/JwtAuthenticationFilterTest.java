@@ -11,6 +11,7 @@ import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -110,7 +111,7 @@ public class JwtAuthenticationFilterTest {
             private boolean isAuthenticated = false;
 
              @Override
-             public Collection<? extends GrantedAuthority> getAuthorities() {
+             public @NonNull Collection<? extends GrantedAuthority> getAuthorities() {
                  return List.of();
              }
 

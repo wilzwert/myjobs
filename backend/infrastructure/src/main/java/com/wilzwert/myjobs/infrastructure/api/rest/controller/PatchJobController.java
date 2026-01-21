@@ -53,17 +53,16 @@ public class PatchJobController {
     public JobResponse patch(@PathVariable String id, @RequestBody Map<String, Object> fields, Authentication authentication) {
         // we need the right DTO for the right job
         // the factory will build one based on the request contents
-        System.out.println(fields);
         UpdateJobDto updateJobDto = updateJobDtoFactory.createUpdateJobDto(fields);
         Set<ConstraintViolation<UpdateJobDto>> violations = validator.validate(updateJobDto);
         if (!violations.isEmpty()) {
-            System.out.println("violations found !");
             throw new ConstraintViolationException(violations);
         }
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         // DTO is built and validated, now the domain needs a command,
         // so we use the mapper to convert our DTO to the right command
+        assert userDetails != null;
         UpdateJobCommand command = updateJobMapper.toCommand(updateJobDto, new JobId(UUID.fromString(id)), userDetails.getId());
         log.info("got this command {}", command);
 
