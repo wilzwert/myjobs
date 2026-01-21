@@ -51,7 +51,13 @@ jobs:
         with:
           java-version: '25'
           distribution: 'temurin'
-          cache: maven
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-java25-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-java25-
 
       - name: Run tests and generate coverage report
         id: run-backend-tests
