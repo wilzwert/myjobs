@@ -35,5 +35,5 @@ public class JobResponse {
     private List<ActivityResponse> activities;
     private List<AttachmentResponse> attachments;
     // this is a property computed and added by the domain
-    private boolean isFollowUpLate;
+    private boolean followUpLate;
 }

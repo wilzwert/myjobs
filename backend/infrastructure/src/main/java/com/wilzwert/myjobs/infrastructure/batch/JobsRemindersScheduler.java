@@ -2,7 +2,11 @@ package com.wilzwert.myjobs.infrastructure.batch;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.*;
-import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.job.Job;
+import org.springframework.batch.core.job.JobExecution;
+import org.springframework.batch.core.job.parameters.JobParameters;
+import org.springframework.batch.core.job.parameters.JobParametersBuilder;
+import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -14,11 +18,11 @@ import java.util.UUID;
 @Slf4j
 public class JobsRemindersScheduler {
 
-    private final JobLauncher jobLauncher;
+    private final JobOperator jobOperator;
     private final Job jobReminderJob;
 
-    public JobsRemindersScheduler(JobLauncher jobLauncher, Job jobReminderJob) {
-        this.jobLauncher = jobLauncher;
+    public JobsRemindersScheduler(JobOperator jobOperator, Job jobReminderJob) {
+        this.jobOperator = jobOperator;
         this.jobReminderJob = jobReminderJob;
     }
 
@@ -28,7 +32,7 @@ public class JobsRemindersScheduler {
                 .addString("run.id", UUID.randomUUID().toString(), true)
                 .toJobParameters();
         try {
-            JobExecution execution = jobLauncher.run(jobReminderJob, params);
+            JobExecution execution = jobOperator.start(jobReminderJob, params);
             log.info("Job reminders scheduled run, started at {}, ended at {}, exited with {}", execution.getStartTime(), execution.getEndTime(), execution.getExitStatus());
         }
         catch (Exception e) {

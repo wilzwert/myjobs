@@ -1,6 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatusMeta;
 import com.wilzwert.myjobs.core.domain.model.user.Lang;
@@ -20,7 +20,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -178,7 +178,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
         void whenUsernameTooShort_thenShouldReturnUnprocessableEntity() throws Exception {
             updateUserRequest.setUsername("T");
             mockMvc.perform(patch(UPDATE_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateUserRequest)))
-                    .andExpect(status().isUnprocessableEntity())
+                    .andExpect(status().isUnprocessableContent())
                     .andExpect(jsonPath("errors.username[0].code").value(ErrorCode.FIELD_TOO_SHORT.name()));
         }
 
@@ -186,7 +186,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
         void whenUsernameTooLong_thenShouldReturnUnprocessableEntity() throws Exception {
             updateUserRequest.setUsername("thisisafartoolongusernamethatshouldtriggeravalidationerror");
             mockMvc.perform(patch(UPDATE_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateUserRequest)))
-                    .andExpect(status().isUnprocessableEntity())
+                    .andExpect(status().isUnprocessableContent())
                     .andExpect(jsonPath("errors.username[0].code").value(ErrorCode.FIELD_TOO_LONG.name()));
         }
 

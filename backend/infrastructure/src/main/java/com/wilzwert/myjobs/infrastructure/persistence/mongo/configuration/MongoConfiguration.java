@@ -6,11 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.MongoTransactionManager;
-import org.springframework.data.mongodb.core.convert.DbRefResolver;
-import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
-import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
-import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.util.Arrays;
 
@@ -20,11 +17,12 @@ import java.util.Arrays;
 
 
 @Configuration
+@EnableTransactionManagement
 public class MongoConfiguration {
 
     @Bean
-    MongoTransactionManager transactionManager(MongoDatabaseFactory dbFactory) {
-        return new MongoTransactionManager(dbFactory);
+    public MongoTransactionManager transactionManager(MongoDatabaseFactory mongoDatabaseFactory) {
+        return new MongoTransactionManager(mongoDatabaseFactory);
     }
 
     @Bean
@@ -35,18 +33,5 @@ public class MongoConfiguration {
                         new JobRatingWriteConverter()
                 )
         );
-    }
-
-    @Bean
-    public MappingMongoConverter mappingMongoConverter(MongoDatabaseFactory factory,
-                                                       MongoCustomConversions conversions,
-                                                       MongoMappingContext context) {
-
-        DbRefResolver dbRefResolver = new DefaultDbRefResolver(factory);
-        MappingMongoConverter converter = new MappingMongoConverter(dbRefResolver, context);
-        converter.setCustomConversions(conversions);
-
-        converter.setMapKeyDotReplacement("_");
-        return converter;
     }
 }

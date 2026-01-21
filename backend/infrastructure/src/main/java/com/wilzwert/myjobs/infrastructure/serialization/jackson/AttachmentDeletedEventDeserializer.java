@@ -1,15 +1,15 @@
 package com.wilzwert.myjobs.infrastructure.serialization.jackson;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonNode;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.JsonNode;
 import com.wilzwert.myjobs.core.domain.model.attachment.AttachmentId;
 import com.wilzwert.myjobs.core.domain.model.attachment.event.integration.AttachmentDeletedEvent;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEventId;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -21,14 +21,14 @@ public class AttachmentDeletedEventDeserializer extends JacksonIntegrationEventD
     }
 
     @Override
-    public AttachmentDeletedEvent deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-        JsonNode node = p.getCodec().readTree(p);
+    public AttachmentDeletedEvent deserialize(JsonParser p, DeserializationContext ctxt) throws JacksonException {
+        JsonNode node = p.objectReadContext().readTree(p);
 
         IntegrationEventId id = IntegrationEventDeserializationUtils.extractId(node);
         Instant occurredAt = IntegrationEventDeserializationUtils.extractOccurredAt(node);
 
-        JobId jobId = new JobId(UUID.fromString(node.get("jobId").get("value").asText()));
-        AttachmentId attachmentId = new AttachmentId(UUID.fromString(node.get("attachmentId").get("value").asText()));
+        JobId jobId = new JobId(UUID.fromString(node.get("jobId").get("value").asString()));
+        AttachmentId attachmentId = new AttachmentId(UUID.fromString(node.get("attachmentId").get("value").asString()));
 
         return new AttachmentDeletedEvent(id, occurredAt, jobId, attachmentId);
     }

@@ -1,6 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.persistence.mongo.entity;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import com.wilzwert.myjobs.core.domain.model.job.JobRating;
 import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.job.JobRatingDeserializer;
@@ -14,6 +14,8 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.index.TextIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import tools.jackson.databind.annotation.JsonDeserialize;
+
 
 import java.time.Instant;
 import java.util.ArrayList;

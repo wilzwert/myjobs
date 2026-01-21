@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.fasterxml.jackson.jr.ob.JSON;
+import tools.jackson.jr.ob.JSON;
 import com.wilzwert.myjobs.core.domain.model.job.JobMetadata;
 import com.wilzwert.myjobs.core.domain.model.job.jsonld.JobPosting;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.extractor.JobMetadataExtractor;
@@ -83,7 +83,7 @@ public class JsonLdJobMetadataExtractor implements JobMetadataExtractor {
                 }
             }
             return Optional.empty();
-        } catch (Exception e) {
+        } catch (Exception _) {
             return Optional.empty();
         }
     }

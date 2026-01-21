@@ -5,8 +5,12 @@ import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEvent
 import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEventId;
 import com.wilzwert.myjobs.core.domain.model.job.event.integration.JobUpdatedEvent;
 import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationTest;
+import org.apache.kafka.clients.CommonClientConfigs;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.config.SaslConfigs;
+import org.apache.kafka.common.config.SslConfigs;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -14,7 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.kafka.support.serializer.JacksonJsonDeserializer;
 import org.springframework.kafka.test.utils.KafkaTestUtils;
 
 import java.time.Duration;
@@ -56,17 +60,19 @@ class KafkaIntegrationEventProcessorIT extends AbstractBaseIntegrationTest {
     @BeforeAll
     void setupConsumer() {
         Properties props = new Properties();
-        props.put("bootstrap.servers", bootstrapServers);
-        props.put("security.protocol", securityProtocol);
-        props.put("ssl.endpoint.identification.algorithm", identificationAlgorithm);
-        props.put("group.id", "myjobs_integration");
-        props.put("sasl.mechanism", saslMechanism);
-        props.put("sasl.jaas.config", jaasConfig);
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, securityProtocol);
+        props.put(SslConfigs.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM_CONFIG, identificationAlgorithm);
+        props.put(SaslConfigs.SASL_MECHANISM, saslMechanism);
+        props.put(SaslConfigs.SASL_JAAS_CONFIG, jaasConfig);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "myjobs_integration");
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JacksonJsonDeserializer.class);
 
         consumer = new KafkaConsumer<>(
                 props,
                 new StringDeserializer(),
-                new JsonDeserializer<>(KafkaIntegrationEvent.class, false)
+                new JacksonJsonDeserializer<>(KafkaIntegrationEvent.class)
         );
         consumer.subscribe(List.of(kafkaTopicPrefix+"jobs"));
     }

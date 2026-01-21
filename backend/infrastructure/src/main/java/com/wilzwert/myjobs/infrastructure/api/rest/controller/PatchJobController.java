@@ -50,7 +50,7 @@ public class PatchJobController {
     }
 
     @PatchMapping("/{id}")
-    public JobResponse patch(@PathVariable("id") String id, @RequestBody Map<String, Object> fields, Authentication authentication) {
+    public JobResponse patch(@PathVariable String id, @RequestBody Map<String, Object> fields, Authentication authentication) {
         // we need the right DTO for the right job
         // the factory will build one based on the request contents
         UpdateJobDto updateJobDto = updateJobDtoFactory.createUpdateJobDto(fields);
@@ -62,6 +62,7 @@ public class PatchJobController {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         // DTO is built and validated, now the domain needs a command,
         // so we use the mapper to convert our DTO to the right command
+        assert userDetails != null;
         UpdateJobCommand command = updateJobMapper.toCommand(updateJobDto, new JobId(UUID.fromString(id)), userDetails.getId());
         log.info("got this command {}", command);
 

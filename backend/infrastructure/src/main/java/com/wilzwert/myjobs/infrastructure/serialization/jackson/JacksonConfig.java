@@ -1,8 +1,8 @@
 package com.wilzwert.myjobs.infrastructure.serialization.jackson;
 
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import tools.jackson.databind.JacksonModule;
+import tools.jackson.databind.module.SimpleModule;
 import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEvent;
-import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -33,17 +33,15 @@ public class JacksonConfig {
     }
 
     @Bean
-    public Jackson2ObjectMapperBuilderCustomizer customJackson() {
-        return builder -> {
-            SimpleModule module = new SimpleModule();
-            for (JacksonIntegrationEventDeserializer<? extends IntegrationEvent> deserializer : deserializers) {
-                Class<? extends IntegrationEvent> targetClass = deserializer.getEventClass();
-                if (targetClass == null) {
-                    throw new IllegalStateException("handledType == null for " + deserializer);
-                }
-                registerDeserializer(module, deserializer);
+    public JacksonModule integrationEventModule() {
+        SimpleModule module = new SimpleModule();
+        for (JacksonIntegrationEventDeserializer<? extends IntegrationEvent> deserializer : deserializers) {
+            Class<? extends IntegrationEvent> targetClass = deserializer.getEventClass();
+            if (targetClass == null) {
+                throw new IllegalStateException("handledType == null for " + deserializer);
             }
-            builder.modulesToInstall(module);
-        };
+            registerDeserializer(module, deserializer);
+        }
+        return module;
     }
 }

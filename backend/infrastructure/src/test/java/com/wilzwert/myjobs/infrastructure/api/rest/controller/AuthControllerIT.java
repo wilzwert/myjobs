@@ -1,7 +1,8 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.MediaType;
+import tools.jackson.databind.ObjectMapper;
 import com.wilzwert.myjobs.core.domain.model.user.EmailStatus;
 import com.wilzwert.myjobs.core.domain.model.user.Lang;
 import com.wilzwert.myjobs.core.domain.model.user.User;
@@ -20,8 +21,7 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.http.*;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -114,7 +114,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
         void whenUsernameTooShort_thenShouldReturnUnprocessableEntity() throws Exception {
             registerUserRequest.setUsername("T");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
-                    .andExpect(status().isUnprocessableEntity())
+                    .andExpect(status().isUnprocessableContent())
                     .andExpect(jsonPath("errors.username[0].code").value(ErrorCode.FIELD_TOO_SHORT.name()));
         }
 
@@ -122,7 +122,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
         void whenUsernameTooLong_thenShouldReturnUnprocessableEntity() throws Exception {
             registerUserRequest.setUsername("thisisafartoolongusernamethatshouldtriggeravalidationerror");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
-                    .andExpect(status().isUnprocessableEntity())
+                    .andExpect(status().isUnprocessableContent())
                     .andExpect(jsonPath("errors.username[0].code").value(ErrorCode.FIELD_TOO_LONG.name()));
         }
 
@@ -138,7 +138,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
         void whenPasswordInvalid_thenShouldReturnUnprocessableEntity() throws Exception {
             registerUserRequest.setPassword("pass");
             mockMvc.perform(post(REGISTER_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(registerUserRequest)))
-                    .andExpect(status().isUnprocessableEntity())
+                    .andExpect(status().isUnprocessableContent())
                     .andExpect(jsonPath("errors.password[0].code").value(ErrorCode.USER_WEAK_PASSWORD.name()));
         }
 
@@ -254,7 +254,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
         @Test
         void whenEmailTaken_thenShouldReturnUnprocessableEntity() throws Exception {
             mockMvc.perform(get("/api/auth/email-check").param("email", "existing@example.com"))
-                            .andExpect(status().isUnprocessableEntity());
+                            .andExpect(status().isUnprocessableContent());
         }
 
         @Test
@@ -272,7 +272,7 @@ public class AuthControllerIT extends AbstractBaseIntegrationTest {
         @Test
         void whenUsernameTaken_thenShouldReturnUnprocessableEntity() throws Exception {
             mockMvc.perform(get("/api/auth/username-check").param("username", "existinguser"))
-                    .andExpect(status().isUnprocessableEntity());
+                    .andExpect(status().isUnprocessableContent());
         }
 
         @Test

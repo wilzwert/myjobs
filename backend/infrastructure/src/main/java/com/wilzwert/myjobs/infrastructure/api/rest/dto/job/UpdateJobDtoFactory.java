@@ -1,8 +1,8 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.dto.job;
 
 
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 import com.wilzwert.myjobs.core.domain.shared.exception.ValidationException;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.core.domain.shared.validation.ValidationError;
@@ -63,11 +63,10 @@ public class UpdateJobDtoFactory {
             return objectMapper.convertValue(enrichedRequestFields, keyToDto.get(key));
         }
         catch (Exception e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof JsonMappingException ife) {
-                List<JsonMappingException.Reference> path = ife.getPath();
+            if (e instanceof JacksonException ife) {
+                List<JacksonException.Reference> path = ife.getPath();
                 if (!path.isEmpty()) {
-                    String fieldName = path.getFirst().getFieldName();
+                    String fieldName = path.getFirst().getPropertyName();
                     ValidationErrors errors = new ValidationErrors();
                     errors.add(new ValidationError(fieldName, ErrorCode.INVALID_VALUE));
                     throw new ValidationException(errors);

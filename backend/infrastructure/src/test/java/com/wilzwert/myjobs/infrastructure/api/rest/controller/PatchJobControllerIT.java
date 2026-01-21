@@ -1,10 +1,9 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.wilzwert.myjobs.core.domain.model.job.Job;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.JobRating;
-import com.wilzwert.myjobs.core.domain.model.job.JobStatus;
 import com.wilzwert.myjobs.core.domain.model.job.ports.driven.JobDataManager;
 import com.wilzwert.myjobs.core.domain.shared.validation.ErrorCode;
 import com.wilzwert.myjobs.infrastructure.api.rest.dto.ErrorResponse;
@@ -18,7 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -86,7 +85,7 @@ class PatchJobControllerIT extends AbstractBaseIntegrationTest  {
     void whenJobIdInvalid_thenShouldReturnUnprocessableEntity() throws Exception {
         UpdateJobRequest updateJobRequest = new UpdateJobRequest();
         mockMvc.perform(patch(JOBS_URL+"/invalid").cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateJobRequest)))
-                .andExpect(status().isUnprocessableEntity());
+                .andExpect(status().isUnprocessableContent());
     }
 
     @Test
@@ -122,7 +121,7 @@ class PatchJobControllerIT extends AbstractBaseIntegrationTest  {
             updateJobRequest.setUrl("invalid-url");
 
             MvcResult mvcResult = mockMvc.perform(patch(JOB_FOR_TEST_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateJobRequest)))
-                    .andExpect(status().isUnprocessableEntity())
+                    .andExpect(status().isUnprocessableContent())
                     .andReturn();
 
             ErrorResponse errorResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ErrorResponse.class);
@@ -194,7 +193,7 @@ class PatchJobControllerIT extends AbstractBaseIntegrationTest  {
                 {"url": "invalid-url"}
             """;
             MvcResult mvcResult = mockMvc.perform(patch(JOB_FOR_TEST_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(json))
-                    .andExpect(status().isUnprocessableEntity())
+                    .andExpect(status().isUnprocessableContent())
                     .andReturn();
 
             ErrorResponse errorResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ErrorResponse.class);
@@ -252,7 +251,7 @@ class PatchJobControllerIT extends AbstractBaseIntegrationTest  {
             """;
 
             MvcResult mvcResult = mockMvc.perform(patch(JOB_FOR_TEST_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(invalidJson))
-                    .andExpect(status().isUnprocessableEntity())
+                    .andExpect(status().isUnprocessableContent())
                     .andReturn();
 
             ErrorResponse errorResponse = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ErrorResponse.class);

@@ -5,7 +5,7 @@ import com.wilzwert.myjobs.infrastructure.configuration.AbstractBaseIntegrationT
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.EventStatus;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.repository.MongoIntegrationEventRepository;
 import org.junit.jupiter.api.Test;
-import org.springframework.batch.item.Chunk;
+import org.springframework.batch.infrastructure.item.Chunk;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;

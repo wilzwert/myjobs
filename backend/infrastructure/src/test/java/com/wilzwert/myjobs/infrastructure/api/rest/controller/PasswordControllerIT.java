@@ -1,6 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.wilzwert.myjobs.core.domain.model.user.User;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.PasswordHasher;
 import com.wilzwert.myjobs.core.domain.model.user.ports.driven.UserDataManager;
@@ -15,7 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -134,7 +134,7 @@ public class PasswordControllerIT extends AbstractBaseIntegrationTest {
         void whenNewPasswordWeak_thenShouldReturnUnprocessableEntity() throws Exception {
             changePasswordRequest.setPassword("abcd1234!");
             mockMvc.perform(post(CREATE_PASSWORD_URL).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
-                    .andExpect(status().isUnprocessableEntity())
+                    .andExpect(status().isUnprocessableContent())
                     .andExpect(jsonPath("message").value(ErrorCode.VALIDATION_FAILED.name()))
                     .andExpect(jsonPath("errors.password[0].code").value(ErrorCode.USER_WEAK_PASSWORD.name()));
         }
@@ -220,7 +220,7 @@ public class PasswordControllerIT extends AbstractBaseIntegrationTest {
         void whenNewPasswordWeak_thenShouldReturnUnprocessableEntity() throws Exception {
             changePasswordRequest.setPassword("abcd1234!");
             mockMvc.perform(put(CHANGE_PASSWORD_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(changePasswordRequest)))
-                    .andExpect(status().isUnprocessableEntity())
+                    .andExpect(status().isUnprocessableContent())
                     .andExpect(jsonPath("message").value(ErrorCode.VALIDATION_FAILED.name()))
                     .andExpect(jsonPath("errors.password[0].code").value(ErrorCode.USER_WEAK_PASSWORD.name()));
         }

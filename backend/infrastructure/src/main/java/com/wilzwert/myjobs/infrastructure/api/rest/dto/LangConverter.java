@@ -1,7 +1,7 @@
 package com.wilzwert.myjobs.infrastructure.api.rest.dto;
 
 
-import com.fasterxml.jackson.databind.util.StdConverter;
+import tools.jackson.databind.util.StdConverter;
 import com.wilzwert.myjobs.core.domain.model.user.Lang;
 import org.springframework.stereotype.Component;
 

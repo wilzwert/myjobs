@@ -1,6 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.staging;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoIntegrationEvent;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoJob;
 import com.wilzwert.myjobs.infrastructure.persistence.mongo.entity.MongoRefreshToken;

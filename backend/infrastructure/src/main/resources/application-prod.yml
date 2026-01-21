@@ -4,11 +4,10 @@ security:
     secure: true
 
 spring:
-  data:
-    mongodb:
-      uri: mongodb+srv://${MONGODB_USERNAME:mongouser}:${MONGODB_PASSWORD:mongopwd}@${MONGODB_HOST:localhost}/${MONGODB_DATABASE:myjobs}?retryWrites=true&w=majority
-      ssl:
-        enabled: true
+  mongodb:
+    uri: mongodb+srv://${MONGODB_USERNAME:mongouser}:${MONGODB_PASSWORD:mongopwd}@${MONGODB_HOST:localhost}/${MONGODB_DATABASE:myjobs}?retryWrites=true&w=majority
+    ssl:
+      enabled: true
 
 logging:
   level:

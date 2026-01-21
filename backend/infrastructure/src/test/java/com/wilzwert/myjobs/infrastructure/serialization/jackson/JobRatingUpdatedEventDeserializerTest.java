@@ -1,7 +1,8 @@
 package com.wilzwert.myjobs.infrastructure.serialization.jackson;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.module.SimpleModule;
 import com.wilzwert.myjobs.core.domain.model.job.JobId;
 import com.wilzwert.myjobs.core.domain.model.job.JobRating;
 import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEventId;
@@ -21,10 +22,11 @@ class JobRatingUpdatedEventDeserializerTest {
 
     @BeforeEach
     void setUp() {
-        objectMapper = new ObjectMapper();
         SimpleModule module = new SimpleModule();
         module.addDeserializer(JobRatingUpdatedEvent.class, new JobRatingUpdatedEventDeserializer());
-        objectMapper.registerModule(module);
+        objectMapper = JsonMapper.builder()
+                        .addModule(module)
+                                .build();
     }
 
     @Test

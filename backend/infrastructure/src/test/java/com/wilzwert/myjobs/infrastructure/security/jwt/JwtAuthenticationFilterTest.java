@@ -11,6 +11,7 @@ import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 /**
@@ -63,10 +63,6 @@ public class JwtAuthenticationFilterTest {
     @Mock
     private FilterChain filterChain;
 
-    /*
-    @Mock
-    private ApiDocProperties apiDocProperties;*/
-
     @InjectMocks
     private JwtAuthenticationFilter underTest;
 
@@ -75,20 +71,6 @@ public class JwtAuthenticationFilterTest {
         SecurityContextHolder.clearContext();
 
     }
-    @Test
-    void shouldReturnTrueWhenFilteringNotNecessaryOnEmptyRequest() {
-        assertThrows(NullPointerException.class, () -> underTest.shouldNotFilter(null));
-    }
-
-
-    /*
-    @Test
-    void shouldReturnTrueWhenFilteringNotNecessaryForApi() {
-        when(apiDocProperties.getApiDocsPath()).thenReturn("/api/doc");
-        when(request.getRequestURI()).thenReturn("/api/doc");
-
-        assertThat(underTest.shouldNotFilter(request)).isTrue();
-    }*/
 
     @ParameterizedTest
     @ValueSource(strings = {"/api/auth/register", "/internal/jobs-reminders-batch", "/swagger-ui/"})
@@ -97,18 +79,6 @@ public class JwtAuthenticationFilterTest {
 
         assertThat(underTest.shouldNotFilter(request)).isTrue();
     }
-
-    /*
-    @Test
-    void shouldReturnTrueWhenFilteringNotNecessaryForSwagger() {
-        when(apiDocProperties.getApiDocsPath()).thenReturn("/api/doc");
-        when(apiDocProperties.getSwaggerPath()).thenReturn("/api/swagger");
-        when(request.getRequestURI()).thenReturn("/api/swagger");
-
-        assertThat(underTest.shouldNotFilter(request)).isTrue();
-    }*/
-
-
 
     @Test
     void shouldReturnFalseWhenFilteringNecessary() {
@@ -141,7 +111,7 @@ public class JwtAuthenticationFilterTest {
             private boolean isAuthenticated = false;
 
              @Override
-             public Collection<? extends GrantedAuthority> getAuthorities() {
+             public @NonNull Collection<? extends GrantedAuthority> getAuthorities() {
                  return List.of();
              }
 

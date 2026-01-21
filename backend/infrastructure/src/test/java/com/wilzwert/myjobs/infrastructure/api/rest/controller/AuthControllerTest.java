@@ -209,7 +209,7 @@ public class AuthControllerTest {
 
             var responseEntity = authController.emailCheck("test@example.com");
 
-            assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
+            assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_CONTENT);
             verify(checkUserAvailabilityUseCase, times(1)).isEmailTaken("test@example.com");
         }
 
@@ -219,7 +219,7 @@ public class AuthControllerTest {
 
             var responseEntity = authController.usernameCheck("test");
 
-            assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
+            assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_CONTENT);
             verify(checkUserAvailabilityUseCase, times(1)).isUsernameTaken("test");
         }
 

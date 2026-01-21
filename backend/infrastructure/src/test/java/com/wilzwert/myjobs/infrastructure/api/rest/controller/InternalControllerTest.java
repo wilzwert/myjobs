@@ -6,15 +6,13 @@ import com.wilzwert.myjobs.infrastructure.batch.BatchRunException;
 import com.wilzwert.myjobs.infrastructure.mapper.UsersJobsBatchResultMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersInvalidException;
-import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
-import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
-import org.springframework.batch.core.repository.JobRestartException;
-import org.springframework.batch.item.ExecutionContext;
+import org.springframework.batch.core.job.Job;
+import org.springframework.batch.core.job.JobExecution;
+import org.springframework.batch.core.job.parameters.InvalidJobParametersException;
+import org.springframework.batch.core.job.parameters.JobParameters;
+import org.springframework.batch.core.launch.*;
+import org.springframework.batch.infrastructure.item.ExecutionContext;
+
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -23,7 +21,7 @@ import static org.mockito.Mockito.*;
 
 class InternalControllerTest {
 
-    private JobLauncher jobLauncher;
+    private JobOperator jobOperator;
     private Job remindersJob;
     private Job integrationEventsJob;
     private UsersJobsBatchResultMapper mapper;
@@ -33,21 +31,21 @@ class InternalControllerTest {
 
     @BeforeEach
     void setUp() {
-        jobLauncher = mock(JobLauncher.class);
+        jobOperator = mock(JobOperator.class);
         remindersJob = mock(Job.class);
         integrationEventsJob = mock(Job.class);
         mapper = mock(UsersJobsBatchResultMapper.class);
-        underTest = new InternalController(jobLauncher, remindersJob, integrationEventsJob, mapper);
+        underTest = new InternalController(jobOperator, remindersJob, integrationEventsJob, mapper);
     }
 
     @Test
-    void whenRunnerThrowsException_thenShouldThrowBatchRunException() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-        when(jobLauncher.run(eq(remindersJob), any(JobParameters.class))).thenThrow(BatchRunException.class);
+    void whenRunnerThrowsException_thenShouldThrowBatchRunException() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, InvalidJobParametersException, JobRestartException {
+        when(jobOperator.start(eq(remindersJob), any(JobParameters.class))).thenThrow(BatchRunException.class);
         assertThrows(BatchRunException.class, underTest::runJobsReminders);
     }
 
     @Test
-    void shouldRunJobsRemindersBatchAndReturnResponse() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+    void shouldRunJobsRemindersBatchAndReturnResponse() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, InvalidJobParametersException, JobRestartException {
         JobExecution jobExecution = mock(JobExecution.class);
         ExecutionContext executionContext = mock(ExecutionContext.class);
         UsersJobsBatchExecutionResult batchExecutionResult = new UsersJobsBatchExecutionResult(2, 10, 20, 1, 3);
@@ -55,24 +53,24 @@ class InternalControllerTest {
         when(jobExecution.getExecutionContext()).thenReturn(executionContext);
         UsersJobsBatchExecutionResultResponse response = new UsersJobsBatchExecutionResultResponse(2, 10, 20, 1, 3);
 
-        when(jobLauncher.run(eq(remindersJob), any(JobParameters.class))).thenReturn(jobExecution);
+        when(jobOperator.start(eq(remindersJob), any(JobParameters.class))).thenReturn(jobExecution);
         when(mapper.toResponse(batchExecutionResult)).thenReturn(response);
 
         var resultResponse = underTest.runJobsReminders();
 
         assertThat(resultResponse).isNotNull().isSameAs(response);
-        verify(jobLauncher).run(eq(remindersJob), any(JobParameters.class));
+        verify(jobOperator).start(eq(remindersJob), any(JobParameters.class));
         verify(mapper).toResponse(batchExecutionResult);
     }
 
     @Test
-    void shouldRunIntegrationEventsDispatchBatch() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+    void shouldRunIntegrationEventsDispatchBatch() throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, InvalidJobParametersException, JobRestartException {
         JobExecution jobExecution = mock(JobExecution.class);
 
-        when(jobLauncher.run(eq(integrationEventsJob), any(JobParameters.class))).thenReturn(jobExecution);
+        when(jobOperator.start(eq(integrationEventsJob), any(JobParameters.class))).thenReturn(jobExecution);
 
         assertDoesNotThrow(() -> underTest.runIntegrationEvents());
 
-        verify(jobLauncher).run(eq(integrationEventsJob), any(JobParameters.class));
+        verify(jobOperator).start(eq(integrationEventsJob), any(JobParameters.class));
     }
 }

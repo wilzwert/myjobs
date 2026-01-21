@@ -11,7 +11,6 @@ import ch.qos.logback.core.read.ListAppender;
 
 public class MemoryAppender extends ListAppender<ILoggingEvent> {
     public boolean contains(String string, Level level) {
-        System.out.println(list);
         return list.stream()
                 .anyMatch(event -> event.toString().contains(string)
                         && event.getLevel().equals(level));

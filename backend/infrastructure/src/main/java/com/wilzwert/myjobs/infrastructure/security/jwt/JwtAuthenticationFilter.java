@@ -8,8 +8,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -44,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         try {
             Optional<JwtToken> token = jwtService.extractTokenFromRequest(request);
             if(token.isPresent()) {
@@ -85,8 +85,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // bypass filter if path should remain publicly accessible
         String path = request.getRequestURI();
         return path.matches("/api/auth/(login|register|refresh-token)")
-                // || path.matches(apiDocProperties.getApiDocsPath()+"/?.*")
-                // || path.matches(apiDocProperties.getSwaggerPath()+"/?.*")
                 || path.matches("/swagger-ui/.*")
                 || path.matches("/internal/.*");
     }

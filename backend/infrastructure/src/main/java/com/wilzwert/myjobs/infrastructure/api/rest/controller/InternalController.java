@@ -5,11 +5,11 @@ import com.wilzwert.myjobs.infrastructure.batch.BatchRunException;
 import com.wilzwert.myjobs.infrastructure.batch.UsersJobsBatchExecutionResult;
 import com.wilzwert.myjobs.infrastructure.mapper.UsersJobsBatchResultMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersBuilder;
-import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.job.Job;
+import org.springframework.batch.core.job.JobExecution;
+import org.springframework.batch.core.job.parameters.JobParameters;
+import org.springframework.batch.core.job.parameters.JobParametersBuilder;
+import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +19,7 @@ import java.util.UUID;
 /**
  * @author Wilhelm Zwertvaegher
  * Controller used to trigger batches in a non "batch-capable" environment by HTTP requests
- * It should not be used when batches can be run with @EnableBatchProcessing and/or @Scheduled
+ * It should not be used when batches can be batched or run with @Scheduled
  * Requests are authorized via {@link com.wilzwert.myjobs.infrastructure.security.internal.InternalEndpointAuthorization}
  * For now we use a specific header to authenticate requests but in "real life" we should use a more secure way
  */
@@ -30,7 +30,7 @@ import java.util.UUID;
 public class InternalController {
 
 
-    private final JobLauncher jobLauncher;
+    private final JobOperator jobOperator;
 
     private final Job jobReminderJob;
 
@@ -41,11 +41,11 @@ public class InternalController {
 
 
     public InternalController(
-            JobLauncher jobLauncher,
+            JobOperator jobOperator,
             Job jobReminderJob,
             Job integrationEventDispatchJob,
             UsersJobsBatchResultMapper usersJobsBatchResultMapper) {
-        this.jobLauncher = jobLauncher;
+        this.jobOperator = jobOperator;
         this.jobReminderJob = jobReminderJob;
         this.integrationEventDispatchJob = integrationEventDispatchJob;
         this.usersJobsBatchResultMapper = usersJobsBatchResultMapper;
@@ -57,7 +57,7 @@ public class InternalController {
                 .addString("run.id", UUID.randomUUID().toString(), true)
                 .toJobParameters();
         try {
-            JobExecution execution = jobLauncher.run(jobReminderJob, params);
+            JobExecution execution = jobOperator.start(jobReminderJob, params);
             UsersJobsBatchExecutionResult result = (UsersJobsBatchExecutionResult) execution
                     .getExecutionContext()
                     .get("usersJobsBatchExecutionResult");
@@ -76,7 +76,7 @@ public class InternalController {
                 .addString("run.id", UUID.randomUUID().toString(), true)
                 .toJobParameters();
         try {
-            JobExecution execution = jobLauncher.run(integrationEventDispatchJob, params);
+            JobExecution execution = jobOperator.start(integrationEventDispatchJob, params);
             log.info("Job integration events run by http, started at {}, ended at {}, exited with {}", execution.getStartTime(), execution.getEndTime(), execution.getExitStatus());
         }
         catch (Exception e) {
