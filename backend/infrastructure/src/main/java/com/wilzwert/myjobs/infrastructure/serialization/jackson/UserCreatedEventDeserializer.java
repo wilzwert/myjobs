@@ -26,7 +26,7 @@ public class UserCreatedEventDeserializer extends JacksonIntegrationEventDeseria
         IntegrationEventId id = IntegrationEventDeserializationUtils.extractId(node);
         Instant occurredAt = IntegrationEventDeserializationUtils.extractOccurredAt(node);
 
-        UserId userId = new UserId(UUID.fromString(node.get("userId").get("value").asText()));
+        UserId userId = new UserId(UUID.fromString(node.get("userId").get("value").asString()));
 
         return new UserCreatedEvent(id, occurredAt, userId);
     }

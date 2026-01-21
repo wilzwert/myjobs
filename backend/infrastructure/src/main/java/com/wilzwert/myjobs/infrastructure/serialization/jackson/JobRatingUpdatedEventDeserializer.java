@@ -10,7 +10,6 @@ import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEvent
 import com.wilzwert.myjobs.core.domain.model.job.event.integration.JobRatingUpdatedEvent;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -29,7 +28,7 @@ public class JobRatingUpdatedEventDeserializer extends JacksonIntegrationEventDe
         Instant occurredAt = IntegrationEventDeserializationUtils.extractOccurredAt(node);
         JobRating jobRating = JobRating.of(node.get("jobRating").get("value").asInt());
 
-        JobId jobId = new JobId(UUID.fromString(node.get("jobId").get("value").asText()));
+        JobId jobId = new JobId(UUID.fromString(node.get("jobId").get("value").asString()));
 
         return new JobRatingUpdatedEvent(id, occurredAt, jobId, jobRating);
     }

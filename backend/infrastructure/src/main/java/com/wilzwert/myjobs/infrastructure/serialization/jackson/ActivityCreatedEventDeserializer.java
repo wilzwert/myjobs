@@ -28,9 +28,9 @@ public class ActivityCreatedEventDeserializer extends JacksonIntegrationEventDes
         IntegrationEventId id = IntegrationEventDeserializationUtils.extractId(node);
         Instant occurredAt = IntegrationEventDeserializationUtils.extractOccurredAt(node);
 
-        JobId jobId = new JobId(UUID.fromString(node.get("jobId").get("value").asText()));
-        ActivityId activityId = new ActivityId(UUID.fromString(node.get("activityId").get("value").asText()));
-        ActivityType activityType = ActivityType.valueOf(node.get("activityType").asText());
+        JobId jobId = new JobId(UUID.fromString(node.get("jobId").get("value").asString()));
+        ActivityId activityId = new ActivityId(UUID.fromString(node.get("activityId").get("value").asString()));
+        ActivityType activityType = ActivityType.valueOf(node.get("activityType").asString());
 
         return new ActivityCreatedEvent(id, occurredAt, jobId, activityId, activityType);
     }

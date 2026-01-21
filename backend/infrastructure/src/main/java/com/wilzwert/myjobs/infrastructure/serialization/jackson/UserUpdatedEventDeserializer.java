@@ -9,7 +9,6 @@ import com.wilzwert.myjobs.core.domain.model.user.event.integration.UserUpdatedE
 import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEventId;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -27,7 +26,7 @@ public class UserUpdatedEventDeserializer extends JacksonIntegrationEventDeseria
         IntegrationEventId id = IntegrationEventDeserializationUtils.extractId(node);
         Instant occurredAt = IntegrationEventDeserializationUtils.extractOccurredAt(node);
 
-        UserId userId = new UserId(UUID.fromString(node.get("userId").get("value").asText()));
+        UserId userId = new UserId(UUID.fromString(node.get("userId").get("value").asString()));
 
         return new UserUpdatedEvent(id, occurredAt, userId);
     }

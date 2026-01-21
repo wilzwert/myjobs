@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 /**
@@ -63,10 +62,6 @@ public class JwtAuthenticationFilterTest {
     @Mock
     private FilterChain filterChain;
 
-    /*
-    @Mock
-    private ApiDocProperties apiDocProperties;*/
-
     @InjectMocks
     private JwtAuthenticationFilter underTest;
 
@@ -75,20 +70,6 @@ public class JwtAuthenticationFilterTest {
         SecurityContextHolder.clearContext();
 
     }
-    @Test
-    void shouldReturnTrueWhenFilteringNotNecessaryOnEmptyRequest() {
-        assertThrows(NullPointerException.class, () -> underTest.shouldNotFilter(null));
-    }
-
-
-    /*
-    @Test
-    void shouldReturnTrueWhenFilteringNotNecessaryForApi() {
-        when(apiDocProperties.getApiDocsPath()).thenReturn("/api/doc");
-        when(request.getRequestURI()).thenReturn("/api/doc");
-
-        assertThat(underTest.shouldNotFilter(request)).isTrue();
-    }*/
 
     @ParameterizedTest
     @ValueSource(strings = {"/api/auth/register", "/internal/jobs-reminders-batch", "/swagger-ui/"})
@@ -97,18 +78,6 @@ public class JwtAuthenticationFilterTest {
 
         assertThat(underTest.shouldNotFilter(request)).isTrue();
     }
-
-    /*
-    @Test
-    void shouldReturnTrueWhenFilteringNotNecessaryForSwagger() {
-        when(apiDocProperties.getApiDocsPath()).thenReturn("/api/doc");
-        when(apiDocProperties.getSwaggerPath()).thenReturn("/api/swagger");
-        when(request.getRequestURI()).thenReturn("/api/swagger");
-
-        assertThat(underTest.shouldNotFilter(request)).isTrue();
-    }*/
-
-
 
     @Test
     void shouldReturnFalseWhenFilteringNecessary() {

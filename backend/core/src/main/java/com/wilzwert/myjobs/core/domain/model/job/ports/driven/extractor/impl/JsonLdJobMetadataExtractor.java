@@ -83,7 +83,7 @@ public class JsonLdJobMetadataExtractor implements JobMetadataExtractor {
                 }
             }
             return Optional.empty();
-        } catch (Exception e) {
+        } catch (Exception _) {
             return Optional.empty();
         }
     }

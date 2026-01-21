@@ -44,20 +44,4 @@ public class JacksonConfig {
         }
         return module;
     }
-
-    /*
-    @Bean
-    public Jackson2ObjectMapperBuilderCustomizer customJackson() {
-        return builder -> {
-            SimpleModule module = new SimpleModule();
-            for (JacksonIntegrationEventDeserializer<? extends IntegrationEvent> deserializer : deserializers) {
-                Class<? extends IntegrationEvent> targetClass = deserializer.getEventClass();
-                if (targetClass == null) {
-                    throw new IllegalStateException("handledType == null for " + deserializer);
-                }
-                registerDeserializer(module, deserializer);
-            }
-            builder.modulesToInstall(module);
-        };
-    }*/
 }

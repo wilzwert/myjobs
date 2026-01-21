@@ -10,7 +10,6 @@ import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEvent
 import com.wilzwert.myjobs.core.domain.model.job.event.integration.JobStatusUpdatedEvent;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -28,8 +27,8 @@ public class JobStatusUpdatedEventDeserializer extends JacksonIntegrationEventDe
         IntegrationEventId id = IntegrationEventDeserializationUtils.extractId(node);
         Instant occurredAt = IntegrationEventDeserializationUtils.extractOccurredAt(node);
 
-        JobId jobId = new JobId(UUID.fromString(node.get("jobId").get("value").asText()));
-        JobStatus jobStatus = JobStatus.valueOf(node.get("jobStatus").asText());
+        JobId jobId = new JobId(UUID.fromString(node.get("jobId").get("value").asString()));
+        JobStatus jobStatus = JobStatus.valueOf(node.get("jobStatus").asString());
 
         return new JobStatusUpdatedEvent(id, occurredAt, jobId, jobStatus);
     }

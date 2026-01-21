@@ -27,8 +27,8 @@ public class AttachmentCreatedEventDeserializer extends JacksonIntegrationEventD
         IntegrationEventId id = IntegrationEventDeserializationUtils.extractId(node);
         Instant occurredAt = IntegrationEventDeserializationUtils.extractOccurredAt(node);
 
-        JobId jobId = new JobId(UUID.fromString(node.get("jobId").get("value").asText()));
-        AttachmentId attachmentId = new AttachmentId(UUID.fromString(node.get("attachmentId").get("value").asText()));
+        JobId jobId = new JobId(UUID.fromString(node.get("jobId").get("value").asString()));
+        AttachmentId attachmentId = new AttachmentId(UUID.fromString(node.get("attachmentId").get("value").asString()));
 
         return new AttachmentCreatedEvent(id, occurredAt, jobId, attachmentId);
     }

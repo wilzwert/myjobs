@@ -10,7 +10,6 @@ import com.wilzwert.myjobs.core.domain.shared.event.integration.IntegrationEvent
 import com.wilzwert.myjobs.core.domain.model.job.event.integration.JobFieldUpdatedEvent;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -27,9 +26,9 @@ public class JobFieldUpdatedEventDeserializer extends JacksonIntegrationEventDes
 
         IntegrationEventId id = IntegrationEventDeserializationUtils.extractId(node);
         Instant occurredAt = IntegrationEventDeserializationUtils.extractOccurredAt(node);
-        UpdateJobFieldCommand.Field jobField = UpdateJobFieldCommand.Field.valueOf(node.get("field").asText());
+        UpdateJobFieldCommand.Field jobField = UpdateJobFieldCommand.Field.valueOf(node.get("field").asString());
 
-        JobId jobId = new JobId(UUID.fromString(node.get("jobId").get("value").asText()));
+        JobId jobId = new JobId(UUID.fromString(node.get("jobId").get("value").asString()));
 
         return new JobFieldUpdatedEvent(id, occurredAt, jobId, jobField);
     }

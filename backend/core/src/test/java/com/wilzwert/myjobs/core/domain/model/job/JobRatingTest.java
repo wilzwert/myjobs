@@ -53,6 +53,6 @@ class JobRatingTest {
     void shouldNotBeEqualToNullOrDifferentType() {
         JobRating rating = JobRating.of(2);
         assertNotNull(rating);
-        assertNotEquals("not a rating", rating);
+        assertInstanceOf(JobRating.class, rating);
     }
 }

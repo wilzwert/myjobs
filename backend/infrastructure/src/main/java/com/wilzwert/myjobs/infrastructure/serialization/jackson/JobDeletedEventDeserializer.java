@@ -26,7 +26,7 @@ public class JobDeletedEventDeserializer extends JacksonIntegrationEventDeserial
         IntegrationEventId id = IntegrationEventDeserializationUtils.extractId(node);
         Instant occurredAt = IntegrationEventDeserializationUtils.extractOccurredAt(node);
 
-        JobId jobId = new JobId(UUID.fromString(node.get("jobId").get("value").asText()));
+        JobId jobId = new JobId(UUID.fromString(node.get("jobId").get("value").asString()));
 
         return new JobDeletedEvent(id, occurredAt, jobId);
     }

@@ -178,7 +178,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
         void whenUsernameTooShort_thenShouldReturnUnprocessableEntity() throws Exception {
             updateUserRequest.setUsername("T");
             mockMvc.perform(patch(UPDATE_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateUserRequest)))
-                    .andExpect(status().isUnprocessableEntity())
+                    .andExpect(status().isUnprocessableContent())
                     .andExpect(jsonPath("errors.username[0].code").value(ErrorCode.FIELD_TOO_SHORT.name()));
         }
 
@@ -186,7 +186,7 @@ public class UserControllerIT extends AbstractBaseIntegrationTest  {
         void whenUsernameTooLong_thenShouldReturnUnprocessableEntity() throws Exception {
             updateUserRequest.setUsername("thisisafartoolongusernamethatshouldtriggeravalidationerror");
             mockMvc.perform(patch(UPDATE_URL).cookie(accessTokenCookie).contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(updateUserRequest)))
-                    .andExpect(status().isUnprocessableEntity())
+                    .andExpect(status().isUnprocessableContent())
                     .andExpect(jsonPath("errors.username[0].code").value(ErrorCode.FIELD_TOO_LONG.name()));
         }
 

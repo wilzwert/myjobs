@@ -19,22 +19,6 @@ import java.util.Arrays;
 @Configuration
 @EnableTransactionManagement
 public class MongoConfiguration {
-/*
-    @Bean
-    @Primary
-    public PlatformTransactionManager transactionManager(MongoDatabaseFactory factory) {
-        return new MongoTransactionManager(factory);
-    }*/
-
-    /*@Bean
-    MongoTransactionManager transactionManager(MongoDatabaseFactory dbFactory) {
-        return new MongoTransactionManager(dbFactory);
-    }*/
-/*
-    @Bean
-    MongoOperations mongoTemplate(MongoClient mongoClient) {
-        return new MongoTemplate(mongoClient);
-    }*/
 
     @Bean
     public MongoTransactionManager transactionManager(MongoDatabaseFactory mongoDatabaseFactory) {
@@ -50,18 +34,4 @@ public class MongoConfiguration {
                 )
         );
     }
-
-    /*
-    @Bean
-    public MappingMongoConverter mappingMongoConverter(MongoDatabaseFactory factory,
-                                                       MongoCustomConversions conversions,
-                                                       MongoMappingContext context) {
-
-        DbRefResolver dbRefResolver = new DefaultDbRefResolver(factory);
-        MappingMongoConverter converter = new MappingMongoConverter(dbRefResolver, context);
-        converter.setCustomConversions(conversions);
-
-        converter.setMapKeyDotReplacement("_");
-        return converter;
-    }*/
 }

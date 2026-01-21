@@ -12,10 +12,10 @@ public class IntegrationEventDeserializationUtils {
 
     public static IntegrationEventId extractId(JsonNode node) {
         JsonNode idNode = node.get("id");
-        return new IntegrationEventId(UUID.fromString(idNode.get("value").asText()));
+        return new IntegrationEventId(UUID.fromString(idNode.get("value").asString()));
     }
 
     public static Instant extractOccurredAt(JsonNode node) {
-        return Instant.parse(node.get("occurredAt").asText());
+        return Instant.parse(node.get("occurredAt").asString());
     }
 }
