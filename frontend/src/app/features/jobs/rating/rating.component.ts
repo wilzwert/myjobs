@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
@@ -10,7 +10,7 @@ import { NotificationService } from '@app/core/services/notification.service';
 
 @Component({
   selector: 'app-rating',
-  imports: [CommonModule, MatIcon, MatIconButton, MatTooltip],
+  imports: [MatIcon, MatIconButton, MatTooltip],
   templateUrl: './rating.component.html',
   styleUrl: './rating.component.scss'
 })
