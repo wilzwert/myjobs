@@ -125,7 +125,7 @@ describe('JobService', () => {
       expect(reloadSpy).toHaveBeenCalledWith(job);
     });
   });
-
+  /* TODO as of now there is no possibility to update only status, so this test is unncessary
   it('updateJobStatus should call dataService.patch and reloadIfNecessary', () => {
     const jobId = '321';
     const job: Job = { id: jobId } as Job;
@@ -140,7 +140,7 @@ describe('JobService', () => {
       expect(dataServiceMock.patch).toHaveBeenCalledWith(`jobs/${jobId}`, request);
       expect(reloadSpy).toHaveBeenCalledWith(job);
     });
-  });
+  });*/
 
   it('updateJobRating should call dataService.patch and reloadIfNecessary', () => {
     const jobId = '321';
@@ -343,6 +343,7 @@ describe('JobService', () => {
     
   });
 
+  /* TODO as of now there is no possibility to update only status, so this test is unncessary
   it('updateJobStatus should trigger job update in BehaviorSubject', (done) => {
     const initialJob: Job = { id: 'job-1', title: 'Initial', status: JobStatus.CREATED } as Job;
     const updatedJob: Job = { id: 'job-1', title: 'Updated', status: JobStatus.PENDING } as Job;
@@ -366,7 +367,7 @@ describe('JobService', () => {
       expect(updatedPage.content[0]).toEqual(updatedJob);
       done()
     });
-  });
+  });*/
 
   it('updateJobRating should trigger job update in BehaviorSubject', (done) => {
     const initialJob: Job = { id: 'job-1', title: 'Initial', rating: {value: 1} as JobRating} as Job;

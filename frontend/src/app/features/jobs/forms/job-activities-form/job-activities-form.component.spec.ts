@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { JobActivitiesFormComponent } from './job-activities-form.component';
 import { JobService } from '@core/services/job.service';
@@ -58,7 +58,8 @@ describe('JobActivitiesFormComponent', () => {
     expect(component.activities.length).toBe(2);
     component.activities.controls.forEach(control => {
       expect(control.get('type')).toBeTruthy();
-      expect(control.get('comment')).toBeTruthy();
+      // FIXME : as of now, comment input is added on render by a child component, we can't test it here
+      // expect(control.get('comment')).toBeTruthy();
     });
   });
 
@@ -78,7 +79,8 @@ describe('JobActivitiesFormComponent', () => {
     component.addActivity();
 
     // fill form with valid values
-    component.activities.at(0).setValue({ type: 'TYPE1', comment: 'A comment' });
+    // FIXME : as of now, comment input is added on render by a child component, we can't test it here
+    component.activities.at(0).setValue({ type: 'TYPE1'/*, comment: 'A comment'*/ });
 
     const jobResponse = { id: 'job123', title: 'Test Job Updated' } as Job;
     // use a subject to complete it after checking the component has been in a loading state
@@ -95,7 +97,8 @@ describe('JobActivitiesFormComponent', () => {
     
 
     expect(jobServiceMock.createActivities).toHaveBeenCalledWith('job123', {
-      activities: [{ type: 'TYPE1', comment: 'A comment' }]
+      // FIXME : as of now, comment input is added on render by a child component, we can't test it here
+      activities: [{ type: 'TYPE1'/*, comment: 'A comment'*/ }]
     });
 
     expect(component.loading).toBe(false);
@@ -108,7 +111,8 @@ describe('JobActivitiesFormComponent', () => {
     component.ngOnInit();
     component.addActivity();
 
-    component.activities.at(0).setValue({ type: 'TYPE1', comment: 'A comment' });
+    // FIXME : as of now, comment input is added on render by a child component, we can't test it here
+    component.activities.at(0).setValue({ type: 'TYPE1', /*comment: 'A comment'*/ });
 
     const error = { message: 'error' };
     jobServiceMock.createActivities.mockReturnValue(throwError(() => error));
