@@ -284,6 +284,29 @@ describe('JobService', () => {
     })
   });
 
+  it('getAllJobs should call dataService.get with query param', (done) => {
+    const page: Page<Job> = {
+      content: [{ id: '1' }] as Job[],
+      totalElementsCount: 1,
+      currentPage: 1,
+      pageSize: 1,
+      pagesCount: 1
+    };
+
+    dataServiceMock.get.mockReturnValue(of(page));
+
+    const options = new JobsListOptions();
+    options.filter(null, JobStatusMeta.ACTIVE);
+    options.query('developer');
+    options.changePagination(1, 15);
+
+    jobService.getAllJobs(options).subscribe(result => {
+      expect(result).toEqual(page);
+      expect(dataServiceMock.get).toHaveBeenCalledWith('jobs?page=1&itemsPerPage=15&statusMeta=ACTIVE&query=developer&sort=createdAt,desc');
+      done()
+    })
+  });
+
   it('getAllJobs should not call dataService.get if page/status/sort did not change', async () => {
     const page: Page<Job> = {
       content: [{ id: '1' }] as Job[],
