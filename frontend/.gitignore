@@ -40,6 +40,7 @@ testem.log
 .env
 /cypress/videos
 /cypress/screenshots
+/src/assets/env.js
 
 # System files
 .DS_Store
