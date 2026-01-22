@@ -47,20 +47,23 @@ export class JobService {
           const status = this.currentOptions.getStatus();
           const statusMeta = this.currentOptions.getStatusMeta();
           let statusOrFilterParam = '';
+          let queryParam = '';
           if(status !== null) {
             statusOrFilterParam += `status=${status}`;
           }
           else if (statusMeta !== null) {
             statusOrFilterParam += `statusMeta=${statusMeta}`;
           }
+
+          const query = this.currentOptions.getQuery();
+          if(query !== null && query.length > 0) {
+            queryParam = `query=${encodeURIComponent(this.currentOptions.getQuery() as string)}`;
+          }
           
           let url = `jobs?page=${this.currentOptions.getCurrentPage()}&itemsPerPage=${this.currentOptions.getItemsPerPage()}`
             +(statusOrFilterParam ? `&${statusOrFilterParam}` : '')
+            +(queryParam ? `&${queryParam}` : '')
             +`&sort=${this.currentOptions.getSort()}`;
-          const query = this.currentOptions.getQuery();
-          if(query !== null && query.length > 0) {
-            url += `&query=${encodeURIComponent(this.currentOptions.getQuery() as string)}`;
-          }
 
           return this.dataService.get<Page<Job>>(url).pipe(
             switchMap((fetchedJobs: Page<Job>) => {
