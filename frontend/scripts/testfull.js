@@ -18,15 +18,14 @@ const runCommand = (command) => {
 
 const runTests = async () => {
   try {
+    await runCommand('npm run generate-env');
+
     // Run unit and integration tests with coverage
     await runCommand('npm run test:coverage');
 
     // Run e2e tests
     await runCommand('npm run e2e:ci');
-
-    // Generate e2e coverage
-    await runCommand('npm run e2e:coverage');
-
+    
     // Merge coverage reports
     await runCommand('npm run merge-coverage');
 

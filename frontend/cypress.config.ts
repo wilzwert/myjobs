@@ -1,20 +1,17 @@
 import { defineConfig } from 'cypress'
-const dotenv = require('dotenv').config({systemvars: true})
+import * as dotenv from 'dotenv'
+
+// charge les variables d'environnement du système
+dotenv.config()
 
 export default defineConfig({
-  
   e2e: {
-    projectId: "h8iz18",
-    video: true,
-    record: true,
-    baseUrl: process.env["CYPRESS_BASE_URL"] || 'http://localhost:4200',
+    baseUrl: process.env.CYPRESS_BASE_URL || 'http://localhost:4201',
+    supportFile: 'cypress/support/e2e.ts',
     fixturesFolder: 'cypress/fixtures',
-    env: {
-      MOCK_API: process.env["MOCK_API"] || 'true'
-    },
+    specPattern: 'cypress/e2e/**/*.cy.ts', // pour tes tests
     setupNodeEvents(on, config) {
       return require('@cypress/code-coverage/task')(on, config)
-    },
+    }
   },
-  
 })
