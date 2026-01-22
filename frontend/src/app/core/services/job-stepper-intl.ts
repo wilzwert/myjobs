@@ -1,6 +1,5 @@
 import {Injectable} from '@angular/core';
 
-import '@angular/localize/init';
 import { MatStepperIntl } from '@angular/material/stepper';
 
 @Injectable()

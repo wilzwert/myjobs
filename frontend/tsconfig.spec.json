@@ -5,7 +5,7 @@
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
     "types": [
-      "node", "jest"
+      "node", "@angular/localize", "jest"
     ],             
     "module": "CommonJS", // use CommonJS for Jest
     "target": "ES2022"

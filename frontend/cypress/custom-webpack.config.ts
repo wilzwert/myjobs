@@ -1,7 +1,5 @@
 import * as path from 'path';
 
-const Dotenv = require('dotenv-webpack');
-
 export default {
   module: {
     rules: [
@@ -13,15 +11,9 @@ export default {
         include: path.join(__dirname, '..', 'src'),
         exclude: [
           /\.(e2e|spec)\.ts$/,
-          /node_modules/,
-          /(ngfactory|ngstyle)\.js/,
+          /node_modules/
         ],
       },
     ],
-  },
-  plugins: [
-    new Dotenv({
-        systemvars: true
-    })
-  ],
+  }
 };

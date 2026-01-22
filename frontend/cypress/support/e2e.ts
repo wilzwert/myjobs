@@ -12,8 +12,7 @@
 // You can read more here:
 // https://on.cypress.io/configuration
 // ***********************************************************
+import '@cypress/code-coverage/support';
 
 // When a command from ./commands is ready to use, import with `import './commands'` syntax
 import './commands';
-
-import '@cypress/code-coverage/support';
