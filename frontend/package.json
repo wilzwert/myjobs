@@ -2,8 +2,8 @@
   "name": "myjobs",
   "version": "0.0.0",
   "scripts": {
-    "start": "npm run env && ng serve",
-    "build": "npm run env && ng build",
+    "start": "npm run generate-env --from-env-file && ng serve",
+    "build:prod": "npm run generate-env && ng build --localize --configuration=production && npm run build-cleanup",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
@@ -16,7 +16,8 @@
     "cypress:run-record": "cypress run --record --key 711387bb-9364-433c-83ba-ca040c440282",
     "test-full": "node scripts/testfull.js",
     "merge-coverage": "node scripts/merge-coverage.js",
-    "generate-env": "node scripts/generate-env.js"
+    "generate-env": "node scripts/generate-env.js",
+    "build-cleanup": "node scripts/build-cleanup.js"
   },
   "nyc": {
     "report-dir": "coverage/e2e"
