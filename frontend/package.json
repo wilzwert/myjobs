@@ -2,7 +2,8 @@
   "name": "myjobs",
   "version": "0.0.0",
   "scripts": {
-    "start": "ng serve",
+    "start": "npm run env && ng serve",
+    "build": "npm run env && ng build",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
@@ -15,7 +16,8 @@
     "cypress:run": "cypress run",
     "cypress:run-record": "cypress run --record --key 711387bb-9364-433c-83ba-ca040c440282",
     "test-full": "node scripts/testfull.js",
-    "merge-coverage": "node scripts/merge-coverage.js"
+    "merge-coverage": "node scripts/merge-coverage.js",
+    "generate-env": "node scripts/generate-env.js"
   },
   "nyc": {
     "report-dir": "coverage/e2e"
@@ -41,7 +43,6 @@
     "zone.js": "~0.16.0"
   },
   "devDependencies": {
-    "@angular-builders/custom-webpack": "^21",
     "@angular-builders/jest": "^21",
     "@angular-eslint/builder": "^21",
     "@angular-eslint/eslint-plugin": "^21",

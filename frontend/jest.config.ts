@@ -4,7 +4,8 @@ import presets from 'jest-preset-angular/presets/index.js';
 export default {
   ...presets.createCjsPreset(),
   setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
-  coverageDirectory: './coverage/jest',
+  coverageDirectory: '<rootDir>/coverage/jest',
+  coverageReporters: ['html', 'lcov', 'text-summary'],
   testMatch: [
     '**/?(*.)+(spec).ts'
   ],
@@ -17,4 +18,6 @@ export default {
     '^@layout/(.*)$': '<rootDir>/src/app/layout/$1',
     '^@lang/(.*)$': '<rootDir>/src/lang/$1',
   },
+  
+
 } satisfies Config;

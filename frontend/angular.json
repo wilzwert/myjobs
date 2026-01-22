@@ -21,30 +21,21 @@
       },
       "architect": {
         "build": {
-          "builder": "@angular-builders/custom-webpack:browser",
+          "builder": "@angular/build:application",
           "options": {
             "localize": true,
             "outputPath": "dist/myjobs",
             "index": "src/index.html",
-            "main": "src/main.ts",
-            "customWebpackConfig": {
-                "path": "./custom-webpack.config.ts"
-            },
             "polyfills": [
               "zone.js"
             ],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
-              {
-                "glob": "**/*",
-                "input": "public"
-              },
-              {
-                "glob": "*",
-                "input": "public"
-              },
-              { "glob": "**/*", "input": "node_modules/tinymce", "output": "/tinymce/" }
+              { "glob": "**/*", "input": "public" },
+              { "glob": "*", "input": "public" },
+              { "glob": "**/*", "input": "node_modules/tinymce", "output": "/tinymce/" },
+              { "glob": "*", "input": "src/assets", "output": "/assets/" }
             ],
             "stylePreprocessorOptions": {
                 "includePaths": ["src/styles"]
@@ -72,17 +63,11 @@
               "outputHashing": "all"
             },
             "development": {
-              "buildOptimizer": false,
               "optimization": false,
-              "vendorChunk": true,
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true,
               "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.development.ts"
-                },
                 {
                   "replace": "src/lang/lang.ts",
                   "with": "src/lang/lang.dev.ts"
@@ -93,29 +78,14 @@
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true,
-              "vendorChunk": true,
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.integration.ts"
-                }
-              ]
             },
             "e2e": {
               "extractLicenses": false,
               "sourceMap": true,
               "namedChunks": true,
-              "vendorChunk": true,
-              "customWebpackConfig": {
-                "path": "./cypress/custom-webpack.config.ts"
-              },
               "localize": ["fr"],
               "baseHref": "/fr/",
               "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.integration.ts"
-                },
                 {
                   "replace": "src/lang/lang.ts",
                   "with": "src/lang/lang.integration.ts"
@@ -127,10 +97,6 @@
               "baseHref": "/fr/",
               "fileReplacements": [
                 {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.development.ts"
-                },
-                {
                   "replace": "src/lang/lang.ts",
                   "with": "src/lang/lang.dev.ts"
                 }
@@ -139,11 +105,7 @@
             "en": {
               "localize": ["en"],
               "baseHref": "/en/",
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.development.ts"
-                },
+              "fileReplacements": [                
                 {
                   "replace": "src/lang/lang.ts",
                   "with": "src/lang/lang.dev.ts"
@@ -154,7 +116,7 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-builders/custom-webpack:dev-server",
+          "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
               "buildTarget": "myjobs:build:production"
@@ -180,7 +142,7 @@
           }
         },
         "serve-coverage": {
-          "builder": "@angular-builders/custom-webpack:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
             "buildTarget": "myjobs:build:e2e",
             "port": 4201
