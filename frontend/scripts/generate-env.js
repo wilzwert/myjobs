@@ -2,7 +2,12 @@ const fs = require('fs');
 const path = require('path');
 const dotenv = require('dotenv');
 
-dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+console.log('Generating assets/env.js from .env file');
+
+const args = process.argv.slice(2);
+const useDotEnv = args.includes('--from-env-file');
+
+dotenv.config({ path: path.resolve(process.cwd(), '.env'), override: useDotEnv });
 
 const envVars = {
   prod: process.env.PROD === 'true' || false,
