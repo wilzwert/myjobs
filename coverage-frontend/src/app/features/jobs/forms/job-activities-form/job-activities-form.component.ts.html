@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">55.07% </span>
+                <span class="strong">71.01% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>38/69</span>
+                <span class='fraction'>49/69</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">30% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/9</span>
+                <span class='fraction'>3/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">38.88% </span>
+                <span class="strong">55.55% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>7/18</span>
+                <span class='fraction'>10/18</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">73.91% </span>
+                <span class="strong">97.82% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>34/46</span>
+                <span class='fraction'>45/46</span>
             </div>
         
             
@@ -227,7 +227,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">26x</span>
+<span class="cline-any cline-yes">28x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -244,33 +244,33 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -352,33 +352,33 @@ export class JobActivitiesFormComponent implements OnInit {
   }
 &nbsp;
 <span class="fstat-no" title="function not covered" >  submit(</span>): void {
-<span class="cstat-no" title="statement not covered" >    <span class="missing-if-branch" title="if path not taken" >I</span>if (this.activityForm.valid) {</span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >      this.loading = true;</span></span>
-      const activities: {}[] = <span class="cstat-no" title="statement not covered" >new Array();</span>
+<span class="cstat-no" title="statement not covered" >    if (this.activityForm.valid) {</span>
+<span class="cstat-no" title="statement not covered" >      this.loading = true;</span>
+      const activities: {}[] = new Array();
       
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >      this.activities.controls.forEach(<span class="fstat-no" title="function not covered" >(a</span>ctivity, index) =&gt; {</span></span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >        activities[index] = {'type': activity.value.type, 'comment':  activity.value.comment} as CreateJobActivityRequest;</span></span>
+<span class="cstat-no" title="statement not covered" >      this.activities.controls.forEach((activity, index) =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >        activities[index] = {'type': activity.value.type, 'comment':  activity.value.comment} as CreateJobActivityRequest;</span>
       });
       
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >      this.jobService.createActivities(this.job.id, {activities: activities} as CreateJobActivitiesRequest).pipe(</span></span>
+<span class="cstat-no" title="statement not covered" >      this.jobService.createActivities(this.job.id, {activities: activities} as CreateJobActivitiesRequest).pipe(</span>
             take(1),
             catchError(
-<span class="fstat-no" title="function not covered" >              (e</span>rror: ApiError) =&gt; {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >                  this.loading = false;</span></span>
+              (error: ApiError) =&gt; {
+<span class="cstat-no" title="statement not covered" >                  this.loading = false;</span>
                   // set an explicit error message
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >                  error.message = $localize `:@@error.activities.creation:Activities could not be created.`+this.translatorService.translateError(error.message);</span></span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >                  return this.errorProcessorService.processError(error);</span></span>
+<span class="cstat-no" title="statement not covered" >                  error.message = $localize `:@@error.activities.creation:Activities could not be created.`+this.translatorService.translateError(error.message);</span>
+<span class="cstat-no" title="statement not covered" >                  return this.errorProcessorService.processError(error);</span>
               }
             )
           )
-          .subscribe(<span class="fstat-no" title="function not covered" >(j</span>ob) =&gt; {
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >            this.loading = false;</span></span>
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >            this.notificationService.confirmation(</span></span>
+          .subscribe((job) =&gt; {
+<span class="cstat-no" title="statement not covered" >            this.loading = false;</span>
+<span class="cstat-no" title="statement not covered" >            this.notificationService.confirmation(</span>
               activities.length &gt; 1 ?
-                $localize`:@@message.activities.created:${activities.length} activities created successfully`
+<span class="branch-0 cbranch-no" title="branch not covered" >                $localize`:@@message.activities.created:${activities.length} activities created successfully`</span>
                 : $localize`:@@message.activity.created:Activity created successfully`
             );
-<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >            this.activitiesSaved.emit(job);</span></span>
+<span class="cstat-no" title="statement not covered" >            this.activitiesSaved.emit(job);</span>
           });
     }
   }
@@ -394,7 +394,7 @@ export class JobActivitiesFormComponent implements OnInit {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-21T12:13:49.141Z
+                at 2026-01-23T09:16:30.712Z
             </div>
         <script src="../../../../../../prettify.js"></script>
         <script>
