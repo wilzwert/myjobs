@@ -1,16 +1,16 @@
 name: Deployment
 
 on:
-  # deploy should be able to run manually
+  # deploy should be able to run manually or when staging succeeds
   workflow_dispatch:
-  push:
-    branches:
-      - master
-    tags:
-      - 'v*'  # triggered by tags v1.0.0, v2.3.1, etc.
+  workflow_run:
+    workflows: ["Run staging tests"]
+    types:
+      - completed
 
 jobs:
   deployment-backend:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     environment: production
 
@@ -53,6 +53,7 @@ jobs:
 
 
   deploy-frontend:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     defaults:
       run:
