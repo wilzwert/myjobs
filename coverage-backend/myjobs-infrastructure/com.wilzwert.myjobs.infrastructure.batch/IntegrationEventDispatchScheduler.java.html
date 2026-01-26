@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>IntegrationEventDispatchScheduler.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">MyJobsAggregateReport</a> &gt; <a href="../index.html" class="el_bundle">myjobs-infrastructure</a> &gt; <a href="index.source.html" class="el_package">com.wilzwert.myjobs.infrastructure.batch</a> &gt; <span class="el_source">IntegrationEventDispatchScheduler.java</span></div><h1>IntegrationEventDispatchScheduler.java</h1><pre class="source lang-java linenums">package com.wilzwert.myjobs.infrastructure.batch;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.core.job.Job;
+import org.springframework.batch.core.job.JobExecution;
+import org.springframework.batch.core.job.parameters.JobParameters;
+import org.springframework.batch.core.job.parameters.JobParametersBuilder;
+import org.springframework.batch.core.launch.JobOperator;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import java.util.UUID;
+
+@Component
+@ConditionalOnProperty(name = &quot;application.batch.enabled&quot;, havingValue = &quot;true&quot;)
+<span class="fc" id="L17">@Slf4j</span>
+public class IntegrationEventDispatchScheduler {
+
+    private final JobOperator jobOperator;
+    private final Job integrationEventDispatchJob;
+
+<span class="fc" id="L23">    public IntegrationEventDispatchScheduler(JobOperator jobOperator, Job integrationEventDispatchJob) {</span>
+<span class="fc" id="L24">        this.jobOperator = jobOperator;</span>
+<span class="fc" id="L25">        this.integrationEventDispatchJob = integrationEventDispatchJob;</span>
+<span class="fc" id="L26">    }</span>
+
+    @Scheduled(cron = &quot;0 */5 * * * ?&quot;) // every 5 minutes
+    public void scheduleIntegrationEventDispatch()  {
+<span class="nc" id="L30">        JobParameters params = new JobParametersBuilder()</span>
+<span class="nc" id="L31">                .addString(&quot;run.id&quot;, UUID.randomUUID().toString(), true)</span>
+<span class="nc" id="L32">                .toJobParameters();</span>
+        try {
+<span class="nc" id="L34">            JobExecution execution = jobOperator.start(integrationEventDispatchJob, params);</span>
+<span class="nc" id="L35">            log.info(</span>
+                    &quot;Integration event dispatch scheduled run, started at {}, ended at {}, exited with {}&quot;,
+<span class="nc" id="L37">                    execution.getStartTime(),</span>
+<span class="nc" id="L38">                    execution.getEndTime(),</span>
+<span class="nc" id="L39">                    execution.getExitStatus()</span>
+            );
+        }
+<span class="nc" id="L42">        catch (Exception e) {</span>
+<span class="nc" id="L43">            log.info(&quot;Integration event dispatch scheduled threw an exception {}&quot;, e.getMessage());</span>
+<span class="nc" id="L44">        }</span>
+<span class="nc" id="L45">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
