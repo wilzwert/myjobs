@@ -1,7 +1,6 @@
 package com.wilzwert.myjobs.infrastructure.batch;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.*;
 import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.JobExecution;
 import org.springframework.batch.core.job.parameters.JobParameters;
@@ -16,27 +15,32 @@ import java.util.UUID;
 @Component
 @ConditionalOnProperty(name = "application.batch.enabled", havingValue = "true")
 @Slf4j
-public class JobsRemindersScheduler {
+public class IntegrationEventDispatchScheduler {
 
     private final JobOperator jobOperator;
-    private final Job jobReminderJob;
+    private final Job integrationEventDispatchJob;
 
-    public JobsRemindersScheduler(JobOperator jobOperator, Job jobReminderJob) {
+    public IntegrationEventDispatchScheduler(JobOperator jobOperator, Job integrationEventDispatchJob) {
         this.jobOperator = jobOperator;
-        this.jobReminderJob = jobReminderJob;
+        this.integrationEventDispatchJob = integrationEventDispatchJob;
     }
 
-    @Scheduled(cron = "0 0 6 * * ?") // daily at 6 am
-    public void scheduleJobsReminders()  {
+    @Scheduled(cron = "0 */5 * * * ?") // every 5 minutes
+    public void scheduleIntegrationEventDispatch()  {
         JobParameters params = new JobParametersBuilder()
                 .addString("run.id", UUID.randomUUID().toString(), true)
                 .toJobParameters();
         try {
-            JobExecution execution = jobOperator.start(jobReminderJob, params);
-            log.info("Job reminders scheduled run, started at {}, ended at {}, exited with {}", execution.getStartTime(), execution.getEndTime(), execution.getExitStatus());
+            JobExecution execution = jobOperator.start(integrationEventDispatchJob, params);
+            log.info(
+                    "Integration event dispatch scheduled run, started at {}, ended at {}, exited with {}",
+                    execution.getStartTime(),
+                    execution.getEndTime(),
+                    execution.getExitStatus()
+            );
         }
         catch (Exception e) {
-            log.info("Job reminders scheduled threw an exception {}", e.getMessage());
+            log.info("Integration event dispatch scheduled threw an exception {}", e.getMessage());
         }
     }
 }
