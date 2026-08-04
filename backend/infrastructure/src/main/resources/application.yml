@@ -91,12 +91,18 @@ logging:
     org.springframework.boot.autoconfigure.kafka: DEBUG
 
 
+captcha:
+  provider: ${CAPTCHA_PROVIDER:altcha}
+  always-valid: ${CAPTCHA_ALWAYS_VALID:true}
+
+altcha:
+  secret-key: ${ALTCHA_SECRET_KEY:secret-key}
+
 google:
   recaptcha:
     # use of v3 enterprise mandatory
     site-key: ${GOOGLE_RECAPTCHA_SITE_KEY:siteKey}
     api-key: ${GOOGLE_RECAPTCHA_API_KEY:apikey}
-    always-valid: ${GOOGLE_RECAPTCHA_ALWAYS_VALID:true}
 
 aws:
   s3:

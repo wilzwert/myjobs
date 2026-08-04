@@ -86,6 +86,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         return path.matches("/api/auth/(login|register|refresh-token)")
                 || path.matches("/swagger-ui/.*")
+                || path.matches("/altcha")
                 || path.matches("/internal/.*");
     }
 }
