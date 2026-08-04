@@ -117,7 +117,7 @@ jobs:
         id: quality-gate
         uses: sonarsource/sonarqube-quality-gate-action@master
         env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_BACKEND }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_FRONTEND }}
         continue-on-error: true
 
       # fail job if coverage requirements not met
