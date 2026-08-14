@@ -25,7 +25,7 @@ public class CaptchaAspectTest {
     private HttpServletRequest request;
 
     @Mock
-    private RecaptchaCaptchaValidator captchaValidator;
+    private CaptchaValidator captchaValidator;
 
     @InjectMocks
     private CaptchaAspect underTest;

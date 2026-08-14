@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AltchaCaptchaValidator implements CaptchaValidator {
 
+    private final static String ALTCHA_ALGORITHM = "PBKDF2/SHA-256";
+
     private final String altchaSecretKey;
 
     private final boolean altchaAlwaysValid;
@@ -25,9 +27,9 @@ public class AltchaCaptchaValidator implements CaptchaValidator {
 
     public Altcha.Challenge createChallenge() throws Exception {
         var options = new Altcha.CreateChallengeOptions()
-                .algorithm("PBKDF2/SHA-256")
-                .cost(5_000)          // PBKDF2 iterations
-                .hmacSignatureSecret("your-secret-key")
+                .algorithm(ALTCHA_ALGORITHM)
+                .cost(5_000)
+                .hmacSignatureSecret(this.altchaSecretKey)
                 .expiresInSeconds(600); // 10 minutes
 
         return Altcha.createChallenge(options);

@@ -1,6 +1,5 @@
-google:
-  recaptcha:
-    always-valid: true
+captcha:
+  always-valid: true
 
 security:
   cors:

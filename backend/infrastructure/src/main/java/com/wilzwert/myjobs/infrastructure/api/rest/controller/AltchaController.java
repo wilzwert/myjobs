@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @Slf4j
-@RequestMapping("/altcha")
+@RequestMapping("/api/altcha")
 @RequiredArgsConstructor
 public class AltchaController {
 
     private final AltchaCaptchaValidator altchaCaptchaValidator;
 
-    @GetMapping
+    @GetMapping("/challenge")
     public Altcha.Challenge createChallenge() {
         try {
             return altchaCaptchaValidator.createChallenge();

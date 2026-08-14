@@ -95,7 +95,7 @@ public class SecurityConfiguration {
                                         "/api/auth/username-check",
                                         "/api/user/password/**",
                                         "/api/user/me/email/validation",
-                                        "/altcha",
+                                        "/api/altcha/**",
                                         /*"/"+storageProperties.getUploadDir()+"/**",
                                         apiDocProperties.getApiDocsPath()+"/**",
                                         apiDocProperties.getSwaggerPath()+"/**",*/
