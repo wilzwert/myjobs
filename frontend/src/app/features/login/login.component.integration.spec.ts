@@ -5,7 +5,6 @@ import { LoginComponent } from './login.component';
 import { SessionService } from '@core/services/session.service';
 import { AuthService } from '@core/services/auth.service';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { provideScReCaptchaSettings } from '@semantic-components/re-captcha';
 import { environment } from '@environments/environment';
 import { CaptchaService } from '@core/services/captcha.service';
 import { of } from 'rxjs';
@@ -40,10 +39,6 @@ describe('LoginComponent integration test', () => {
         { provide: ActivatedRoute, useValue: { snapshot: {}, params: {} } },
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
-        provideScReCaptchaSettings({
-          v3SiteKey: environment.recaptcha_key,
-          languageCode: 'fr',
-        }),
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
       ]
     });

@@ -22,21 +22,21 @@ import static org.mockito.Mockito.*;
  * @author Wilhelm Zwertvaegher
  */
 @ExtendWith(MockitoExtension.class)
-public class CaptchaValidatorTest {
+public class RecaptchaCaptchaValidatorTest {
 
     @Mock
     private RestTemplate restTemplate;
 
-    private CaptchaValidator underTest;
+    private RecaptchaCaptchaValidator underTest;
 
     @BeforeEach
     void setUp() {
-        underTest = new CaptchaValidator("siteKey", "apiKey", false, restTemplate);
+        underTest = new RecaptchaCaptchaValidator("siteKey", "apiKey", false, restTemplate);
     }
 
     @Test
     void shouldReturnTrue_whenAlwaysTrue() {
-        underTest = new CaptchaValidator( "siteKey", "apiKey", true, restTemplate);
+        underTest = new RecaptchaCaptchaValidator( "siteKey", "apiKey", true, restTemplate);
 
         assertTrue(underTest.validateCaptcha("response"));
         verify(restTemplate, times(0)).postForObject(anyString(), any(), eq(AssessmentResponse.class));

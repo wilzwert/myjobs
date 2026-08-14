@@ -77,7 +77,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter, RateLimitingFilter rateLimitingFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthenticationFilter jwtAuthenticationFilter, RateLimitingFilter rateLimitingFilter) {
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 // disable CSRF protection, as the app is RESTful API
@@ -95,6 +95,7 @@ public class SecurityConfiguration {
                                         "/api/auth/username-check",
                                         "/api/user/password/**",
                                         "/api/user/me/email/validation",
+                                        "/api/altcha/**",
                                         /*"/"+storageProperties.getUploadDir()+"/**",
                                         apiDocProperties.getApiDocsPath()+"/**",
                                         apiDocProperties.getSwaggerPath()+"/**",*/
@@ -103,6 +104,7 @@ public class SecurityConfiguration {
                                         "/swagger-ui/**",
                                         // used for "internal" http calls e.g. manual/scheduled http batch triggering
                                         "/internal/**"
+
                         ).permitAll()
                         // everything else requires authentication
                         .anyRequest().authenticated()

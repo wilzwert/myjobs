@@ -4,7 +4,6 @@ import { NewPasswordComponent } from './new-password.component';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideScReCaptchaSettings } from '@semantic-components/re-captcha';
 import { environment } from '@environments/environment';
 import { ErrorInterceptor } from '@core/interceptors/error.interceptor';
 import { ErrorProcessorService } from '@core/services/error-processor.service';
@@ -38,10 +37,6 @@ describe('NewPasswordComponent', () => {
         { provide: CaptchaService, useValue: captchaServiceMock},
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
-        provideScReCaptchaSettings({
-          v3SiteKey: environment.recaptcha_key,
-          languageCode: 'fr',
-        }),
         { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
       ]
     })
