@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, from, of, switchMap, tap, map } from 'rxjs';
+import { BehaviorSubject, Observable, from, switchMap, tap, map } from 'rxjs';
+import { environment } from '@environments/environment';
 import { solveChallenge, type Challenge, type Solution } from 'altcha/lib';
 import { pbkdf2 } from 'altcha/lib';
 
@@ -10,7 +11,7 @@ import { pbkdf2 } from 'altcha/lib';
 })
 export class CaptchaService {
 
-  private readonly challengeUrl = '/api/altcha/challenge';
+  private readonly challengeUrl = `${environment.apiUrl}/api/altcha/challenge`;
   private tokenSubject = new BehaviorSubject<string | null | false>(null);
 
   constructor(private http: HttpClient) {}
