@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">75.6% </span>
+                <span class="strong">87.8% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>31/41</span>
+                <span class='fraction'>36/41</span>
             </div>
         
             
@@ -37,9 +37,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">54.54% </span>
+                <span class="strong">77.27% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>12/22</span>
+                <span class='fraction'>17/22</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line medium'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -160,23 +160,23 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">12x</span>
-<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">12x</span>
-<span class="cline-any cline-yes">12x</span>
-<span class="cline-any cline-yes">12x</span>
-<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">14x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">17x</span>
+<span class="cline-any cline-yes">86x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">43x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -191,7 +191,7 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">31x</span>
+<span class="cline-any cline-yes">41x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">4x</span>
@@ -241,37 +241,37 @@ export class MenuComponent implements OnInit, OnDestroy {
   public menuOpen: boolean = false;
   
 &nbsp;
-<span class="fstat-no" title="function not covered" >  constructor(</span>
+  constructor(
     private sessionService: SessionService,
     private authService: AuthService,
     private router: Router,
     private localeService: LocaleService
   ) {}
 &nbsp;
-<span class="fstat-no" title="function not covered" >  get l</span>ang() {
-<span class="cstat-no" title="statement not covered" >    return this.localeService.currentLocale;</span>
+  get lang() {
+    return this.localeService.currentLocale;
   }
   
-  public <span class="fstat-no" title="function not covered" >$isLogged(</span>): Observable&lt;boolean&gt; {
-<span class="cstat-no" title="statement not covered" >    return this.sessionService.$isLogged();</span>
+  public $isLogged(): Observable&lt;boolean&gt; {
+    return this.sessionService.$isLogged();
   }
 &nbsp;
   public <span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" >openNav(</span></span>) :void {
 <span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >    this.menuOpen = true;</span></span>
   }
 &nbsp;
-  public <span class="fstat-no" title="function not covered" >closeNav(</span>) :void {
-<span class="cstat-no" title="statement not covered" >    this.menuOpen = false;</span>
+  public closeNav() :void {
+    this.menuOpen = false;
   }
 &nbsp;
-<span class="fstat-no" title="function not covered" >  ngOnInit(</span>): void {
+  ngOnInit(): void {
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    this.router.events.pipe(</span>
+    this.router.events.pipe(
       takeUntil(this.destroy$),
       filter(event =&gt; event instanceof NavigationEnd || event instanceof NavigationSkipped)
     )
       .subscribe(() =&gt; {
-<span class="cstat-no" title="statement not covered" >        this.closeNav();</span>
+        this.closeNav();
     });
   }
 &nbsp;
@@ -301,7 +301,7 @@ export class MenuComponent implements OnInit, OnDestroy {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-26T16:01:25.805Z
+                at 2026-08-14T15:35:16.132Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

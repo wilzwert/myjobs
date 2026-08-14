@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">80% </span>
+                <span class="strong">82.14% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>12/15</span>
-            </div>
-        
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
-                <span class="quiet">Branches</span>
-                <span class='fraction'>2/2</span>
+                <span class='fraction'>23/28</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">66.66% </span>
-                <span class="quiet">Functions</span>
+                <span class="quiet">Branches</span>
                 <span class='fraction'>4/6</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">90% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>9/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>9/9</span>
+                <span class='fraction'>18/18</span>
             </div>
         
             
@@ -85,58 +85,106 @@
 <a name='L20'></a><a href='#L20'>20</a>
 <a name='L21'></a><a href='#L21'>21</a>
 <a name='L22'></a><a href='#L22'>22</a>
-<a name='L23'></a><a href='#L23'>23</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">29x</span>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">29x</span>
+<span class="cline-any cline-yes">29x</span>
+<span class="cline-any cline-yes">29x</span>
 <span class="cline-any cline-yes">29x</span>
 <span class="cline-any cline-yes">29x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">29x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">9x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Injectable } from '@angular/core';
-import { ScScoreReCaptcha } from '@semantic-components/re-captcha';
-import { BehaviorSubject, from, Observable, of, switchMap } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, from, of, switchMap, tap, map } from 'rxjs';
+import { solveChallenge, type Challenge, type Solution } from 'altcha/lib';
+import { pbkdf2 } from 'altcha/lib';
+&nbsp;
 &nbsp;
 @Injectable({
   providedIn: 'root'
 })
 export class CaptchaService {
 &nbsp;
-  private tokenSubject: BehaviorSubject&lt;string | null | false&gt; = new BehaviorSubject&lt;string | null | false&gt;(null);
+  private readonly challengeUrl = '/api/altcha/challenge';
+  private tokenSubject = new BehaviorSubject&lt;string | null | false&gt;(null);
 &nbsp;
-<span class="fstat-no" title="function not covered" >  constructor(private s</span>cScoreReCaptcha: ScScoreReCaptcha) {}
+  constructor(private http: HttpClient) {}
 &nbsp;
-<span class="fstat-no" title="function not covered" >  getCaptchaToken(</span>) :Observable&lt;string&gt; {
-<span class="cstat-no" title="statement not covered" >    return from(this.scScoreReCaptcha.execute('captcha')).pipe(</span>
-      switchMap((token: string) =&gt;  {
-<span class="cstat-no" title="statement not covered" >          this.tokenSubject.next(token);</span>
-<span class="cstat-no" title="statement not covered" >          return of(token);</span>
-      }
-    ));
+  getCaptchaToken(): Observable&lt;string&gt; {
+    console.log('Getting captcha token...');
+    return this.http.get&lt;Challenge&gt;(this.challengeUrl).pipe(
+      switchMap(challenge =&gt;
+        from(solveChallenge({ challenge, deriveKey: pbkdf2.deriveKey })).pipe(
+          map((solution: Solution | null) =&gt; {
+<span class="cstat-no" title="statement not covered" >            console.log('Captcha challenge solved:', solution);</span>
+<span class="cstat-no" title="statement not covered" >            if (!solution) {</span>
+<span class="cstat-no" title="statement not covered" >              throw new Error('Unable to solve captcha challenge');</span>
+            }
+<span class="cstat-no" title="statement not covered" >            return this.encodeToken(challenge, solution);</span>
+          })
+        )
+      ),
+      tap(token =&gt; this.tokenSubject.next(token))
+    );
   }
-}
-&nbsp;</pre></td></tr></table></pre>
+&nbsp;
+  private <span class="fstat-no" title="function not covered" >encodeToken(</span>challenge: Challenge, solution: Solution): string {
+<span class="cstat-no" title="statement not covered" >    return btoa(JSON.stringify({ challenge, solution }));</span>
+  }
+}</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
             </div><!-- /wrapper -->
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2026-01-26T16:01:25.805Z
+                at 2026-08-14T15:35:16.132Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>
