@@ -3,7 +3,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideScReCaptchaSettings } from '@semantic-components/re-captcha';
 import { Router, RouterModule } from '@angular/router';
 import { HomeComponent } from './layout/home/home.component';
 
@@ -20,11 +19,7 @@ let router: Router;
       ],
      providers: [
         provideHttpClient(withInterceptorsFromDi()),
-        provideHttpClientTesting(),
-        provideScReCaptchaSettings({
-          v3SiteKey: environment.recaptcha_key,
-          languageCode: 'fr',
-        }),
+        provideHttpClientTesting()
      ]
     }).compileComponents();
     router = TestBed.inject(Router);

@@ -6,7 +6,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { NgxCaptchaModule } from 'ngx-captcha';
 import { NotificationService } from '@core/services/notification.service';
 import { ResetPasswordRequest } from '@core/model/reset-password-request.interface';
 import { UserService } from '@core/services/user.service';
@@ -17,7 +16,7 @@ import { ErrorProcessorService } from '@core/services/error-processor.service';
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, ReactiveFormsModule, NgxCaptchaModule, StatusIconComponent],
+  imports: [MatButtonModule, MatFormFieldModule, MatIconModule, MatInputModule, ReactiveFormsModule, StatusIconComponent],
   templateUrl: './reset-password.component.html',
   styleUrl: './reset-password.component.scss'
 })

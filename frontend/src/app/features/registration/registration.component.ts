@@ -11,7 +11,6 @@ import { Router } from '@angular/router';
 import { NotificationService } from '@core/services/notification.service';
 import { ApiError } from '@core/errors/api-error';
 import { AuthValidators } from '@core/services/auth.validators';
-import { NgxCaptchaModule } from 'ngx-captcha';
 import { PasswordValidator } from '@core/validators/password-validator';
 import { UserFormComponent } from "@features/user/user-form/user-form.component";
 import { ErrorProcessorService } from '@core/services/error-processor.service';
@@ -25,7 +24,6 @@ import { ErrorProcessorService } from '@core/services/error-processor.service';
     MatIconModule,
     MatInputModule,
     ReactiveFormsModule,
-    NgxCaptchaModule,
     UserFormComponent
 ],
   templateUrl: './registration.component.html',
